@@ -1,0 +1,350 @@
+/**
+ ******************************************************************************
+ * @file    system_misc.c
+ * @author  William Xu
+ * @version V1.0.0
+ * @date    05-May-2014
+ * @brief   This file provide the system mics functions for internal usage
+ ******************************************************************************
+ *
+ *  UNPUBLISHED PROPRIETARY SOURCE CODE
+ *  Copyright (c) 2016 MXCHIP Inc.
+ *
+ *  The contents of this file may not be disclosed to third parties, copied or
+ *  duplicated in any form, in whole or in part, without the prior written
+ *  permission of MXCHIP Corporation.
+ ******************************************************************************
+ */
+
+#include "mxos.h"
+#include "StringUtils.h"
+#include "time.h"
+
+#include "system_internal.h"
+
+extern system_context_t* sys_context;
+
+system_context_t *system_context( void )
+{
+    return sys_context;
+}
+
+static void mxosNotify_DHCPCompleteHandler(IPStatusTypedef *pnet, system_context_t * const inContext)
+{
+  require(inContext, exit);
+  mxos_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+  strcpy((char *)inContext->mxosStatus.localIp, pnet->ip);
+  strcpy((char *)inContext->mxosStatus.netMask, pnet->mask);
+  strcpy((char *)inContext->mxosStatus.gateWay, pnet->gate);
+  strcpy((char *)inContext->mxosStatus.dnsServer, pnet->dns);
+  mxos_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+exit:
+  return;
+}
+
+static void mxosNotify_ConnectFailedHandler(OSStatus err, system_context_t * const inContext)
+{
+  (void)inContext;
+  system_log("Wlan Connection Err %d", err);
+}
+
+static void mxosNotify_WlanFatalErrHandler(system_context_t * const inContext)
+{
+  (void)inContext;
+  system_log("Wlan Fatal Err!");
+  MxosSystemReboot();
+}
+
+static void mxosNotify_StackOverflowErrHandler(char *taskname, system_context_t * const inContext)
+{
+  (void)inContext;
+  system_log("Thread %s overflow, system rebooting", taskname);
+  MxosSystemReboot();
+}
+
+static void mxosNotify_WifiStatusHandler(WiFiEvent event, system_context_t * const inContext)
+{
+  (void)inContext;
+  switch (event) {
+  case NOTIFY_STATION_UP:
+    system_log("Station up");
+    MxosRfLed(true);
+    break;
+  case NOTIFY_STATION_DOWN:
+    system_log("Station down");
+    MxosRfLed(false);
+    break;
+  case NOTIFY_AP_UP:
+    system_log("uAP established");
+    MxosRfLed(true);
+    break;
+  case NOTIFY_AP_DOWN:
+    system_log("uAP deleted");
+    MxosRfLed(false);
+    break;
+  case NOTIFY_ETH_UP:
+    system_log("ETH up");
+    break;
+  case NOTIFY_ETH_DOWN:
+    system_log("ETH down");
+    break;
+  default:
+    break;
+  }
+  return;
+}
+
+static void mxosNotify_WiFIParaChangedHandler(apinfo_adv_t *ap_info, char *key, int key_len, system_context_t * const inContext)
+{
+  bool _needsUpdate = false;
+  require(inContext, exit);
+  mxos_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+  if(strncmp(inContext->flashContentInRam.mxosSystemConfig.ssid, ap_info->ssid, maxSsidLen)!=0){
+    strncpy(inContext->flashContentInRam.mxosSystemConfig.ssid, ap_info->ssid, maxSsidLen);
+    _needsUpdate = true;
+  }
+
+  if(memcmp(inContext->flashContentInRam.mxosSystemConfig.bssid, ap_info->bssid, 6)!=0){
+    memcpy(inContext->flashContentInRam.mxosSystemConfig.bssid, ap_info->bssid, 6);
+    _needsUpdate = true;
+  }
+
+  if(inContext->flashContentInRam.mxosSystemConfig.channel != ap_info->channel){
+    inContext->flashContentInRam.mxosSystemConfig.channel = ap_info->channel;
+    _needsUpdate = true;
+  }
+  
+  if(inContext->flashContentInRam.mxosSystemConfig.security != ap_info->security){
+    inContext->flashContentInRam.mxosSystemConfig.security = ap_info->security;
+    _needsUpdate = true;
+  }
+
+  if (key_len == maxKeyLen) {//  maxKeyLen is the PSK. using PSK replace passphrase. 
+    if(memcmp(inContext->flashContentInRam.mxosSystemConfig.key, key, maxKeyLen)!=0){
+      memcpy(inContext->flashContentInRam.mxosSystemConfig.key, key, maxKeyLen);
+      _needsUpdate = true;
+    }
+  
+    if(inContext->flashContentInRam.mxosSystemConfig.keyLength != key_len){
+      inContext->flashContentInRam.mxosSystemConfig.keyLength = key_len;
+      _needsUpdate = true;
+    }
+  }
+  
+  if(_needsUpdate== true)  
+    mxos_system_context_update( &inContext->flashContentInRam );
+  mxos_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+  
+exit:
+  return;
+}
+
+OSStatus system_notification_init( system_context_t * const inContext )
+{
+  OSStatus err = kNoErr;
+
+  err = mxos_system_notify_register( mxos_notify_WIFI_CONNECT_FAILED, (void *)mxosNotify_ConnectFailedHandler, inContext );
+  require_noerr( err, exit );
+
+  err = mxos_system_notify_register( mxos_notify_WIFI_Fatal_ERROR, (void *)mxosNotify_WlanFatalErrHandler, inContext );
+  require_noerr( err, exit ); 
+
+  err = mxos_system_notify_register( mxos_notify_Stack_Overflow_ERROR, (void *)mxosNotify_StackOverflowErrHandler, inContext );
+  require_noerr( err, exit );
+
+  err = mxos_system_notify_register( mxos_notify_DHCP_COMPLETED, (void *)mxosNotify_DHCPCompleteHandler, inContext );
+  require_noerr( err, exit ); 
+
+  err = mxos_system_notify_register( mxos_notify_WIFI_STATUS_CHANGED, (void *)mxosNotify_WifiStatusHandler, inContext );
+  require_noerr( err, exit );
+
+  err = mxos_system_notify_register( mxos_notify_WiFI_PARA_CHANGED, (void *)mxosNotify_WiFIParaChangedHandler, inContext );
+  require_noerr( err, exit ); 
+
+exit:
+  return err;
+}
+
+void system_connect_wifi_normal( system_context_t * const inContext)
+{
+  network_InitTypeDef_adv_st wNetConfig;
+  memset(&wNetConfig, 0x0, sizeof(network_InitTypeDef_adv_st));
+  
+  mxos_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+  strncpy((char*)wNetConfig.ap_info.ssid, inContext->flashContentInRam.mxosSystemConfig.ssid, maxSsidLen);
+  wNetConfig.ap_info.security = SECURITY_TYPE_AUTO;
+  memcpy(wNetConfig.key, inContext->flashContentInRam.mxosSystemConfig.user_key, maxKeyLen);
+  wNetConfig.key_len = inContext->flashContentInRam.mxosSystemConfig.user_keyLength;
+  wNetConfig.dhcpMode = inContext->flashContentInRam.mxosSystemConfig.dhcpEnable;
+  strncpy((char*)wNetConfig.local_ip_addr, inContext->flashContentInRam.mxosSystemConfig.localIp, maxIpLen);
+  strncpy((char*)wNetConfig.net_mask, inContext->flashContentInRam.mxosSystemConfig.netMask, maxIpLen);
+  strncpy((char*)wNetConfig.gateway_ip_addr, inContext->flashContentInRam.mxosSystemConfig.gateWay, maxIpLen);
+  strncpy((char*)wNetConfig.dnsServer_ip_addr, inContext->flashContentInRam.mxosSystemConfig.dnsServer, maxIpLen);
+  wNetConfig.wifi_retry_interval = 100;
+  mxos_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+
+  system_log("connect to %s.....", wNetConfig.ap_info.ssid);
+  mxosWlanStartAdv(&wNetConfig);
+}
+
+void system_connect_wifi_fast( system_context_t * const inContext)
+{
+  network_InitTypeDef_adv_st wNetConfig;
+  memset(&wNetConfig, 0x0, sizeof(network_InitTypeDef_adv_st));
+  
+  mxos_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+  strncpy((char*)wNetConfig.ap_info.ssid, inContext->flashContentInRam.mxosSystemConfig.ssid, maxSsidLen);
+  memcpy(wNetConfig.ap_info.bssid, inContext->flashContentInRam.mxosSystemConfig.bssid, 6);
+  wNetConfig.ap_info.channel = inContext->flashContentInRam.mxosSystemConfig.channel;
+  wNetConfig.ap_info.security = inContext->flashContentInRam.mxosSystemConfig.security;
+  memcpy(wNetConfig.key, inContext->flashContentInRam.mxosSystemConfig.key, inContext->flashContentInRam.mxosSystemConfig.keyLength);
+  wNetConfig.key_len = inContext->flashContentInRam.mxosSystemConfig.keyLength;
+  if(inContext->flashContentInRam.mxosSystemConfig.dhcpEnable == true)
+    wNetConfig.dhcpMode = DHCP_Client;
+  else
+    wNetConfig.dhcpMode = DHCP_Disable;
+  strncpy((char*)wNetConfig.local_ip_addr, inContext->flashContentInRam.mxosSystemConfig.localIp, maxIpLen);
+  strncpy((char*)wNetConfig.net_mask, inContext->flashContentInRam.mxosSystemConfig.netMask, maxIpLen);
+  strncpy((char*)wNetConfig.gateway_ip_addr, inContext->flashContentInRam.mxosSystemConfig.gateWay, maxIpLen);
+  strncpy((char*)wNetConfig.dnsServer_ip_addr, inContext->flashContentInRam.mxosSystemConfig.dnsServer, maxIpLen);
+  mxos_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+
+  wNetConfig.wifi_retry_interval = 100;
+  system_log("Connect to %s.....", wNetConfig.ap_info.ssid);
+  mxosWlanStartAdv(&wNetConfig);
+}
+
+OSStatus system_network_daemen_start( system_context_t * const inContext )
+{
+  IPStatusTypedef para;
+  uint8_t major, minor, revision;
+
+  MxosInit();
+  MxosSysLed(true);
+  mxosWlanGetIPStatus(&para, Station);
+  formatMACAddr(inContext->mxosStatus.mac, (char *)&para.mac);
+  MxosGetRfVer(inContext->mxosStatus.rf_version, sizeof(inContext->mxosStatus.rf_version));
+  inContext->mxosStatus.rf_version[49] = 0x0;
+
+  system_log("Author name: %s , email: %s", MXOS_OS_USER_NAME, MXOS_OS_USER_EMAIL );
+  system_log("GCC version: %s", CC_VERSION );
+  
+  system_log("MXOS version: %s", MXOS_OS_VERSION );
+  system_log("Kernel version: %s", MxosGetVer());
+  system_log("Wi-Fi driver version %s", inContext->mxosStatus.rf_version);
+  system_log("Wi-Fi mac address: %s", inContext->mxosStatus.mac);
+
+  system_log("Free memory %d bytes", MxosGetMemoryInfo()->free_memory); 
+
+#if PLATFORM_ETH_ENABLE
+  mxos_eth_bringup(true, NULL, NULL, NULL);
+  system_log("Ethernet mac address %s", mxos_eth_get_mac_address());
+#endif
+
+  if(inContext->flashContentInRam.mxosSystemConfig.rfPowerSaveEnable == true){
+    mxosWlanEnablePowerSave();
+  }
+
+  if(inContext->flashContentInRam.mxosSystemConfig.mcuPowerSaveEnable == true){
+    MxosMcuPowerSaveConfig(true);
+  }  
+  return kNoErr;
+}
+
+#if MXOS_CONFIG_EASYLINK_BTN_ENABLE
+#include "button.h"
+
+button_context_t easylink_btn;
+
+static void PlatformEasyLinkButtonClickedCallback(void)
+{
+  require_quiet( sys_context, exit );
+
+#ifdef EasyLink_Needs_Reboot
+  if(sys_context->flashContentInRam.mxosSystemConfig.easyLinkByPass != EASYLINK_BYPASS_NO){
+      sys_context->flashContentInRam.mxosSystemConfig.easyLinkByPass = EASYLINK_BYPASS_NO;
+    needs_update = true;
+  }
+
+  /* Enter easylink mode temporary in configed mode */
+  if(sys_context->flashContentInRam.mxosSystemConfig.configured == allConfigured){
+      sys_context->flashContentInRam.mxosSystemConfig.configured = wLanUnConfigured;
+    needs_update = true;
+  }
+
+  mxos_system_power_perform( &sys_context->flashContentInRam, eState_Software_Reset );
+#else
+  mxos_system_wlan_start_autoconf( );
+#endif
+
+exit:
+  return;
+}
+
+static void PlatformEasyLinkButtonLongPressedCallback(void)
+{
+  mxos_Context_t* context = NULL;
+  mxos_logic_partition_t *partition = NULL;
+
+  context = mxos_system_context_get( );
+  require( context, exit );
+
+  partition = MxosFlashGetInfo( MXOS_PARTITION_PARAMETER_1 );
+
+  MxosFlashErase( MXOS_PARTITION_PARAMETER_1 ,0x0, partition->partition_length );
+
+  partition = MxosFlashGetInfo( MXOS_PARTITION_PARAMETER_2 );
+
+  MxosFlashErase( MXOS_PARTITION_PARAMETER_2 ,0x0, partition->partition_length );
+
+  mxos_system_power_perform( context, eState_Software_Reset );
+
+exit:
+  return;
+}
+
+void system_easylink_btn_init( mxos_gpio_t btn, uint32_t long_pressed_timeout )
+{
+    easylink_btn.gpio = btn;
+    easylink_btn.idle = MXOS_CONFIG_EASYLINK_BTN_IDLE_STATE;
+    easylink_btn.pressed_func = PlatformEasyLinkButtonClickedCallback;
+    easylink_btn.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
+    easylink_btn.long_pressed_timeout = long_pressed_timeout;
+
+    button_init( &easylink_btn );
+}
+
+#endif
+
+void mxos_sdk_version( uint8_t *major, uint8_t *minor, uint8_t *revision )
+{
+  *major = MXOS_SDK_VERSION_MAJOR;
+  *minor = MXOS_SDK_VERSION_MINOR;
+  *revision = MXOS_SDK_VERSION_REVISION;
+}
+
+OSStatus mxos_system_get_status_wlan( system_status_wlan_t** status )
+{
+    if( sys_context == NULL )
+    {
+        *status = NULL;
+        return kNotPreparedErr;
+    }
+    else
+    {
+        *status = &sys_context->mxosStatus;
+        return kNotPreparedErr;
+    }
+}
+
+OSStatus mxos_system_wlan_get_status( mxos_system_status_wlan_t** status )
+{
+    return mxos_system_get_status_wlan( status );
+}
+
+void mxos_app_info(char *str, int len)
+{
+  snprintf( str, len, "%s %s, build at %s %s", APP_INFO, FIRMWARE_REVISION, __TIME__, __DATE__);
+}
+
+
