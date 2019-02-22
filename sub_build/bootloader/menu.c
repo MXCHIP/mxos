@@ -175,7 +175,7 @@ void SerialUpload(mxos_flash_t flash, uint32_t flashdestination, char * fileName
   uint8_t key;
 
   printf("Select Receive File\n\r");
-  MxosUartRecv( MXOS_STDIO_UART, &key, 1, MXOS_NEVER_TIMEOUT );
+  mxos_uart_recv( MXOS_STDIO_UART, &key, 1, MXOS_NEVER_TIMEOUT );
 
   if (key == CRC16)
   {
@@ -226,14 +226,14 @@ void Main_Menu(void)
 #if 1
     /***************** Command "0" or "BOOTUPDATE": Update the application  *************************/
     if(strcmp(cmdname, "BOOTUPDATE") == 0 || strcmp(cmdname, "0") == 0) {
-      partition = MxosFlashGetInfo( MXOS_PARTITION_BOOTLOADER );
+      partition = mxos_flash_get_info( MXOS_PARTITION_BOOTLOADER );
       if (findCommandPara(cmdbuf, "r", NULL, 0) != -1){
         printf ("\n\rRead Bootloader...\n\r");
         SerialUpload( partition->partition_owner, partition->partition_start_addr, "BootLoaderImage.bin", partition->partition_length );
         continue;
       }
       printf ("\n\rUpdating Bootloader...\n\r");
-      err = MxosFlashDisableSecurity( MXOS_PARTITION_BOOTLOADER, 0x0, partition->partition_length );
+      err = mxos_flash_disable_security( MXOS_PARTITION_BOOTLOADER, 0x0, partition->partition_length );
       require_noerr( err, exit);
 
       SerialDownload( partition->partition_owner, partition->partition_start_addr, partition->partition_length );
@@ -243,21 +243,21 @@ void Main_Menu(void)
     else
 #endif
     if(strcmp(cmdname, "FWUPDATE") == 0 || strcmp(cmdname, "1") == 0)	{
-      partition = MxosFlashGetInfo( MXOS_PARTITION_APPLICATION );
+      partition = mxos_flash_get_info( MXOS_PARTITION_APPLICATION );
       if (findCommandPara(cmdbuf, "r", NULL, 0) != -1){
         printf ("\n\rRead application...\n\r");
         SerialUpload( partition->partition_owner, partition->partition_start_addr, "ApplicationImage.bin", partition->partition_length );
         continue;
       }
       printf ("\n\rUpdating application...\n\r");
-      err = MxosFlashDisableSecurity( MXOS_PARTITION_APPLICATION, 0x0, partition->partition_length );
+      err = mxos_flash_disable_security( MXOS_PARTITION_APPLICATION, 0x0, partition->partition_length );
       require_noerr( err, exit);
       SerialDownload( partition->partition_owner, partition->partition_start_addr, partition->partition_length ); 							   	
     }
 #if 1
     /***************** Command "2" or "DRIVERUPDATE": Update the RF driver  *************************/
     else if(strcmp(cmdname, "DRIVERUPDATE") == 0 || strcmp(cmdname, "2") == 0) {
-      partition = MxosFlashGetInfo( MXOS_PARTITION_RF_FIRMWARE );
+      partition = mxos_flash_get_info( MXOS_PARTITION_RF_FIRMWARE );
       if( partition == NULL ){
         printf ("\n\rNo flash memory for RF firmware, exiting...\n\r");
         continue;
@@ -269,7 +269,7 @@ void Main_Menu(void)
         continue;
       }
       printf ("\n\rUpdating RF driver...\n\r");
-      err = MxosFlashDisableSecurity( MXOS_PARTITION_RF_FIRMWARE, 0x0, partition->partition_length );
+      err = mxos_flash_disable_security( MXOS_PARTITION_RF_FIRMWARE, 0x0, partition->partition_length );
       require_noerr( err, exit);
       SerialDownload( partition->partition_owner, partition->partition_start_addr, partition->partition_length );    
     }
@@ -281,7 +281,7 @@ void Main_Menu(void)
           printf ("\n\rIllegal start address.\n\r");
           continue;
         }
-        partition = MxosFlashGetInfo( (mxos_partition_t)id );
+        partition = mxos_flash_get_info( (mxos_partition_t)id );
       }else{
         printf ("\n\rPlease input correct MXOS partition id.\n\r");
         continue;
@@ -290,9 +290,9 @@ void Main_Menu(void)
       if( findCommandPara(cmdbuf, "e", NULL, 0) != -1 ){
         printf( "\n\rErasing %s...\n\r", partition->partition_description );
 
-        err = MxosFlashDisableSecurity( (mxos_partition_t)id, 0x0, partition->partition_length );
+        err = mxos_flash_disable_security( (mxos_partition_t)id, 0x0, partition->partition_length );
         require_noerr( err, exit);
-        MxosFlashErase( (mxos_partition_t)id, 0x0, partition->partition_length );
+        mxos_flash_erase( (mxos_partition_t)id, 0x0, partition->partition_length );
         continue;
       }
       if (findCommandPara(cmdbuf, "r", NULL, 0) != -1){
@@ -301,7 +301,7 @@ void Main_Menu(void)
         continue;
       }
       printf ("\n\rUpdating %s...\n\r", partition->partition_description );
-      err = MxosFlashDisableSecurity( (mxos_partition_t)id, 0x0, partition->partition_length );
+      err = mxos_flash_disable_security( (mxos_partition_t)id, 0x0, partition->partition_length );
       require_noerr( err, exit);
       SerialDownload( partition->partition_owner, partition->partition_start_addr, partition->partition_length );                        
     }
@@ -378,7 +378,7 @@ void Main_Menu(void)
     else if(strcmp(cmdname, "MEMORYMAP") == 0 || strcmp(cmdname, "5") == 0)  {
       printf("\r");
       for( i = 0; i <= MXOS_PARTITION_MAX - 1; i++ ){
-        partition = MxosFlashGetInfo( (mxos_partition_t)i );
+        partition = mxos_flash_get_info( (mxos_partition_t)i );
         if (partition->partition_owner == MXOS_FLASH_NONE || partition->partition_description == NULL )
             continue;
         printf( "|ID:%d| %11s |  Dev:%ld  | 0x%08lx | 0x%08lx |\r\n", i, partition->partition_description, partition->partition_owner,
@@ -388,14 +388,14 @@ void Main_Menu(void)
     /***************** Command: Excute the application *************************/
     else if(strcmp(cmdname, "BOOT") == 0 || strcmp(cmdname, "6") == 0)	{
       printf ("\n\rBooting.......\n\r");
-      partition = MxosFlashGetInfo( MXOS_PARTITION_APPLICATION );
+      partition = mxos_flash_get_info( MXOS_PARTITION_APPLICATION );
       bootloader_start_app( partition->partition_start_addr );
     }
     
     /***************** Command: Reboot *************************/
     else if(strcmp(cmdname, "REBOOT") == 0 || strcmp(cmdname, "7") == 0)  {
       printf ("\n\rReBooting.......\n\r");
-      MxosSystemReboot();
+      mxos_sys_reboot();
       break;                              
     }
 #if 0

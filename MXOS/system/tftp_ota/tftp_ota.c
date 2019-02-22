@@ -48,7 +48,7 @@ WEAK void mxos_ota_finished(int result, uint8_t *reserved)
         printf("OTA SUCCESS. Rebooting...\r\n");
 		mxos_system_context_get( )->mxosSystemConfig.reserved |= FORCE_OTA_SUEECSS;
         mxos_system_context_update(mxos_system_context_get( ));
-        MxosSystemReboot();
+        mxos_sys_reboot();
         break;
     case OTA_NO_AP:
         printf("OTA FAIL. Can't find the OTA AP\r\n");
@@ -99,7 +99,7 @@ void tftp_ota(void)
     uint8_t *tmpbuf;
     md5_context ctx;
     uint8_t mac[6], sta_ip_addr[16];
-    mxos_logic_partition_t* ota_partition = MxosFlashGetInfo( MXOS_PARTITION_OTA_TEMP );
+    mxos_logic_partition_t* ota_partition = mxos_flash_get_info( MXOS_PARTITION_OTA_TEMP );
     uint16_t crc = 0;
     CRC16_Context contex;
     
@@ -175,7 +175,7 @@ void tftp_ota(void)
     filelen -= 16; // remove md5.
     fota_log("tftp download image finished, OTA bin len %d", filelen);
     flashaddr = filelen;
-    MxosFlashRead(MXOS_PARTITION_OTA_TEMP, &flashaddr, (uint8_t *)md5_recv, 16);
+    mxos_flash_read(MXOS_PARTITION_OTA_TEMP, &flashaddr, (uint8_t *)md5_recv, 16);
     InitMd5( &ctx );
     CRC16_Init( &contex );
     flashaddr = 0;
@@ -187,7 +187,7 @@ void tftp_ota(void)
             len = left;
         }
         left -= len;
-        MxosFlashRead(MXOS_PARTITION_OTA_TEMP, &flashaddr, (uint8_t *)tmpbuf, len);
+        mxos_flash_read(MXOS_PARTITION_OTA_TEMP, &flashaddr, (uint8_t *)tmpbuf, len);
         Md5Update( &ctx, (uint8_t *)tmpbuf, len);
         CRC16_Update( &contex, tmpbuf, len );
     }

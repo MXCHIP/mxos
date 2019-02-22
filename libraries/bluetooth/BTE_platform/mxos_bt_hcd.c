@@ -26,15 +26,15 @@ void get_one_command(char * out, int offset)
     //uint32_t buffer_size;
 
     volatile uint32_t read_address = offset+2;
-    mxos_logic_partition_t *driver_partition = MxosFlashGetInfo( MXOS_PARTITION_BT_FIRMWARE );
+    mxos_logic_partition_t *driver_partition = mxos_flash_get_info( MXOS_PARTITION_BT_FIRMWARE );
 
     if( image_size == 0)
       image_size = driver_partition->partition_length;
 
-    MxosFlashRead( MXOS_PARTITION_BT_FIRMWARE, &read_address, (uint8_t *)&len, 1);
+    mxos_flash_read( MXOS_PARTITION_BT_FIRMWARE, &read_address, (uint8_t *)&len, 1);
     len = len&0x00ff;
     read_address = offset;
-    MxosFlashRead( MXOS_PARTITION_BT_FIRMWARE, &read_address, (uint8_t*)out, len+3);
+    mxos_flash_read( MXOS_PARTITION_BT_FIRMWARE, &read_address, (uint8_t*)out, len+3);
 
     read_address = offset+10;
 }
@@ -44,7 +44,7 @@ uint32_t get_hcd_content_length()
 #define READ_LEN 2048
     if(image_size==0)
     {
-        mxos_logic_partition_t *driver_partition = MxosFlashGetInfo( MXOS_PARTITION_BT_FIRMWARE );
+        mxos_logic_partition_t *driver_partition = mxos_flash_get_info( MXOS_PARTITION_BT_FIRMWARE );
         uint32_t offset = driver_partition->partition_length;
         uint32_t *p;
         uint32_t *buf = (uint32_t *)malloc(READ_LEN);
@@ -52,8 +52,8 @@ uint32_t get_hcd_content_length()
         uint32_t image_size2 = driver_partition->partition_length;
         do {
             offset -= READ_LEN; // Next block
-            MxosFlashRead( MXOS_PARTITION_BT_FIRMWARE, &offset, (uint8_t *)buf, READ_LEN);
-            offset -= READ_LEN; // MxosFlashRead will increase FlashAddress READ_LEN, move back.
+            mxos_flash_read( MXOS_PARTITION_BT_FIRMWARE, &offset, (uint8_t *)buf, READ_LEN);
+            offset -= READ_LEN; // mxos_flash_read will increase FlashAddress READ_LEN, move back.
             p = buf + (READ_LEN - 4)/sizeof(uint32_t);
             while(p >= buf) {
                 if (*p != 0xFFFFFFFF) {

@@ -317,8 +317,8 @@ s8 BMA2x2_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 	* have to be initiated. For that cnt+1 operation done in the I2C write string function
 	* For more information please refer data sheet SPI communication:
 	*/
-        iError = MxosI2cBuildTxMessage(&bma2x2_i2c_msg, array, cnt + 1, 3);
-        iError = MxosI2cTransfer(&bma2x2_i2c_device, &bma2x2_i2c_msg, 1);
+        iError = mxos_i2c_build_tx_msg(&bma2x2_i2c_msg, array, cnt + 1, 3);
+        iError = mxos_i2c_transfer(&bma2x2_i2c_device, &bma2x2_i2c_msg, 1);
         if(0 != iError){
           iError = -1;
         }
@@ -350,11 +350,11 @@ s8 BMA2x2_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
      * and FAILURE defined as -1
 	 */
         
-        iError = MxosI2cBuildCombinedMessage(&bma2x2_i2c_msg, array, reg_data, 1, cnt, 3);
+        iError = mxos_i2c_build_comb_msg(&bma2x2_i2c_msg, array, reg_data, 1, cnt, 3);
          if(0 != iError){
           return (s8)iError; 
         }
-        iError = MxosI2cTransfer(&bma2x2_i2c_device, &bma2x2_i2c_msg, 1);
+        iError = mxos_i2c_transfer(&bma2x2_i2c_device, &bma2x2_i2c_msg, 1);
         if(0 != iError){
           return (s8)iError;
         }
@@ -456,10 +456,10 @@ OSStatus bma2x2_sensor_init(void)
  // u8 v_stand_by_time_u8 = BME280_INIT_VALUE;  //  The variable used to assign the standby time
   
   // I2C init
-  MxosI2cFinalize(&bma2x2_i2c_device);   // in case error
-  err = MxosI2cInitialize(&bma2x2_i2c_device);
-  require_noerr_action( err, exit, bma2x2_user_log("BMA2x2_ERROR: MxosI2cInitialize err = %d.", err) );
-  if( false == MxosI2cProbeDevice(&bma2x2_i2c_device, 5) ){
+  mxos_i2c_deinit(&bma2x2_i2c_device);   // in case error
+  err = mxos_i2c_init(&bma2x2_i2c_device);
+  require_noerr_action( err, exit, bma2x2_user_log("BMA2x2_ERROR: mxos_i2c_init err = %d.", err) );
+  if( false == mxos_i2c_probe_dev(&bma2x2_i2c_device, 5) ){
     bma2x2_user_log("BMA2x2_ERROR: no i2c device found!");
     err = kNotFoundErr;
     goto exit;
@@ -512,7 +512,7 @@ OSStatus bma2x2_data_readout(s16 *v_accel_x_s16, s16 *v_accel_y_s16, s16 *v_acce
   
   //-------------------------- NOTE ----------------------------------
   // this is to avoid i2c pin is re-init by other module because they use the same pin.
-  MxosI2cInitialize(&bma2x2_i2c_device);
+  mxos_i2c_init(&bma2x2_i2c_device);
   //------------------------------------------------------------------
     
   /************ START READ TRUE PRESSURE, TEMPERATURE AND HUMIDITY DATA *********/
@@ -536,8 +536,8 @@ OSStatus bma2x2_sensor_deinit(void)
   OSStatus err = kUnknownErr;
   s32 com_rslt = BMA2x2_ERROR;
   
-  err = MxosI2cFinalize(&bma2x2_i2c_device);
-  require_noerr_action( err, exit, bma2x2_user_log("BMA2x2_ERROR: MxosI2cFinalize err = %d.", err));
+  err = mxos_i2c_deinit(&bma2x2_i2c_device);
+  require_noerr_action( err, exit, bma2x2_user_log("BMA2x2_ERROR: mxos_i2c_deinit err = %d.", err));
   
 /*-----------------------------------------------------------------------*
 ************************* START DE-INITIALIZATION ***********************

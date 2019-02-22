@@ -38,6 +38,12 @@
 #pragma once
 #include "mxos_common.h"
 
+/* Legacy definitions */
+#define MxosMFiAuthInitialize mxos_mfi_auth_init
+#define MxosMFiAuthFinalize mxos_mfi_auth_deinit
+#define MxosMFiAuthCreateSignature mxos_mfi_auth_create_sign
+#define MxosMFiAuthCopyCertificate mxos_mfi_auth_copy_cert
+
 /** @addtogroup MXOS_PLATFORM
 * @{
 */
@@ -81,7 +87,7 @@
  *  @return    kNoErr        : on success.
  *  @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus MxosMFiAuthInitialize( mxos_i2c_t i2c );
+OSStatus mxos_mfi_auth_init( mxos_i2c_t i2c );
 
 
 /** @brief    PlatformMFiAuthFinalize
@@ -94,7 +100,7 @@ OSStatus MxosMFiAuthInitialize( mxos_i2c_t i2c );
  *
  *  @return   none
  */
-void MxosMFiAuthFinalize( void );
+void mxos_mfi_auth_deinit( void );
 
 
 
@@ -111,7 +117,7 @@ void MxosMFiAuthFinalize( void );
  *  @return    kNoErr         :    on success.
  *  @return    kGeneralErr    :    if an error occurred with any step
  */
-OSStatus MxosMFiAuthCreateSignature( const  void      *inDigestPtr,
+OSStatus mxos_mfi_auth_create_sign( const  void      *inDigestPtr,
                                             size_t     inDigestLen,
                                             uint8_t  **outSignaturePtr,
                                             size_t    *outSignatureLen );
@@ -129,7 +135,7 @@ OSStatus MxosMFiAuthCreateSignature( const  void      *inDigestPtr,
  *  @return    kNoErr         :    on success.
  *  @return    kGeneralErr    :    if an error occurred with any step
  */
-OSStatus MxosMFiAuthCopyCertificate( uint8_t **outCertificatePtr, size_t *outCertificateLen );
+OSStatus mxos_mfi_auth_copy_cert( uint8_t **outCertificatePtr, size_t *outCertificateLen );
 
 /** @} */
 /** @} */

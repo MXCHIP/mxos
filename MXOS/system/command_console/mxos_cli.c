@@ -415,7 +415,7 @@ static void tftp_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char
     ip = inet_addr(argv[1]);
     parttype = (mxos_partition_t)atoi(argv[4]);
 
-    partition = MxosFlashGetInfo( parttype );
+    partition = mxos_flash_get_info( parttype );
     if (partition) {
         cmdinfo.flashtype = parttype;
     } else {
@@ -449,7 +449,7 @@ static void partShow_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, 
     mxos_logic_partition_t *partition;
 
     for( i = MXOS_PARTITION_BOOTLOADER; i <= MXOS_PARTITION_MAX; i++ ){
-        partition = MxosFlashGetInfo( i );
+        partition = mxos_flash_get_info( i );
         if (partition == NULL)
             continue;
         if (partition->partition_owner == MXOS_FLASH_NONE)
@@ -495,7 +495,7 @@ static void get_version(char *pcWriteBuffer, int xWriteBufferLen,int argc, char 
   cmd_printf( "Product module: %s\r\n", MODEL );
   cmd_printf( "Hardware version: %s\r\n", HARDWARE_REVISION );
   cmd_printf( "Manufacture: %s\r\n", MANUFACTURER );
-  cmd_printf( "Kernel version: %s\r\n", MxosGetVer() );
+  cmd_printf( "Kernel version: %s\r\n", mxos_system_lib_version() );
 
   cmd_printf( "MXOS version: %d.%d.%d\r\n", major, minor, revision );
   cmd_printf("Firmware version: %s\r\n", FIRMWARE_REVISION );
@@ -504,7 +504,7 @@ static void get_version(char *pcWriteBuffer, int xWriteBufferLen,int argc, char 
   
 #ifndef PPP_IF
   memset(ver, 0, sizeof(ver));
-  ret = MxosGetRfVer(ver, sizeof(ver));
+  ret = mxos_wlan_driver_version(ver, sizeof(ver));
   if (ret == 0)
     cmd_printf("WIFI version: %s\r\n", ver);
   else
@@ -514,7 +514,7 @@ static void get_version(char *pcWriteBuffer, int xWriteBufferLen,int argc, char 
 
 static void reboot(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv)
 {
-  MxosSystemReboot();
+  mxos_sys_reboot();
 }
 
 static void echo_cmd_handler(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv)
@@ -800,7 +800,7 @@ int cli_init(void)
   memset((void *)pCli, 0, sizeof(struct cli_st));
   
   ring_buffer_init  ( (ring_buffer_t*)&cli_rx_buffer, (uint8_t*)cli_rx_data, INBUF_SIZE );
-  MxosUartInitialize( MXOS_CLI_UART, &cli_uart_config, (ring_buffer_t*)&cli_rx_buffer );
+  mxos_uart_init( MXOS_CLI_UART, &cli_uart_config, (ring_buffer_t*)&cli_rx_buffer );
   
   /* add our built-in commands */
   if (cli_register_commands(&built_ins[0],
@@ -856,14 +856,14 @@ int cli_printf(const char *msg, ...)
 int cli_putstr(const char *msg)
 {
   if (msg[0] != 0)
-    MxosUartSend( MXOS_CLI_UART, (const char*)msg, strlen(msg) );
+    mxos_uart_send( MXOS_CLI_UART, (const char*)msg, strlen(msg) );
   
   return 0;
 }
 
 int cli_getchar(char *inbuf)
 {
-  if (MxosUartRecv(MXOS_CLI_UART, inbuf, 1, MXOS_WAIT_FOREVER) == 0)
+  if (mxos_uart_recv(MXOS_CLI_UART, inbuf, 1, MXOS_WAIT_FOREVER) == 0)
     return 1;
   else
     return 0;

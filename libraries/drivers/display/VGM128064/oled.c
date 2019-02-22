@@ -47,9 +47,9 @@ OSStatus ssd1106_i2c_bus_write(uint8_t reg_addr, uint8_t *reg_data, uint8_t cnt)
           array[stringpos + 1] = *(reg_data + stringpos);
   }
 
-  err = MxosI2cBuildTxMessage(&ssd1106_i2c_msg, array, cnt + 1, 3);
+  err = mxos_i2c_build_tx_msg(&ssd1106_i2c_msg, array, cnt + 1, 3);
   require_noerr( err, exit );
-  err = MxosI2cTransfer(&ssd1106_i2c_device, &ssd1106_i2c_msg, 1);
+  err = mxos_i2c_transfer(&ssd1106_i2c_device, &ssd1106_i2c_msg, 1);
   require_noerr( err, exit );
   
 exit:
@@ -103,7 +103,7 @@ void OLED_WR_Bytes(u8 *dat, u8 len, u8 cmd)
   else
     OLED_DC_Clr();
 
-  MxosSpiTransfer( &mxoskit_spi_oled, &oled_spi_msg, 1 );
+  mxos_spi_transfer( &mxoskit_spi_oled, &oled_spi_msg, 1 );
 
 #else
   platform_spi_config_t config;
@@ -312,18 +312,18 @@ void OLED_DrawBMP(unsigned char x0, unsigned char y0,unsigned char x1, unsigned 
 void OLED_Init(void)
 { 	 
 #ifdef SSD1106_USE_I2C
-  if( kNoErr != MxosI2cInitialize( &ssd1106_i2c_device ) )
+  if( kNoErr != mxos_i2c_init( &ssd1106_i2c_device ) )
   {
-      oled_log( "OLED_ERROR: MxosI2cInitialize err." );
+      oled_log( "OLED_ERROR: mxos_i2c_init err." );
       return;
   }
-  if( false == MxosI2cProbeDevice(&ssd1106_i2c_device, 5) ){
+  if( false == mxos_i2c_probe_dev(&ssd1106_i2c_device, 5) ){
       oled_log("OLED_ERROR: no i2c device found!");
       return;
   }
   _oled_avalid = 1;
 #else
-  MxosSpiInitialize( &mxoskit_spi_oled );
+  mxos_spi_init( &mxoskit_spi_oled );
   OLED_DC_INIT();   
   OLED_DC_Clr();
 #endif

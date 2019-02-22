@@ -40,6 +40,15 @@
 #include "platform_peripheral.h"
 #endif
 
+/* Legacy definitions */
+#define MxosI2cInitialize mxos_i2c_init
+#define MxosI2cProbeDevice mxos_i2c_probe_dev 
+#define MxosI2cBuildTxMessage mxos_i2c_build_tx_msg
+#define MxosI2cBuildRxMessage mxos_i2c_build_rx_msg
+#define MxosI2cBuildCombinedMessage mxos_i2c_build_comb_msg
+#define MxosI2cTransfer mxos_i2c_transfer
+#define MxosI2cFinalize mxos_i2c_deinit
+
 /** @addtogroup MXOS_PLATFORM
 * @{
 */
@@ -96,7 +105,7 @@ typedef struct
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred during initialisation
  */
-OSStatus MxosI2cInitialize( mxos_i2c_device_t* device );
+OSStatus mxos_i2c_init( mxos_i2c_device_t* device );
 
 
 /**@brief Checks whether the device is available on a bus or not
@@ -107,7 +116,7 @@ OSStatus MxosI2cInitialize( mxos_i2c_device_t* device );
  * @return    true : device is found.
  * @return    false: device is not found
  */
-bool MxosI2cProbeDevice( mxos_i2c_device_t* device, int retries );
+bool mxos_i2c_probe_dev( mxos_i2c_device_t* device, int retries );
 
 
 /**@brief Initialize the mxos_i2c_message_t structure for i2c tx transaction
@@ -120,7 +129,7 @@ bool MxosI2cProbeDevice( mxos_i2c_device_t* device, int retries );
  * @return    kNoErr    : message structure was initialised properly.
  * @return    kParamErr : one of the arguments is given incorrectly
  */
-OSStatus MxosI2cBuildTxMessage(mxos_i2c_message_t* message, const void* tx_buffer, uint16_t  tx_buffer_length, uint16_t retries);
+OSStatus mxos_i2c_build_tx_msg(mxos_i2c_message_t* message, const void* tx_buffer, uint16_t  tx_buffer_length, uint16_t retries);
 
 /**@brief Initialize the mxos_i2c_message_t structure for i2c rx transaction
  *
@@ -132,7 +141,7 @@ OSStatus MxosI2cBuildTxMessage(mxos_i2c_message_t* message, const void* tx_buffe
  * @return    kNoErr    : message structure was initialised properly.
  * @return    kParamErr : one of the arguments is given incorrectly
  */
-OSStatus MxosI2cBuildRxMessage(mxos_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length, uint16_t retries);
+OSStatus mxos_i2c_build_rx_msg(mxos_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length, uint16_t retries);
 
 
 /**@brief Initialize the mxos_i2c_message_t structure for i2c combined transaction
@@ -147,7 +156,7 @@ OSStatus MxosI2cBuildRxMessage(mxos_i2c_message_t* message, void* rx_buffer, uin
  * @return    kNoErr    : message structure was initialised properly.
  * @return    kParamErr : one of the arguments is given incorrectly
  */
-OSStatus MxosI2cBuildCombinedMessage(mxos_i2c_message_t* message, const void* tx_buffer, void* rx_buffer, uint16_t tx_buffer_length, uint16_t rx_buffer_length, uint16_t retries);
+OSStatus mxos_i2c_build_comb_msg(mxos_i2c_message_t* message, const void* tx_buffer, void* rx_buffer, uint16_t tx_buffer_length, uint16_t rx_buffer_length, uint16_t retries);
 
 
 /**@brief Transmits and/or receives data over an I2C interface
@@ -159,7 +168,7 @@ OSStatus MxosI2cBuildCombinedMessage(mxos_i2c_message_t* message, const void* tx
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred during message transfer
  */
-OSStatus MxosI2cTransfer( mxos_i2c_device_t* device, mxos_i2c_message_t* message, uint16_t number_of_messages );
+OSStatus mxos_i2c_transfer( mxos_i2c_device_t* device, mxos_i2c_message_t* message, uint16_t number_of_messages );
 
 
 /**@brief Deinitialises an I2C device
@@ -169,7 +178,7 @@ OSStatus MxosI2cTransfer( mxos_i2c_device_t* device, mxos_i2c_message_t* message
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred during deinitialisation
  */
-OSStatus MxosI2cFinalize( mxos_i2c_device_t* device );
+OSStatus mxos_i2c_deinit( mxos_i2c_device_t* device );
 
 
 /** @} */

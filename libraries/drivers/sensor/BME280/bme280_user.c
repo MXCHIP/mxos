@@ -335,8 +335,8 @@ s8 BME280_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 	* have to be initiated. For that cnt+1 operation done in the I2C write string function
 	* For more information please refer data sheet SPI communication:
 	*/
-        iError = MxosI2cBuildTxMessage(&user_i2c_msg, array, cnt + 1, 3);
-        iError = MxosI2cTransfer(&user_i2c_device, &user_i2c_msg, 1);
+        iError = mxos_i2c_build_tx_msg(&user_i2c_msg, array, cnt + 1, 3);
+        iError = mxos_i2c_transfer(&user_i2c_device, &user_i2c_msg, 1);
         if(0 != iError){
           iError = -1;
         }
@@ -367,12 +367,12 @@ s8 BME280_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
      * In the driver BME280_SUCCESS defined as 0
      * and FAILURE defined as -1
 	 */
-        //iError = MxosI2cBuildRxMessage(&user_i2c_msg, array, cnt + 1, 3);
-        iError = MxosI2cBuildCombinedMessage(&user_i2c_msg, array, reg_data, 1, cnt, 3);
+        //iError = mxos_i2c_build_rx_msg(&user_i2c_msg, array, cnt + 1, 3);
+        iError = mxos_i2c_build_comb_msg(&user_i2c_msg, array, reg_data, 1, cnt, 3);
          if(0 != iError){
           return (s8)iError; 
         }
-        iError = MxosI2cTransfer(&user_i2c_device, &user_i2c_msg, 1);
+        iError = mxos_i2c_transfer(&user_i2c_device, &user_i2c_msg, 1);
         if(0 != iError){
           return (s8)iError;
         }
@@ -473,10 +473,10 @@ OSStatus bme280_sensor_init(void)
  // u8 v_stand_by_time_u8 = BME280_INIT_VALUE;  //  The variable used to assign the standby time
   
   // I2C init
-  MxosI2cFinalize(&user_i2c_device);   // in case error
-  err = MxosI2cInitialize(&user_i2c_device);
-  require_noerr_action( err, exit, bme280_user_log("BME280_ERROR: MxosI2cInitialize err = %d.", err) );
-  if( false == MxosI2cProbeDevice(&user_i2c_device, 5) ){
+  mxos_i2c_deinit(&user_i2c_device);   // in case error
+  err = mxos_i2c_init(&user_i2c_device);
+  require_noerr_action( err, exit, bme280_user_log("BME280_ERROR: mxos_i2c_init err = %d.", err) );
+  if( false == mxos_i2c_probe_dev(&user_i2c_device, 5) ){
     bme280_user_log("BME280_ERROR: no i2c device found!");
     err = kNotFoundErr;
     goto exit;
@@ -521,7 +521,7 @@ OSStatus bme280_data_readout(s32 *v_actual_temp_s32, u32 *v_actual_press_u32, u3
         
         //-------------------------- NOTE ----------------------------------
         // this is to avoid i2c pin is re-init by other module because they use the same pin.
-        MxosI2cInitialize(&user_i2c_device);
+        mxos_i2c_init(&user_i2c_device);
         //------------------------------------------------------------------
           
 //        /************ START READ TRUE PRESSURE, TEMPERATURE AND HUMIDITY DATA *********/
@@ -550,7 +550,7 @@ OSStatus bme280_read_temperature(s32 *v_actual_temp_s32)
      
         //-------------------------- NOTE ----------------------------------
         // this is to avoid i2c pin is re-init by other module because they use the same pin.
-        MxosI2cInitialize(&user_i2c_device);
+        mxos_i2c_init(&user_i2c_device);
         //------------------------------------------------------------------
         
         com_rslt = bme280_read_uncomp_temperature(&v_data_uncomp_tem_s32);
@@ -570,7 +570,7 @@ OSStatus bme280_read_humidity(u32 *v_actual_humity_u32)
      
         //-------------------------- NOTE ----------------------------------
         // this is to avoid i2c pin is re-init by other module because they use the same pin.
-        MxosI2cInitialize(&user_i2c_device);
+        mxos_i2c_init(&user_i2c_device);
         //------------------------------------------------------------------
         
         com_rslt = bme280_read_uncomp_humidity(&v_data_uncomp_hum_s32);
@@ -590,7 +590,7 @@ OSStatus bme280_data_pressure(u32 *v_actual_press_u32)
      
         //-------------------------- NOTE ----------------------------------
         // this is to avoid i2c pin is re-init by other module because they use the same pin.
-        MxosI2cInitialize(&user_i2c_device);
+        mxos_i2c_init(&user_i2c_device);
         //------------------------------------------------------------------
         
         com_rslt = bme280_read_uncomp_pressure(&v_data_uncomp_pres_s32);
@@ -610,8 +610,8 @@ OSStatus bme280_sensor_deinit(void)
   OSStatus err = kUnknownErr;
   s32 com_rslt = BME280_ERROR;
   
-  err = MxosI2cFinalize(&user_i2c_device);
-  require_noerr_action( err, exit, bme280_user_log("BME280_ERROR: MxosI2cFinalize err = %d.", err));
+  err = mxos_i2c_deinit(&user_i2c_device);
+  require_noerr_action( err, exit, bme280_user_log("BME280_ERROR: mxos_i2c_deinit err = %d.", err));
   
   /*********************** START DE-INITIALIZATION ************************/
   /*	For de-initialization it is required to set the mode of

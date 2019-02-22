@@ -49,7 +49,7 @@ OSStatus system_discovery_init(system_context_t * const inContext)
     snprintf(keyvals, SYS_TXT_LEN, "%sHardware Rev=%s.", keyvals, val);
     free(val);
 
-    val = __strdup_trans_dot(MxosGetVer());
+    val = __strdup_trans_dot(mxos_system_lib_version());
     snprintf(keyvals, SYS_TXT_LEN, "%sMXOS OS Rev=%s.", keyvals, val);
     free(val);
 

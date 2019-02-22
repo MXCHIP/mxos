@@ -72,10 +72,10 @@ mxos_i2c_device_t lps25hb_i2c_device = {
 PRESSURE_StatusTypeDef LPS25HB_IO_Init(void)
 {
   // I2C init
-  MxosI2cFinalize(&lps25hb_i2c_device);   // in case error
-  MxosI2cInitialize(&lps25hb_i2c_device);
+  mxos_i2c_deinit(&lps25hb_i2c_device);   // in case error
+  mxos_i2c_init(&lps25hb_i2c_device);
 
-  if( false == MxosI2cProbeDevice(&lps25hb_i2c_device, 5) ){
+  if( false == mxos_i2c_probe_dev(&lps25hb_i2c_device, 5) ){
     lps25hb_log("LPS25HB_ERROR: no i2c device found!");
     return PRESSURE_ERROR;
   }
@@ -102,8 +102,8 @@ PRESSURE_StatusTypeDef LPS25HB_IO_Write(uint8_t* pBuffer, uint8_t DeviceAddr, ui
     array[stringpos + 1] = *(pBuffer + stringpos);
   }
   
-  iError = MxosI2cBuildTxMessage(&lps25hb_i2c_msg, array, NumByteToWrite + 1, 3);
-  iError = MxosI2cTransfer(&lps25hb_i2c_device, &lps25hb_i2c_msg, 1);
+  iError = mxos_i2c_build_tx_msg(&lps25hb_i2c_msg, array, NumByteToWrite + 1, 3);
+  iError = mxos_i2c_transfer(&lps25hb_i2c_device, &lps25hb_i2c_msg, 1);
   if(0 != iError){
     iError = PRESSURE_ERROR;
   }
@@ -125,11 +125,11 @@ PRESSURE_StatusTypeDef LPS25HB_IO_Read(uint8_t* pBuffer, uint8_t DeviceAddr, uin
   uint8_t array[8] = {0};
   array[0] = RegisterAddr;
   
-  iError = MxosI2cBuildCombinedMessage(&lps25hb_i2c_msg, array, pBuffer, 1, NumByteToRead, 3);
+  iError = mxos_i2c_build_comb_msg(&lps25hb_i2c_msg, array, pBuffer, 1, NumByteToRead, 3);
   if(0 != iError){
     return PRESSURE_ERROR; 
   }
-  iError = MxosI2cTransfer(&lps25hb_i2c_device, &lps25hb_i2c_msg, 1);
+  iError = mxos_i2c_transfer(&lps25hb_i2c_device, &lps25hb_i2c_msg, 1);
   if(0 != iError){
     return PRESSURE_ERROR;
   }
@@ -514,7 +514,7 @@ OSStatus lps25hb_sensor_deinit(void)
   if(LPS25HB_PowerOff() != PRESSURE_OK){
     return -1;
   }
-  if(MxosI2cFinalize(&lps25hb_i2c_device) != PRESSURE_OK){
+  if(mxos_i2c_deinit(&lps25hb_i2c_device) != PRESSURE_OK){
     return -1;
   }
   return 0;

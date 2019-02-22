@@ -40,15 +40,15 @@
 #endif
 
 // Set GPIO Direction
-#define DHT11_IO_IN()          MxosGpioInitialize( (mxos_gpio_t)DHT11_DATA, INPUT_PULL_UP );										 
-#define DHT11_IO_OUT()         MxosGpioInitialize( (mxos_gpio_t)DHT11_DATA, OUTPUT_PUSH_PULL );
+#define DHT11_IO_IN()          mxos_gpio_init( (mxos_gpio_t)DHT11_DATA, INPUT_PULL_UP );										 
+#define DHT11_IO_OUT()         mxos_gpio_init( (mxos_gpio_t)DHT11_DATA, OUTPUT_PUSH_PULL );
 	
 // Set Data output state
-#define DHT11_DATA_Clr()       MxosGpioOutputLow(DHT11_DATA) 
-#define DHT11_DATA_Set()       MxosGpioOutputHigh(DHT11_DATA)
+#define DHT11_DATA_Clr()       mxos_gpio_output_low(DHT11_DATA) 
+#define DHT11_DATA_Set()       mxos_gpio_output_high(DHT11_DATA)
 
 // get DATA input state
-#define	DHT11_DQ_IN            MxosGpioInputGet(DHT11_DATA)
+#define	DHT11_DQ_IN            mxos_gpio_input_get(DHT11_DATA)
 
 //-------------------------------- USER INTERFACES -----------------------------
 

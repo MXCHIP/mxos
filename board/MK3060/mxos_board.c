@@ -194,30 +194,30 @@ const platform_adc_t platform_adc_peripherals[] = {};
 
 void mxos_board_init( void )
 {
-  MxosGpioInitialize( (mxos_gpio_t)MXOS_SYS_LED, OUTPUT_PUSH_PULL );
-  MxosGpioOutputLow( (mxos_gpio_t)MXOS_SYS_LED );
-  MxosGpioInitialize( (mxos_gpio_t)MXOS_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
-  MxosGpioOutputHigh( (mxos_gpio_t)MXOS_RF_LED );
+  mxos_gpio_init( (mxos_gpio_t)MXOS_SYS_LED, OUTPUT_PUSH_PULL );
+  mxos_gpio_output_low( (mxos_gpio_t)MXOS_SYS_LED );
+  mxos_gpio_init( (mxos_gpio_t)MXOS_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
+  mxos_gpio_output_high( (mxos_gpio_t)MXOS_RF_LED );
   
-  MxosGpioInitialize((mxos_gpio_t)BOOT_SEL, INPUT_PULL_UP);
-  MxosGpioInitialize((mxos_gpio_t)MFG_SEL, INPUT_PULL_UP);
+  mxos_gpio_init((mxos_gpio_t)BOOT_SEL, INPUT_PULL_UP);
+  mxos_gpio_init((mxos_gpio_t)MFG_SEL, INPUT_PULL_UP);
 }
 
-void MxosSysLed(bool onoff)
+void mxos_sys_led(bool onoff)
 {
   if (onoff) {
-    MxosGpioOutputLow( (mxos_gpio_t)MXOS_SYS_LED );
+    mxos_gpio_output_low( (mxos_gpio_t)MXOS_SYS_LED );
   } else {
-    MxosGpioOutputHigh( (mxos_gpio_t)MXOS_SYS_LED );
+    mxos_gpio_output_high( (mxos_gpio_t)MXOS_SYS_LED );
   }
 }
 
-void MxosRfLed(bool onoff)
+void mxos_rf_led(bool onoff)
 {
   if (onoff) {
-    MxosGpioOutputLow( (mxos_gpio_t)MXOS_RF_LED );
+    mxos_gpio_output_low( (mxos_gpio_t)MXOS_RF_LED );
   } else {
-    MxosGpioOutputHigh( (mxos_gpio_t)MXOS_RF_LED );
+    mxos_gpio_output_high( (mxos_gpio_t)MXOS_RF_LED );
   }
 }
 
@@ -227,7 +227,7 @@ void MxosRfLed(bool onoff)
 #define BOOT_MODE_ATE   1
 #define BOOT_MODE_QC    2
 
-bool MxosShouldEnterMFGMode(void)
+bool mxos_should_enter_mfg_mode(void)
 {
     return BOOT_MODE_REG == BOOT_MODE_QC ? true : false;
 }

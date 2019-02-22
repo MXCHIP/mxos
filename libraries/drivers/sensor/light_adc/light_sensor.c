@@ -28,7 +28,7 @@ int light_sensor_init(void)
 {
   OSStatus err = kUnknownErr;
   
-  err = MxosAdcInitialize(LIGHT_SENSOR_ADC, LIGHT_SENSOR_ADC_SAMPLE_CYCLE);
+  err = mxos_adc_init(LIGHT_SENSOR_ADC, LIGHT_SENSOR_ADC_SAMPLE_CYCLE);
   if(kNoErr != err){
     return -1;
   }
@@ -42,12 +42,12 @@ int light_sensor_read(uint16_t *data)
   OSStatus err = kUnknownErr;
   
   // init ADC
-  err = MxosAdcInitialize(LIGHT_SENSOR_ADC, LIGHT_SENSOR_ADC_SAMPLE_CYCLE);
+  err = mxos_adc_init(LIGHT_SENSOR_ADC, LIGHT_SENSOR_ADC_SAMPLE_CYCLE);
   if(kNoErr != err){
     return -1;
   }
   // get ADC data
-  err = MxosAdcTakeSample(LIGHT_SENSOR_ADC, data);
+  err = mxos_adc_take_sample(LIGHT_SENSOR_ADC, data);
   if(kNoErr == err){
     ret = 0;   // get data succeed
   }

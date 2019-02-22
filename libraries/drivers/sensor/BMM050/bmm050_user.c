@@ -282,8 +282,8 @@ s8 BMM050_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 	* For more information please refer data sheet SPI communication:
 	*/
           
-        iError = MxosI2cBuildTxMessage(&bmm050_i2c_msg, array, cnt + 1, 3);
-        iError = MxosI2cTransfer(&bmm050_i2c_device, &bmm050_i2c_msg, 1);
+        iError = mxos_i2c_build_tx_msg(&bmm050_i2c_msg, array, cnt + 1, 3);
+        iError = mxos_i2c_transfer(&bmm050_i2c_device, &bmm050_i2c_msg, 1);
         if(0 != iError){
           iError = -1;
         }
@@ -315,11 +315,11 @@ s8 BMM050_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
      * and FAILURE defined as -C_BMM050_ONE_U8X
 	 */
         
-        iError = MxosI2cBuildCombinedMessage(&bmm050_i2c_msg, array, reg_data, 1, cnt, 3);
+        iError = mxos_i2c_build_comb_msg(&bmm050_i2c_msg, array, reg_data, 1, cnt, 3);
          if(0 != iError){
           return (s8)iError; 
         }
-        iError = MxosI2cTransfer(&bmm050_i2c_device, &bmm050_i2c_msg, 1);
+        iError = mxos_i2c_transfer(&bmm050_i2c_device, &bmm050_i2c_msg, 1);
         if(0 != iError){
           return (s8)iError;
         }
@@ -422,10 +422,10 @@ OSStatus bmm050_sensor_init(void)
  // u8 v_stand_by_time_u8 = BME280_INIT_VALUE;  //  The variable used to assign the standby time
   
   // I2C init
-  MxosI2cFinalize(&bmm050_i2c_device);   // in case error
-  err = MxosI2cInitialize(&bmm050_i2c_device);
-  require_noerr_action( err, exit, bmm050_user_log("BMM050_ERROR: MxosI2cInitialize err = %d.", err) );
-  if( false == MxosI2cProbeDevice(&bmm050_i2c_device, 5) ){
+  mxos_i2c_deinit(&bmm050_i2c_device);   // in case error
+  err = mxos_i2c_init(&bmm050_i2c_device);
+  require_noerr_action( err, exit, bmm050_user_log("BMM050_ERROR: mxos_i2c_init err = %d.", err) );
+  if( false == mxos_i2c_probe_dev(&bmm050_i2c_device, 5) ){
     bmm050_user_log("BMM050_ERROR: no i2c device found!");
     err = kNotFoundErr;
     goto exit;
@@ -478,7 +478,7 @@ OSStatus bmm050_data_readout(s16 *v_mag_datax_s16, s16 *v_mag_datay_s16, s16 *v_
   
   //-------------------------- NOTE ----------------------------------
   // this is to avoid i2c pin is re-init by other module because they use the same pin.
-  MxosI2cInitialize(&bmm050_i2c_device);
+  mxos_i2c_init(&bmm050_i2c_device);
   //------------------------------------------------------------------
     
   /************ START READ TRUE PRESSURE, TEMPERATURE AND HUMIDITY DATA *********/
@@ -502,8 +502,8 @@ OSStatus bmm050_sensor_deinit(void)
   OSStatus err = kUnknownErr;
   s32 com_rslt = BMM050_ERROR;
   
-  err = MxosI2cFinalize(&bmm050_i2c_device);
-  require_noerr_action( err, exit, bmm050_user_log("BMM050_ERROR: MxosI2cFinalize err = %d.", err));
+  err = mxos_i2c_deinit(&bmm050_i2c_device);
+  require_noerr_action( err, exit, bmm050_user_log("BMM050_ERROR: mxos_i2c_deinit err = %d.", err));
   
 /*---------------------------------------------------------------------------*
 *********************** START DE-INITIALIZATION *****************************

@@ -42,25 +42,25 @@ static OSStatus _gpio_test_one( const qc_test_gpio_pair_t* gpio_test_pair )
     in  = gpio_test_pair->input_pin;
     out = gpio_test_pair->output_pin;
 
-    MxosGpioInitialize(out, OUTPUT_PUSH_PULL);
+    mxos_gpio_init(out, OUTPUT_PUSH_PULL);
 
-    MxosGpioInitialize(in, INPUT_PULL_DOWN);
-    MxosGpioOutputHigh(out);
+    mxos_gpio_init(in, INPUT_PULL_DOWN);
+    mxos_gpio_output_high(out);
     mxos_rtos_thread_msleep(1);
-    if (MxosGpioInputGet(in) != true)
+    if (mxos_gpio_input_get(in) != true)
         goto EXIT;
 
-    MxosGpioInitialize(in, INPUT_PULL_UP);
-    MxosGpioOutputLow(out);
+    mxos_gpio_init(in, INPUT_PULL_UP);
+    mxos_gpio_output_low(out);
     mxos_rtos_thread_msleep(1);
-    if (MxosGpioInputGet(in) != false)
+    if (mxos_gpio_input_get(in) != false)
         goto EXIT;
 
     err = kNoErr;
 
 EXIT:
-    MxosGpioInitialize(in, INPUT_HIGH_IMPEDANCE);
-    MxosGpioInitialize(out, INPUT_HIGH_IMPEDANCE);
+    mxos_gpio_init(in, INPUT_HIGH_IMPEDANCE);
+    mxos_gpio_init(out, INPUT_HIGH_IMPEDANCE);
     return err;
 }
 
@@ -76,8 +76,8 @@ static OSStatus _gpio_test( const qc_test_gpio_pair_t* gpio_test_pair, int num )
     {
         in  = gpio_test->input_pin;
         out = gpio_test->output_pin;
-        MxosGpioInitialize(in,OUTPUT_OPEN_DRAIN_NO_PULL);
-        MxosGpioInitialize(out,OUTPUT_OPEN_DRAIN_NO_PULL);
+        mxos_gpio_init(in,OUTPUT_OPEN_DRAIN_NO_PULL);
+        mxos_gpio_init(out,OUTPUT_OPEN_DRAIN_NO_PULL);
         gpio_test++;
     }
     

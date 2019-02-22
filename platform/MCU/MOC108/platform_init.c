@@ -85,7 +85,7 @@ void platform_mcu_reset( void )
 {
     mxos_rtos_enter_critical();
     if(!platform_is_in_interrupt_context())
-        MxosWdgInitialize(1);
+        mxos_wdg_init(1);
     for(;;);
 }
 

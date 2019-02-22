@@ -102,7 +102,7 @@ int _read( int file, char *ptr, int len )
     switch ( file )
     {
         case STDIN_FILENO:
-            MxosUartRecv(MXOS_STDIO_UART, ptr, len, 0xFFFFFFFF );
+            mxos_uart_recv(MXOS_STDIO_UART, ptr, len, 0xFFFFFFFF );
             break;
         default:
             errno = EBADF;
@@ -134,7 +134,7 @@ int _write( int file, char *ptr, int len )
     UNUSED_PARAMETER( channel );
 #ifndef MXOS_DISABLE_STDIO
 
-    MxosUartSend( MXOS_STDIO_UART, (const char*)ptr, len );
+    mxos_uart_send( MXOS_STDIO_UART, (const char*)ptr, len );
 
 #endif
     return len;

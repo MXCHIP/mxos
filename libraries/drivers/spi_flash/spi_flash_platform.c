@@ -26,7 +26,7 @@ int sflash_platform_init ( /*@shared@*/ void* peripheral_id, /*@out@*/ void** pl
 {
     UNUSED_PARAMETER( peripheral_id );  /* Unused due to single SPI Flash */
 
-    if ( kNoErr != MxosSpiInitialize( &mxos_spi_flash ) )
+    if ( kNoErr != mxos_spi_init( &mxos_spi_flash ) )
     {
         /*@-mustdefine@*/ /* Lint: failed - do not define platform peripheral */
         return -1;
@@ -44,7 +44,7 @@ extern int sflash_platform_send_recv ( const void* platform_peripheral, /*@in@*/
 {
     UNUSED_PARAMETER( platform_peripheral );
 
-    if ( kNoErr != MxosSpiTransfer( &mxos_spi_flash, (mxos_spi_message_segment_t*) segments, (uint16_t) num_segments ) )
+    if ( kNoErr != mxos_spi_transfer( &mxos_spi_flash, (mxos_spi_message_segment_t*) segments, (uint16_t) num_segments ) )
     {
         return -1;
     }
@@ -54,7 +54,7 @@ extern int sflash_platform_send_recv ( const void* platform_peripheral, /*@in@*/
 
 int sflash_platform_deinit( void )
 {
-    if ( kNoErr != MxosSpiFinalize( &mxos_spi_flash ) )
+    if ( kNoErr != mxos_spi_deinit( &mxos_spi_flash ) )
     {
         /*@-mustdefine@*/ /* Lint: failed - do not define platform peripheral */
         return -1;

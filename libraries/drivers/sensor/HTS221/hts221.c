@@ -40,9 +40,9 @@ mxos_i2c_device_t hts221_i2c_device = {
 HUM_TEMP_StatusTypeDef HTS221_IO_Init(void)
 {
   // I2C init
-  MxosI2cFinalize(&hts221_i2c_device);   // in case error
-  MxosI2cInitialize(&hts221_i2c_device);
-  if( false == MxosI2cProbeDevice(&hts221_i2c_device, 5) ){
+  mxos_i2c_deinit(&hts221_i2c_device);   // in case error
+  mxos_i2c_init(&hts221_i2c_device);
+  if( false == mxos_i2c_probe_dev(&hts221_i2c_device, 5) ){
     hts221_log("HTS221_ERROR: no i2c device found!");
     return HUM_TEMP_ERROR;
   }
@@ -69,8 +69,8 @@ HUM_TEMP_StatusTypeDef HTS221_IO_Write(uint8_t* pBuffer, uint8_t DeviceAddr, uin
     array[stringpos + 1] = *(pBuffer + stringpos);
   }
   
-  iError = MxosI2cBuildTxMessage(&hts221_i2c_msg, array, NumByteToWrite + 1, 3);
-  iError = MxosI2cTransfer(&hts221_i2c_device, &hts221_i2c_msg, 1);
+  iError = mxos_i2c_build_tx_msg(&hts221_i2c_msg, array, NumByteToWrite + 1, 3);
+  iError = mxos_i2c_transfer(&hts221_i2c_device, &hts221_i2c_msg, 1);
   if(0 != iError){
     iError = HUM_TEMP_ERROR;
   }
@@ -92,11 +92,11 @@ HUM_TEMP_StatusTypeDef HTS221_IO_Read(uint8_t* pBuffer, uint8_t DeviceAddr, uint
   uint8_t array[8] = {0};
   array[0] = RegisterAddr;
   
-  iError = MxosI2cBuildCombinedMessage(&hts221_i2c_msg, array, pBuffer, 1, NumByteToRead, 3);
+  iError = mxos_i2c_build_comb_msg(&hts221_i2c_msg, array, pBuffer, 1, NumByteToRead, 3);
   if(0 != iError){
     return HUM_TEMP_ERROR; 
   }
-  iError = MxosI2cTransfer(&hts221_i2c_device, &hts221_i2c_msg, 1);
+  iError = mxos_i2c_transfer(&hts221_i2c_device, &hts221_i2c_msg, 1);
   if(0 != iError){
     return HUM_TEMP_ERROR;
   }
@@ -567,7 +567,7 @@ OSStatus hts221_sensor_deinit(void)
   if(HTS221_Power_OFF() != HUM_TEMP_OK){
     return -1;
   }
-  if(MxosI2cFinalize(&hts221_i2c_device) != HUM_TEMP_OK){
+  if(mxos_i2c_deinit(&hts221_i2c_device) != HUM_TEMP_OK){
     return -1;
   }
   return 0;

@@ -532,7 +532,7 @@ typedef struct
     int free_memory; /**< total free space*/
 } mxosMemInfo_t;
 
-#define MxosGetMemoryInfo           mxos_memory_info
+#define mxos_get_mem_info           mxos_memory_info
 
 /**
  * @brief  Get memory usage information

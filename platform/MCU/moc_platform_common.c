@@ -122,91 +122,91 @@ OSStatus mxos_platform_init( void )
   return kNoErr;
 }
 
-OSStatus MxosAdcInitialize( mxos_adc_t adc, uint32_t sampling_cycle )
+OSStatus mxos_adc_init( mxos_adc_t adc, uint32_t sampling_cycle )
 {
   if ( adc >= MXOS_ADC_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_adc_init( &platform_adc_peripherals[adc], sampling_cycle );
 }
 
-OSStatus  MxosAdcFinalize( mxos_adc_t adc )
+OSStatus  mxos_adc_deinit( mxos_adc_t adc )
 {
   if ( adc >= MXOS_ADC_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_adc_deinit( &platform_adc_peripherals[adc] );
 }
 
-OSStatus MxosAdcTakeSample( mxos_adc_t adc, uint16_t* output )
+OSStatus mxos_adc_take_sample( mxos_adc_t adc, uint16_t* output )
 {
   if ( adc >= MXOS_ADC_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_adc_take_sample( &platform_adc_peripherals[adc], output );
 }
 
-OSStatus MxosAdcTakeSampleStreram( mxos_adc_t adc, void* buffer, uint16_t buffer_length )
+OSStatus mxos_adc_take_sampleStreram( mxos_adc_t adc, void* buffer, uint16_t buffer_length )
 {
   if ( adc >= MXOS_ADC_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_adc_take_sample_stream( &platform_adc_peripherals[adc], buffer, buffer_length );
 }
 
-OSStatus MxosGpioInitialize( mxos_gpio_t gpio, mxos_gpio_config_t configuration )
+OSStatus mxos_gpio_init( mxos_gpio_t gpio, mxos_gpio_config_t configuration )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_gpio_init( &platform_gpio_pins[gpio], configuration );
 }
 
-OSStatus MxosGpioOutputHigh( mxos_gpio_t gpio )
+OSStatus mxos_gpio_output_high( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_gpio_output_high( &platform_gpio_pins[gpio] );
 }
 
-OSStatus MxosGpioOutputLow( mxos_gpio_t gpio )
+OSStatus mxos_gpio_output_low( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_gpio_output_low( &platform_gpio_pins[gpio] );
 }
 
-OSStatus MxosGpioOutputTrigger( mxos_gpio_t gpio )
+OSStatus mxos_gpio_output_toggle( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_gpio_output_trigger( &platform_gpio_pins[gpio] );
 }
 
-OSStatus MxosGpioFinalize( mxos_gpio_t gpio )
+OSStatus mxos_gpio_deinit( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_gpio_deinit( &platform_gpio_pins[gpio] );
 }
 
-bool MxosGpioInputGet( mxos_gpio_t gpio )
+bool mxos_gpio_input_get( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return platform_gpio_input_get( &platform_gpio_pins[gpio] );
 }
 
-OSStatus MxosGpioEnableIRQ( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler, void* arg )
+OSStatus mxos_gpio_enable_irq( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler, void* arg )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_gpio_irq_enable( &platform_gpio_pins[gpio], trigger, handler, arg );
 }
 
-OSStatus MxosGpioDisableIRQ( mxos_gpio_t gpio )
+OSStatus mxos_gpio_disable_irq( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_gpio_irq_disable( &platform_gpio_pins[gpio] );
 }
 
-OSStatus MxosI2cInitialize( mxos_i2c_device_t* device )
+OSStatus mxos_i2c_init( mxos_i2c_device_t* device )
 {
   platform_i2c_config_t config;
   OSStatus result;
@@ -229,7 +229,7 @@ OSStatus MxosI2cInitialize( mxos_i2c_device_t* device )
   return result;
 }
 
-OSStatus MxosI2cFinalize( mxos_i2c_device_t* device )
+OSStatus mxos_i2c_deinit( mxos_i2c_device_t* device )
 {
   platform_i2c_config_t config;
 
@@ -249,7 +249,7 @@ OSStatus MxosI2cFinalize( mxos_i2c_device_t* device )
   return (OSStatus) platform_i2c_deinit( &platform_i2c_peripherals[device->port], &config );
 }
 
-bool MxosI2cProbeDevice( mxos_i2c_device_t* device, int retries )
+bool mxos_i2c_probe_dev( mxos_i2c_device_t* device, int retries )
 {
   bool ret;
   platform_i2c_config_t config;
@@ -269,22 +269,22 @@ bool MxosI2cProbeDevice( mxos_i2c_device_t* device, int retries )
   return ret;
 }
 
-OSStatus MxosI2cBuildTxMessage( mxos_i2c_message_t* message, const void* tx_buffer, uint16_t  tx_buffer_length, uint16_t retries )
+OSStatus mxos_i2c_build_tx_msg( mxos_i2c_message_t* message, const void* tx_buffer, uint16_t  tx_buffer_length, uint16_t retries )
 {
   return (OSStatus) platform_i2c_init_tx_message( message, tx_buffer, tx_buffer_length, retries );
 }
 
-OSStatus MxosI2cBuildRxMessage( mxos_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length, uint16_t retries )
+OSStatus mxos_i2c_build_rx_msg( mxos_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length, uint16_t retries )
 {
   return (OSStatus) platform_i2c_init_rx_message( message, rx_buffer, rx_buffer_length, retries );
 }
 
-OSStatus MxosI2cBuildCombinedMessage( mxos_i2c_message_t* message, const void* tx_buffer, void* rx_buffer, uint16_t tx_buffer_length, uint16_t rx_buffer_length, uint16_t retries )
+OSStatus mxos_i2c_build_comb_msg( mxos_i2c_message_t* message, const void* tx_buffer, void* rx_buffer, uint16_t tx_buffer_length, uint16_t rx_buffer_length, uint16_t retries )
 {
   return (OSStatus) platform_i2c_init_combined_message( message, tx_buffer, rx_buffer, tx_buffer_length, rx_buffer_length, retries );
 }
 
-OSStatus MxosI2cTransfer( mxos_i2c_device_t* device, mxos_i2c_message_t* messages, uint16_t number_of_messages )
+OSStatus mxos_i2c_transfer( mxos_i2c_device_t* device, mxos_i2c_message_t* messages, uint16_t number_of_messages )
 {
   OSStatus err = kNoErr;
   platform_i2c_config_t config;
@@ -304,7 +304,7 @@ OSStatus MxosI2cTransfer( mxos_i2c_device_t* device, mxos_i2c_message_t* message
   return err;
 }
 
-void MxosMcuPowerSaveConfig( int enable )
+void mxos_mcu_powersave_config( int enable )
 {
   if (enable == 1)
     platform_mcu_powersave_enable( );
@@ -312,44 +312,44 @@ void MxosMcuPowerSaveConfig( int enable )
     platform_mcu_powersave_disable( );
 }
 
-void MxosSystemStandBy( uint32_t secondsToWakeup )
+void mxos_sys_standby( uint32_t secondsToWakeup )
 {
   platform_mcu_enter_standby( secondsToWakeup );
 }
 
 
-OSStatus MxosPwmInitialize(mxos_pwm_t pwm, uint32_t frequency, float duty_cycle)
+OSStatus mxos_pwm_init(mxos_pwm_t pwm, uint32_t frequency, float duty_cycle)
 {
   if ( pwm >= MXOS_PWM_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_pwm_init( &platform_pwm_peripherals[pwm], frequency, duty_cycle );
 }
 
-OSStatus MxosPwmStart( mxos_pwm_t pwm )
+OSStatus mxos_pwm_start( mxos_pwm_t pwm )
 {
   if ( pwm >= MXOS_PWM_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_pwm_start( &platform_pwm_peripherals[pwm] );
 }
 
-OSStatus MxosPwmStop( mxos_pwm_t pwm )
+OSStatus mxos_pwm_stop( mxos_pwm_t pwm )
 {
   if ( pwm >= MXOS_PWM_NONE )
     return kUnsupportedErr;
   return (OSStatus) platform_pwm_stop( &platform_pwm_peripherals[pwm] );
 }
 
-OSStatus MxosRtcGetTime(mxos_rtc_time_t* time)
+OSStatus mxos_rtc_get_time(mxos_rtc_time_t* time)
 {
   return (OSStatus) platform_rtc_get_time( time );
 }
 
-OSStatus MxosRtcSetTime(mxos_rtc_time_t* time)
+OSStatus mxos_rtc_set_time(mxos_rtc_time_t* time)
 {
   return (OSStatus) platform_rtc_set_time( time );
 }
 
-OSStatus MxosSpiInitialize( const mxos_spi_device_t* spi )
+OSStatus mxos_spi_init( const mxos_spi_device_t* spi )
 {
   platform_spi_config_t config;
   OSStatus              err = kNoErr;
@@ -379,7 +379,7 @@ OSStatus MxosSpiInitialize( const mxos_spi_device_t* spi )
   return err;
 }
 
-OSStatus MxosSpiFinalize( const mxos_spi_device_t* spi )
+OSStatus mxos_spi_deinit( const mxos_spi_device_t* spi )
 {
   OSStatus err = kNoErr;
 
@@ -404,7 +404,7 @@ OSStatus MxosSpiFinalize( const mxos_spi_device_t* spi )
   return err;
 }
 
-OSStatus MxosSpiTransfer( const mxos_spi_device_t* spi, const mxos_spi_message_segment_t* segments, uint16_t number_of_segments )
+OSStatus mxos_spi_transfer( const mxos_spi_device_t* spi, const mxos_spi_message_segment_t* segments, uint16_t number_of_segments )
 {
   platform_spi_config_t config;
   OSStatus err = kNoErr;
@@ -483,7 +483,7 @@ OSStatus MxosSpiSlaveGenerateInterrupt( mxos_spi_t spi, uint32_t pulse_duration_
   return (OSStatus) platform_spi_slave_generate_interrupt( &platform_spi_slave_drivers[spi], pulse_duration_ms );
 }
 
-OSStatus MxosUartInitialize( mxos_uart_t uart, const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer )
+OSStatus mxos_uart_init( mxos_uart_t uart, const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer )
 {
   if ( uart >= MXOS_UART_NONE )
     return kUnsupportedErr;
@@ -499,7 +499,7 @@ OSStatus MxosUartInitialize( mxos_uart_t uart, const mxos_uart_config_t* config,
   return (OSStatus) platform_uart_init( &platform_uart_drivers[uart], &platform_uart_peripherals[uart], config, optional_rx_buffer );
 }
 
-OSStatus MxosUartFinalize( mxos_uart_t uart )
+OSStatus mxos_uart_deinit( mxos_uart_t uart )
 {
   if ( uart >= MXOS_UART_NONE )
     return kUnsupportedErr;
@@ -507,7 +507,7 @@ OSStatus MxosUartFinalize( mxos_uart_t uart )
   return (OSStatus) platform_uart_deinit( &platform_uart_drivers[uart] );
 }
 
-OSStatus MxosUartSend( mxos_uart_t uart, const void* data, uint32_t size )
+OSStatus mxos_uart_send( mxos_uart_t uart, const void* data, uint32_t size )
 {
   if ( uart >= MXOS_UART_NONE )
     return kUnsupportedErr;
@@ -515,7 +515,7 @@ OSStatus MxosUartSend( mxos_uart_t uart, const void* data, uint32_t size )
   return (OSStatus) platform_uart_transmit_bytes( &platform_uart_drivers[uart], (const uint8_t*) data, size );
 }
 
-OSStatus MxosUartRecv( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout )
+OSStatus mxos_uart_recv( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout )
 {
   if ( uart >= MXOS_UART_NONE )
     return kUnsupportedErr;
@@ -523,7 +523,7 @@ OSStatus MxosUartRecv( mxos_uart_t uart, void* data, uint32_t size, uint32_t tim
   return (OSStatus) platform_uart_receive_bytes( &platform_uart_drivers[uart], (uint8_t*)data, size, timeout );
 }
 
-uint32_t MxosUartGetLengthInBuffer( mxos_uart_t uart )
+uint32_t mxos_uart_recvd_data_len( mxos_uart_t uart )
 {
   if ( uart >= MXOS_UART_NONE )
     return 0;
@@ -536,21 +536,21 @@ OSStatus MxosRandomNumberRead( void *inBuffer, int inByteCount )
   return (OSStatus) platform_random_number_read( inBuffer, inByteCount );
 }
 
-void MxosSystemReboot( void )
+void mxos_sys_reboot( void )
 {
   platform_mcu_reset();
 }
-OSStatus MxosWdgInitialize( uint32_t timeout )
+OSStatus mxos_wdg_init( uint32_t timeout )
 {
     return (OSStatus) platform_watchdog_init( timeout );
 }
 
-void MxosWdgReload( void )
+void mxos_wdg_reload( void )
 {
     platform_watchdog_kick( );
 }
 
-mxos_logic_partition_t* MxosFlashGetInfo( mxos_partition_t inPartition )
+mxos_logic_partition_t* mxos_flash_get_info( mxos_partition_t inPartition )
 {
     mxos_logic_partition_t *logic_partition = NULL;
     require( inPartition >= 0 && inPartition < MXOS_PARTITION_MAX, exit );
@@ -575,7 +575,7 @@ static OSStatus MxosFlashInitialize( mxos_partition_t partition )
   require_action_quiet( partition > MXOS_PARTITION_ERROR, exit, err = kParamErr );
   require_action_quiet( partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
 
-  partition_info = MxosFlashGetInfo( partition );
+  partition_info = mxos_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
   
   if( platform_flash_drivers[ partition_info->partition_owner ].flash_mutex == NULL){
@@ -594,7 +594,7 @@ exit:
   return err;
 }
 
-OSStatus MxosFlashErase(mxos_partition_t partition, uint32_t off_set, uint32_t size)
+OSStatus mxos_flash_erase(mxos_partition_t partition, uint32_t off_set, uint32_t size)
 {
   OSStatus err = kNoErr;
   uint32_t start_addr, end_addr;
@@ -604,7 +604,7 @@ OSStatus MxosFlashErase(mxos_partition_t partition, uint32_t off_set, uint32_t s
   require_action_quiet( partition > MXOS_PARTITION_ERROR && partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
   require_action_quiet( partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
 
-  partition_info = MxosFlashGetInfo( partition );
+  partition_info = mxos_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
 #if (!defined BOOTLOADER) && (!defined FIRMWARE_DOWNLOAD)
   require_action_quiet( ( partition_info->partition_options & PAR_OPT_WRITE_MASK ) == PAR_OPT_WRITE_EN, exit, err = kPermissionErr );
@@ -629,7 +629,7 @@ exit:
   return err;
 }
 
-OSStatus MxosFlashWrite( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength)
+OSStatus mxos_flash_write( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength)
 {
   OSStatus err = kNoErr;
   uint32_t start_addr, end_addr;
@@ -638,7 +638,7 @@ OSStatus MxosFlashWrite( mxos_partition_t partition, volatile uint32_t* off_set,
   require_quiet( inBufferLength != 0, exit);
   require_action_quiet( partition > MXOS_PARTITION_ERROR && partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
   
-  partition_info = MxosFlashGetInfo( partition );
+  partition_info = mxos_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
 #if (!defined BOOTLOADER) && (!defined FIRMWARE_DOWNLOAD)
   require_action_quiet( ( partition_info->partition_options & PAR_OPT_WRITE_MASK ) == PAR_OPT_WRITE_EN, exit, err = kPermissionErr );
@@ -663,7 +663,7 @@ exit:
   return err;
 }
 
-OSStatus MxosFlashRead( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* outBuffer ,uint32_t inBufferLength)
+OSStatus mxos_flash_read( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* outBuffer ,uint32_t inBufferLength)
 {
   OSStatus err = kNoErr;
   uint32_t start_addr, end_addr;
@@ -672,7 +672,7 @@ OSStatus MxosFlashRead( mxos_partition_t partition, volatile uint32_t* off_set, 
   require_quiet( inBufferLength != 0, exit);
   require_action_quiet( partition > MXOS_PARTITION_ERROR && partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
 
-  partition_info = MxosFlashGetInfo( partition );
+  partition_info = mxos_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
 #if (!defined BOOTLOADER) && (!defined FIRMWARE_DOWNLOAD)
   require_action_quiet( ( partition_info->partition_options & PAR_OPT_READ_MASK ) == PAR_OPT_READ_EN, exit, err = kPermissionErr );
@@ -697,7 +697,7 @@ exit:
   return err;
 }
 
-OSStatus MxosFlashEnableSecurity( mxos_partition_t partition, uint32_t off_set, uint32_t size )
+OSStatus mxos_flash_enable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size )
 {
   OSStatus err = kNoErr;
   uint32_t start_addr, end_addr;
@@ -706,7 +706,7 @@ OSStatus MxosFlashEnableSecurity( mxos_partition_t partition, uint32_t off_set, 
   require_quiet( size != 0, exit);
   require_action_quiet( partition > MXOS_PARTITION_ERROR && partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
 
-  partition_info = MxosFlashGetInfo( partition );
+  partition_info = mxos_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
 
   start_addr = partition_info->partition_start_addr + off_set;
@@ -734,7 +734,7 @@ char *mxos_get_bootloader_ver(void)
     uint32_t version_offset = bootloader_partition->partition_length - 0x20;
 
     memset(ver, 0, sizeof(ver));
-    MxosFlashRead( MXOS_PARTITION_BOOTLOADER, &version_offset, (uint8_t *)ver , 32);
+    mxos_flash_read( MXOS_PARTITION_BOOTLOADER, &version_offset, (uint8_t *)ver , 32);
     return ver;
 }
 
@@ -744,23 +744,23 @@ char *mxos_get_bootloader_ver(void)
 void mxos_set_bootload_ver(void)
 {
    uint8_t ver[33];
-   mxos_logic_partition_t *boot_partition = MxosFlashGetInfo( MXOS_PARTITION_BOOTLOADER );
+   mxos_logic_partition_t *boot_partition = mxos_flash_get_info( MXOS_PARTITION_BOOTLOADER );
    uint32_t flashaddr =  boot_partition->partition_length - 0x20;
    int i;
 
    memset(ver, 0, sizeof(ver));
-   MxosFlashRead( MXOS_PARTITION_BOOTLOADER, &flashaddr, (uint8_t *)ver , 32);
+   mxos_flash_read( MXOS_PARTITION_BOOTLOADER, &flashaddr, (uint8_t *)ver , 32);
    for(i=0;i<32;i++) {
        if (ver[i] != 0xFF)
            return;
    }
    snprintf((char *)ver, 33, "%s %s %d", MODEL, Bootloader_REVISION , STDIO_UART_BAUDRATE);
    flashaddr =  boot_partition->partition_length - 0x20;
-   MxosFlashDisableSecurity( MXOS_PARTITION_BOOTLOADER, 0x0, boot_partition->partition_length );
-   MxosFlashWrite( MXOS_PARTITION_BOOTLOADER, &flashaddr, ver , 32);
+   mxos_flash_disable_security( MXOS_PARTITION_BOOTLOADER, 0x0, boot_partition->partition_length );
+   mxos_flash_write( MXOS_PARTITION_BOOTLOADER, &flashaddr, ver , 32);
 }
 
-OSStatus MxosFlashDisableSecurity( mxos_partition_t partition, uint32_t off_set, uint32_t size )
+OSStatus mxos_flash_disable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size )
 {
   OSStatus err = kNoErr;
   uint32_t start_addr, end_addr;
@@ -769,7 +769,7 @@ OSStatus MxosFlashDisableSecurity( mxos_partition_t partition, uint32_t off_set,
   require_quiet( size != 0, exit);
   require_action_quiet( partition > MXOS_PARTITION_ERROR && partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
 
-  partition_info = MxosFlashGetInfo( partition );
+  partition_info = mxos_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
 
   start_addr = partition_info->partition_start_addr + off_set;

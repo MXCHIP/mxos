@@ -85,7 +85,7 @@ static uint8_t* _qc_test_uart_init( void )
         uart_config.flags        = UART_WAKEUP_DISABLE;
 
         ring_buffer_init( (ring_buffer_t *) &rx_buffer, (uint8_t *) pbuffer, QC_UART_BUFFER_SIZR );
-        MxosUartInitialize( MXOS_MFG_TEST, &uart_config, (ring_buffer_t *) &rx_buffer );
+        mxos_uart_init( MXOS_MFG_TEST, &uart_config, (ring_buffer_t *) &rx_buffer );
     }
     return pbuffer;
 }
@@ -93,7 +93,7 @@ static uint8_t* _qc_test_uart_init( void )
 /* Calculate Application firmware's CRC */
 static void _qc_test_calculate_app_crc( char *str, int len )
 {
-    mxos_logic_partition_t *partition_flash = MxosFlashGetInfo( MXOS_PARTITION_APPLICATION );
+    mxos_logic_partition_t *partition_flash = mxos_flash_get_info( MXOS_PARTITION_APPLICATION );
     uint8_t *mfgbuf = malloc( 1024 );
     uint16_t crc = 0;
     uint32_t flash_addr = 0x0;
@@ -107,7 +107,7 @@ static void _qc_test_calculate_app_crc( char *str, int len )
         int buf_len = (flash_len > 1024) ? 1024 : flash_len;
         flash_len -= buf_len;
 
-        MxosFlashRead( MXOS_PARTITION_APPLICATION, &flash_addr, (uint8_t *) mfgbuf, buf_len );
+        mxos_flash_read( MXOS_PARTITION_APPLICATION, &flash_addr, (uint8_t *) mfgbuf, buf_len );
         CRC16_Update( &mfg_context, (uint8_t *) mfgbuf, buf_len );
     }
 
@@ -130,7 +130,7 @@ static void _qc_test_thread( mxos_thread_arg_t arg )
     uint8_t * rx_data = NULL;
 
     mxos_debug_enabled = 0;
-    mxchipInit( );
+    mxos_network_init( );
 
     rx_data = _qc_test_uart_init( );
     require( rx_data, exit );
@@ -139,10 +139,10 @@ static void _qc_test_thread( mxos_thread_arg_t arg )
     QC_TEST_PRINT_STRING( "Serial Number:", SERIAL_NUMBER );
     QC_TEST_PRINT_STRING_FUN( "App CRC:", _qc_test_calculate_app_crc );
     QC_TEST_PRINT_STRING( "Bootloader Version:", mxos_get_bootloader_ver( ) );
-    QC_TEST_PRINT_STRING( "Library Version:", MxosGetVer() );
+    QC_TEST_PRINT_STRING( "Library Version:", mxos_system_lib_version() );
     QC_TEST_PRINT_STRING_FUN( "APP Version:", mxos_app_info );
 #ifndef PPP_IF
-    QC_TEST_PRINT_STRING_FUN( "Driver:", wlan_driver_version );
+    QC_TEST_PRINT_STRING_FUN( "Driver:", mxos_wlan_driver_version );
 #endif
 
 #ifdef QC_TEST_GPIO_ENABLE
@@ -219,7 +219,7 @@ void mxos_mfg_test(mxos_Context_t *inContext)
   uart_config.flags = UART_WAKEUP_DISABLE;
   
   ring_buffer_init  ( (ring_buffer_t *)&rx_buffer, (uint8_t *)rx_data, 2048 );
-  MxosUartInitialize( UART_FOR_APP, &uart_config, (ring_buffer_t *)&rx_buffer );
+  mxos_uart_init( UART_FOR_APP, &uart_config, (ring_buffer_t *)&rx_buffer );
   err = mxos_rtos_create_thread(NULL, MXOS_APPLICATION_PRIORITY, "MFG UART Recv", uartRecvMfg_thread, 0x300, 0 );
   
   /* Initialize UDP interface */
@@ -258,7 +258,7 @@ void mxos_mfg_test(mxos_Context_t *inContext)
     /* Recv UDP data and send to COM */
     if (FD_ISSET(testCommandFd, &readfds)) {
       recvLength = recvfrom(testCommandFd, buf, 1500, 0, (struct sockaddr *)&addr, &addrLen);
-      MxosUartSend(UART_FOR_APP, buf, recvLength);
+      mxos_uart_send(UART_FOR_APP, buf, recvLength);
     }
   }
   
@@ -297,13 +297,13 @@ static size_t _uart_get_one_packet(uint8_t* inBuf, int inBufLen)
   int datalen;
   
   while(1) {
-    if( MxosUartRecv( UART_FOR_APP, inBuf, inBufLen, 500) == kNoErr){
+    if( mxos_uart_recv( UART_FOR_APP, inBuf, inBufLen, 500) == kNoErr){
       return inBufLen;
     }
     else{
-      datalen = MxosUartGetLengthInBuffer( UART_FOR_APP );
+      datalen = mxos_uart_recvd_data_len( UART_FOR_APP );
       if(datalen){
-        MxosUartRecv(UART_FOR_APP, inBuf, datalen, 500);
+        mxos_uart_recv(UART_FOR_APP, inBuf, datalen, 500);
         return datalen;
       }
     }

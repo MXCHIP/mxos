@@ -126,14 +126,14 @@ static uint16_t para_crc16(mxos_partition_t part)
         return 0;
 
     offset = mxos_context_section_offsets[ PARA_MXOS_DATA_SECTION ];
-    partition = MxosFlashGetInfo( part );
+    partition = mxos_flash_get_info( part );
     /* Calculate CRC value */
     CRC16_Init( &crc_context );
     end = partition->partition_length - CRC_SIZE;
     while(offset < end) {
         if (offset + len > end)
             len = end - offset;
-        MxosFlashRead( part, &offset, tmp, len);
+        mxos_flash_read( part, &offset, tmp, len);
         CRC16_Update( &crc_context, tmp, len );
     }
     CRC16_Final( &crc_context, &crc_result );
@@ -154,47 +154,47 @@ static OSStatus internal_update_config( system_context_t * const inContext )
 
   para_log("Flash write!");
   mxos_rtos_lock_mutex( &para_flash_mutex);
-  partition = MxosFlashGetInfo( MXOS_PARTITION_PARAMETER_1 );
-  err = MxosFlashErase( MXOS_PARTITION_PARAMETER_1, 0x0, partition->partition_length);
+  partition = mxos_flash_get_info( MXOS_PARTITION_PARAMETER_1 );
+  err = mxos_flash_erase( MXOS_PARTITION_PARAMETER_1, 0x0, partition->partition_length);
   require_noerr(err, exit);
 
   para_offset = 0x0;
-  err = MxosFlashWrite( MXOS_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof(system_config_t));
+  err = mxos_flash_write( MXOS_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof(system_config_t));
   require_noerr(err, exit);
 
   para_offset = mxos_context_section_offsets[ PARA_APP_DATA_SECTION ];
-  err = MxosFlashWrite( MXOS_PARTITION_PARAMETER_1, &para_offset, inContext->user_config_data, inContext->user_config_data_size );
+  err = mxos_flash_write( MXOS_PARTITION_PARAMETER_1, &para_offset, inContext->user_config_data, inContext->user_config_data_size );
   require_noerr(err, exit);
 
   crc_result = para_crc16(MXOS_PARTITION_PARAMETER_1);
   para_offset = partition->partition_length - CRC_SIZE;
-  err = MxosFlashWrite( MXOS_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)&crc_result, CRC_SIZE );
+  err = mxos_flash_write( MXOS_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)&crc_result, CRC_SIZE );
   require_noerr(err, exit);
   
   /* Read back*/
   para_offset = partition->partition_length - CRC_SIZE;
-  err = MxosFlashRead( MXOS_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)&crc_readback, CRC_SIZE );
+  err = mxos_flash_read( MXOS_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)&crc_readback, CRC_SIZE );
   if( crc_readback != crc_result) {
     mxos_rtos_unlock_mutex( &para_flash_mutex);
     para_log( "crc_readback = %d, crc_result %d", crc_readback, crc_result);
     return kWriteErr;
   }
 
-  partition = MxosFlashGetInfo( MXOS_PARTITION_PARAMETER_2 );
+  partition = mxos_flash_get_info( MXOS_PARTITION_PARAMETER_2 );
   /* Write backup data*/
-  err = MxosFlashErase( MXOS_PARTITION_PARAMETER_2, 0x0, partition->partition_length );
+  err = mxos_flash_erase( MXOS_PARTITION_PARAMETER_2, 0x0, partition->partition_length );
   require_noerr(err, exit);
 
   para_offset = 0x0;
-  err = MxosFlashWrite( MXOS_PARTITION_PARAMETER_2, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof(system_config_t));
+  err = mxos_flash_write( MXOS_PARTITION_PARAMETER_2, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof(system_config_t));
   require_noerr(err, exit);
 
   para_offset = mxos_context_section_offsets[ PARA_APP_DATA_SECTION ];
-  err = MxosFlashWrite( MXOS_PARTITION_PARAMETER_2, &para_offset, inContext->user_config_data, inContext->user_config_data_size );
+  err = mxos_flash_write( MXOS_PARTITION_PARAMETER_2, &para_offset, inContext->user_config_data, inContext->user_config_data_size );
   require_noerr(err, exit);
 
   para_offset = partition->partition_length - CRC_SIZE;
-  err = MxosFlashWrite( MXOS_PARTITION_PARAMETER_2, &para_offset, (uint8_t *)&crc_result, CRC_SIZE );
+  err = mxos_flash_write( MXOS_PARTITION_PARAMETER_2, &para_offset, (uint8_t *)&crc_result, CRC_SIZE );
   require_noerr(err, exit);
 
 exit:
@@ -272,32 +272,32 @@ OSStatus MXOSReadConfiguration(system_context_t *inContext)
   user_backup_data = malloc( inContext->user_config_data_size );
   require_action( user_backup_data, exit, err = kNoMemoryErr );
 
-  partition = MxosFlashGetInfo( MXOS_PARTITION_PARAMETER_1 );
+  partition = mxos_flash_get_info( MXOS_PARTITION_PARAMETER_1 );
   /* Load data and crc from main partition */
   para_offset = 0x0;
-  err = MxosFlashRead( MXOS_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof( system_config_t ) );
+  err = mxos_flash_read( MXOS_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof( system_config_t ) );
   para_offset = mxos_context_section_offsets[ PARA_APP_DATA_SECTION ];
-  err = MxosFlashRead( MXOS_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)inContext->user_config_data, inContext->user_config_data_size );
+  err = mxos_flash_read( MXOS_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)inContext->user_config_data, inContext->user_config_data_size );
 
   crc_result = para_crc16(MXOS_PARTITION_PARAMETER_1);
   para_log( "crc_result = %d", crc_result);
 
   crc_offset = partition->partition_length - CRC_SIZE;
-  err = MxosFlashRead( MXOS_PARTITION_PARAMETER_1, &crc_offset, (uint8_t *)&crc_target, CRC_SIZE );
+  err = mxos_flash_read( MXOS_PARTITION_PARAMETER_1, &crc_offset, (uint8_t *)&crc_target, CRC_SIZE );
   para_log( "crc_target = %d", crc_target);
 
   /* Load data and crc from backup partition */
-  partition = MxosFlashGetInfo( MXOS_PARTITION_PARAMETER_2 );
+  partition = mxos_flash_get_info( MXOS_PARTITION_PARAMETER_2 );
   para_offset = mxos_context_section_offsets[ PARA_MXOS_DATA_SECTION ];
-  err = MxosFlashRead( MXOS_PARTITION_PARAMETER_2, &para_offset, sys_backup_data, SYS_CONFIG_SIZE );
+  err = mxos_flash_read( MXOS_PARTITION_PARAMETER_2, &para_offset, sys_backup_data, SYS_CONFIG_SIZE );
   para_offset = mxos_context_section_offsets[ PARA_APP_DATA_SECTION ];
-  err = MxosFlashRead( MXOS_PARTITION_PARAMETER_2, &para_offset, user_backup_data, inContext->user_config_data_size );
+  err = mxos_flash_read( MXOS_PARTITION_PARAMETER_2, &para_offset, user_backup_data, inContext->user_config_data_size );
 
   crc_backup_result = para_crc16(MXOS_PARTITION_PARAMETER_2);
   para_log( "crc_backup_result = %d", crc_backup_result);
 
   crc_offset = partition->partition_length - CRC_SIZE;
-  err = MxosFlashRead( MXOS_PARTITION_PARAMETER_2, &crc_offset, (uint8_t *)&crc_backup_target, CRC_SIZE );  
+  err = mxos_flash_read( MXOS_PARTITION_PARAMETER_2, &crc_offset, (uint8_t *)&crc_backup_target, CRC_SIZE );  
   para_log( "crc_backup_target = %d", crc_backup_target);
   
   /* Data collapsed at main partition */
@@ -320,20 +320,20 @@ OSStatus MXOSReadConfiguration(system_context_t *inContext)
       memcpy( (uint8_t *)inContext->user_config_data, user_backup_data, inContext->user_config_data_size );
 
       /* Save data to main Flash  */
-      partition = MxosFlashGetInfo( MXOS_PARTITION_PARAMETER_1 );
-      err = MxosFlashErase( MXOS_PARTITION_PARAMETER_1 ,0x0, partition->partition_length );
+      partition = mxos_flash_get_info( MXOS_PARTITION_PARAMETER_1 );
+      err = mxos_flash_erase( MXOS_PARTITION_PARAMETER_1 ,0x0, partition->partition_length );
       require_noerr(err, exit);
 
       para_offset = 0x0;
-      err = MxosFlashWrite( MXOS_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof(system_config_t) );
+      err = mxos_flash_write( MXOS_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof(system_config_t) );
       require_noerr(err, exit);
 
       para_offset = mxos_context_section_offsets[ PARA_APP_DATA_SECTION ];
-      err = MxosFlashWrite( MXOS_PARTITION_PARAMETER_1, &para_offset, inContext->user_config_data, inContext->user_config_data_size );
+      err = mxos_flash_write( MXOS_PARTITION_PARAMETER_1, &para_offset, inContext->user_config_data, inContext->user_config_data_size );
       require_noerr(err, exit);
 
       crc_offset = partition->partition_length - CRC_SIZE;
-      err = MxosFlashWrite( MXOS_PARTITION_PARAMETER_1, &crc_offset, (uint8_t *)&crc_backup_result, CRC_SIZE );
+      err = mxos_flash_write( MXOS_PARTITION_PARAMETER_1, &crc_offset, (uint8_t *)&crc_backup_result, CRC_SIZE );
       require_noerr(err, exit);
     }
   }   
@@ -344,21 +344,21 @@ OSStatus MXOSReadConfiguration(system_context_t *inContext)
       para_log("Config failed on backup, recover!");
 
       /* Save data to backup Flash  */
-      partition = MxosFlashGetInfo( MXOS_PARTITION_PARAMETER_2 );
+      partition = mxos_flash_get_info( MXOS_PARTITION_PARAMETER_2 );
 
-      err = MxosFlashErase( MXOS_PARTITION_PARAMETER_2 ,0x0, partition->partition_length );
+      err = mxos_flash_erase( MXOS_PARTITION_PARAMETER_2 ,0x0, partition->partition_length );
       require_noerr(err, exit);
   
       para_offset = 0x0;
-      err = MxosFlashWrite( MXOS_PARTITION_PARAMETER_2, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof(system_config_t) );
+      err = mxos_flash_write( MXOS_PARTITION_PARAMETER_2, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof(system_config_t) );
       require_noerr(err, exit);
 
       para_offset = mxos_context_section_offsets[ PARA_APP_DATA_SECTION ];
-      err = MxosFlashWrite( MXOS_PARTITION_PARAMETER_2, &para_offset, inContext->user_config_data, inContext->user_config_data_size );
+      err = mxos_flash_write( MXOS_PARTITION_PARAMETER_2, &para_offset, inContext->user_config_data, inContext->user_config_data_size );
       require_noerr(err, exit);
 
       crc_offset = partition->partition_length - CRC_SIZE;
-      err = MxosFlashWrite( MXOS_PARTITION_PARAMETER_2, &crc_offset, (uint8_t *)&crc_target, CRC_SIZE );
+      err = mxos_flash_write( MXOS_PARTITION_PARAMETER_2, &crc_offset, (uint8_t *)&crc_target, CRC_SIZE );
       require_noerr(err, exit);
     }
   }
@@ -480,7 +480,7 @@ OSStatus mxos_ota_switch_to_new_fw( int ota_data_len, uint16_t ota_data_crc )
     extern int switch_active_firmware(void);
     switch_active_firmware();
 #else
-    mxos_logic_partition_t* ota_partition = MxosFlashGetInfo( MXOS_PARTITION_OTA_TEMP );
+    mxos_logic_partition_t* ota_partition = mxos_flash_get_info( MXOS_PARTITION_OTA_TEMP );
 
     memset( &sys_context->flashContentInRam.bootTable, 0, sizeof(boot_table_t) );
 #ifdef CONFIG_MX108
@@ -509,9 +509,9 @@ static int is_old_part_crc_match(system_context_t *inContext, mxos_partition_t p
     uint16_t crc_result, crc_target;
     
     para_offset = 0x0;
-    MxosFlashRead( part, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof( system_config_t ) );
+    mxos_flash_read( part, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof( system_config_t ) );
     para_offset = mxos_context_section_offsets[ PARA_APP_DATA_SECTION ];
-    MxosFlashRead( part, &para_offset, (uint8_t *)inContext->user_config_data, inContext->user_config_data_size );
+    mxos_flash_read( part, &para_offset, (uint8_t *)inContext->user_config_data, inContext->user_config_data_size );
 
     CRC16_Init( &crc_context );
     CRC16_Update( &crc_context, (uint8_t *)&inContext->flashContentInRam.mxosSystemConfig, SYS_CONFIG_SIZE );
@@ -520,7 +520,7 @@ static int is_old_part_crc_match(system_context_t *inContext, mxos_partition_t p
     para_log( "crc_result = %d", crc_result);
 
     crc_offset = mxos_context_section_offsets[ PARA_APP_DATA_SECTION ] + inContext->user_config_data_size;;
-    MxosFlashRead( part, &crc_offset, (uint8_t *)&crc_target, CRC_SIZE );
+    mxos_flash_read( part, &crc_offset, (uint8_t *)&crc_target, CRC_SIZE );
     para_log( "crc_target = %d", crc_target);
 
     if( is_crc_match( crc_result, crc_target ) == true ) {

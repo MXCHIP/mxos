@@ -71,17 +71,17 @@ extern int stdio_break_in(void);
 #endif
 
 
-WEAK bool MxosShouldEnterBootloader( void )
+WEAK bool mxos_should_enter_bootloader( void )
 {
   return false;
 }
 
-WEAK bool MxosShouldEnterMFGMode( void )
+WEAK bool mxos_should_enter_mfg_mode( void )
 {
   return false;
 }
 
-WEAK bool MxosShouldEnterATEMode( void )
+WEAK bool mxos_should_enter_ate_mode( void )
 {
   return false;
 }
@@ -105,12 +105,12 @@ int main(void)
     goto BOOT;
 #endif
 
-    if ( MxosShouldEnterBootloader() == false )
-        bootloader_start_app((MxosFlashGetInfo(MXOS_PARTITION_APPLICATION))->partition_start_addr);
-    else if ( MxosShouldEnterMFGMode() == true )
-        bootloader_start_app((MxosFlashGetInfo(MXOS_PARTITION_APPLICATION))->partition_start_addr);
-    else if ( MxosShouldEnterATEMode() ) {
-        partition = MxosFlashGetInfo(MXOS_PARTITION_ATE);
+    if ( mxos_should_enter_bootloader() == false )
+        bootloader_start_app((mxos_flash_get_info(MXOS_PARTITION_APPLICATION))->partition_start_addr);
+    else if ( mxos_should_enter_mfg_mode() == true )
+        bootloader_start_app((mxos_flash_get_info(MXOS_PARTITION_APPLICATION))->partition_start_addr);
+    else if ( mxos_should_enter_ate_mode() ) {
+        partition = mxos_flash_get_info(MXOS_PARTITION_ATE);
         if ( partition->partition_owner != MXOS_FLASH_NONE ) {
             bootloader_start_app(partition->partition_start_addr);
         }

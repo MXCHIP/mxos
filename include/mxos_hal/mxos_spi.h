@@ -40,6 +40,11 @@
 #include "platform_peripheral.h"
 #endif
 
+/* Legacy definitions */
+#define MxosSpiInitialize mxos_spi_init
+#define MxosSpiTransfer mxos_spi_transfer
+#define MxosSpiFinalize mxos_spi_deinit
+
 /** @addtogroup MXOS_PLATFORM
 * @{
 */
@@ -102,7 +107,7 @@ typedef struct
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if the SPI device could not be initialised
  */
-OSStatus MxosSpiInitialize( const mxos_spi_device_t* spi );
+OSStatus mxos_spi_init( const mxos_spi_device_t* spi );
 
 
 /**@brief Transmits and/or receives data from a SPI device
@@ -114,7 +119,7 @@ OSStatus MxosSpiInitialize( const mxos_spi_device_t* spi );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-OSStatus MxosSpiTransfer( const mxos_spi_device_t* spi, const mxos_spi_message_segment_t* segments, uint16_t number_of_segments );
+OSStatus mxos_spi_transfer( const mxos_spi_device_t* spi, const mxos_spi_message_segment_t* segments, uint16_t number_of_segments );
 
 
 /**@brief De-initialises a SPI interface
@@ -126,7 +131,7 @@ OSStatus MxosSpiTransfer( const mxos_spi_device_t* spi, const mxos_spi_message_s
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-OSStatus MxosSpiFinalize( const mxos_spi_device_t* spi );
+OSStatus mxos_spi_deinit( const mxos_spi_device_t* spi );
 
 /** @} */
 /** @} */

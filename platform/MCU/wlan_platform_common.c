@@ -173,7 +173,7 @@ static uint32_t image_size = 0x0;
 uint32_t platform_get_wifi_image_size(void)
 {
 #define READ_LEN 2048
-    mxos_logic_partition_t *driver_partition = MxosFlashGetInfo( MXOS_PARTITION_RF_FIRMWARE );
+    mxos_logic_partition_t *driver_partition = mxos_flash_get_info( MXOS_PARTITION_RF_FIRMWARE );
     uint32_t offset = driver_partition->partition_length;
     uint32_t *p;
     uint32_t *buf = (uint32_t *)malloc(READ_LEN);
@@ -181,8 +181,8 @@ uint32_t platform_get_wifi_image_size(void)
     image_size = driver_partition->partition_length;
     do {
         offset -= READ_LEN; // Next block
-        MxosFlashRead( MXOS_PARTITION_RF_FIRMWARE, &offset, (uint8_t *)buf, READ_LEN);
-        offset -= READ_LEN; // MxosFlashRead will increase FlashAddress READ_LEN, move back.
+        mxos_flash_read( MXOS_PARTITION_RF_FIRMWARE, &offset, (uint8_t *)buf, READ_LEN);
+        offset -= READ_LEN; // mxos_flash_read will increase FlashAddress READ_LEN, move back.
         p = buf + (READ_LEN - 4)/sizeof(uint32_t);
         while(p >= buf) {
             if (*p != 0xFFFFFFFF) {
@@ -203,14 +203,14 @@ uint32_t platform_get_wifi_image(unsigned char* buffer, uint32_t size, uint32_t 
 {
     uint32_t buffer_size;
     uint32_t read_address = offset;
-    mxos_logic_partition_t *driver_partition = MxosFlashGetInfo( MXOS_PARTITION_RF_FIRMWARE );
+    mxos_logic_partition_t *driver_partition = mxos_flash_get_info( MXOS_PARTITION_RF_FIRMWARE );
     
     if( image_size == 0)
       image_size = driver_partition->partition_length;
     
     buffer_size = MIN(size, (image_size - offset));
 
-    MxosFlashRead( MXOS_PARTITION_RF_FIRMWARE, &read_address, buffer, buffer_size);
+    mxos_flash_read( MXOS_PARTITION_RF_FIRMWARE, &read_address, buffer, buffer_size);
     return buffer_size;
 }
 #endif

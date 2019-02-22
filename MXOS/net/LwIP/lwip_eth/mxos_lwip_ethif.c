@@ -87,7 +87,7 @@ void mxos_eth_add_dns_addr();
 const ip_addr_t *mxos_eth_get_ip_addr(bool any_addr);
 static const ip_addr_t *mxos_eth_get_ipv6_addr(void);
 
-extern OSStatus mxchipInit( void );
+extern OSStatus mxos_network_init( void );
 
 extern err_t eth_arch_enetif_init(struct netif *netif);
 extern void eth_arch_enable_interrupts(void);
@@ -107,7 +107,7 @@ static char lwip_mac_address[NSAPI_MAC_SIZE];
  *               Function Definitions
  ******************************************************/
 
-/* This function is called after void MxosInit(void) */
+/* This function is called after void mxos_network_init(void) */
 OSStatus mxos_eth_init( void )
 {
 
@@ -117,7 +117,7 @@ OSStatus mxos_eth_init( void )
         mxos_eth_set_mac_address();
 
         if (mxos_tcpip_stack_is_inited() == MXOS_FALSE) {
-            mxchipInit();
+            mxos_network_init();
         }
 
         memset(&lwip_netif, 0, sizeof lwip_netif);

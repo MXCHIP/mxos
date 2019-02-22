@@ -319,7 +319,7 @@ char* aws_notify_msg_create(system_context_t *context)
              "{\"FW\":\"%s\",\"HD\":\"%s\",\"PO\":\"%s\",\"RF\":\"%s\",\"MAC\":\"%s\",\"OS\":\"%s\",\"MD\":\"%s\",\"MF\":\"%s\"",
              FIRMWARE_REVISION, HARDWARE_REVISION, PROTOCOL,
              context->mxosStatus.rf_version, context->mxosStatus.mac,
-             MxosGetVer( ), MODEL, MANUFACTURER );
+             mxos_system_lib_version( ), MODEL, MANUFACTURER );
 
     sprintf(aws_notify_msg, "%s,\"wlan unconfigured\":\"F\"", aws_notify_msg);
 

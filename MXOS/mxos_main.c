@@ -125,7 +125,7 @@ void mxos_main( void )
 #ifndef ALIOS_SUPPORT
 #if MXOS_QUALITY_CONTROL_ENABLE
 #ifndef RTOS_mocOS
-    if ( MxosShouldEnterMFGMode( ) ) {
+    if ( mxos_should_enter_mfg_mode( ) ) {
         mxos_system_qc_test( );
         mxos_rtos_delete_thread(NULL);
         mxos_rtos_thread_yield();

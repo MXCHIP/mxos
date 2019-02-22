@@ -84,13 +84,13 @@
 #define u32    uint32_t
 
 //----------------- OLED PIN ----------------  	
-#define OLED_DC_INIT()     MxosGpioInitialize( (mxos_gpio_t)OLED_SPI_DC, OUTPUT_PUSH_PULL )  // in case spi flash is wrote
+#define OLED_DC_INIT()     mxos_gpio_init( (mxos_gpio_t)OLED_SPI_DC, OUTPUT_PUSH_PULL )  // in case spi flash is wrote
 
-#define OLED_CS_Clr()      MxosGpioOutputLow(OLED_SPI_CS)  //CS
-#define OLED_CS_Set()      MxosGpioOutputHigh(OLED_SPI_CS)
+#define OLED_CS_Clr()      mxos_gpio_output_low(OLED_SPI_CS)  //CS
+#define OLED_CS_Set()      mxos_gpio_output_high(OLED_SPI_CS)
 
-#define OLED_DC_Clr()      MxosGpioOutputLow(OLED_SPI_DC)  //DC
-#define OLED_DC_Set()      MxosGpioOutputHigh(OLED_SPI_DC)
+#define OLED_DC_Clr()      mxos_gpio_output_low(OLED_SPI_DC)  //DC
+#define OLED_DC_Set()      mxos_gpio_output_high(OLED_SPI_DC)
 
 #define OLED_RST_Clr()
 #define OLED_RST_Set()
@@ -99,11 +99,11 @@
 #define DATAOUT(x)           GPIO_Write(GPIOC,x);//���  
 //ʹ��4�ߴ��нӿ�ʱʹ�� 
 
-#define OLED_SCLK_Clr() MxosGpioOutputLow(OLED_SPI_SCK)  //CLK
-#define OLED_SCLK_Set() MxosGpioOutputHigh(OLED_SPI_SCK)
+#define OLED_SCLK_Clr() mxos_gpio_output_low(OLED_SPI_SCK)  //CLK
+#define OLED_SCLK_Set() mxos_gpio_output_high(OLED_SPI_SCK)
 
-#define OLED_SDIN_Clr() MxosGpioOutputLow(OLED_SPI_DIN)  //DIN
-#define OLED_SDIN_Set() MxosGpioOutputHigh(OLED_SPI_DIN)
+#define OLED_SDIN_Clr() mxos_gpio_output_low(OLED_SPI_DIN)  //DIN
+#define OLED_SDIN_Set() mxos_gpio_output_high(OLED_SPI_DIN)
 	     
 #define OLED_CMD  0	//д����
 #define OLED_DATA 1	//д����

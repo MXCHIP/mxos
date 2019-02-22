@@ -49,12 +49,12 @@
 
 void uart_putchar( int c )
 {
-    MxosUartSend( MXOS_STDIO_UART, &c, 1 );
+    mxos_uart_send( MXOS_STDIO_UART, &c, 1 );
 }
 
 int uart_getchar(char *inbuf, uint32_t timeout )
 {
-    if (MxosUartRecv( MXOS_STDIO_UART, inbuf, 1, timeout )!=kNoErr)
+    if (mxos_uart_recv( MXOS_STDIO_UART, inbuf, 1, timeout )!=kNoErr)
       return -1;
     else
       return 0;

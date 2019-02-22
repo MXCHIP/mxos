@@ -110,7 +110,7 @@ extern int main(int argc, char **argv);
 extern void mxos_rtos_stack_overflow(char *taskname);
 extern void mxos_board_init( void );
 extern void mxos_system_qc_test( void );
-extern bool MxosShouldEnterMFGMode(void);
+extern bool mxos_should_enter_mfg_mode(void);
 
 extern void mxos_main(void);
 extern void pre_main (void);

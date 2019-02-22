@@ -30,7 +30,7 @@ static bool _Led_EL_timer_initialized = false;
 static void _led_EL_Timeout_handler( void* arg )
 {
   (void)(arg);
-  MxosGpioOutputTrigger((mxos_gpio_t)MXOS_SYS_LED);
+  mxos_gpio_output_toggle((mxos_gpio_t)MXOS_SYS_LED);
 }
 
 WEAK void mxos_system_delegate_config_will_start( void )
@@ -62,7 +62,7 @@ WEAK void mxos_system_delegate_config_will_stop( void )
     mxos_deinit_timer( &_Led_EL_timer );
     _Led_EL_timer_initialized = false;
   }
-  MxosSysLed(true);
+  mxos_sys_led(true);
   return;
 }
 

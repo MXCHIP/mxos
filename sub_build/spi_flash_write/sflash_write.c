@@ -278,7 +278,7 @@ int main( void )
             unsigned long position = 0;
             position = pos + data_transfer.partition_offset;
             if ( 0
-                != MxosFlashRead( partition_remapping[data_transfer.partition], &position, data_transfer.data,
+                != mxos_flash_read( partition_remapping[data_transfer.partition], &position, data_transfer.data,
                                   (unsigned int) data_transfer.size ) )
             {
                 /* Read failed */
@@ -327,7 +327,7 @@ int main( void )
                 unsigned long position = 0;
                 position = pos + data_transfer.partition_offset;
                 if ( 0
-                    != MxosFlashRead( partition_remapping[data_transfer.partition], &position, Rx_Buffer,
+                    != mxos_flash_read( partition_remapping[data_transfer.partition], &position, Rx_Buffer,
                                       read_size ) )
                 {
                     /* Verify Error - Chip not erased properly */
@@ -377,7 +377,7 @@ int main( void )
                         (chip_size - pos > (unsigned long) sizeof(Rx_Buffer)) ?
                             (unsigned int) sizeof(Rx_Buffer) : (unsigned int) (chip_size - pos);
                     if ( 0
-                        != MxosFlashRead( partition_remapping[data_transfer.partition], &pos, Rx_Buffer, read_size ) )
+                        != mxos_flash_read( partition_remapping[data_transfer.partition], &pos, Rx_Buffer, read_size ) )
                     {
                         /* Verify Error - Chip not erased properly */
                         data_transfer.result = MFG_SPI_FLASH_RESULT_READ_FAILED;
@@ -417,7 +417,7 @@ int main( void )
                 unsigned long position = 0;
                 position = pos + data_transfer.partition_offset;
                 if ( 0
-                    != MxosFlashWrite( partition_remapping[data_transfer.partition], &position,
+                    != mxos_flash_write( partition_remapping[data_transfer.partition], &position,
                                        &data_transfer.data[pos], write_size ) )
                 {
                     /* Verify Error - Chip not erased properly */
@@ -441,11 +441,11 @@ int main( void )
 
 
             /* Force erase embedded flash once before program */
-            partition_info = MxosFlashGetInfo( partition_remapping[data_transfer.partition] );
+            partition_info = mxos_flash_get_info( partition_remapping[data_transfer.partition] );
             if(  platform_flash_peripherals[partition_info->partition_owner].flash_type == FLASH_TYPE_EMBEDDED && erase_once )
             {
                 flash_program_log( "Partition erase!" );
-                MxosFlashErase( partition_remapping[data_transfer.partition], 0x0, partition_info->partition_length);
+                mxos_flash_erase( partition_remapping[data_transfer.partition], 0x0, partition_info->partition_length);
                 erase_once = false;
             }
 
@@ -458,7 +458,7 @@ int main( void )
                 position = pos;
 
                 if ( 0
-                    != MxosFlashRead( partition_remapping[data_transfer.partition], &position, Rx_Buffer,
+                    != mxos_flash_read( partition_remapping[data_transfer.partition], &position, Rx_Buffer,
                                       (unsigned int) SECTOR_SIZE ) )
                 {
                     /* Verify Error - Chip not read properly */
@@ -479,7 +479,7 @@ int main( void )
                         uint32_t offset;
                         flash_program_log( "Erasing sector 0x%lx", pos );
                         offset = pos;
-                        if ( 0 != MxosFlashErase( partition_remapping[data_transfer.partition], offset, SECTOR_SIZE ) )
+                        if ( 0 != mxos_flash_erase( partition_remapping[data_transfer.partition], offset, SECTOR_SIZE ) )
                         {
                             /* Sector Erase Error - Chip not erased properly */
                             data_transfer.result = MFG_SPI_FLASH_RESULT_ERASE_FAILED;
@@ -492,7 +492,7 @@ int main( void )
 #ifdef DEBUG
                         memset(Rx_Buffer,0xa5,SECTOR_SIZE);
 #endif /* DEBUG */
-                        if ( 0 != MxosFlashRead( partition_remapping[data_transfer.partition], &position, Rx_Buffer,
+                        if ( 0 != mxos_flash_read( partition_remapping[data_transfer.partition], &position, Rx_Buffer,
                                                  (unsigned int) SECTOR_SIZE ) )
                         {
                             /* Verify Error - Chip not read properly */
@@ -519,7 +519,7 @@ int main( void )
                     position = pos;
                     flash_program_log("position is 0x%lx",position);
                     if ( 0
-                        != MxosFlashWrite( partition_remapping[data_transfer.partition], &position, Rx_Buffer,
+                        != mxos_flash_write( partition_remapping[data_transfer.partition], &position, Rx_Buffer,
                                            (unsigned int) SECTOR_SIZE ) )
                     {
                         /* Write Error - Chip not written properly */
@@ -552,7 +552,7 @@ int main( void )
                 unsigned long position;
                 position = pos + data_transfer.partition_offset;
                 if ( 0
-                    != MxosFlashRead( partition_remapping[data_transfer.partition], &position, Rx_Buffer,
+                    != mxos_flash_read( partition_remapping[data_transfer.partition], &position, Rx_Buffer,
                                       read_size ) )
                 {
                     /* Verify Error - Chip not erased properly */

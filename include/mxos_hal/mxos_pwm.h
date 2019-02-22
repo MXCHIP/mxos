@@ -40,6 +40,12 @@
 #include "platform_peripheral.h"
 #endif
 
+/* Legacy definitions */
+#define MxosPwmInitialize mxos_pwm_init
+#define MxosPwmStart mxos_pwm_start
+#define MxosPwmStop mxos_pwm_stop
+
+
 /** @addtogroup MXOS_PLATFORM
   * @{
   */
@@ -68,7 +74,7 @@ typedef int8_t mxos_pwm_t;   /**< MXOS PWM peripheral handle, MXOS_PWM_XX define
 /**@brief Initialises a PWM pin
  *
  * @note  Prepares a Pulse-Width Modulation pin for use.
- * Does not start the PWM output (use @ref MxosPwmStart).
+ * Does not start the PWM output (use @ref mxos_pwm_start).
  *
  * @param pwm        : the PWM interface which should be initialised
  * @param frequency  : Output signal frequency in Hertz
@@ -77,7 +83,7 @@ typedef int8_t mxos_pwm_t;   /**< MXOS PWM peripheral handle, MXOS_PWM_XX define
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus MxosPwmInitialize(mxos_pwm_t pwm, uint32_t frequency, float duty_cycle);
+OSStatus mxos_pwm_init(mxos_pwm_t pwm, uint32_t frequency, float duty_cycle);
 
 
 /**@brief Starts PWM output on a PWM interface
@@ -89,7 +95,7 @@ OSStatus MxosPwmInitialize(mxos_pwm_t pwm, uint32_t frequency, float duty_cycle)
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus MxosPwmStart(mxos_pwm_t pwm);
+OSStatus mxos_pwm_start(mxos_pwm_t pwm);
 
 
 /**@brief Stops output on a PWM pin
@@ -101,7 +107,7 @@ OSStatus MxosPwmStart(mxos_pwm_t pwm);
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus MxosPwmStop(mxos_pwm_t pwm);
+OSStatus mxos_pwm_stop(mxos_pwm_t pwm);
 
 /** @} */
 /** @} */

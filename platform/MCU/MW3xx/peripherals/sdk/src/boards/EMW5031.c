@@ -442,36 +442,36 @@ const platform_adc_t platform_adc_peripherals[] =
   },
 };
 
-bool MxosShouldEnterBootloader( void )
+bool mxos_should_enter_bootloader( void )
 {
-  if ((MxosGpioInputGet((mxos_gpio_t)BOOT_SEL) == false) &&
-	  (MxosGpioInputGet((mxos_gpio_t)EasyLink_BUTTON) == true) &&
-	  (MxosGpioInputGet((mxos_gpio_t)MFG_SEL) == true))
+  if ((mxos_gpio_input_get((mxos_gpio_t)BOOT_SEL) == false) &&
+	  (mxos_gpio_input_get((mxos_gpio_t)EasyLink_BUTTON) == true) &&
+	  (mxos_gpio_input_get((mxos_gpio_t)MFG_SEL) == true))
 	  return true;
   else
   	return false;
 }
 
-bool MxosShouldEnterMFGMode( void )
+bool mxos_should_enter_mfg_mode( void )
 {
-  if ((MxosGpioInputGet((mxos_gpio_t)BOOT_SEL) == false) &&
-	  (MxosGpioInputGet((mxos_gpio_t)MFG_SEL) == false))
+  if ((mxos_gpio_input_get((mxos_gpio_t)BOOT_SEL) == false) &&
+	  (mxos_gpio_input_get((mxos_gpio_t)MFG_SEL) == false))
 	  return true;
   else
   	return false;
 }
 
-bool MxosShouldEnterATEMode( void )
+bool mxos_should_enter_ate_mode( void )
 {
-  if ((MxosGpioInputGet((mxos_gpio_t)BOOT_SEL) == false) &&
-	  (MxosGpioInputGet((mxos_gpio_t)EasyLink_BUTTON) == false) &&
-	  (MxosGpioInputGet((mxos_gpio_t)MFG_SEL) == true))
+  if ((mxos_gpio_input_get((mxos_gpio_t)BOOT_SEL) == false) &&
+	  (mxos_gpio_input_get((mxos_gpio_t)EasyLink_BUTTON) == false) &&
+	  (mxos_gpio_input_get((mxos_gpio_t)MFG_SEL) == true))
 	  return true;
   else
   	return false;
 }
 
-void MxosRfLed(bool onoff)
+void mxos_rf_led(bool onoff)
 {
     
 }
@@ -506,23 +506,23 @@ static int gpio_test_one( int index)
     in  = gpio_test_mapping[index].input_pin;
     out = gpio_test_mapping[index].output_pin;
 
-    MxosGpioInitialize(in, INPUT_HIGH_IMPEDANCE);
-    MxosGpioInitialize(out, OUTPUT_PUSH_PULL);
+    mxos_gpio_init(in, INPUT_HIGH_IMPEDANCE);
+    mxos_gpio_init(out, OUTPUT_PUSH_PULL);
     
-    MxosGpioOutputHigh(out);
+    mxos_gpio_output_high(out);
     msleep(1);
-    if (MxosGpioInputGet(in) != true)
+    if (mxos_gpio_input_get(in) != true)
         goto EXIT;
     
-    MxosGpioOutputLow(out);
+    mxos_gpio_output_low(out);
     msleep(1);
-    if (MxosGpioInputGet(in) != false)
+    if (mxos_gpio_input_get(in) != false)
         goto EXIT;
 
     ret = 1;
 EXIT:    
-    MxosGpioInitialize(in, INPUT_HIGH_IMPEDANCE);
-    MxosGpioInitialize(out, INPUT_HIGH_IMPEDANCE);
+    mxos_gpio_init(in, INPUT_HIGH_IMPEDANCE);
+    mxos_gpio_init(out, INPUT_HIGH_IMPEDANCE);
     return ret;
 }
 

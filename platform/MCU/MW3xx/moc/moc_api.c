@@ -156,86 +156,86 @@ void wlan_set_channel(int channel)
 {
 	return lib_api_p->;
 } UART */
-mxos_logic_partition_t* MxosFlashGetInfo( mxos_partition_t inPartition )
+mxos_logic_partition_t* mxos_flash_get_info( mxos_partition_t inPartition )
 {
-	return lib_api_p->MxosFlashGetInfo(inPartition);
+	return lib_api_p->mxos_flash_get_info(inPartition);
 }
-OSStatus MxosFlashErase(mxos_partition_t inPartition, uint32_t off_set, uint32_t size)
+OSStatus mxos_flash_erase(mxos_partition_t inPartition, uint32_t off_set, uint32_t size)
 {
-	return lib_api_p->MxosFlashErase(inPartition, off_set, size);
+	return lib_api_p->mxos_flash_erase(inPartition, off_set, size);
 }
-OSStatus MxosFlashWrite( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength)
+OSStatus mxos_flash_write( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength)
 {
-	 lib_api_p->MxosFlashWrite(inPartition, off_set, inBuffer, inBufferLength);
+	 lib_api_p->mxos_flash_write(inPartition, off_set, inBuffer, inBufferLength);
 	 return 0;
 }
-OSStatus MxosFlashRead( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* outBuffer, uint32_t inBufferLength)
+OSStatus mxos_flash_read( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* outBuffer, uint32_t inBufferLength)
 {
-	return lib_api_p->MxosFlashRead(inPartition, off_set, outBuffer, inBufferLength);
+	return lib_api_p->mxos_flash_read(inPartition, off_set, outBuffer, inBufferLength);
 }
-OSStatus MxosFlashEnableSecurity( mxos_partition_t partition, uint32_t off_set, uint32_t size )
+OSStatus mxos_flash_enable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size )
 {
-	return lib_api_p->MxosFlashEnableSecurity(partition, off_set, size );
-}
-
-OSStatus MxosGpioInitialize( mxos_gpio_t gpio, mxos_gpio_config_t configuration )
-{
-	return lib_api_p->MxosGpioInitialize(gpio, configuration );
-}
-OSStatus MxosGpioFinalize( mxos_gpio_t gpio )
-{
-	return lib_api_p->MxosGpioFinalize(gpio);
-}
-OSStatus MxosGpioOutputHigh( mxos_gpio_t gpio )
-{
-	return lib_api_p->MxosGpioOutputHigh(gpio);
-}
-OSStatus MxosGpioOutputLow( mxos_gpio_t gpio )
-{
-	return lib_api_p->MxosGpioOutputLow(gpio);
-}
-OSStatus MxosGpioOutputTrigger( mxos_gpio_t gpio )
-{
-	return lib_api_p->MxosGpioOutputTrigger(gpio);
-}
-bool MxosGpioInputGet( mxos_gpio_t gpio )
-{
-	return lib_api_p->MxosGpioInputGet(gpio);
-}
-OSStatus MxosGpioEnableIRQ( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler, void* arg )
-{
-	return lib_api_p->MxosGpioEnableIRQ(gpio, trigger, handler, arg );
-}
-OSStatus MxosGpioDisableIRQ( mxos_gpio_t gpio )
-{
-	return lib_api_p->MxosGpioDisableIRQ(gpio);
+	return lib_api_p->mxos_flash_enable_security(partition, off_set, size );
 }
 
-OSStatus MxosUartInitialize( mxos_uart_t uart, const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer )
+OSStatus mxos_gpio_init( mxos_gpio_t gpio, mxos_gpio_config_t configuration )
 {
-	return lib_api_p->MxosUartInitialize(uart, config, optional_rx_buffer );
+	return lib_api_p->mxos_gpio_init(gpio, configuration );
+}
+OSStatus mxos_gpio_deinit( mxos_gpio_t gpio )
+{
+	return lib_api_p->mxos_gpio_deinit(gpio);
+}
+OSStatus mxos_gpio_output_high( mxos_gpio_t gpio )
+{
+	return lib_api_p->mxos_gpio_output_high(gpio);
+}
+OSStatus mxos_gpio_output_low( mxos_gpio_t gpio )
+{
+	return lib_api_p->mxos_gpio_output_low(gpio);
+}
+OSStatus mxos_gpio_output_toggle( mxos_gpio_t gpio )
+{
+	return lib_api_p->mxos_gpio_output_toggle(gpio);
+}
+bool mxos_gpio_input_get( mxos_gpio_t gpio )
+{
+	return lib_api_p->mxos_gpio_input_get(gpio);
+}
+OSStatus mxos_gpio_enable_irq( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler, void* arg )
+{
+	return lib_api_p->mxos_gpio_enable_irq(gpio, trigger, handler, arg );
+}
+OSStatus mxos_gpio_disable_irq( mxos_gpio_t gpio )
+{
+	return lib_api_p->mxos_gpio_disable_irq(gpio);
+}
+
+OSStatus mxos_uart_init( mxos_uart_t uart, const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer )
+{
+	return lib_api_p->mxos_uart_init(uart, config, optional_rx_buffer );
 }
 
 OSStatus mxos_stdio_uart_init( const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer )
 {
-    return lib_api_p->MxosUartInitialize(MXOS_STDIO_UART, config, optional_rx_buffer );
+    return lib_api_p->mxos_uart_init(MXOS_STDIO_UART, config, optional_rx_buffer );
 }
 
-OSStatus MxosUartFinalize( mxos_uart_t uart )
+OSStatus mxos_uart_deinit( mxos_uart_t uart )
 {
-	return lib_api_p->MxosUartFinalize(uart);
+	return lib_api_p->mxos_uart_deinit(uart);
 }
-OSStatus MxosUartSend( mxos_uart_t uart, const void* data, uint32_t size )
+OSStatus mxos_uart_send( mxos_uart_t uart, const void* data, uint32_t size )
 {
-	return lib_api_p->MxosUartSend(uart, data, size );
+	return lib_api_p->mxos_uart_send(uart, data, size );
 }
-OSStatus MxosUartRecv( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout )
+OSStatus mxos_uart_recv( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout )
 {
-	return lib_api_p->MxosUartRecv(uart, data, size, timeout );
+	return lib_api_p->mxos_uart_recv(uart, data, size, timeout );
 }
-uint32_t MxosUartGetLengthInBuffer( mxos_uart_t uart )
+uint32_t mxos_uart_recvd_data_len( mxos_uart_t uart )
 {
-	return lib_api_p->MxosUartGetLengthInBuffer(uart);
+	return lib_api_p->mxos_uart_recvd_data_len(uart);
 }
 OSStatus MxosUartPinRedirect( mxos_uart_t uart )
 {
@@ -302,9 +302,9 @@ void driver_state_Command(char *pcWriteBuffer, int xWriteBufferLen, int argc, ch
 	lib_api_p->driver_state_Command(pcWriteBuffer, xWriteBufferLen, argc, argv);
 }
 
-int wlan_driver_version( char* outVersion, uint8_t inLength )
+int mxos_wlan_driver_version( char* outVersion, uint8_t inLength )
 {
-	return lib_api_p->wlan_driver_version(outVersion, inLength);
+	return lib_api_p->mxos_wlan_driver_version(outVersion, inLength);
 }
 
 void mxos_wlan_get_mac_address( uint8_t *mac )
@@ -368,9 +368,9 @@ int  AesCbcDecrypt(Aes* aes, uint8_t* out,
 	return lib_api_p->AesCbcDecrypt(aes, out, in, sz);
 }
 
-OSStatus mxchipInit(void)
+OSStatus mxos_network_init(void)
 {
-	lib_api_p->mxchipInit();
+	lib_api_p->mxos_network_init();
 	return kNoErr;
 }
 
@@ -378,14 +378,14 @@ mxosMemInfo_t* mxos_memory_info(void)
 {
 	return lib_api_p->mxos_memory_info();
 }
-char* system_lib_version(void)
+char* mxos_system_lib_version(void)
 {
     return lib_api_p->library_version;
 }
 
-void MxosSystemReboot(void)
+void mxos_sys_reboot(void)
 {
-	lib_api_p->MxosSystemReboot();
+	lib_api_p->mxos_sys_reboot();
 }
 
 char *mxos_get_bootloader_ver(void)
@@ -393,7 +393,7 @@ char *mxos_get_bootloader_ver(void)
 	return "bootloader";
 }
 
-void MxosSystemStandBy( uint32_t secondsToWakeup )
+void mxos_sys_standby( uint32_t secondsToWakeup )
 {
   lib_api_p->wifi_off_mcu_standby(secondsToWakeup);
 }
@@ -408,19 +408,19 @@ char *get_ali_secret(void)
 	return lib_api_p->get_ali_secret();
 }
 
-void MxosRtcInitialize(void)
+void mxos_rtc_init(void)
 {
-	lib_api_p->MxosRtcInitialize();
+	lib_api_p->mxos_rtc_init();
 }
 
-OSStatus MxosRtcGetTime(time_t* time)
+OSStatus mxos_rtc_get_time(time_t* time)
 {
-	return lib_api_p->MxosRtcGetTime(time);
+	return lib_api_p->mxos_rtc_get_time(time);
 }
 
-OSStatus MxosRtcSetTime(time_t time)
+OSStatus mxos_rtc_set_time(time_t time)
 {
-	return lib_api_p->MxosRtcSetTime(time);
+	return lib_api_p->mxos_rtc_set_time(time);
 }
 
 #if defined ( __ICCARM__ )
@@ -548,32 +548,32 @@ lwip_ntohl(uint32_t n)
   return lwip_htonl(n);
 }
 
-OSStatus MxosPwmInitialize(mxos_pwm_t pwm, uint32_t freequency, float duty_cycle)
+OSStatus mxos_pwm_init(mxos_pwm_t pwm, uint32_t freequency, float duty_cycle)
 {
 	return lib_api_p->pwm_apis->pwm_init(pwm, freequency, duty_cycle);
 }
 
-OSStatus MxosPwmStart(mxos_pwm_t pwm)
+OSStatus mxos_pwm_start(mxos_pwm_t pwm)
 {
 	return lib_api_p->pwm_apis->pwm_start(pwm);
 }
 
-OSStatus MxosPwmStop(mxos_pwm_t pwm)
+OSStatus mxos_pwm_stop(mxos_pwm_t pwm)
 {
 	return lib_api_p->pwm_apis->pwm_stop(pwm);
 }
 
-OSStatus MxosWdgInitialize( uint32_t timeout )
+OSStatus mxos_wdg_init( uint32_t timeout )
 {
 	return lib_api_p->wdg_apis->wdg_init(timeout);
 }
 
-void MxosWdgReload( void )
+void mxos_wdg_reload( void )
 {
 	lib_api_p->wdg_apis->wdg_reload();
 }
 
-OSStatus MxosWdgFinalize( void )
+OSStatus mxos_wdg_deinit( void )
 {
 	return lib_api_p->wdg_apis->wdg_stop();
 }
@@ -583,27 +583,27 @@ int Cyassl_get_fd(const void *ssl)
 	return lib_api_p->ssl_get_fd(ssl);
 }
 
-OSStatus MxosAdcInitialize( mxos_adc_t adc, uint32_t sampling_cycle )
+OSStatus mxos_adc_init( mxos_adc_t adc, uint32_t sampling_cycle )
 {
-	return lib_api_p->adc_apis->MxosAdcInitialize(adc, sampling_cycle);
+	return lib_api_p->adc_apis->mxos_adc_init(adc, sampling_cycle);
 }
 
-OSStatus  MxosAdcFinalize( mxos_adc_t adc )
+OSStatus  mxos_adc_deinit( mxos_adc_t adc )
 {
-    return lib_api_p->adc_apis->MxosAdcFinalize(adc);
+    return lib_api_p->adc_apis->mxos_adc_deinit(adc);
 }
 
-OSStatus MxosAdcTakeSample( mxos_adc_t adc, uint16_t* output )
+OSStatus mxos_adc_take_sample( mxos_adc_t adc, uint16_t* output )
 {
-    return lib_api_p->adc_apis->MxosAdcTakeSample(adc, output);
+    return lib_api_p->adc_apis->mxos_adc_take_sample(adc, output);
 }
 
-OSStatus MxosAdcTakeSampleStreram( mxos_adc_t adc, void* buffer, uint16_t buffer_length )
+OSStatus mxos_adc_take_sampleStreram( mxos_adc_t adc, void* buffer, uint16_t buffer_length )
 {
-    return lib_api_p->adc_apis->MxosAdcTakeSampleStreram(adc, buffer, buffer_length);
+    return lib_api_p->adc_apis->mxos_adc_take_sampleStreram(adc, buffer, buffer_length);
 }
 
-OSStatus MxosI2cInitialize( mxos_i2c_device_t* device )
+OSStatus mxos_i2c_init( mxos_i2c_device_t* device )
 {
     OSStatus result;
 
@@ -616,7 +616,7 @@ OSStatus MxosI2cInitialize( mxos_i2c_device_t* device )
     return result;
 }
 
-OSStatus MxosI2cFinalize( mxos_i2c_device_t* device )
+OSStatus mxos_i2c_deinit( mxos_i2c_device_t* device )
 {
     if( platform_i2c_drivers[device->port].i2c_mutex != NULL){
       mxos_rtos_deinit_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
@@ -626,7 +626,7 @@ OSStatus MxosI2cFinalize( mxos_i2c_device_t* device )
     return lib_api_p->i2c_apis->i2c_deinit(device);
 }
 
-bool MxosI2cProbeDevice( mxos_i2c_device_t* device, int retries )
+bool mxos_i2c_probe_dev( mxos_i2c_device_t* device, int retries )
 {
     bool ret;
 
@@ -636,23 +636,23 @@ bool MxosI2cProbeDevice( mxos_i2c_device_t* device, int retries )
     return ret;
 }
 
-OSStatus MxosI2cBuildTxMessage( mxos_i2c_message_t* message, const void* tx_buffer, uint16_t  tx_buffer_length, uint16_t retries )
+OSStatus mxos_i2c_build_tx_msg( mxos_i2c_message_t* message, const void* tx_buffer, uint16_t  tx_buffer_length, uint16_t retries )
 {
     return lib_api_p->i2c_apis->i2c_build_tx_msg(message, tx_buffer, tx_buffer_length, retries );
 }
 
-OSStatus MxosI2cBuildRxMessage( mxos_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length, uint16_t retries )
+OSStatus mxos_i2c_build_rx_msg( mxos_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length, uint16_t retries )
 {
 	return lib_api_p->i2c_apis->i2c_build_rx_msg(message, rx_buffer, rx_buffer_length, retries );
 }
 
-OSStatus MxosI2cBuildCombinedMessage( mxos_i2c_message_t* message, const void* tx_buffer, void* rx_buffer, uint16_t tx_buffer_length, uint16_t rx_buffer_length, uint16_t retries )
+OSStatus mxos_i2c_build_comb_msg( mxos_i2c_message_t* message, const void* tx_buffer, void* rx_buffer, uint16_t tx_buffer_length, uint16_t rx_buffer_length, uint16_t retries )
 {
 	return lib_api_p->i2c_apis->i2c_build_combined_msg(message, tx_buffer, rx_buffer,
 										tx_buffer_length, rx_buffer_length, retries );
 }
 
-OSStatus MxosI2cTransfer( mxos_i2c_device_t* device, mxos_i2c_message_t* messages, uint16_t number_of_messages )
+OSStatus mxos_i2c_transfer( mxos_i2c_device_t* device, mxos_i2c_message_t* messages, uint16_t number_of_messages )
 {
     OSStatus err = kNoErr;
 
@@ -663,7 +663,7 @@ OSStatus MxosI2cTransfer( mxos_i2c_device_t* device, mxos_i2c_message_t* message
     return err;
 }
 
-OSStatus MxosSpiInitialize( const mxos_spi_device_t* spi )
+OSStatus mxos_spi_init( const mxos_spi_device_t* spi )
 {
     // if ( platform_spi_drivers[spi->port].initialized == MXOS_TRUE )
     //     return kNoErr;
@@ -672,12 +672,12 @@ OSStatus MxosSpiInitialize( const mxos_spi_device_t* spi )
     return kNoErr;
 }
 
-OSStatus MxosSpiFinalize( const mxos_spi_device_t* spi )
+OSStatus mxos_spi_deinit( const mxos_spi_device_t* spi )
 {
     return lib_api_p->spi_apis->spi_finalize(spi);
 }
 
-OSStatus MxosSpiTransfer( const mxos_spi_device_t* spi, const mxos_spi_message_segment_t* segments, uint16_t number_of_segments )
+OSStatus mxos_spi_transfer( const mxos_spi_device_t* spi, const mxos_spi_message_segment_t* segments, uint16_t number_of_segments )
 {
 	return lib_api_p->spi_apis->spi_transfer(spi, segments, number_of_segments );
 }
@@ -709,7 +709,7 @@ OSStatus mxos_wlan_send_mgnt(uint8_t *buffer, uint32_t length)
 }
 
 /* 3031 MCU power save mode set to PM2 */
-void MxosMcuPowerSaveConfig(int enable)
+void mxos_mcu_powersave_config(int enable)
 {
     if (enable) {
         lib_api_p->pm_mcu_cfg(true, PM2, 10);// auto go to sleep mode if sleep time bigger than 10ms.
@@ -784,27 +784,27 @@ int send_easylink_minus(uint32_t ip, char *ssid, char *key)
 	return lib_api_p->send_easylink_minus(ip, ssid, key);
 }
 
-OSStatus MxosIISInitialize( const mxos_iis_device_t* iis )
+OSStatus mxos_i2s_init( const mxos_iis_device_t* iis )
 {
   	return lib_api_p->iis_apis->iis_init(iis);
 }
 
-OSStatus MxosIISFinalize( const mxos_iis_device_t* iis )
+OSStatus mxos_i2s_deinit( const mxos_iis_device_t* iis )
 {
     return lib_api_p->iis_apis->iis_finalize(iis);
 }
 
-OSStatus MxosIISTransfer( const mxos_iis_device_t* iis, const mxos_iis_message_segment_t* segments, uint16_t number_of_segments )
+OSStatus mxos_i2s_transfer( const mxos_iis_device_t* iis, const mxos_iis_message_segment_t* segments, uint16_t number_of_segments )
 {
 	return lib_api_p->iis_apis->iis_transfer(iis,segments,number_of_segments);
 }
 
-OSStatus MxosIISWrite( const mxos_iis_device_t* iis, uint8_t *p_buf, uint32_t size )
+OSStatus mxos_i2s_write( const mxos_iis_device_t* iis, uint8_t *p_buf, uint32_t size )
 {
 	return lib_api_p->iis_apis->iis_write(iis, p_buf, size);
 }
 
-OSStatus MxosIISRead( const mxos_iis_device_t* iis, uint8_t *p_buf, uint32_t size )
+OSStatus mxos_i2s_read( const mxos_iis_device_t* iis, uint8_t *p_buf, uint32_t size )
 {
 	return lib_api_p->iis_apis->iis_read(iis, p_buf, size);
 }

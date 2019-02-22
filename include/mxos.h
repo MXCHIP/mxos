@@ -69,9 +69,9 @@ extern "C" {
 #endif
 
 
-#define MxosGetRfVer                wlan_driver_version
-#define MxosGetVer                  system_lib_version
-#define MxosInit                    mxchipInit
+#define MxosGetRfVer                mxos_wlan_driver_version
+#define MxosGetVer                  mxos_system_lib_version
+#define MxosInit                    mxos_network_init
 
 /** @defgroup MXOS_Core_APIs MXOS Core APIs
   * @brief MXOS Initialization, RTOS, TCP/IP stack, and Network Management
@@ -107,7 +107,7 @@ extern "C" {
   *
   * @return int
   */
-int MxosGetRfVer( char* outVersion, uint8_t inLength );
+int mxos_wlan_driver_version( char* outVersion, uint8_t inLength );
 
 /**
   * @brief  Get MXOS's version.
@@ -116,7 +116,7 @@ int MxosGetRfVer( char* outVersion, uint8_t inLength );
   *
   * @return Point to the MXOS's version string.
   */
-char* MxosGetVer( void );
+char* mxos_system_lib_version( void );
 
 /**
   * @brief  Initialize the TCPIP stack thread, RF driver thread, and other
@@ -127,7 +127,7 @@ char* MxosGetVer( void );
   *
   * @return kNoErr: success, kGeneralErr: fail
   */
-OSStatus MxosInit( void );
+OSStatus mxos_network_init( void );
 
 
 /**

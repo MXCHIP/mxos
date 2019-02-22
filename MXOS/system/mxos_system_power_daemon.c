@@ -48,14 +48,14 @@ static OSStatus _sys_power_state_change_handler(void *arg)
     case eState_Normal:
       break;
     case eState_Software_Reset:
-      MxosSystemReboot( );
+      mxos_sys_reboot( );
       break;
     case eState_Wlan_Powerdown:
       mxosWlanPowerOff( );
       break;
     case eState_Standby:
       mxosWlanPowerOff( );
-      MxosSystemStandBy( MXOS_WAIT_FOREVER );
+      mxos_sys_standby( MXOS_WAIT_FOREVER );
       break;
     default:
       break;

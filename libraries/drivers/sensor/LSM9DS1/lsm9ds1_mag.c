@@ -88,10 +88,10 @@ mxos_i2c_device_t lsm9ds1_mag_i2c_device = {
 static OSStatus LSM9DS1_MAG_IO_Init(void)
 {
   // I2C init
-  MxosI2cFinalize(&lsm9ds1_mag_i2c_device);   // in case error
-  MxosI2cInitialize(&lsm9ds1_mag_i2c_device);
+  mxos_i2c_deinit(&lsm9ds1_mag_i2c_device);   // in case error
+  mxos_i2c_init(&lsm9ds1_mag_i2c_device);
   
-  if( false == MxosI2cProbeDevice(&lsm9ds1_mag_i2c_device, 5) ){
+  if( false == mxos_i2c_probe_dev(&lsm9ds1_mag_i2c_device, 5) ){
     lsm9ds1_mag_log("LSM9DS1_MAG_ERROR: no i2c device found!");
     return kNotInitializedErr;
   }
@@ -118,8 +118,8 @@ static OSStatus LSM9DS1_MAG_IO_Write(uint8_t* pBuffer, uint8_t RegisterAddr, uin
     array[stringpos + 1] = *(pBuffer + stringpos);
   }
   
-  iError = MxosI2cBuildTxMessage(&lsm9ds1_mag_i2c_msg, array, NumByteToWrite + 1, 3);
-  iError = MxosI2cTransfer(&lsm9ds1_mag_i2c_device, &lsm9ds1_mag_i2c_msg, 1);
+  iError = mxos_i2c_build_tx_msg(&lsm9ds1_mag_i2c_msg, array, NumByteToWrite + 1, 3);
+  iError = mxos_i2c_transfer(&lsm9ds1_mag_i2c_device, &lsm9ds1_mag_i2c_msg, 1);
   if(kNoErr != iError){
     iError = kWriteErr;
   }
@@ -141,11 +141,11 @@ static OSStatus LSM9DS1_MAG_IO_Read(uint8_t* pBuffer, uint8_t RegisterAddr, uint
   uint8_t array[8] = {0};
   array[0] = RegisterAddr;
   
-  iError = MxosI2cBuildCombinedMessage(&lsm9ds1_mag_i2c_msg, array, pBuffer, 1, NumByteToRead, 3);
+  iError = mxos_i2c_build_comb_msg(&lsm9ds1_mag_i2c_msg, array, pBuffer, 1, NumByteToRead, 3);
   if(kNoErr != iError){
     return kReadErr; 
   }
-  iError = MxosI2cTransfer(&lsm9ds1_mag_i2c_device, &lsm9ds1_mag_i2c_msg, 1);
+  iError = mxos_i2c_transfer(&lsm9ds1_mag_i2c_device, &lsm9ds1_mag_i2c_msg, 1);
   if(kNoErr != iError){
     return kReadErr;
   }
@@ -259,5 +259,5 @@ OSStatus lsm9ds1_mag_sensor_deinit(void)
     return err;
   }
   
-  return MxosI2cFinalize(&lsm9ds1_mag_i2c_device);
+  return mxos_i2c_deinit(&lsm9ds1_mag_i2c_device);
 }

@@ -40,9 +40,9 @@ OSStatus APDS9930_I2C_bus_write(uint8_t reg_addr, uint8_t *reg_data, uint8_t cnt
           array[stringpos + 1] = *(reg_data + stringpos);
   }
 
-  err = MxosI2cBuildTxMessage(&apds_i2c_msg, array, cnt + 1, 3);
+  err = mxos_i2c_build_tx_msg(&apds_i2c_msg, array, cnt + 1, 3);
   require_noerr( err, exit );
-  err = MxosI2cTransfer(&apds_i2c_device, &apds_i2c_msg, 1);
+  err = mxos_i2c_transfer(&apds_i2c_device, &apds_i2c_msg, 1);
   require_noerr( err, exit );
   
 exit:  
@@ -54,9 +54,9 @@ OSStatus APDS9930_I2C_bus_read(uint8_t *reg_data, uint8_t cnt)
   OSStatus err = kNoErr;
   mxos_i2c_message_t apds_i2c_msg = {NULL, NULL, 0, 0, 0, false};
 
-  err = MxosI2cBuildRxMessage(&apds_i2c_msg, reg_data, cnt, 3);
+  err = mxos_i2c_build_rx_msg(&apds_i2c_msg, reg_data, cnt, 3);
   require_noerr( err, exit );
-  err = MxosI2cTransfer(&apds_i2c_device, &apds_i2c_msg, 1);
+  err = mxos_i2c_transfer(&apds_i2c_device, &apds_i2c_msg, 1);
   require_noerr( err, exit );
 
 exit:
@@ -111,8 +111,8 @@ OSStatus apds9930_data_readout(uint16_t *Prox_data, uint16_t *Lux_data)
   float B = 1.862, C = 0.746, D = 1.296, ALSIT = 400, AGAIN = 1;
   float LPC = 0;
   
-  err = MxosI2cInitialize(&apds_i2c_device);
-  require_noerr_action( err, exit, apds9930_log("APDS9930_ERROR: MxosI2cInitialize err = %d.", err) );
+  err = mxos_i2c_init(&apds_i2c_device);
+  require_noerr_action( err, exit, apds9930_log("APDS9930_ERROR: mxos_i2c_init err = %d.", err) );
   
   err = APDS9930_Read_RegData(STATUS_ADDR, &status);
   require_noerr( err, exit );
@@ -158,13 +158,13 @@ OSStatus apds9930_sensor_init(void)
   OSStatus err = kNoErr;
   uint8_t device_id;
   
-  MxosI2cFinalize(&apds_i2c_device); 
+  mxos_i2c_deinit(&apds_i2c_device); 
   
   /*int apds9930 sensor i2c device*/
-  err = MxosI2cInitialize(&apds_i2c_device);
-  require_noerr_action( err, exit, apds9930_log("APDS9930_ERROR: MxosI2cInitialize err = %d.", err) );
+  err = mxos_i2c_init(&apds_i2c_device);
+  require_noerr_action( err, exit, apds9930_log("APDS9930_ERROR: mxos_i2c_init err = %d.", err) );
   
-  if( false == MxosI2cProbeDevice(&apds_i2c_device, 5) ){
+  if( false == mxos_i2c_probe_dev(&apds_i2c_device, 5) ){
     apds9930_log("APDS9930_ERROR: no i2c device found!");
     err = kNotFoundErr;
     goto exit;
@@ -191,8 +191,8 @@ OSStatus apds9930_sensor_deinit(void)
 {
   OSStatus err = kUnknownErr;
   
-  err = MxosI2cFinalize(&apds_i2c_device);
-  require_noerr_action( err, exit, apds9930_log("APDS9930_ERROR: MxosI2cFinalize err = %d.", err));
+  err = mxos_i2c_deinit(&apds_i2c_device);
+  require_noerr_action( err, exit, apds9930_log("APDS9930_ERROR: mxos_i2c_deinit err = %d.", err));
   
 exit:
   return err;

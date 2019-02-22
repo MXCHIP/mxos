@@ -40,7 +40,7 @@ void mxos_system_monitor_thread_main( uint32_t arg );
 OSStatus MXOSStartSystemMonitor ( void )
 {
   OSStatus err = kNoErr;
-  require_noerr(MxosWdgInitialize( DEFAULT_SYSTEM_MONITOR_PERIOD + 1000 ), exit);
+  require_noerr(mxos_wdg_init( DEFAULT_SYSTEM_MONITOR_PERIOD + 1000 ), exit);
   memset(system_monitors, 0, sizeof(system_monitors));
 
   err = mxos_rtos_create_thread(NULL, 0, "SYS MONITOR", mxos_system_monitor_thread_main, STACK_SIZE_mxos_system_MONITOR_THREAD, 0 );
@@ -65,13 +65,13 @@ void mxos_system_monitor_thread_main( uint32_t arg )
         if ((current_time - system_monitors[a]->last_update) > system_monitors[a]->longest_permitted_delay)
         {
           /* A system monitor update period has been missed */
-          MxosSystemReboot();
+          mxos_sys_reboot();
           while(1);
         }
       }
     }
     
-    MxosWdgReload();
+    mxos_wdg_reload();
     mxos_thread_msleep(DEFAULT_SYSTEM_MONITOR_PERIOD);
   }
 }

@@ -55,7 +55,7 @@ static void _bonjour_generate_txt_record( char *txt_record, uint16_t txt_record_
     snprintf( txt_record, txt_record_len, "%sMAC=%s.", txt_record, val );
     free( val );
 
-    val = __strdup_trans_dot( MxosGetVer( ) );
+    val = __strdup_trans_dot( mxos_system_lib_version( ) );
     snprintf( txt_record, txt_record_len, "%sOS=%s.", txt_record, val );
     free( val );
 

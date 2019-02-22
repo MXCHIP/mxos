@@ -46,7 +46,7 @@ extern "C" {
 
 
 /**
- * @brief  Check TCPIP stack is initialized or not, TCPIP can be initialized by MxosInit()
+ * @brief  Check TCPIP stack is initialized or not, TCPIP can be initialized by mxos_init()
  *
  * @param  None
  *

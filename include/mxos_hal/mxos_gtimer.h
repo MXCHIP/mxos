@@ -40,6 +40,11 @@
 #include "platform_peripheral.h"
 #endif
 
+/* Legacy definitions */
+#define MxosGtimerInitialize mxos_gtimer_init
+#define MxosGtimerStart mxos_gtimer_start
+#define MxosGtimerStop mxos_gtimer_stop
+
 /** @addtogroup MXOS_PLATFORM
   * @{
   */
@@ -67,11 +72,11 @@ typedef int8_t mxos_gtimer_t;
  *                 Function Declarations
  ******************************************************/
 
-OSStatus MxosGtimerInitialize(mxos_gtimer_t timer);
+OSStatus mxos_gtimer_init(mxos_gtimer_t timer);
 
-OSStatus MxosGtimerStart(mxos_gtimer_t timer, mxos_gtimer_mode_t mode, uint32_t time, mxos_gtimer_irq_callback_t function, void *arg);
+OSStatus mxos_gtimer_start(mxos_gtimer_t timer, mxos_gtimer_mode_t mode, uint32_t time, mxos_gtimer_irq_callback_t function, void *arg);
 
-OSStatus MxosGtimerStop(mxos_gtimer_t timer);
+OSStatus mxos_gtimer_stop(mxos_gtimer_t timer);
 
 /** @} */
 /** @} */

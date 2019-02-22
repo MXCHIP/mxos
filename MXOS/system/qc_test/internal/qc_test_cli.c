@@ -32,12 +32,12 @@ static char cmd_str[64];
 
 void mf_printf(char *str)
 {
-  MxosUartSend( MXOS_MFG_TEST, str, strlen(str));
+  mxos_uart_send( MXOS_MFG_TEST, str, strlen(str));
 }
 
 void mf_putc(char ch)
 {
-  MxosUartSend( MXOS_MFG_TEST, &ch, 1);
+  mxos_uart_send( MXOS_MFG_TEST, &ch, 1);
 }
 
 int mf_get_line( char** p_cmd_str )
@@ -56,7 +56,7 @@ int mf_get_line( char** p_cmd_str )
 
   memset(cmd_str, 0, sizeof(cmd_str));
   while(1) {
-    if( MxosUartRecv( MXOS_MFG_TEST, p, 1, 100) != kNoErr)
+    if( mxos_uart_recv( MXOS_MFG_TEST, p, 1, 100) != kNoErr)
       continue;
 
     mf_putc(*p);

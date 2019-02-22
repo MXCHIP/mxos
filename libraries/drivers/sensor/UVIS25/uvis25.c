@@ -32,10 +32,10 @@ mxos_i2c_device_t uvis25_i2c_device = {
 OSStatus UVIS25_IO_Init(void)
 {
   // I2C init
-  MxosI2cFinalize(&uvis25_i2c_device);   // in case error
-  MxosI2cInitialize(&uvis25_i2c_device);
+  mxos_i2c_deinit(&uvis25_i2c_device);   // in case error
+  mxos_i2c_init(&uvis25_i2c_device);
 
-  if( false == MxosI2cProbeDevice(&uvis25_i2c_device, 5) ){
+  if( false == mxos_i2c_probe_dev(&uvis25_i2c_device, 5) ){
     uvis25_log("UVI25S_ERROR: no i2c device found!");
     return kNotInitializedErr;
   }
@@ -62,8 +62,8 @@ OSStatus UVIS25_IO_Write(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByt
     array[stringpos + 1] = *(pBuffer + stringpos);
   }
   
-  iError = MxosI2cBuildTxMessage(&uvis25_i2c_msg, array, NumByteToWrite + 1, 3);
-  iError = MxosI2cTransfer(&uvis25_i2c_device, &uvis25_i2c_msg, 1);
+  iError = mxos_i2c_build_tx_msg(&uvis25_i2c_msg, array, NumByteToWrite + 1, 3);
+  iError = mxos_i2c_transfer(&uvis25_i2c_device, &uvis25_i2c_msg, 1);
   if(kNoErr != iError){
     iError = kWriteErr;
   }
@@ -85,11 +85,11 @@ OSStatus UVIS25_IO_Read(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByte
   uint8_t array[8] = {0};
   array[0] = RegisterAddr;
   
-  iError = MxosI2cBuildCombinedMessage(&uvis25_i2c_msg, array, pBuffer, 1, NumByteToRead, 3);
+  iError = mxos_i2c_build_comb_msg(&uvis25_i2c_msg, array, pBuffer, 1, NumByteToRead, 3);
   if(kNoErr != iError){
     return kReadErr; 
   }
-  iError = MxosI2cTransfer(&uvis25_i2c_device, &uvis25_i2c_msg, 1);
+  iError = mxos_i2c_transfer(&uvis25_i2c_device, &uvis25_i2c_msg, 1);
   if(kNoErr != iError){
     return kReadErr;
   }
@@ -145,6 +145,6 @@ OSStatus uvis25_Read_Data(float *uv_index)
 
 OSStatus uvis25_sensor_deinit(void)
 {
-  return MxosI2cFinalize(&uvis25_i2c_device);
+  return mxos_i2c_deinit(&uvis25_i2c_device);
 }
 

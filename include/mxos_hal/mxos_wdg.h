@@ -87,7 +87,7 @@
 /**
  * @biref This function will initialize the on board CPU hardware watch dog
  *
- * @param timeout        : Watchdag timeout, application should call MxosWdgReload befor timeout.
+ * @param timeout        : Watchdag timeout, application should call mxos_wdg_reload befor timeout.
  *
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step

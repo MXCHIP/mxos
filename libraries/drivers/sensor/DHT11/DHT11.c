@@ -22,7 +22,7 @@
 
 void Delay_us(uint32_t nus)
 { 
-  MxosNanosendDelay( 1000*nus );
+  mxos_nanosecond_delay( 1000*nus );
 }
 
 void Delay_ms(uint16_t nms)

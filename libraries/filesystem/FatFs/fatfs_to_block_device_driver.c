@@ -194,7 +194,7 @@ DRESULT disk_ioctl(
     /* Handle the various IOCTL's */
     mxos_block_device_t* device = (mxos_block_device_t*) user_data;
     mxos_logic_partition_t *fatfs_partition;
-    fatfs_partition = MxosFlashGetInfo( MXOS_PARTITION_FILESYS );
+    fatfs_partition = mxos_flash_get_info( MXOS_PARTITION_FILESYS );
 
     switch ( cmd )
     {

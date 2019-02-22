@@ -52,14 +52,14 @@ static void mxosNotify_WlanFatalErrHandler(system_context_t * const inContext)
 {
   (void)inContext;
   system_log("Wlan Fatal Err!");
-  MxosSystemReboot();
+  mxos_sys_reboot();
 }
 
 static void mxosNotify_StackOverflowErrHandler(char *taskname, system_context_t * const inContext)
 {
   (void)inContext;
   system_log("Thread %s overflow, system rebooting", taskname);
-  MxosSystemReboot();
+  mxos_sys_reboot();
 }
 
 static void mxosNotify_WifiStatusHandler(WiFiEvent event, system_context_t * const inContext)
@@ -68,19 +68,19 @@ static void mxosNotify_WifiStatusHandler(WiFiEvent event, system_context_t * con
   switch (event) {
   case NOTIFY_STATION_UP:
     system_log("Station up");
-    MxosRfLed(true);
+    mxos_rf_led(true);
     break;
   case NOTIFY_STATION_DOWN:
     system_log("Station down");
-    MxosRfLed(false);
+    mxos_rf_led(false);
     break;
   case NOTIFY_AP_UP:
     system_log("uAP established");
-    MxosRfLed(true);
+    mxos_rf_led(true);
     break;
   case NOTIFY_AP_DOWN:
     system_log("uAP deleted");
-    MxosRfLed(false);
+    mxos_rf_led(false);
     break;
   case NOTIFY_ETH_UP:
     system_log("ETH up");
@@ -219,22 +219,22 @@ OSStatus system_network_daemen_start( system_context_t * const inContext )
   IPStatusTypedef para;
   uint8_t major, minor, revision;
 
-  MxosInit();
-  MxosSysLed(true);
+  mxos_network_init();
+  mxos_sys_led(true);
   mxosWlanGetIPStatus(&para, Station);
   formatMACAddr(inContext->mxosStatus.mac, (char *)&para.mac);
-  MxosGetRfVer(inContext->mxosStatus.rf_version, sizeof(inContext->mxosStatus.rf_version));
+  mxos_wlan_driver_version(inContext->mxosStatus.rf_version, sizeof(inContext->mxosStatus.rf_version));
   inContext->mxosStatus.rf_version[49] = 0x0;
 
   system_log("Author name: %s , email: %s", MXOS_OS_USER_NAME, MXOS_OS_USER_EMAIL );
   system_log("GCC version: %s", CC_VERSION );
   
   system_log("MXOS version: %s", MXOS_OS_VERSION );
-  system_log("Kernel version: %s", MxosGetVer());
+  system_log("Kernel version: %s", mxos_system_lib_version());
   system_log("Wi-Fi driver version %s", inContext->mxosStatus.rf_version);
   system_log("Wi-Fi mac address: %s", inContext->mxosStatus.mac);
 
-  system_log("Free memory %d bytes", MxosGetMemoryInfo()->free_memory); 
+  system_log("Free memory %d bytes", mxos_get_mem_info()->free_memory); 
 
 #if PLATFORM_ETH_ENABLE
   mxos_eth_bringup(true, NULL, NULL, NULL);
@@ -246,7 +246,7 @@ OSStatus system_network_daemen_start( system_context_t * const inContext )
   }
 
   if(inContext->flashContentInRam.mxosSystemConfig.mcuPowerSaveEnable == true){
-    MxosMcuPowerSaveConfig(true);
+    mxos_mcu_powersave_config(true);
   }  
   return kNoErr;
 }
@@ -289,13 +289,13 @@ static void PlatformEasyLinkButtonLongPressedCallback(void)
   context = mxos_system_context_get( );
   require( context, exit );
 
-  partition = MxosFlashGetInfo( MXOS_PARTITION_PARAMETER_1 );
+  partition = mxos_flash_get_info( MXOS_PARTITION_PARAMETER_1 );
 
-  MxosFlashErase( MXOS_PARTITION_PARAMETER_1 ,0x0, partition->partition_length );
+  mxos_flash_erase( MXOS_PARTITION_PARAMETER_1 ,0x0, partition->partition_length );
 
-  partition = MxosFlashGetInfo( MXOS_PARTITION_PARAMETER_2 );
+  partition = mxos_flash_get_info( MXOS_PARTITION_PARAMETER_2 );
 
-  MxosFlashErase( MXOS_PARTITION_PARAMETER_2 ,0x0, partition->partition_length );
+  mxos_flash_erase( MXOS_PARTITION_PARAMETER_2 ,0x0, partition->partition_length );
 
   mxos_system_power_perform( context, eState_Software_Reset );
 

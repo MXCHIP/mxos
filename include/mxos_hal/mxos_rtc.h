@@ -40,6 +40,11 @@
 #include "platform_peripheral.h"
 #endif
 
+/* Legacy definitions */
+#define MxosRtcInitialize mxos_rtc_init
+#define MxosRtcGetTime mxos_rtc_get_time
+#define MxosRtcSetTime mxos_rtc_set_time
+
 /** @addtogroup MXOS_PLATFORM
 * @{
 */

@@ -74,20 +74,20 @@ static mxos_i2c_device_t MFi_CP =
 static OSStatus CP_ReadBuffer(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead);
 static OSStatus CP_BufferWrite(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite);
 
-OSStatus MxosMFiAuthInitialize( mxos_i2c_t i2c )
+OSStatus mxos_mfi_auth_init( mxos_i2c_t i2c )
 {
     OSStatus err = kNoErr;
     // PLATFORM_TO_DO
     bool isCPFound = false;
     MFi_CP.port = i2c;
     
-    err = MxosI2cInitialize( (mxos_i2c_device_t *)&MFi_CP );
+    err = mxos_i2c_init( (mxos_i2c_device_t *)&MFi_CP );
     require_noerr_action(err, exit, err = kRequestErr);
 
-    isCPFound = MxosI2cProbeDevice( (mxos_i2c_device_t *)&MFi_CP, 3 );
+    isCPFound = mxos_i2c_probe_dev( (mxos_i2c_device_t *)&MFi_CP, 3 );
     if(!isCPFound){
       MFi_CP.address = CP_ADDRESS_2>>1;
-      isCPFound = MxosI2cProbeDevice( (mxos_i2c_device_t *)&MFi_CP, 3 );
+      isCPFound = mxos_i2c_probe_dev( (mxos_i2c_device_t *)&MFi_CP, 3 );
     }
     require_action( isCPFound == true, exit, err = kNotFoundErr );
 
@@ -95,13 +95,13 @@ exit:
     return err;
 }
 
-void MxosMFiAuthFinalize( void )
+void mxos_mfi_auth_deinit( void )
 {
     // PLATFORM_TO_DO
     return;
 }
 
-OSStatus MxosMFiAuthCreateSignature( const void *inDigestPtr,
+OSStatus mxos_mfi_auth_create_sign( const void *inDigestPtr,
                                          size_t     inDigestLen,
                                          uint8_t    **outSignaturePtr,
                                          size_t     *outSignatureLen )
@@ -168,7 +168,7 @@ exit:
     return kNotPreparedErr;
 }
 
-OSStatus MxosMFiAuthCopyCertificate( uint8_t **outCertificatePtr, size_t *outCertificateLen )
+OSStatus mxos_mfi_auth_copy_cert( uint8_t **outCertificatePtr, size_t *outCertificateLen )
 {
     // PLATFORM_TO_DO
     OSStatus err = kNoErr;
@@ -212,9 +212,9 @@ static OSStatus CP_BufferWrite(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t Num
   memcpy(txData, &WriteAddr, 1);
   memcpy(txData+1, pBuffer, NumByteToWrite);
   
-  err = MxosI2cBuildTxMessage(&message, txData, NumByteToWrite+1, 100);
+  err = mxos_i2c_build_tx_msg(&message, txData, NumByteToWrite+1, 100);
   require_noerr( err , exit ) ;
-  err = MxosI2cTransfer( (mxos_i2c_device_t *)&MFi_CP, &message, 1 );
+  err = mxos_i2c_transfer( (mxos_i2c_device_t *)&MFi_CP, &message, 1 );
   require_noerr( err , exit ) ;
  
 exit:
@@ -227,9 +227,9 @@ OSStatus CP_ReadBuffer(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRea
   OSStatus err = kNoErr;
   mxos_i2c_message_t message;
 
-  err = MxosI2cBuildCombinedMessage(&message, &ReadAddr, pBuffer, 1, NumByteToRead, 100);
+  err = mxos_i2c_build_comb_msg(&message, &ReadAddr, pBuffer, 1, NumByteToRead, 100);
   require_noerr( err , exit ) ;
-  err = MxosI2cTransfer( (mxos_i2c_device_t *)&MFi_CP, &message, 1 );
+  err = mxos_i2c_transfer( (mxos_i2c_device_t *)&MFi_CP, &message, 1 );
   require_noerr( err , exit ) ;
  
 exit:

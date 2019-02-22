@@ -380,36 +380,36 @@ const platform_uart_t platform_uart[] =
 	[MXOS_UART_2] = {.id = UART2_ID,},
 };
 
-bool MxosShouldEnterBootloader( void )
+bool mxos_should_enter_bootloader( void )
 {
-  if ((MxosGpioInputGet((mxos_gpio_t)BOOT_SEL) == false) &&
-	  (MxosGpioInputGet((mxos_gpio_t)EasyLink_BUTTON) == true) &&
-	  (MxosGpioInputGet((mxos_gpio_t)MFG_SEL) == true))
+  if ((mxos_gpio_input_get((mxos_gpio_t)BOOT_SEL) == false) &&
+	  (mxos_gpio_input_get((mxos_gpio_t)EasyLink_BUTTON) == true) &&
+	  (mxos_gpio_input_get((mxos_gpio_t)MFG_SEL) == true))
 	  return true;
   else
   	return false;
 }
 
-bool MxosShouldEnterMFGMode( void )
+bool mxos_should_enter_mfg_mode( void )
 {
-  if ((MxosGpioInputGet((mxos_gpio_t)BOOT_SEL) == false) &&
-	  (MxosGpioInputGet((mxos_gpio_t)MFG_SEL) == false))
+  if ((mxos_gpio_input_get((mxos_gpio_t)BOOT_SEL) == false) &&
+	  (mxos_gpio_input_get((mxos_gpio_t)MFG_SEL) == false))
 	  return true;
   else
   	return false;
 }
 
-bool MxosShouldEnterATEMode( void )
+bool mxos_should_enter_ate_mode( void )
 {
-  if ((MxosGpioInputGet((mxos_gpio_t)BOOT_SEL) == false) &&
-	  (MxosGpioInputGet((mxos_gpio_t)EasyLink_BUTTON) == false) &&
-	  (MxosGpioInputGet((mxos_gpio_t)MFG_SEL) == true))
+  if ((mxos_gpio_input_get((mxos_gpio_t)BOOT_SEL) == false) &&
+	  (mxos_gpio_input_get((mxos_gpio_t)EasyLink_BUTTON) == false) &&
+	  (mxos_gpio_input_get((mxos_gpio_t)MFG_SEL) == true))
 	  return true;
   else
   	return false;
 }
 
-void MxosRfLed(bool onoff)
+void mxos_rf_led(bool onoff)
 {
     
 }

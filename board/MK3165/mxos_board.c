@@ -418,58 +418,45 @@ void mxos_board_init( void )
     /* Ensure 802.11 device is in reset. */
     host_platform_init( );
 
-    MxosGpioInitialize( (mxos_gpio_t)MXOS_SYS_LED, OUTPUT_PUSH_PULL );
-    MxosGpioOutputLow( (mxos_gpio_t)MXOS_SYS_LED );
-    MxosGpioInitialize( (mxos_gpio_t)MXOS_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
-    MxosGpioOutputHigh( (mxos_gpio_t)MXOS_RF_LED );
+    mxos_gpio_init( (mxos_gpio_t)MXOS_SYS_LED, OUTPUT_PUSH_PULL );
+    mxos_gpio_output_low( (mxos_gpio_t)MXOS_SYS_LED );
+    mxos_gpio_init( (mxos_gpio_t)MXOS_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
+    mxos_gpio_output_high( (mxos_gpio_t)MXOS_RF_LED );
   
-    MxosGpioInitialize((mxos_gpio_t)BOOT_SEL, INPUT_PULL_UP);
-    MxosGpioInitialize((mxos_gpio_t)MFG_SEL, INPUT_PULL_UP);
+    mxos_gpio_init((mxos_gpio_t)BOOT_SEL, INPUT_PULL_UP);
+    mxos_gpio_init((mxos_gpio_t)MFG_SEL, INPUT_PULL_UP);
 }
 
 
-void MxosSysLed(bool onoff)
+void mxos_sys_led(bool onoff)
 {
   if (onoff) {
-    MxosGpioOutputLow( (mxos_gpio_t)MXOS_SYS_LED );
+    mxos_gpio_output_low( (mxos_gpio_t)MXOS_SYS_LED );
   } else {
-    MxosGpioOutputHigh( (mxos_gpio_t)MXOS_SYS_LED );
+    mxos_gpio_output_high( (mxos_gpio_t)MXOS_SYS_LED );
   }
 }
 
-void MxosRfLed(bool onoff)
+void mxos_rf_led(bool onoff)
 {
   if (onoff) {
-    MxosGpioOutputLow( (mxos_gpio_t)MXOS_RF_LED );
+    mxos_gpio_output_low( (mxos_gpio_t)MXOS_RF_LED );
   } else {
-    MxosGpioOutputHigh( (mxos_gpio_t)MXOS_RF_LED );
+    mxos_gpio_output_high( (mxos_gpio_t)MXOS_RF_LED );
   }
 }
 
-#ifdef USE_MXOSKit_EXT
-// add test mode for MXOSKit-EXT board,check Arduino_D5 pin when system startup
-bool MxosExtShouldEnterTestMode(void)
+bool mxos_should_enter_mfg_mode(void)
 {
-  if( MxosGpioInputGet((mxos_gpio_t)Arduino_D5)==false ){
-    return true;
-  }
-  else{
-    return false;
-  }
-}
-#endif
-
-bool MxosShouldEnterMFGMode(void)
-{
-  if(MxosGpioInputGet((mxos_gpio_t)BOOT_SEL)==false && MxosGpioInputGet((mxos_gpio_t)MFG_SEL)==false)
+  if(mxos_gpio_input_get((mxos_gpio_t)BOOT_SEL)==false && mxos_gpio_input_get((mxos_gpio_t)MFG_SEL)==false)
     return true;
   else
     return false;
 }
 
-bool MxosShouldEnterBootloader(void)
+bool mxos_should_enter_bootloader(void)
 {
-  if(MxosGpioInputGet((mxos_gpio_t)BOOT_SEL)==false && MxosGpioInputGet((mxos_gpio_t)MFG_SEL)==true)
+  if(mxos_gpio_input_get((mxos_gpio_t)BOOT_SEL)==false && mxos_gpio_input_get((mxos_gpio_t)MFG_SEL)==true)
     return true;
   else
     return false;

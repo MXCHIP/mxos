@@ -40,6 +40,13 @@
 #include "platform_peripheral.h"
 #endif
 
+/* Legacy definitions */
+#define MxosIISInitialize mxos_i2s_init
+#define MxosIISTransfer mxos_i2s_transfer
+#define MxosIISFinalize mxos_i2s_deinit
+#define MxosIISWrite mxos_i2s_write
+#define MxosIISRead mxos_i2s_read
+
 /** @addtogroup MXOS_PLATFORM
 * @{
 */
@@ -92,7 +99,7 @@ typedef struct
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if the iis device could not be initialised
  */
-OSStatus MxosIISInitialize( const mxos_iis_device_t* iis );
+OSStatus mxos_i2s_init( const mxos_iis_device_t* iis );
 
 
 /**@brief Transmits and/or receives data from a IIS device
@@ -104,7 +111,7 @@ OSStatus MxosIISInitialize( const mxos_iis_device_t* iis );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-OSStatus MxosIISTransfer( const mxos_iis_device_t* iis, const mxos_iis_message_segment_t* segments, uint16_t number_of_segments );
+OSStatus mxos_i2s_transfer( const mxos_iis_device_t* iis, const mxos_iis_message_segment_t* segments, uint16_t number_of_segments );
 
 
 /**@brief De-initialises a IIS interface
@@ -116,7 +123,7 @@ OSStatus MxosIISTransfer( const mxos_iis_device_t* iis, const mxos_iis_message_s
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-OSStatus MxosIISFinalize( const mxos_iis_device_t* iis );
+OSStatus mxos_i2s_deinit( const mxos_iis_device_t* iis );
 
 /**@brief Write through IIS interface
  *
@@ -129,7 +136,7 @@ OSStatus MxosIISFinalize( const mxos_iis_device_t* iis );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-OSStatus MxosIISWrite( const mxos_iis_device_t* iis, uint8_t *p_buf, uint32_t size );
+OSStatus mxos_i2s_write( const mxos_iis_device_t* iis, uint8_t *p_buf, uint32_t size );
 
 /**@brief Read through IIS interface
  *
@@ -142,7 +149,7 @@ OSStatus MxosIISWrite( const mxos_iis_device_t* iis, uint8_t *p_buf, uint32_t si
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-OSStatus MxosIISRead( const mxos_iis_device_t* iis, uint8_t *p_buf, uint32_t size );
+OSStatus mxos_i2s_read( const mxos_iis_device_t* iis, uint8_t *p_buf, uint32_t size );
 
 /** @} */
 /** @} */

@@ -59,8 +59,8 @@ extern "C" {
 #endif
 
 #define MxosMcuPowerSaveConfig mxos_mcu_powersave_config
-
-#define MxosSystemReboot mxos_system_reboot
+#define MxosSystemReboot mxos_sys_reboot
+#define MxosSystemStandBy mxos_sys_standby
 
 
 /** @defgroup MXOS_PLATFORM  MXOS Hardware Abstract Layer APIs
@@ -85,7 +85,7 @@ extern "C" {
   * @param    none
   * @return   none
   */
-void mxos_system_reboot(void);
+void mxos_sys_reboot(void);
 
 
 /** @brief    Software reboot the MXOS hardware
@@ -93,7 +93,7 @@ void mxos_system_reboot(void);
   * @param    timeToWakeup: MXOS will wakeup after secondsToWakeup (seconds)
   * @return   none
   */
-void MxosSystemStandBy(uint32_t secondsToWakeup);
+void mxos_sys_standby(uint32_t secondsToWakeup);
 
 
 /** @brief    Enables the MCU to enter deep sleep mode when all threads are suspended.
@@ -117,29 +117,21 @@ void mxos_mcu_powersave_config( int enable );
   * @param    onff: State of syetem LED,0: OFF,1:ON
   * @return   none
   */
-void MxosSysLed(bool onoff);
+void mxos_sys_led(bool onoff);
 
 /** @brief     Set MXOS RF led on/off state
   *
   * @param    onff: State of RF LED,0: OFF,1:ON
   * @return   none
   */
-void MxosRfLed(bool onoff);
+void mxos_rf_led(bool onoff);
 
 /** @brief    add
   *
   * @param    add
   * @return   none
   */
-bool MxosShouldEnterMFGMode(void);
-
-
-/** @brief    add
-  *
-  * @param    add
-  * @return   none
-  */
-bool MxosShouldEnterATEMode(void);
+bool mxos_should_enter_mfg_mode(void);
 
 
 /** @brief    add
@@ -147,7 +139,15 @@ bool MxosShouldEnterATEMode(void);
   * @param    add
   * @return   none
   */
-bool MxosShouldEnterBootloader(void);
+bool mxos_should_enter_ate_mode(void);
+
+
+/** @brief    add
+  *
+  * @param    add
+  * @return   none
+  */
+bool mxos_should_enter_bootloader(void);
 
 
 /** @brief    add

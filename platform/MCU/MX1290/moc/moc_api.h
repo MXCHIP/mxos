@@ -110,7 +110,6 @@ typedef struct
 #define USER_APP_ADDR 0x1f064000 /* 400KB offset */
 #define USER_MAGIC_NUM 0xC89346
 
-#define time_t unsigned long
 /** Power States of MCU */
 typedef enum
 {
@@ -155,10 +154,10 @@ typedef enum
 
 typedef struct
 {
-    OSStatus (*MxosAdcInitialize)( mxos_adc_t adc, uint32_t sampling_cycle );
-    OSStatus (*MxosAdcTakeSample)( mxos_adc_t adc, uint16_t* output );
-    OSStatus (*MxosAdcTakeSampleStreram)( mxos_adc_t adc, void* buffer, uint16_t buffer_length );
-    OSStatus (*MxosAdcFinalize)( mxos_adc_t adc );
+    OSStatus (*mxos_adc_init)( mxos_adc_t adc, uint32_t sampling_cycle );
+    OSStatus (*mxos_adc_take_sample)( mxos_adc_t adc, uint16_t* output );
+    OSStatus (*mxos_adc_take_sampleStreram)( mxos_adc_t adc, void* buffer, uint16_t buffer_length );
+    OSStatus (*mxos_adc_deinit)( mxos_adc_t adc );
 } adc_api_t;
 
 typedef struct
@@ -184,9 +183,9 @@ typedef struct
 } spi_api_t;
 
 typedef struct {
-	OSStatus (*MxosGtimerInitialize)(mxos_gtimer_t gtimer);
-	OSStatus (*MxosGtimerStart)(mxos_gtimer_t timer, mxos_gtimer_mode_t mode, uint32_t time, mxos_gtimer_irq_callback_t function, void *arg);
-	OSStatus (*MxosGtimerStop)(mxos_gtimer_t timer);
+	OSStatus (*mxos_gtimer_init)(mxos_gtimer_t gtimer);
+	OSStatus (*mxos_gtimer_start)(mxos_gtimer_t timer, mxos_gtimer_mode_t mode, uint32_t time, mxos_gtimer_irq_callback_t function, void *arg);
+	OSStatus (*mxos_gtimer_stop)(mxos_gtimer_t timer);
 } gtimer_api_t;
 
 /* API type define */
@@ -197,7 +196,7 @@ typedef struct mxos_api_struct
     /* OS Layer*/
     mxos_system_config_t* (*system_config_get)( void );
     void (*system_config_set)( mxos_system_config_t *cfg );
-    void (*mxchipInit)( );
+    void (*mxos_network_init)( );
     OSStatus (*mxos_rtos_create_thread)( mxos_thread_t* thread, uint8_t priority, const char* name,
                                          mxos_thread_function_t function, uint32_t stack_size, void* arg );
     OSStatus (*mxos_rtos_delete_thread)( mxos_thread_t* thread );
@@ -307,7 +306,7 @@ typedef struct mxos_api_struct
     /* WIFI MGR */
     int (*wlan_get_mac_address)( unsigned char *dest );
     int (*wlan_get_mac_address_by_interface)(wlan_if_t wlan_if, unsigned char *dest);
-    int (*wlan_driver_version)( char* version, int length );
+    int (*mxos_wlan_driver_version)( char* version, int length );
     OSStatus (*mxosWlanStart)( network_InitTypeDef_st* inNetworkInitPara );
     OSStatus (*mxosWlanStartAdv)( network_InitTypeDef_adv_st* inNetworkInitParaAdv );
     OSStatus (*mxosWlanGetIPStatus)( IPStatusTypedef *outNetpara, WiFi_Interface inInterface );
@@ -361,50 +360,50 @@ typedef struct mxos_api_struct
     void (*iperf_Command)( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv );
 
     /* HAL: GPIO; FLASH; UART */
-    mxos_logic_partition_t* (*MxosFlashGetInfo)( mxos_partition_t inPartition );
-    OSStatus (*MxosFlashErase)( mxos_partition_t inPartition, uint32_t off_set, uint32_t size );
-    OSStatus (*MxosFlashWrite)( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* inBuffer,
+    mxos_logic_partition_t* (*mxos_flash_get_info)( mxos_partition_t inPartition );
+    OSStatus (*mxos_flash_erase)( mxos_partition_t inPartition, uint32_t off_set, uint32_t size );
+    OSStatus (*mxos_flash_write)( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* inBuffer,
                                 uint32_t inBufferLength );
-    OSStatus (*MxosFlashRead)( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* outBuffer,
+    OSStatus (*mxos_flash_read)( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* outBuffer,
                                uint32_t inBufferLength );
-    OSStatus (*MxosFlashEnableSecurity)( mxos_partition_t partition, uint32_t off_set, uint32_t size );
+    OSStatus (*mxos_flash_enable_security)( mxos_partition_t partition, uint32_t off_set, uint32_t size );
 
-    OSStatus (*MxosGpioInitialize)( mxos_gpio_t gpio, mxos_gpio_config_t configuration );
-    OSStatus (*MxosGpioFinalize)( mxos_gpio_t gpio );
-    OSStatus (*MxosGpioOutputHigh)( mxos_gpio_t gpio );
-    OSStatus (*MxosGpioOutputLow)( mxos_gpio_t gpio );
-    OSStatus (*MxosGpioOutputTrigger)( mxos_gpio_t gpio );
-    bool (*MxosGpioInputGet)( mxos_gpio_t gpio );
-    OSStatus (*MxosGpioEnableIRQ)( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler,
+    OSStatus (*mxos_gpio_init)( mxos_gpio_t gpio, mxos_gpio_config_t configuration );
+    OSStatus (*mxos_gpio_deinit)( mxos_gpio_t gpio );
+    OSStatus (*mxos_gpio_output_high)( mxos_gpio_t gpio );
+    OSStatus (*mxos_gpio_output_low)( mxos_gpio_t gpio );
+    OSStatus (*mxos_gpio_output_toggle)( mxos_gpio_t gpio );
+    bool (*mxos_gpio_input_get)( mxos_gpio_t gpio );
+    OSStatus (*mxos_gpio_enable_irq)( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler,
                                    void* arg );
-    OSStatus (*MxosGpioDisableIRQ)( mxos_gpio_t gpio );
+    OSStatus (*mxos_gpio_disable_irq)( mxos_gpio_t gpio );
 
-    OSStatus (*MxosUartInitialize)( mxos_uart_t uart, const mxos_uart_config_t* config,
+    OSStatus (*mxos_uart_init)( mxos_uart_t uart, const mxos_uart_config_t* config,
                                     ring_buffer_t* optional_rx_buffer );
-    OSStatus (*MxosUartFinalize)( mxos_uart_t uart );
-    OSStatus (*MxosUartSend)( mxos_uart_t uart, const void* data, uint32_t size );
-    OSStatus (*MxosUartRecv)( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout );
-    uint32_t (*MxosUartGetLengthInBuffer)( mxos_uart_t uart );
+    OSStatus (*mxos_uart_deinit)( mxos_uart_t uart );
+    OSStatus (*mxos_uart_send)( mxos_uart_t uart, const void* data, uint32_t size );
+    OSStatus (*mxos_uart_recv)( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout );
+    uint32_t (*mxos_uart_recvd_data_len)( mxos_uart_t uart );
     void (*MxosUartPinRedirect)( mxos_uart_t uart );
 
     /* Power management*/
     int (*pm_mcu_state)( power_state_t state, uint32_t time_dur );
     int (*pm_wakeup_source)( uint8_t wake_source );
     void (*wifi_off_mcu_standby)( int seconds );
-    void (*MxosMcuPowerSaveConfig)( int enable );
+    void (*mxos_mcu_powersave_config)( int enable );
 
     /* uitls */
     int (*debug_putchar)( char *ch, int len );
-    void (*MxosSystemReboot)( void );
+    void (*mxos_sys_reboot)( void );
 
     /* ALI APIs */
     char* (*get_ali_key)( void );
     char* (*get_ali_secret)( void );
 
     /* RTC */
-    void (*MxosRtcInitialize)( void );
-    OSStatus (*MxosRtcGetTime)( time_t *t );
-    OSStatus (*MxosRtcSetTime)( time_t t );
+    void (*mxos_rtc_init)( void );
+    OSStatus (*mxos_rtc_get_time)( time_t *t );
+    OSStatus (*mxos_rtc_set_time)( time_t t );
     struct tm* (*localtime)( const time_t * time );
     char * (*asctime)( const struct tm *tm );
 
