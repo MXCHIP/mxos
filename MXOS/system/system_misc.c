@@ -226,7 +226,8 @@ OSStatus system_network_daemen_start( system_context_t * const inContext )
   mxos_wlan_driver_version(inContext->mxosStatus.rf_version, sizeof(inContext->mxosStatus.rf_version));
   inContext->mxosStatus.rf_version[49] = 0x0;
 
-  system_log("Author name: %s , email: %s", MXOS_OS_USER_NAME, MXOS_OS_USER_EMAIL );
+  system_log("Author: %s", MXOS_OS_USER_NAME );
+  system_log("Email: %s", MXOS_OS_USER_EMAIL );
   system_log("GCC version: %s", CC_VERSION );
   
   system_log("MXOS version: %s", MXOS_OS_VERSION );
