@@ -85,7 +85,8 @@ $(NAME)_SOURCES := platform_stub.c \
 				   ../../$(HOST_ARCH)/platform_core.c \
                    ../mxos_platform_common.c \
                    ../platform_retarget.c \
-                   platform_init.c
+                   platform_init.c \
+                   vcall.c
                    
 
 # Extra build target in mxos_standard_targets.mk, include bootloader, and copy output file to eclipse debug file (copy_output_for_eclipse)
