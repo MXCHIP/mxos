@@ -103,7 +103,6 @@ typedef struct
 #define USER_APP_ADDR 0x1f064000 /* 400KB offset */
 #define USER_MAGIC_NUM 0xC89346
 
-#define time_t unsigned long
 /** Power States of MCU */
 typedef enum
 {

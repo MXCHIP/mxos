@@ -408,9 +408,10 @@ char *get_ali_secret(void)
 	return lib_api_p->get_ali_secret();
 }
 
-void mxos_rtc_init(void)
+OSStatus mxos_rtc_init(void)
 {
 	lib_api_p->mxos_rtc_init();
+	return kNoErr;
 }
 
 OSStatus mxos_rtc_get_time(time_t* time)
