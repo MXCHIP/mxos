@@ -36,11 +36,7 @@
 
 #include "mxos_common.h"
 #include "RingBufferUtils.h"
-#ifdef ALIOS_SUPPORT
-#include "aos_peripheral.h"
-#else
 #include "platform_peripheral.h"
-#endif
 
 /* Legacy definitions */
 #define MxosUartInitialize          mxos_uart_init

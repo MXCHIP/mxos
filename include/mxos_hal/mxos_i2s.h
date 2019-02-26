@@ -32,13 +32,8 @@
 #ifndef __MXOSDRIVERI2S_H__
 #define __MXOSDRIVERI2S_H__
 
-
 #include "mxos_common.h"
-#ifdef ALIOS_SUPPORT
-#include "aos_peripheral.h"
-#else
 #include "platform_peripheral.h"
-#endif
 
 /* Legacy definitions */
 #define MxosIISInitialize mxos_i2s_init

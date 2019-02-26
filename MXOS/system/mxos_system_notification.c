@@ -51,9 +51,6 @@ typedef void (*mxos_notify_GPRS_STATUS_CHANGED_function)          ( notify_netif
 netif_status_t netif_status[INTERFACE_MAX] = {INTERFACE_STATUS_DOWN, INTERFACE_STATUS_DOWN, INTERFACE_STATUS_DOWN};
 
 /* User defined notifications */
-
-#ifndef ALIOS_SUPPORT
-
 void ApListCallback(ScanResult *pApList)
 {
   _Notify_list_t *temp =  Notify_list[mxos_notify_WIFI_SCAN_COMPLETED];
@@ -144,7 +141,6 @@ void NetCallback(IPStatusTypedef *pnet)
     }while(temp!=NULL);
   }
 }
-#endif
 
 void RptConfigmodeRslt(network_InitTypeDef_st *nwkpara)
 {

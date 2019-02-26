@@ -13,34 +13,25 @@ ifndef USES_BOOTLOADER
 USES_BOOTLOADER :=1
 endif
 
-ifneq ($(ALIOS_SUPPORT),y)
 $(NAME)_COMPONENTS += MXOS/core
-endif
-
 $(NAME)_SOURCES += mxos_main.c core/mxos_config.c
 
 ifneq ($(filter $(subst ., ,$(COMPONENTS)),mocOS mocIP),)
 $(NAME)_SOURCES += moc_main.c
 endif
 
-ifneq ($(ALIOS_SUPPORT),y)
 $(NAME)_COMPONENTS += MXOS/security \
                       MXOS/system
-endif
 
 $(NAME)_COMPONENTS += utilities
 
 GLOBAL_DEFINES += 
 
 # Add MCU component
-ifeq ($(ALIOS_SUPPORT),y)
-$(NAME)_COMPONENTS += alios
-else
 ifneq ($(MBED_SUPPORT),)
 $(NAME)_COMPONENTS += platform/mbed
 else
 $(NAME)_COMPONENTS += platform/MCU/$(HOST_MCU_FAMILY)
-endif
 endif
 
 # Easylink Button

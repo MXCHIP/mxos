@@ -19,22 +19,10 @@ $(NAME)_SOURCES := AESUtils.c \
                    TLVUtils.c \
                    URLUtils.c
                    
-ifeq ($(ALIOS_SUPPORT),y)
-# AliOS + moc108 source codes
-ifneq ($(filter moc108 rtl8710bn stm32f4xx,$(HOST_MCU_FAMILY)),)
-
-else
-# AliOS source codes
-$(NAME)_SOURCES += RingBufferUtils.c \
-                   StringUtils.c
-endif
-
-else
 # MXOS source codes
 $(NAME)_SOURCES += CheckSumUtils.c \
                    RingBufferUtils.c \
                    StringUtils.c
-endif
                    
 $(NAME)_COMPONENTS += utilities/json_c
 

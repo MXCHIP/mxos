@@ -60,10 +60,6 @@
 #include "mxos_system.h"
 #include "mxos_gprs.h"
 
-#ifdef ALIOS_SUPPORT
-#include <aos/aos.h>
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif

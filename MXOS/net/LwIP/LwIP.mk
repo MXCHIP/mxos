@@ -9,10 +9,6 @@
 
 NAME := LwIP
 
-ifeq ($(ALIOS_SUPPORT),y)
-GLOBAL_DEFINES += WITH_LWIP
-else
-
 ifneq ($(filter $(HOST_MCU_FAMILY),MOC108),)
 VERSION := 2.0.2
 else
@@ -53,5 +49,3 @@ $(NAME)_SOURCES :=  mxos/mxos_socket.c \
 LWIP_MBED_TARGETS := $(foreach target, $(MBED_TARGETS), TARGET_$(target))
 $(eval DIRS := $(shell $(PYTHON) $(LIST_SUB_DIRS_SCRIPT) mxos/MXOS/net/LwIP/lwip_eth))
 $(foreach DIR, $(DIRS), $(if $(filter $(notdir $(DIR)), $(LWIP_MBED_TARGETS)), $(eval $(NAME)_COMPONENTS += $(subst \,/,$(DIR))),))
-
-endif

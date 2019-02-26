@@ -63,9 +63,8 @@ typedef struct
 /******************************************************
  *               Static Function Declarations
  ******************************************************/
-#ifndef ALIOS_SUPPORT
+
 static void timed_event_handler( void* arg );
-#endif
 
 /******************************************************
  *               Variable Definitions
@@ -133,7 +132,7 @@ OSStatus mxos_rtos_delay_microseconds( uint32_t microseconds )
 
     return kNoErr;
 }
-#ifndef ALIOS_SUPPORT
+
 static void worker_thread_main( uint32_t arg )
 {
     mxos_worker_thread_t* worker_thread = (mxos_worker_thread_t*) arg;
@@ -406,8 +405,3 @@ static void timer_thread_func(void* arg)
     }
 }
 #endif
-
-#endif
-
-
-

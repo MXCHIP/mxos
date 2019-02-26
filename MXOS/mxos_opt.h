@@ -20,11 +20,7 @@
 #define __MXOS_OPT_H
 
 #ifndef MXOS_PREBUILT_LIBS
-#ifdef ALIOS_NATIVE_APP
-#include "alios_native_app_config.h"
-#else
 #include "mxos_config.h"
-#endif
 #include "mxos_board_conf.h"
 #endif
 

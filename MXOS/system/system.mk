@@ -20,10 +20,8 @@ $(NAME)_SOURCES := mxos_system_init.c \
                    mxos_station_monitor.c \
                    system_misc.c 
 
-ifneq ($(ALIOS_SUPPORT),y)
 $(NAME)_SOURCES  += command_console/mxos_cli.c
 $(NAME)_INCLUDES += command_console
-endif
 
 $(NAME)_SOURCES += config_server/config_server_menu.c \
                    config_server/config_server.c

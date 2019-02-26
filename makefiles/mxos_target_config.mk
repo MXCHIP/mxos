@@ -171,8 +171,7 @@ BUILD_TYPE          := $(if $(filter $(BUILD_TYPE_LIST),$(COMPONENTS)),$(firstwo
 IMAGE_TYPE          := $(if $(filter $(IMAGE_TYPE_LIST),$(COMPONENTS)),$(firstword $(filter $(IMAGE_TYPE_LIST),$(COMPONENTS))),ram)
 RUN_LINT            := $(filter lint,$(COMPONENTS))
 MOC                 := $(filter $(MOC_LIST),$(COMPONENTS))
-ALIOS               := $(filter aos,$(COMPONENTS))
-COMPONENTS          := $(filter-out $(MOC_LIST) $(BUS_LIST) $(BUILD_TYPE_LIST) $(IMAGE_TYPE_LIST) $(TOTAL_BUILD) aos, $(COMPONENTS))
+COMPONENTS          := $(filter-out $(MOC_LIST) $(BUS_LIST) $(BUILD_TYPE_LIST) $(IMAGE_TYPE_LIST) $(TOTAL_BUILD), $(COMPONENTS))
 
 # Set debug/release specific options
 ifeq ($(BUILD_TYPE),release)
@@ -194,17 +193,6 @@ PLATFORM_DIRECTORY 	:= $(PLATFORM_FULL)
 # Load platform makefile to make variables like WLAN_CHIP, HOST_OPENOCD & HOST_ARCH available to all makefiles
 $(eval CURDIR := $(PLATFORM_DIRECTORY)/)
 include $(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTORY)).mk
-
-# Add AliOS components
-ifeq ($(ALIOS_SUPPORT),y)
-ifneq ($(wildcard $(SOURCE_ROOT)alios/alios.mk),)
-ALIOS_TARGETS ?= GENERAL
-COMPONENTS += alios_kernel alios_crypto
-include $(SOURCE_ROOT)alios/alios.mk
-else
-$(error alios component not found, use mxos cube command: "mxos add alios".)
-endif
-endif
 
 ifeq ($(MBED_SUPPORT),1)
 ifeq ($(wildcard $(SOURCE_ROOT)mbed-os/mbed-os.mk),)
@@ -256,15 +244,6 @@ EXTRA_CFLAGS += -DMXOS_OS_USER_NAME=\"$(MXOS_OS_USER_NAME)\"
 MXOS_OS_USER_EMAIL := $(shell git config user.email)
 EXTRA_CFLAGS += -DMXOS_OS_USER_EMAIL=\"$(MXOS_OS_USER_EMAIL)\"
 
-# AliOS native apps, add some default configurations
-$(if $(filter alios, $(subst /, ,$(dir $(APP_FULL)))), \
-     $(eval ALIOS_NATIVE_APP := y),)
-
-ifneq ($(ALIOS_SUPPORT),)
-$(eval CURDIR := $(ALIOS_PATH)/platform/mcu/$(HOST_MCU_FAMILY)/)
-include $(ALIOS_PATH)/platform/mcu/$(HOST_MCU_FAMILY)/$(HOST_MCU_FAMILY).mk
-
-else
 ifneq ($(MBED_SUPPORT),)
 include $(MXOS_OS_PATH)/platform/mbed/mbed.mk
 TARGETS := $(foreach target, $(MBED_TARGETS), TARGET_$(target))
@@ -274,7 +253,6 @@ $(foreach DIR, $(DIRS), $(if $(filter $(notdir $(DIR)), $(TARGETS)), $(eval incl
 else
 $(eval CURDIR := $(MXOS_OS_PATH)/platform/MCU/$(HOST_MCU_FAMILY)/)
 include $(MXOS_OS_PATH)/platform/MCU/$(HOST_MCU_FAMILY)/$(HOST_MCU_FAMILY).mk
-endif # MBED_SUPPORT
 endif # MBED_SUPPORT
 
 MAIN_COMPONENT_PROCESSING :=1
@@ -346,9 +324,6 @@ $(CONFIG_FILE_DIR):
 $(foreach comp,$(PROCESSED_COMPONENTS), $(eval $(comp)_CFLAGS_ALL := $(call ADD_COMPILER_SPECIFIC_STANDARD_CFLAGS,$($(comp)_OPTIM_CFLAGS))) )
 $(foreach comp,$(PROCESSED_COMPONENTS), $(eval $(comp)_CFLAGS_ALL += $(EXTRA_CFLAGS)) )
 $(foreach comp,$(PROCESSED_COMPONENTS), $(eval $(comp)_CFLAGS_ALL += $($(comp)_CFLAGS)) )
-
-# Remove AliOS warnings, componentes under AliOS-Things
-$(foreach comp, $(PROCESSED_COMPONENTS), $(if $(filter AliOS-Things, $(subst /, ,$(dir $($(comp)_LOCATION)))),$(eval $(comp)_CFLAGS_ALL += -w),))
 
 $(foreach comp,$(PROCESSED_COMPONENTS), $(eval $(comp)_CXXFLAGS_ALL := $(call ADD_COMPILER_SPECIFIC_STANDARD_CXXFLAGS,$($(comp)_OPTIM_CXXFLAGS))) )
 $(foreach comp,$(PROCESSED_COMPONENTS), $(eval $(comp)_CXXFLAGS_ALL += $(EXTRA_CFLAGS)) )

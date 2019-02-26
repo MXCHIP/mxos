@@ -33,12 +33,7 @@
 #define __MXOSDRIVERRNG_H__
 
 #include "mxos_common.h"
-#ifdef ALIOS_SUPPORT
-#include "aos_peripheral.h"
-#else
 #include "platform_peripheral.h"
-#endif
-
 
 /** @addtogroup MXOS_PLATFORM
 * @{

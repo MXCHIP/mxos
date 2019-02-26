@@ -23,16 +23,11 @@
 
 #include <string.h>
 #include <stdlib.h>
-
 #include "mxos.h"
 #include "mxos_board_conf.h"
-
 #include "mxos_rtos_common.h"
-
-#ifndef ALIOS_SUPPORT
 #if MXOS_QUALITY_CONTROL_ENABLE
 #include "qc_test.h"
-#endif
 #endif
 
 /******************************************************
@@ -69,8 +64,6 @@
 
 
 #ifndef MXOS_DISABLE_STDIO
-
-#ifndef ALIOS_SUPPORT
 static const mxos_uart_config_t stdio_uart_config =
 {
   .baud_rate    = MXOS_STDIO_UART_BAUDRATE,
@@ -83,7 +76,6 @@ static const mxos_uart_config_t stdio_uart_config =
 
 static volatile ring_buffer_t stdio_rx_buffer;
 static volatile uint8_t       stdio_rx_data[STDIO_BUFFER_SIZE];
-#endif /* #ifndef ALIOS_SUPPORT */
 
 mxos_mutex_t MXOS_WEAK stdio_tx_mutex = NULL;
 #endif /* #ifndef MXOS_DISABLE_STDIO */
@@ -113,16 +105,12 @@ void mxos_main( void )
     if( stdio_tx_mutex == NULL )
         mxos_rtos_init_mutex( &stdio_tx_mutex );
 
-#ifndef ALIOS_SUPPORT
     ring_buffer_init( (ring_buffer_t*) &stdio_rx_buffer, (uint8_t*) stdio_rx_data, STDIO_BUFFER_SIZE );
     mxos_stdio_uart_init( &stdio_uart_config, (ring_buffer_t*) &stdio_rx_buffer );
 #endif
 
-#endif
-
     mxos_rtos_init( );
 
-#ifndef ALIOS_SUPPORT
 #if MXOS_QUALITY_CONTROL_ENABLE
 #ifndef RTOS_mocOS
     if ( mxos_should_enter_mfg_mode( ) ) {
@@ -130,7 +118,6 @@ void mxos_main( void )
         mxos_rtos_delete_thread(NULL);
         mxos_rtos_thread_yield();
     }
-#endif
 #endif
 #endif
 

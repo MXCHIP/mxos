@@ -16,7 +16,6 @@ export MXOS_SDK_VERSION_REVISION :=  0
 export SOURCE_ROOT ?= ./
 
 export MXOS_OS_PATH := $(SOURCE_ROOT)mxos
-export ALIOS_PATH := $(SOURCE_ROOT)alios/AliOS-Things
 export MBED_OS_PATH := $(SOURCE_ROOT)mbed-os
 export MAKEFILES_PATH := $(SOURCE_ROOT)mxos/makefiles
 export SCRIPTS_PATH := $(SOURCE_ROOT)mxos/makefiles/scripts

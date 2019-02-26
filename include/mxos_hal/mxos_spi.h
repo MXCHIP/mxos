@@ -34,11 +34,7 @@
 
 #pragma once
 #include "mxos_common.h"
-#ifdef ALIOS_SUPPORT
-#include "aos_peripheral.h"
-#else
 #include "platform_peripheral.h"
-#endif
 
 /* Legacy definitions */
 #define MxosSpiInitialize mxos_spi_init

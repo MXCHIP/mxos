@@ -38,10 +38,7 @@
 #include "system.h"
 #include "json_c/json.h"
 #include "system_internal.h"
-
-#ifndef ALIOS_SUPPORT
 #include "command_console/mxos_cli.h"
-#endif
 
 #ifdef __cplusplus
 extern "C" {

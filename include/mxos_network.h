@@ -36,10 +36,6 @@
 #include "mxos_opt.h"
 #include "mxos_common.h"
 
-#ifdef ALIOS_SUPPORT
-#include <hal/wifi.h>
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -84,13 +80,11 @@ extern netif_status_t netif_status[INTERFACE_MAX];
  *  @brief  Interface status change notification.
  */
 enum {
-#ifndef ALIOS_SUPPORT
     NOTIFY_STATION_UP = 1,
     NOTIFY_STATION_DOWN,
 
     NOTIFY_AP_UP,
     NOTIFY_AP_DOWN,
-#endif
     NOTIFY_ETH_UP = 5,
     NOTIFY_ETH_DOWN,
 

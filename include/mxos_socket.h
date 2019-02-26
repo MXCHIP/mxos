@@ -38,10 +38,7 @@
 #include <sys/select.h>
 #endif
 #include "mxos_errno.h"
-
-#ifndef ALIOS_SUPPORT
 #include "mxos_poll.h"
-#endif
 
 #ifdef __cplusplus
 extern "C" {

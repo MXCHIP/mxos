@@ -33,12 +33,7 @@
 #define __MXOS_ADC_H__
 
 #include "mxos_common.h"
-
-#ifdef ALIOS_SUPPORT
-#include "aos_peripheral.h"
-#else
 #include "platform_peripheral.h"
-#endif
 
 #ifdef __cplusplus
 extern "C" {
