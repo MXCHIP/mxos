@@ -80,7 +80,8 @@ $(NAME)_SOURCES := ../../$(HOST_ARCH)/crt0_$(TOOLCHAIN_NAME).c \
                    ../wlan_platform_common.c \
                    platform_init.c \
                    platform_vector_table.c \
-                   GCC/platform_unhandled_isr.c
+                   GCC/platform_unhandled_isr.c \
+                   vcall.c
 
 
 ifndef NO_WIFI
