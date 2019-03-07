@@ -13,6 +13,7 @@ THUMB_GNU_ARCH_LIST := Cortex-M0 \
                        Cortex-M3 \
                        Cortex-M4 \
                        Cortex-M4F\
+                       Cortex-M33\
                        Cortex-R3 \
                        Cortex-M0plus
 
@@ -26,7 +27,7 @@ HOST_INSTRUCTION_SET := THUMB
 endif
 
 TOOLCHAIN_PREFIX  := arm-none-eabi-
-TOOLCHAIN_VERSION := 5_4-2016q2-20160622
+TOOLCHAIN_VERSION := 7-2017-q4-major
 
 ifeq ($(HOST_OS),Win32)
 ################

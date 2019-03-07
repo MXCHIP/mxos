@@ -215,20 +215,20 @@ TLS         :=$(notdir $(TLS_FULL))
 APP         :=$(notdir $(APP_FULL))
 
 # Define default RTOS and TCPIP stack
-ifndef RTOS
-RTOS := FreeRTOS
-COMPONENTS += $(RTOS)
-endif
+# ifndef RTOS
+# RTOS := FreeRTOS
+# COMPONENTS += $(RTOS)
+# endif
 
-ifndef NET
-NET := LwIP
-COMPONENTS += $(NET)
-endif
+# ifndef NET
+# NET := LwIP
+# COMPONENTS += $(NET)
+# endif
 
-ifndef TLS
-TLS := wolfSSL
-COMPONENTS += $(TLS)
-endif
+# ifndef TLS
+# TLS := wolfSSL
+# COMPONENTS += $(TLS)
+# endif
 
 EXTRA_CFLAGS :=    -DMXOS_SDK_VERSION_MAJOR=$(MXOS_SDK_VERSION_MAJOR) \
                    -DMXOS_SDK_VERSION_MINOR=$(MXOS_SDK_VERSION_MINOR) \
@@ -261,7 +261,7 @@ $(eval $(call PROCESS_COMPATIBILITY_CHECK,))
 # Now we know the target architecture - include all toolchain makefiles and check one of them can handle the architecture
 CC :=
 
-ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-M4F Cortex-R4 Cortex-M0 Cortex-M0plus ARM968E-S),)
+ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-M4F Cortex-R4 Cortex-M0 Cortex-M0plus ARM968E-S Cortex-M33),)
 
 include $(MAKEFILES_PATH)/mxosder_toolchain_arm-none-eabi.mk
 
@@ -279,7 +279,7 @@ CC_VERSION := $(shell $(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)gcc$(EXECUTABLE_SUFFIX
 EXTRA_CFLAGS += -DCC_VERSION=\"$(CC_VERSION)\"
 
 # Process all the components + MXOS
-COMPONENTS += MXOS
+# COMPONENTS += MXOS
 $(info processing components: $(COMPONENTS))
 
 CURDIR :=
@@ -292,16 +292,9 @@ MXOS_SDK_DEFINES += $(EXTERNAL_MXOS_GLOBAL_DEFINES)
 ALL_RESOURCES := $(sort $(foreach comp,$(PROCESSED_COMPONENTS),$($(comp)_RESOURCES_EXPANDED)))
 
 # Make sure the user has specified a component from each category
-$(if $(RTOS),,$(error No RTOS specified. Options are: $(notdir $(wildcard MXOS/RTOS/*))))
+# $(if $(RTOS),,$(error No RTOS specified. Options are: $(notdir $(wildcard MXOS/RTOS/*))))
 $(if $(PLATFORM),,$(error No platform specified. Options are: $(notdir $(wildcard board/*))))
 $(if $(APP),,$(error No application specified.))
-$(if $(BUS),,$(error No bus specified. Options are: SDIO SPI))
-
-# Make sure a WLAN_CHIP, WLAN_CHIP_REVISION, WLAN_CHIP_FAMILY and HOST_OPENOCD have been defined
-$(if $(WLAN_CHIP),,$(error No WLAN_CHIP has been defined))
-$(if $(WLAN_CHIP_REVISION),,$(error No WLAN_CHIP_REVISION has been defined))
-$(if $(WLAN_CHIP_FAMILY),,$(error No WLAN_CHIP_FAMILY has been defined))
-$(if $(HOST_OPENOCD),,$(error No HOST_OPENOCD has been defined))
 
 $(eval VALID_PLATFORMS := $(call EXPAND_WILDCARD_PLATFORMS,$(VALID_PLATFORMS)))
 $(eval INVALID_PLATFORMS := $(call EXPAND_WILDCARD_PLATFORMS,$(INVALID_PLATFORMS)))
