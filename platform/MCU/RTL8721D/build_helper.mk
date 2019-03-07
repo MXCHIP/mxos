@@ -12,3 +12,7 @@ postbuild: build_done
 	cat $(OUTPUT_DIR)/binary/xip_image2_prepend.bin $(OUTPUT_DIR)/binary/ram_2_prepend.bin > $(BIN_OUTPUT_FILE)
 	$(KM4_ASDK_PATH)gnu_utility/pad.sh $(BIN_OUTPUT_FILE)
 	cat $(KM4_ASDK_PATH)../../realtek_amebaD_cm0_gcc_verification/asdk/image/km0_image2_all.bin $(BIN_OUTPUT_FILE) > $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all.bin)
+
+download: postbuild
+	@echo Downloading ...
+	yes|./mxos/platform/MCU/RTL8721D/flashloader/flashloader.sh $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all.bin) >$(OUTPUT_DIR)/flashloader.log 2>&1
