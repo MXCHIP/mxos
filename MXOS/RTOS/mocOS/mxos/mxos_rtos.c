@@ -69,7 +69,7 @@ mos_thread_id_t mos_thread_new( uint8_t priority, const char* name, mos_thread_f
         return NULL;
 }
 
-mret_t mos_thread_delete( mos_thread_id_t thread )
+merr_t mos_thread_delete( mos_thread_id_t thread )
 {
     return lib_api_p->mos_thread_delete( &thread );
 }
@@ -94,12 +94,12 @@ long mxos_rtos_resume_all_thread(void)
     return lib_api_p->mxos_rtos_resume_all_thread();
 }
 
-mret_t mos_thread_join( mos_thread_id_t id )
+merr_t mos_thread_join( mos_thread_id_t id )
 {
     return lib_api_p->mos_thread_join(&id);
 }
 
-mret_t mxos_rtos_thread_force_awake( mos_thread_id_t* thread )
+merr_t mxos_rtos_thread_force_awake( mos_thread_id_t* thread )
 {
     return lib_api_p->mxos_rtos_thread_force_awake(thread);
 }
@@ -109,51 +109,51 @@ bool mxos_rtos_is_current_thread( mos_thread_id_t* thread )
     return lib_api_p->mxos_rtos_is_current_thread(thread);
 }
 
-mret_t mxos_rtos_init_semaphore( mxos_semaphore_t* semaphore, int count )
+merr_t mxos_rtos_init_semaphore( mxos_semaphore_t* semaphore, int count )
 {
     return lib_api_p->mxos_rtos_init_semaphore(semaphore, count);
 }
-mret_t mxos_rtos_set_semaphore( mxos_semaphore_t* semaphore )
+merr_t mxos_rtos_set_semaphore( mxos_semaphore_t* semaphore )
 {
     return lib_api_p->mxos_rtos_set_semaphore(semaphore);
 }
-mret_t mxos_rtos_get_semaphore( mxos_semaphore_t* semaphore, uint32_t timeout_ms )
+merr_t mxos_rtos_get_semaphore( mxos_semaphore_t* semaphore, uint32_t timeout_ms )
 {
     return lib_api_p->mxos_rtos_get_semaphore(semaphore, timeout_ms);
 }
-mret_t mxos_rtos_deinit_semaphore( mxos_semaphore_t* semaphore )
+merr_t mxos_rtos_deinit_semaphore( mxos_semaphore_t* semaphore )
 {
     return lib_api_p->mxos_rtos_deinit_semaphore(semaphore);
 }
-mret_t mxos_rtos_init_mutex( mxos_mutex_t* mutex )
+merr_t mxos_rtos_init_mutex( mxos_mutex_t* mutex )
 {
     return lib_api_p->mxos_rtos_init_mutex( mutex );
 }
-mret_t mxos_rtos_lock_mutex( mxos_mutex_t* mutex )
+merr_t mxos_rtos_lock_mutex( mxos_mutex_t* mutex )
 {
     return lib_api_p->mxos_rtos_lock_mutex( mutex );
 }
-mret_t mxos_rtos_unlock_mutex( mxos_mutex_t* mutex )
+merr_t mxos_rtos_unlock_mutex( mxos_mutex_t* mutex )
 {
     return lib_api_p->mxos_rtos_unlock_mutex( mutex );
 }
-mret_t mxos_rtos_deinit_mutex( mxos_mutex_t* mutex )
+merr_t mxos_rtos_deinit_mutex( mxos_mutex_t* mutex )
 {
     return lib_api_p->mxos_rtos_deinit_mutex( mutex );
 }
-mret_t mxos_rtos_init_queue( mxos_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages )
+merr_t mxos_rtos_init_queue( mxos_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages )
 {
     return lib_api_p->mxos_rtos_init_queue( queue, name, message_size, number_of_messages );
 }
-mret_t mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
+merr_t mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
 {
     return lib_api_p->mxos_rtos_push_to_queue( queue, message, timeout_ms );
 }
-mret_t mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
+merr_t mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
 {
     return lib_api_p->mxos_rtos_pop_from_queue( queue, message, timeout_ms );
 }
-mret_t mxos_rtos_deinit_queue( mxos_queue_t* queue )
+merr_t mxos_rtos_deinit_queue( mxos_queue_t* queue )
 {
     return lib_api_p->mxos_rtos_deinit_queue( queue );
 }
@@ -166,23 +166,23 @@ bool mxos_rtos_is_queue_full( mxos_queue_t* queue )
     return lib_api_p->mxos_rtos_is_queue_full( queue );
 }
 
-mret_t mxos_rtos_init_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
+merr_t mxos_rtos_init_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
 {
     return lib_api_p->mxos_init_timer( timer, time_ms, function, arg );
 }
-mret_t mxos_rtos_start_timer( mxos_timer_t* timer )
+merr_t mxos_rtos_start_timer( mxos_timer_t* timer )
 {
     return lib_api_p->mxos_start_timer( timer );
 }
-mret_t mxos_rtos_stop_timer( mxos_timer_t* timer )
+merr_t mxos_rtos_stop_timer( mxos_timer_t* timer )
 {
     return lib_api_p->mxos_stop_timer( timer );
 }
-mret_t mxos_rtos_reload_timer( mxos_timer_t* timer )
+merr_t mxos_rtos_reload_timer( mxos_timer_t* timer )
 {
     return lib_api_p->mxos_reload_timer( timer );
 }
-mret_t mxos_rtos_deinit_timer( mxos_timer_t* timer )
+merr_t mxos_rtos_deinit_timer( mxos_timer_t* timer )
 {
     return lib_api_p->mxos_deinit_timer( timer );
 }
@@ -211,13 +211,13 @@ mxos_time_t mxos_rtos_get_time( void )
     return lib_api_p->mxos_get_time();
 }
 
-mret_t mxos_time_get_time( mxos_time_t* time_ptr )
+merr_t mxos_time_get_time( mxos_time_t* time_ptr )
 {
     *time_ptr = lib_api_p->mxos_get_time( ) + mxos_time_offset;
     return kNoErr;
 }
 
-mret_t mxos_time_set_time( const mxos_time_t* time_ptr )
+merr_t mxos_time_set_time( const mxos_time_t* time_ptr )
 {
     mxos_time_offset = *time_ptr - lib_api_p->mxos_get_time( );
     return kNoErr;
@@ -233,10 +233,10 @@ mret_t mxos_time_set_time( const mxos_time_t* time_ptr )
  * is less than the delay required, then makes up the difference
  * with a tight loop
  *
- * @return mret_t : kNoErr if delay was successful
+ * @return merr_t : kNoErr if delay was successful
  *
  */
-mret_t mos_thread_delay( uint32_t num_ms )
+merr_t mos_thread_delay( uint32_t num_ms )
 {
     lib_api_p->mxos_thread_msleep(num_ms);
     return kNoErr;

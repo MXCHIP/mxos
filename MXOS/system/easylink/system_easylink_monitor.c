@@ -82,7 +82,7 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
 /* MXOS callback when EasyLink is finished step 1, return SSID and KEY */
 static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t * const inContext )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action_string( nwkpara, exit, err = kTimeoutErr, "EasyLink Timeout or terminated" );
 
@@ -117,7 +117,7 @@ static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_contex
  */
 static void easylink_extra_data_cb( int datalen, char* data, system_context_t * const inContext )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     int index;
     uint32_t *identifier, ipInfoCount;
     char *debugString;
@@ -224,7 +224,7 @@ static void easylink_remove_bonjour_from_sta(void)
 
 static void easylink_monitor_thread( void *arg )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     system_context_t *context = (system_context_t *) arg;
 
     mxos_time_t current;
@@ -334,7 +334,7 @@ exit:
     mos_thread_delete( NULL );
 }
 
-mret_t mxos_easylink_monitor_channel_walker( mxos_bool_t enable, uint32_t interval )
+merr_t mxos_easylink_monitor_channel_walker( mxos_bool_t enable, uint32_t interval )
 {
     wlan_channel_walker = enable;
 
@@ -343,7 +343,7 @@ mret_t mxos_easylink_monitor_channel_walker( mxos_bool_t enable, uint32_t interv
     return kNoErr;
 }
 
-mret_t mxos_easylink_monitor_save_result( network_InitTypeDef_st *nwkpara )
+merr_t mxos_easylink_monitor_save_result( network_InitTypeDef_st *nwkpara )
 {
     system_context_t * context = system_context( );
 
@@ -362,9 +362,9 @@ mret_t mxos_easylink_monitor_save_result( network_InitTypeDef_st *nwkpara )
     return kNoErr;
 }
 
-mret_t mxos_easylink_monitor_with_easylink( mxos_Context_t * const in_context, mxos_bool_t enable )
+merr_t mxos_easylink_monitor_with_easylink( mxos_Context_t * const in_context, mxos_bool_t enable )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action( in_context, exit, err = kNotPreparedErr );
 
@@ -392,7 +392,7 @@ mret_t mxos_easylink_monitor_with_easylink( mxos_Context_t * const in_context, m
 }
 
 
-mret_t mxos_easylink_monitor( mxos_Context_t * const in_context, mxos_bool_t enable )
+merr_t mxos_easylink_monitor( mxos_Context_t * const in_context, mxos_bool_t enable )
 {
     mxos_wlan_monitor_no_easylink();
     return mxos_easylink_monitor_with_easylink( in_context, enable );

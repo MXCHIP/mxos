@@ -118,7 +118,7 @@ static uint8_t prefix_addr[][BLE_ACCESS_PREFIX_LEN] = {
  *  Worker thread
  */
 
-mret_t ble_access_create_worker_thread(void)
+merr_t ble_access_create_worker_thread(void)
 {
     return mos_worker_thread_new(&ble_access_worker_thread, 
                                           MXOS_DEFAULT_WORKER_PRIORITY,
@@ -126,7 +126,7 @@ mret_t ble_access_create_worker_thread(void)
                                           20);
 }
 
-mret_t ble_access_send_aync_event(event_handler_t event_handle, void *arg)
+merr_t ble_access_send_aync_event(event_handler_t event_handle, void *arg)
 {
     return mxos_rtos_send_asynchronous_event(&ble_access_worker_thread, event_handle, arg);
 }
@@ -142,9 +142,9 @@ static void ble_access_timer_callback(void *arg)
     }
 }
 
-mret_t ble_access_start_timer(ble_access_device_t *dev, event_handler_t timer_event_handle, void *arg)
+merr_t ble_access_start_timer(ble_access_device_t *dev, event_handler_t timer_event_handle, void *arg)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action(dev != NULL && timer_event_handle != NULL, exit, err = kParamErr);
 
@@ -160,9 +160,9 @@ exit:
     return err;
 }
 
-mret_t ble_access_stop_timer(ble_access_device_t *dev)
+merr_t ble_access_stop_timer(ble_access_device_t *dev)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action(dev != NULL, exit, err = kParamErr);
 
@@ -182,7 +182,7 @@ exit:
 /* Initialize a devices pool */
 void ble_access_initialize_devices(void)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     uint8_t  idx = 0;
 
     for (idx = 0; idx < ble_access_array_size(ble_access_devices); idx++) {
@@ -280,7 +280,7 @@ void ble_access_release_device(mxos_bool_t free, const ble_access_device_t *devi
  *  ---->
  *      addr = { 0x20, 0x73, 0x6a, 0x11, 0x22, 0x33 }
  */
-mret_t ble_access_generate_device_address(mxos_bt_device_address_t addr, uint32_t device_id)
+merr_t ble_access_generate_device_address(mxos_bt_device_address_t addr, uint32_t device_id)
 {
     uint8_t idx_addr_type = 0;
 
@@ -347,7 +347,7 @@ exit:
 /*
  * Get and parse manufacturer data from the Peer Device Advertisement data.
  */
-mret_t ble_access_get_manufactor_adv_data(uint8_t *eir_data,
+merr_t ble_access_get_manufactor_adv_data(uint8_t *eir_data,
                                             uint8_t  eir_data_length,
                                             ble_access_manufactor_data_t *manufactor_data)
 {
@@ -374,12 +374,12 @@ mret_t ble_access_get_manufactor_adv_data(uint8_t *eir_data,
 }
 
 /* Check wheter a ADV packet is valid type */
-mret_t ble_access_check_adv_type(const uint8_t *adv_data,
+merr_t ble_access_check_adv_type(const uint8_t *adv_data,
                                    uint8_t length,
                                    uint8_t adv_type,
                                    ble_access_manufactor_data_t *manu_data)
 {
-    mret_t                         err = kNoErr;
+    merr_t                         err = kNoErr;
     uint8_t                         *packet = NULL;
     uint8_t                          data_length = 0;
     ble_access_manufactor_data_t     manufactor_data;
@@ -457,15 +457,15 @@ mxos_bool_t ble_access_uuid_compare(const ble_access_uuid_t *uuid1, const ble_ac
     return MXOS_FALSE;
 }
 
-mret_t ble_access_connect_list_init( void )
+merr_t ble_access_connect_list_init( void )
 {
     mxos_rtos_init_mutex(&ble_access_conn_dev_list_mutex);
     return linked_list_init(&ble_access_connecting_device_list);
 }
 
-mret_t ble_access_connect_list_deinit(void)
+merr_t ble_access_connect_list_deinit(void)
 {
-    mret_t                err = kNoErr;
+    merr_t                err = kNoErr;
     mxos_bt_smart_device_t *dev = NULL;
 
     for(; ;) {
@@ -492,9 +492,9 @@ mxos_bool_t compare_device_by_address(linked_list_node_t* node_to_compare, void*
     }
 }
 
-mret_t ble_access_connect_list_add(const mxos_bt_smart_device_t *remote_device, mxos_bool_t is_reported)
+merr_t ble_access_connect_list_add(const mxos_bt_smart_device_t *remote_device, mxos_bool_t is_reported)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     ble_access_connecting_device_t *device_found, *new_device;
 
     require_action(remote_device != NULL, exit, err = kParamErr);
@@ -528,9 +528,9 @@ exit:
     return err;
 }
 
-mret_t ble_access_connect_list_set_report(const mxos_bt_smart_device_t *device, mxos_bool_t is_reported)
+merr_t ble_access_connect_list_set_report(const mxos_bt_smart_device_t *device, mxos_bool_t is_reported)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     ble_access_connecting_device_t *device_found;
 
     require_action(device != NULL, exit, err = kParamErr);
@@ -549,9 +549,9 @@ exit:
     return err;
 }
 
-mret_t ble_access_connect_list_get(mxos_bt_smart_device_t** device, mxos_bool_t *reported)
+merr_t ble_access_connect_list_get(mxos_bt_smart_device_t** device, mxos_bool_t *reported)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     ble_access_connecting_device_t* current_device;
 
     require_action(device != NULL, exit, err = kParamErr);
@@ -569,9 +569,9 @@ exit:
     return err;
 }
 
-mret_t ble_access_connect_list_get_by_address(mxos_bt_smart_device_t **device, mxos_bool_t *reported, const mxos_bt_device_address_t address)
+merr_t ble_access_connect_list_get_by_address(mxos_bt_smart_device_t **device, mxos_bool_t *reported, const mxos_bt_device_address_t address)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     ble_access_connecting_device_t *current_device;
 
     require_action(device != NULL && address != NULL, exit, err = kParamErr);
@@ -592,9 +592,9 @@ exit:
     return err;
 }
 
-mret_t ble_access_connect_list_find_by_address(const mxos_bt_device_address_t address)
+merr_t ble_access_connect_list_find_by_address(const mxos_bt_device_address_t address)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     ble_access_connecting_device_t *current_device;
 
     mxos_rtos_lock_mutex(&ble_access_conn_dev_list_mutex);
@@ -606,9 +606,9 @@ mret_t ble_access_connect_list_find_by_address(const mxos_bt_device_address_t ad
     return err;
 }
 
-mret_t ble_access_connect_list_remove(mxos_bt_smart_device_t *device)
+merr_t ble_access_connect_list_remove(mxos_bt_smart_device_t *device)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     ble_access_connecting_device_t* current_device;
 
     mxos_rtos_lock_mutex(&ble_access_conn_dev_list_mutex);

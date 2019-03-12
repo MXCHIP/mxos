@@ -83,10 +83,10 @@ typedef struct
  *               Static Function Declarations
  ******************************************************/
 
-static mret_t smartbridge_att_cache_get_free_cache          ( bt_smartbridge_att_cache_t** free_cache );
-static mret_t smartbridge_att_cache_insert_to_used_list     ( bt_smartbridge_att_cache_t* instance );
-static mret_t smartbridge_att_cache_return_to_free_list     ( bt_smartbridge_att_cache_t* instance );
-static mret_t smartbridge_att_cache_discover_all            ( bt_smartbridge_att_cache_t* cache, uint16_t connection_handle );
+static merr_t smartbridge_att_cache_get_free_cache          ( bt_smartbridge_att_cache_t** free_cache );
+static merr_t smartbridge_att_cache_insert_to_used_list     ( bt_smartbridge_att_cache_t* instance );
+static merr_t smartbridge_att_cache_return_to_free_list     ( bt_smartbridge_att_cache_t* instance );
+static merr_t smartbridge_att_cache_discover_all            ( bt_smartbridge_att_cache_t* cache, uint16_t connection_handle );
 static bool     smartbridge_att_cache_find_by_device_callback ( linked_list_node_t* node_to_compare, void* user_data );
 static bool     smartbridge_att_cache_get_free_callback       ( linked_list_node_t* node_to_compare, void* user_data );
 
@@ -102,10 +102,10 @@ static bt_smartbridge_att_cache_manager_t* att_cache_manager = NULL;
  *               Function Definitions
  ******************************************************/
 
-mret_t bt_smartbridge_att_cache_enable( uint32_t cache_count, mxos_bt_uuid_t cache_services[], uint32_t service_count )
+merr_t bt_smartbridge_att_cache_enable( uint32_t cache_count, mxos_bt_uuid_t cache_services[], uint32_t service_count )
 {
     uint32_t a;
-    mret_t result;
+    merr_t result;
     bt_smartbridge_att_cache_manager_t* manager;
     mxos_bt_uuid_t* services = NULL;
 
@@ -190,7 +190,7 @@ mret_t bt_smartbridge_att_cache_enable( uint32_t cache_count, mxos_bt_uuid_t cac
     return result;
 }
 
-mret_t bt_smartbridge_att_cache_disable( void )
+merr_t bt_smartbridge_att_cache_disable( void )
 {
     uint32_t a;
     linked_list_node_t* node = NULL;
@@ -240,7 +240,7 @@ mret_t bt_smartbridge_att_cache_disable( void )
     return MXOS_BT_SUCCESS;
 }
 
-mret_t bt_smartbridge_att_cache_get_list( bt_smartbridge_att_cache_t* cache, mxos_bt_smart_attribute_list_t** list )
+merr_t bt_smartbridge_att_cache_get_list( bt_smartbridge_att_cache_t* cache, mxos_bt_smart_attribute_list_t** list )
 {
     if ( cache == NULL || list == NULL )
     {
@@ -281,7 +281,7 @@ mxos_bool_t   bt_smartbridge_att_cache_get_active_state( const bt_smartbridge_at
     return cache->is_active;
 }
 
-mret_t bt_smartbridge_att_cache_set_active_state( bt_smartbridge_att_cache_t* cache, mxos_bool_t is_active )
+merr_t bt_smartbridge_att_cache_set_active_state( bt_smartbridge_att_cache_t* cache, mxos_bool_t is_active )
 {
     if ( cache == NULL )
     {
@@ -297,7 +297,7 @@ mret_t bt_smartbridge_att_cache_set_active_state( bt_smartbridge_att_cache_t* ca
     return MXOS_BT_SUCCESS;
 }
 
-mret_t bt_smartbridge_att_cache_lock( bt_smartbridge_att_cache_t* cache )
+merr_t bt_smartbridge_att_cache_lock( bt_smartbridge_att_cache_t* cache )
 {
     if ( cache == NULL )
     {
@@ -312,7 +312,7 @@ mret_t bt_smartbridge_att_cache_lock( bt_smartbridge_att_cache_t* cache )
     return mxos_rtos_lock_mutex( &cache->mutex );
 }
 
-mret_t bt_smartbridge_att_cache_unlock( bt_smartbridge_att_cache_t* cache )
+merr_t bt_smartbridge_att_cache_unlock( bt_smartbridge_att_cache_t* cache )
 {
     if ( cache == NULL )
     {
@@ -327,9 +327,9 @@ mret_t bt_smartbridge_att_cache_unlock( bt_smartbridge_att_cache_t* cache )
     return mxos_rtos_unlock_mutex( &cache->mutex );
 }
 
-mret_t bt_smartbridge_att_cache_find( const mxos_bt_smart_device_t* remote_device, bt_smartbridge_att_cache_t** cache )
+merr_t bt_smartbridge_att_cache_find( const mxos_bt_smart_device_t* remote_device, bt_smartbridge_att_cache_t** cache )
 {
-    mret_t      result;
+    merr_t      result;
     linked_list_node_t* node_found;
 
     if ( remote_device == NULL || cache == NULL )
@@ -360,10 +360,10 @@ mret_t bt_smartbridge_att_cache_find( const mxos_bt_smart_device_t* remote_devic
     return result;
 }
 
-mret_t bt_smartbridge_att_cache_generate( const mxos_bt_smart_device_t* remote_device, uint16_t connection_handle, bt_smartbridge_att_cache_t** cache )
+merr_t bt_smartbridge_att_cache_generate( const mxos_bt_smart_device_t* remote_device, uint16_t connection_handle, bt_smartbridge_att_cache_t** cache )
 {
     bt_smartbridge_att_cache_t* new_cache = NULL;
-    mret_t              result;
+    merr_t              result;
 
     if ( cache == NULL )
     {
@@ -413,9 +413,9 @@ mret_t bt_smartbridge_att_cache_generate( const mxos_bt_smart_device_t* remote_d
 }
 
 
-mret_t bt_smartbridge_att_cache_release( bt_smartbridge_att_cache_t* cache )
+merr_t bt_smartbridge_att_cache_release( bt_smartbridge_att_cache_t* cache )
 {
-    mret_t            result;
+    merr_t            result;
 
     if ( att_cache_manager == NULL )
     {
@@ -445,9 +445,9 @@ mret_t bt_smartbridge_att_cache_release( bt_smartbridge_att_cache_t* cache )
 }
 
 
-static mret_t smartbridge_att_cache_get_free_cache( bt_smartbridge_att_cache_t** free_cache )
+static merr_t smartbridge_att_cache_get_free_cache( bt_smartbridge_att_cache_t** free_cache )
 {
-    mret_t            result;
+    merr_t            result;
     linked_list_node_t* node;
 
     if ( att_cache_manager == NULL )
@@ -493,9 +493,9 @@ static mret_t smartbridge_att_cache_get_free_cache( bt_smartbridge_att_cache_t**
     return result;
 }
 
-static mret_t smartbridge_att_cache_insert_to_used_list( bt_smartbridge_att_cache_t* cache )
+static merr_t smartbridge_att_cache_insert_to_used_list( bt_smartbridge_att_cache_t* cache )
 {
-    mret_t  result;
+    merr_t  result;
 
     if ( att_cache_manager == NULL )
     {
@@ -517,9 +517,9 @@ static mret_t smartbridge_att_cache_insert_to_used_list( bt_smartbridge_att_cach
     return result;
 }
 
-static mret_t smartbridge_att_cache_return_to_free_list( bt_smartbridge_att_cache_t* cache )
+static merr_t smartbridge_att_cache_return_to_free_list( bt_smartbridge_att_cache_t* cache )
 {
-    mret_t result;
+    merr_t result;
 
     if ( att_cache_manager == NULL )
     {
@@ -541,7 +541,7 @@ static mret_t smartbridge_att_cache_return_to_free_list( bt_smartbridge_att_cach
     return result;
 }
 
-static mret_t smartbridge_att_cache_discover_all( bt_smartbridge_att_cache_t* cache, uint16_t connection_handle )
+static merr_t smartbridge_att_cache_discover_all( bt_smartbridge_att_cache_t* cache, uint16_t connection_handle )
 {
     /* This function performs the following:
      * 1. Primary Services discovery
@@ -557,8 +557,8 @@ static mret_t smartbridge_att_cache_discover_all( bt_smartbridge_att_cache_t* ca
     mxos_bt_smart_attribute_t*      descriptor_with_no_value = NULL;
     mxos_bt_smart_attribute_t*      descriptor_with_value    = NULL;
     mxos_bt_smart_attribute_t*      iterator                 = NULL;
-    mret_t                         result                   = MXOS_BT_SUCCESS;
-    mret_t                         error_code_var           = MXOS_BT_ERROR;
+    merr_t                         result                   = MXOS_BT_SUCCESS;
+    merr_t                         error_code_var           = MXOS_BT_ERROR;
     uint32_t                         i                        = 0;
     uint32_t                         j                        = 0;
     uint32_t                         primary_service_count    = 0;

@@ -72,7 +72,7 @@ static void aws_wifi_status_cb( WiFiEvent event, system_context_t * const inCont
 /* MXOS callback when EasyLink is finished step 1, return SSID and KEY */
 static void aws_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t * const inContext )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action_string( nwkpara, exit, err = kTimeoutErr, "AWS Timeout or terminated" );
 
@@ -185,7 +185,7 @@ static int aws_broadcast_notification(char *msg, int msg_num)
 
 static void aws_thread( void *arg )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     system_context_t *context = (system_context_t *) arg;
     char *aws_msg = aws_notify_msg_create(context);
 
@@ -271,9 +271,9 @@ exit:
     mos_thread_delete( NULL );
 }
 
-mret_t mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enable )
+merr_t mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enable )
 {
-    mret_t err = kUnknownErr;
+    merr_t err = kUnknownErr;
 
     require_action( in_context, exit, err = kNotPreparedErr );
 

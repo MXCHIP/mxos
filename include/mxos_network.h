@@ -109,7 +109,7 @@ void mxos_network_set_interface_priority( netif_t priorities[INTERFACE_MAX] );
  *
  * @return    None
  */
-mret_t mxos_network_switch_interface_auto( void );
+merr_t mxos_network_switch_interface_auto( void );
 
 /**@brief Disable auto switch mode, and set the default interface manually
  *
@@ -117,7 +117,7 @@ mret_t mxos_network_switch_interface_auto( void );
  *
  * @return    kNoErr on success
  */
-mret_t mxos_network_switch_interface_manual( netif_t interface );
+merr_t mxos_network_switch_interface_manual( netif_t interface );
 
 
 #ifdef __cplusplus

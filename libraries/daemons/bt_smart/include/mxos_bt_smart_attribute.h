@@ -300,7 +300,7 @@ typedef struct
  *
  * @return MXOS_BT_SUCCESS：success，MXOS_BT_BADARG：input argument error
  */
-mret_t mxos_bt_smart_attribute_create( mxos_bt_smart_attribute_t** attribute, mxos_bt_smart_attribute_type_t type, uint16_t variable_length );
+merr_t mxos_bt_smart_attribute_create( mxos_bt_smart_attribute_t** attribute, mxos_bt_smart_attribute_type_t type, uint16_t variable_length );
 
 /** Delete a Bluetooth Smart Attribute structure
  *
@@ -308,7 +308,7 @@ mret_t mxos_bt_smart_attribute_create( mxos_bt_smart_attribute_t** attribute, mx
  *
  * @return MXOS_BT_SUCCESS：success，MXOS_BT_BADARG：input argument error
  */
-mret_t mxos_bt_smart_attribute_delete( mxos_bt_smart_attribute_t* attribute );
+merr_t mxos_bt_smart_attribute_delete( mxos_bt_smart_attribute_t* attribute );
 
 /** Initialise a list of Bluetooth Smart Attributes
  *
@@ -316,33 +316,33 @@ mret_t mxos_bt_smart_attribute_delete( mxos_bt_smart_attribute_t* attribute );
  *
  * @return MXOS_BT_SUCCESS：success，MXOS_BT_BADARG：input argument error
  */
-mret_t mxos_bt_smart_attribute_create_list( mxos_bt_smart_attribute_list_t* list );
+merr_t mxos_bt_smart_attribute_create_list( mxos_bt_smart_attribute_list_t* list );
 
 /** Deinitialise a list of Bluetooth Smart Attributes
  *
  * @param[out] list : list to deinitialise
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smart_attribute_delete_list( mxos_bt_smart_attribute_list_t* list );
+merr_t mxos_bt_smart_attribute_delete_list( mxos_bt_smart_attribute_list_t* list );
 
 /** Add a Bluetooth Smart Attribute to a list
  *
  * @param[in,out] list      : list to add attribute to
  * @param[in]     attribute : attribute to add to the list
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smart_attribute_add_to_list( mxos_bt_smart_attribute_list_t* list, mxos_bt_smart_attribute_t* attribute );
+merr_t mxos_bt_smart_attribute_add_to_list( mxos_bt_smart_attribute_list_t* list, mxos_bt_smart_attribute_t* attribute );
 
 /** Remove a Bluetooth Smart Attribute with the given handle from a list
  *
  * @param[in,out] list   : list to remote attribute from
  * @param[in]     handle : handle of the attribute to remove
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smart_attribute_remove_from_list( mxos_bt_smart_attribute_list_t* list, uint16_t handle );
+merr_t mxos_bt_smart_attribute_remove_from_list( mxos_bt_smart_attribute_list_t* list, uint16_t handle );
 
 /** Find a Bluetooth Smart Attribute with the given handle from a list
  *
@@ -350,9 +350,9 @@ mret_t mxos_bt_smart_attribute_remove_from_list( mxos_bt_smart_attribute_list_t*
  * @param[in]     handle    : handle of the attribute to find
  * @param[out]    attribute : pointer that will receive the attribute
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smart_attribute_search_list_by_handle( const mxos_bt_smart_attribute_list_t* list, uint16_t handle, mxos_bt_smart_attribute_t** attribute );
+merr_t mxos_bt_smart_attribute_search_list_by_handle( const mxos_bt_smart_attribute_list_t* list, uint16_t handle, mxos_bt_smart_attribute_t** attribute );
 
 /** Find a Bluetooth Smart Attribute with the given handle from a list
  *
@@ -362,43 +362,43 @@ mret_t mxos_bt_smart_attribute_search_list_by_handle( const mxos_bt_smart_attrib
  * @param[in]     ending_handle   : handle to end the search
  * @param[out]    attribute       : pointer that will receive the attribute
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smart_attribute_search_list_by_uuid( const mxos_bt_smart_attribute_list_t* list, const mxos_bt_uuid_t* uuid, uint16_t starting_handle,  uint16_t ending_handle, mxos_bt_smart_attribute_t** attribute );
+merr_t mxos_bt_smart_attribute_search_list_by_uuid( const mxos_bt_smart_attribute_list_t* list, const mxos_bt_uuid_t* uuid, uint16_t starting_handle,  uint16_t ending_handle, mxos_bt_smart_attribute_t** attribute );
 
 /** Merge two Bluetooth Smart Attribute lists
  *
  * @param[in,out] trunk_list   : list that will receive all of the attributes from the branch list
  * @param[in,out] branch_list  : list whose attributes will be removed and inserted into the trunk list
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smart_attribute_merge_lists( mxos_bt_smart_attribute_list_t* trunk_list, mxos_bt_smart_attribute_list_t* branch_list );
+merr_t mxos_bt_smart_attribute_merge_lists( mxos_bt_smart_attribute_list_t* trunk_list, mxos_bt_smart_attribute_list_t* branch_list );
 
 /** Print attribute contents
  *
  * @param[in] attribute : attribute to print
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smart_attribute_print( const mxos_bt_smart_attribute_t* attribute );
+merr_t mxos_bt_smart_attribute_print( const mxos_bt_smart_attribute_t* attribute );
 
 /** Print the contents of all attributes in a list
  *
  * @param[in] list : list whose attributes to print
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smart_attribute_print_list( const mxos_bt_smart_attribute_list_t* list );
+merr_t mxos_bt_smart_attribute_print_list( const mxos_bt_smart_attribute_list_t* list );
 
 /** Get attribute list head
  *
  * @param[in]  list : attribute list
  * @param[out] head : pointer that will receive the list head
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smart_attribute_get_list_head( const mxos_bt_smart_attribute_list_t* list, mxos_bt_smart_attribute_t** head );
+merr_t mxos_bt_smart_attribute_get_list_head( const mxos_bt_smart_attribute_list_t* list, mxos_bt_smart_attribute_t** head );
 
 
 /** Get attribute list count
@@ -406,9 +406,9 @@ mret_t mxos_bt_smart_attribute_get_list_head( const mxos_bt_smart_attribute_list
  * @param[in]  list  : attribute list
  * @param[out] count : variable that will receive the count
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smart_attribute_get_list_count( const mxos_bt_smart_attribute_list_t* list, uint32_t* count );
+merr_t mxos_bt_smart_attribute_get_list_count( const mxos_bt_smart_attribute_list_t* list, uint32_t* count );
 
 /** @} */
 

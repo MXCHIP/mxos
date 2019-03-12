@@ -60,12 +60,12 @@ uint8_t paraSaveInRam[16*1024];
 #define update_log(M, ...) custom_log("UPDATE", M, ##__VA_ARGS__)
 #define update_log_trace() custom_log_trace("UPDATE")
 
-static mret_t checkcrc(uint16_t crc_in, int partition_type, int total_len)
+static merr_t checkcrc(uint16_t crc_in, int partition_type, int total_len)
 {
     uint16_t crc = 0;
     mxos_logic_partition_t* part;
     int len;
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     uint32_t update_data_offset = 0x0;
     CRC16_Context contex;
 
@@ -138,7 +138,7 @@ Log_Status updateLogCheck( boot_table_t *updateLog, mxos_partition_t *dest_parti
 }
 
 
-mret_t update(void)
+merr_t update(void)
 {
   boot_table_t updateLog;
   uint32_t i, j, size;
@@ -150,7 +150,7 @@ mret_t update(void)
   //uint8_t *paraSaveInRam = NULL;
   mxos_logic_partition_t *ota_partition_info, *dest_partition_info, *para_partition_info;
   mxos_partition_t dest_partition;
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
 
   ota_partition_info = mxos_flash_get_info(MXOS_PARTITION_OTA_TEMP);
   require_action( ota_partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kUnsupportedErr );

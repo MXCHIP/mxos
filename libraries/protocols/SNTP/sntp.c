@@ -107,7 +107,7 @@ typedef struct
  *               Static Function Declarations
  ******************************************************/
 
-static mret_t sync_ntp_time( void* arg );
+static merr_t sync_ntp_time( void* arg );
 
 /******************************************************
  *               Variable Definitions
@@ -122,9 +122,9 @@ static struct in_addr ntp_server[2];
  *               Function Definitions
  ******************************************************/
 
-mret_t sntp_start_auto_time_sync( uint32_t interval_ms, time_synced_fun call_back )
+merr_t sntp_start_auto_time_sync( uint32_t interval_ms, time_synced_fun call_back )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     uint8_t random_initial;
 
     time_synced_call_back = call_back;
@@ -140,7 +140,7 @@ mret_t sntp_start_auto_time_sync( uint32_t interval_ms, time_synced_fun call_bac
     return err;
 }
 
-mret_t sntp_set_server_ip_address( uint32_t index, struct in_addr address )
+merr_t sntp_set_server_ip_address( uint32_t index, struct in_addr address )
 {
     if ( (index != 0) && (index != 1) )
         return kParamErr;
@@ -149,7 +149,7 @@ mret_t sntp_set_server_ip_address( uint32_t index, struct in_addr address )
     return kNoErr;
 }
 
-mret_t sntp_clr_server_ip_address( uint32_t index )
+merr_t sntp_clr_server_ip_address( uint32_t index )
 {
     if ( index > 1 )
         return kParamErr;
@@ -158,15 +158,15 @@ mret_t sntp_clr_server_ip_address( uint32_t index )
     return kNoErr;
 }
 
-mret_t sntp_stop_auto_time_sync( void )
+merr_t sntp_stop_auto_time_sync( void )
 {
     return mxos_rtos_deregister_timed_event( &sync_ntp_time_event );
 }
 
-mret_t sntp_get_time( const struct in_addr *ntp_server_ip, ntp_timestamp_t* timestamp)
+merr_t sntp_get_time( const struct in_addr *ntp_server_ip, ntp_timestamp_t* timestamp)
 {
     int                Ntp_fd = -1;
-    mret_t           err;
+    merr_t           err;
     ntp_packet_t       data;
     mxos_utc_time_t    utc_time;
     fd_set             readfds;
@@ -239,9 +239,9 @@ mret_t sntp_get_time( const struct in_addr *ntp_server_ip, ntp_timestamp_t* time
     return err;
 }
 
-static mret_t sync_ntp_time( void* arg )
+static merr_t sync_ntp_time( void* arg )
 {
-    mret_t             err = kGeneralErr;
+    merr_t             err = kGeneralErr;
     ntp_timestamp_t      current_time;
     struct hostent *     hostent_content = NULL;
     struct in_addr       ntp_server_ip;

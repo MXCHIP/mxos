@@ -21,9 +21,9 @@
 #include "sensor/BMM050/bmm050_user.h"
 #include "motion_sensor.h"
 
-mret_t motion_sensor_init(void)
+merr_t motion_sensor_init(void)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   
   /*low-g acceleration sensor init*/
   err = bma2x2_sensor_init();
@@ -41,9 +41,9 @@ exit:
   return err;
 }
 
-mret_t motion_sensor_readout(motion_data_t *motion_data)
+merr_t motion_sensor_readout(motion_data_t *motion_data)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   
   /*low-g acceleration sensor data read*/
   err = bma2x2_data_readout(&motion_data->accel_data.accel_datax,
@@ -67,9 +67,9 @@ exit:
   return err;
 }
 
-mret_t motion_sensor_deinit(void)
+merr_t motion_sensor_deinit(void)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   
   /*low-g acceleration sensor deinit*/
   err = bma2x2_sensor_deinit();

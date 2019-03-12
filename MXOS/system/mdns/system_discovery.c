@@ -27,7 +27,7 @@
 static struct mdns_service mxos_system_service;
 static char keyvals[SYS_TXT_LEN];
 
-mret_t system_discovery_init(system_context_t * const inContext)
+merr_t system_discovery_init(system_context_t * const inContext)
 {
     char *val;
 

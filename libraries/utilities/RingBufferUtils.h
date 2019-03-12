@@ -66,7 +66,7 @@ typedef struct
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-mret_t ring_buffer_init( ring_buffer_t* ring_buffer, uint8_t* buffer, uint32_t size );
+merr_t ring_buffer_init( ring_buffer_t* ring_buffer, uint8_t* buffer, uint32_t size );
 
 
 /**
@@ -77,7 +77,7 @@ mret_t ring_buffer_init( ring_buffer_t* ring_buffer, uint8_t* buffer, uint32_t s
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-mret_t ring_buffer_deinit( ring_buffer_t* ring_buffer );
+merr_t ring_buffer_deinit( ring_buffer_t* ring_buffer );
 
 
 /**
@@ -109,7 +109,7 @@ uint32_t ring_buffer_used_space( ring_buffer_t* ring_buffer );
  *
  * @return   
  */
-mret_t ring_buffer_get_data( ring_buffer_t* ring_buffer, uint8_t** data, uint32_t* contiguous_bytes );
+merr_t ring_buffer_get_data( ring_buffer_t* ring_buffer, uint8_t** data, uint32_t* contiguous_bytes );
 
 
 /**
@@ -120,7 +120,7 @@ mret_t ring_buffer_get_data( ring_buffer_t* ring_buffer, uint8_t** data, uint32_
  *
  * @return   
  */
-mret_t ring_buffer_consume( ring_buffer_t* ring_buffer, uint32_t bytes_consumed );
+merr_t ring_buffer_consume( ring_buffer_t* ring_buffer, uint32_t bytes_consumed );
 
 
 
@@ -137,7 +137,7 @@ uint32_t ring_buffer_write( ring_buffer_t* ring_buffer, const uint8_t* data, uin
 
 uint8_t ring_buffer_is_full(ring_buffer_t *ring_buffer);
 
-mret_t ring_buffer_read( ring_buffer_t* ring_buffer, uint8_t* data, uint32_t data_length, uint32_t* number_of_bytes_read );
+merr_t ring_buffer_read( ring_buffer_t* ring_buffer, uint8_t* data, uint32_t data_length, uint32_t* number_of_bytes_read );
 /**
   * @}
   */

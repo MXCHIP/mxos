@@ -28,9 +28,9 @@ mxos_i2c_device_t apds_i2c_device = {
   APDS9930_I2C_DEVICE, APDS9930_ID, I2C_ADDRESS_WIDTH_7BIT, I2C_STANDARD_SPEED_MODE
 };
 
-mret_t APDS9930_I2C_bus_write(uint8_t reg_addr, uint8_t *reg_data, uint8_t cnt)
+merr_t APDS9930_I2C_bus_write(uint8_t reg_addr, uint8_t *reg_data, uint8_t cnt)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   mxos_i2c_message_t apds_i2c_msg = {NULL, NULL, 0, 0, 0, false};
 
   uint8_t array[APDS_BUFFER_LEN];
@@ -49,9 +49,9 @@ exit:
   return err;
 }
 
-mret_t APDS9930_I2C_bus_read(uint8_t *reg_data, uint8_t cnt)
+merr_t APDS9930_I2C_bus_read(uint8_t *reg_data, uint8_t cnt)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   mxos_i2c_message_t apds_i2c_msg = {NULL, NULL, 0, 0, 0, false};
 
   err = mxos_i2c_build_rx_msg(&apds_i2c_msg, reg_data, cnt, 3);
@@ -63,24 +63,24 @@ exit:
   return err;
 }
 
-mret_t APDS9930_Write_RegData(uint8_t reg_addr, uint8_t reg_data)
+merr_t APDS9930_Write_RegData(uint8_t reg_addr, uint8_t reg_data)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   err = APDS9930_I2C_bus_write(0x80|reg_addr, &reg_data, 1);
   return err;
 }
 
-mret_t APDS9930_Read_RegData(uint8_t reg_addr, uint8_t *reg_data)
+merr_t APDS9930_Read_RegData(uint8_t reg_addr, uint8_t *reg_data)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   err = APDS9930_I2C_bus_write(0xA0|reg_addr, NULL, 0);
   err = APDS9930_I2C_bus_read(reg_data, 1);
   return err;  
 }
 
-mret_t APDS9930_Clear_intrtrupt( void )
+merr_t APDS9930_Clear_intrtrupt( void )
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   err = APDS9930_I2C_bus_write(0x80|CLIT_ADDR, NULL, 0);
   return err;
 }
@@ -102,9 +102,9 @@ void apds9930_enable()
   mxos_thread_msleep(12);
 }
  
-mret_t apds9930_data_readout(uint16_t *Prox_data, uint16_t *Lux_data)
+merr_t apds9930_data_readout(uint16_t *Prox_data, uint16_t *Lux_data)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   uint8_t  CH0L_data = 0, CH0H_data = 0, CH1L_data = 0, CH1H_data = 0, ProxL_data = 0, ProxH_data = 0, status = 0; 
   uint16_t CH0_data = 0, CH1_data = 0; 
   int IAC1 = 0, IAC2 = 0, IAC = 0;
@@ -153,9 +153,9 @@ exit:
   return err;
 }
 
-mret_t apds9930_sensor_init(void)
+merr_t apds9930_sensor_init(void)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   uint8_t device_id;
   
   mxos_i2c_deinit(&apds_i2c_device); 
@@ -187,9 +187,9 @@ exit:
   return err;
 }
 
-mret_t apds9930_sensor_deinit(void)
+merr_t apds9930_sensor_deinit(void)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   
   err = mxos_i2c_deinit(&apds_i2c_device);
   require_noerr_action( err, exit, apds9930_log("APDS9930_ERROR: mxos_i2c_deinit err = %d.", err));

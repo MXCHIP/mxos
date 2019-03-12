@@ -36,9 +36,9 @@ static mos_worker_thread_id_t wlan_autoconf_worker_thread;
  *               Variables Definitions
  ******************************************************/
 
-static mret_t system_config_mode_worker( void *arg )
+static merr_t system_config_mode_worker( void *arg )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     mxos_Context_t* in_context = mxos_system_context_get();
     require( in_context, exit );
 
@@ -68,7 +68,7 @@ exit:
     return err;
 }
 
-mret_t mxos_system_wlan_start_autoconf( void )
+merr_t mxos_system_wlan_start_autoconf( void )
 {
   /* Enter auto-conf mode only once in reboot mode, use MXOS_NETWORKING_WORKER_THREAD to save ram */
 #ifdef  EasyLink_Needs_Reboot
@@ -79,9 +79,9 @@ mret_t mxos_system_wlan_start_autoconf( void )
 }
 
 
-mret_t mxos_system_init( mxos_Context_t* in_context )
+merr_t mxos_system_init( mxos_Context_t* in_context )
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
 
   require_action( in_context, exit, err = kNotPreparedErr );
 

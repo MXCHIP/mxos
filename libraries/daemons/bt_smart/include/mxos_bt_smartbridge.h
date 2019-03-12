@@ -56,22 +56,22 @@ typedef struct mxos_bt_smartbridge_auto_conn_cback_parm mxos_bt_smartbridge_auto
 /**
  * Socket disconnection callback
  */
-typedef mret_t (*mxos_bt_smartbridge_disconnection_callback_t)       ( mxos_bt_smartbridge_socket_t* socket );
+typedef merr_t (*mxos_bt_smartbridge_disconnection_callback_t)       ( mxos_bt_smartbridge_socket_t* socket );
 
 /**
  * Socket GATT notification callback
  */
-typedef mret_t (*mxos_bt_smartbridge_notification_callback_t)        ( mxos_bt_smartbridge_socket_t* socket, uint16_t attribute_handle );
+typedef merr_t (*mxos_bt_smartbridge_notification_callback_t)        ( mxos_bt_smartbridge_socket_t* socket, uint16_t attribute_handle );
 
 /**
  * BLE Auto connection callback 
  */
-typedef mret_t (*mxos_bt_smartbridge_auto_connection_callback_t)     ( mxos_bt_smartbridge_socket_t *socket );
+typedef merr_t (*mxos_bt_smartbridge_auto_connection_callback_t)     ( mxos_bt_smartbridge_socket_t *socket );
 
 /**
  * BLE Auto connection parameters callback -- auto connection procedure callback
  */
-typedef mret_t (*mxos_bt_smartbridge_auto_connection_parms_cback_t)   ( const mxos_bt_device_address_t random_bda, const char *name, const uint8_t *p_data, uint8_t len, mxos_bt_smartbridge_auto_conn_cback_parms_t *parm );
+typedef merr_t (*mxos_bt_smartbridge_auto_connection_parms_cback_t)   ( const mxos_bt_device_address_t random_bda, const char *name, const uint8_t *p_data, uint8_t len, mxos_bt_smartbridge_auto_conn_cback_parms_t *parm );
 
 
 /******************************************************
@@ -155,9 +155,9 @@ struct mxos_bt_smartbridge_auto_conn_cback_parm
  * After calling @ref mxos_bt_smartbridge_init, you may call:
  * \li  @ref mxos_bt_smartbridge_enable_attribute_cache() to enable Attribute Cache
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_init( uint8_t count );
+merr_t mxos_bt_smartbridge_init( uint8_t count );
 
 
 /** Deinitialise the MXOS SmartBridge
@@ -169,9 +169,9 @@ mret_t mxos_bt_smartbridge_init( uint8_t count );
  * \li SmartBridge Socket Manager
  * \li SmartBridge Attribute Cache Manager (if enabled)
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_deinit( void );
+merr_t mxos_bt_smartbridge_deinit( void );
 
 
 /** Enable Attribute Cache
@@ -196,9 +196,9 @@ mret_t mxos_bt_smartbridge_deinit( void );
  * @param[in]  service_count  : the number of services to generate caches, pass 0 to generate 
  *                              all primary services
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_enable_attribute_cache( uint32_t cache_count, mxos_bt_uuid_t cache_services[], uint32_t service_count );
+merr_t mxos_bt_smartbridge_enable_attribute_cache( uint32_t cache_count, mxos_bt_uuid_t cache_services[], uint32_t service_count );
 
 
 /** Disable Attribute Cache
@@ -206,9 +206,9 @@ mret_t mxos_bt_smartbridge_enable_attribute_cache( uint32_t cache_count, mxos_bt
  * @note
  * This function disables the attribute caching feature
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_disable_attribute_cache( void );
+merr_t mxos_bt_smartbridge_disable_attribute_cache( void );
 
 
 /** @} */
@@ -260,9 +260,9 @@ mxos_bool_t   mxos_bt_smartbridge_is_scanning( void );
  * @param[in]  advertising_report_callback  : callback function which is called when an advertising
  *                                            report is received
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_start_scan( const mxos_bt_smart_scan_settings_t*        settings,
+merr_t mxos_bt_smartbridge_start_scan( const mxos_bt_smart_scan_settings_t*        settings,
                                                 mxos_bt_smart_scan_complete_callback_t      complete_callback,
                                                 mxos_bt_smart_advertising_report_callback_t advertising_report_callback );
 
@@ -272,9 +272,9 @@ mret_t mxos_bt_smartbridge_start_scan( const mxos_bt_smart_scan_settings_t*     
  * This function instructs the Bluetooth controller to stop scanning for remote
  * Bluetooth Smart devices.
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_stop_scan( void );
+merr_t mxos_bt_smartbridge_stop_scan( void );
 
 
 /** Retrieve the most recent scan results
@@ -288,9 +288,9 @@ mret_t mxos_bt_smartbridge_stop_scan( void );
  * @param[out]  result_list : pointer that will receive the result linked-list
  * @param[out]  count       : variable that will receive the result count
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_get_scan_result_list( mxos_bt_smart_scan_result_t** result_list, uint32_t* count );
+merr_t mxos_bt_smartbridge_get_scan_result_list( mxos_bt_smart_scan_result_t** result_list, uint32_t* count );
 
 /** @} */
 
@@ -314,9 +314,9 @@ mret_t mxos_bt_smartbridge_get_scan_result_list( mxos_bt_smart_scan_result_t** r
  *
  * @param[out]  size : device count
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_get_background_connection_devices_size( uint8_t *size );
+merr_t mxos_bt_smartbridge_get_background_connection_devices_size( uint8_t *size );
 
 /** Set auto connection action - start or stop. 
  *
@@ -334,9 +334,9 @@ mret_t mxos_bt_smartbridge_get_background_connection_devices_size( uint8_t *size
  *                                stack. Users should fill a socket entity, 
  *                                connection settings and callback function.
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_set_auto_connection_action( mxos_bool_t start_stop, const mxos_bt_smart_scan_settings_t *scan_settings, mxos_bt_smartbridge_auto_connection_parms_cback_t p_auto_conn_cback );
+merr_t mxos_bt_smartbridge_set_auto_connection_action( mxos_bool_t start_stop, const mxos_bt_smart_scan_settings_t *scan_settings, mxos_bt_smartbridge_auto_connection_parms_cback_t p_auto_conn_cback );
 
 
 /** @} */
@@ -370,9 +370,9 @@ mxos_bool_t   mxos_bt_smartbridge_is_ready_to_connect( void );
  * @param[in]  socket : pointer to the socket to get the status
  * @param[out] status : socket status
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_get_socket_status( mxos_bt_smartbridge_socket_t* socket, mxos_bt_smartbridge_socket_status_t* status );
+merr_t mxos_bt_smartbridge_get_socket_status( mxos_bt_smartbridge_socket_t* socket, mxos_bt_smartbridge_socket_status_t* status );
 
 
 /** Create a SmartBridge socket
@@ -384,9 +384,9 @@ mret_t mxos_bt_smartbridge_get_socket_status( mxos_bt_smartbridge_socket_t* sock
  *
  * @param[out]  socket : pointer to the socket to initialise
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_create_socket( mxos_bt_smartbridge_socket_t* socket );
+merr_t mxos_bt_smartbridge_create_socket( mxos_bt_smartbridge_socket_t* socket );
 
 
 /** Delete a SmartBridge socket
@@ -396,9 +396,9 @@ mret_t mxos_bt_smartbridge_create_socket( mxos_bt_smartbridge_socket_t* socket )
  *
  * @param[in,out]  socket : pointer to the socket to deinitialise
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_delete_socket( mxos_bt_smartbridge_socket_t* socket );
+merr_t mxos_bt_smartbridge_delete_socket( mxos_bt_smartbridge_socket_t* socket );
 
 
 /** Initiate a SmartBridge connection with a remote Bluetooth Smart device
@@ -434,9 +434,9 @@ mret_t mxos_bt_smartbridge_delete_socket( mxos_bt_smartbridge_socket_t* socket )
  *
 
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t*                socket,
+merr_t mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t*                socket,
                                        const mxos_bt_smart_device_t*                remote_device,
                                        const mxos_bt_smart_connection_settings_t*   settings,
                                        mxos_bt_smartbridge_disconnection_callback_t disconnection_callback,
@@ -451,9 +451,9 @@ mret_t mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t*               
  * @param[in,out]  socket : pointer to the socket of the connection to disconnect
  * @param[in] remove_it_from_whitelist: this device is remove from the white list if TRUE.
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_disconnect( mxos_bt_smartbridge_socket_t* socket, mxos_bool_t remove_it_from_whitelist );
+merr_t mxos_bt_smartbridge_disconnect( mxos_bt_smartbridge_socket_t* socket, mxos_bool_t remove_it_from_whitelist );
 
 
 /** Set transmit power during connection
@@ -464,9 +464,9 @@ mret_t mxos_bt_smartbridge_disconnect( mxos_bt_smartbridge_socket_t* socket, mxo
  * @param[in]  socket             : pointer to the socket of the connection
  * @param[in]  transmit_power_dbm : transmit power in dBm
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_set_transmit_power( mxos_bt_smartbridge_socket_t* socket, int8_t transmit_power_dbm );
+merr_t mxos_bt_smartbridge_set_transmit_power( mxos_bt_smartbridge_socket_t* socket, int8_t transmit_power_dbm );
 
 /** @} */
 
@@ -496,9 +496,9 @@ mret_t mxos_bt_smartbridge_set_transmit_power( mxos_bt_smartbridge_socket_t* soc
  * @param[in]      settings  : security settings
  * @param[in]      bond_info : Bond information
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_set_bond_info( mxos_bt_smartbridge_socket_t*            socket,
+merr_t mxos_bt_smartbridge_set_bond_info( mxos_bt_smartbridge_socket_t*            socket,
                                              const mxos_bt_smart_security_settings_t* settings,
                                              const mxos_bt_smart_bond_info_t*         bond_info );
 
@@ -510,9 +510,9 @@ mret_t mxos_bt_smartbridge_set_bond_info( mxos_bt_smartbridge_socket_t*         
  *
  * @param[in,out]  socket : pointer to the socket of the connection to disconnect
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_clear_bond_info( mxos_bt_smartbridge_socket_t* socket );
+merr_t mxos_bt_smartbridge_clear_bond_info( mxos_bt_smartbridge_socket_t* socket );
 
 
 /** Force a SmartBridge socket to initiate Pairing Request with a Bluetooth Smart device
@@ -533,9 +533,9 @@ mret_t mxos_bt_smartbridge_clear_bond_info( mxos_bt_smartbridge_socket_t* socket
  *
  * @note:
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_enable_pairing( mxos_bt_smartbridge_socket_t*             socket,
+merr_t mxos_bt_smartbridge_enable_pairing( mxos_bt_smartbridge_socket_t*             socket,
                                               const mxos_bt_smart_security_settings_t* settings,
                                               mxos_bt_smart_bonding_callback_t         bonding_callback );
 
@@ -547,9 +547,9 @@ mret_t mxos_bt_smartbridge_enable_pairing( mxos_bt_smartbridge_socket_t*        
  *
  * @param[in,out]  socket : pointer to the socket to disable pairing
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_disable_pairing( mxos_bt_smartbridge_socket_t* socket );
+merr_t mxos_bt_smartbridge_disable_pairing( mxos_bt_smartbridge_socket_t* socket );
 
 /** @} */
 
@@ -576,9 +576,9 @@ mret_t mxos_bt_smartbridge_disable_pairing( mxos_bt_smartbridge_socket_t* socket
  * @param[in] socket : socket to enable notifications
  * @param[in] is_notification_or_indication: Enable Notification or Indication
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_enable_attribute_cache_notification( mxos_bt_smartbridge_socket_t* socket, mxos_bool_t is_notification_or_indication );
+merr_t mxos_bt_smartbridge_enable_attribute_cache_notification( mxos_bt_smartbridge_socket_t* socket, mxos_bool_t is_notification_or_indication );
 
 
 /** Disable all GATT notifications supported by the server
@@ -591,9 +591,9 @@ mret_t mxos_bt_smartbridge_enable_attribute_cache_notification( mxos_bt_smartbri
  *
  * @param[in] socket : socket to disable notifications
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_disable_attribute_cache_notification( mxos_bt_smartbridge_socket_t* socket );
+merr_t mxos_bt_smartbridge_disable_attribute_cache_notification( mxos_bt_smartbridge_socket_t* socket );
 
 /** Release attribute cache data
  *
@@ -604,9 +604,9 @@ mret_t mxos_bt_smartbridge_disable_attribute_cache_notification( mxos_bt_smartbr
  *
  * @param[in] socket : socket to delete attribute cache
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_remove_attribute_cache( mxos_bt_smartbridge_socket_t* socket );
+merr_t mxos_bt_smartbridge_remove_attribute_cache( mxos_bt_smartbridge_socket_t* socket );
 
 /** Retrieve the list of cached Attributes
  *
@@ -618,9 +618,9 @@ mret_t mxos_bt_smartbridge_remove_attribute_cache( mxos_bt_smartbridge_socket_t*
  * @param[in] socket          : socket to get the Attribute list from
  * @param[out] att_cache_list : pointer that will receive the Attribute list
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_get_attribute_cache_list( mxos_bt_smartbridge_socket_t* socket, mxos_bt_smart_attribute_list_t** att_cache_list );
+merr_t mxos_bt_smartbridge_get_attribute_cache_list( mxos_bt_smartbridge_socket_t* socket, mxos_bt_smart_attribute_list_t** att_cache_list );
 
 
 /** Find and read attribute with the handle provided from the Attribute Cache
@@ -636,9 +636,9 @@ mret_t mxos_bt_smartbridge_get_attribute_cache_list( mxos_bt_smartbridge_socket_
  * @param[in,out]  attribute : pointer to the buffer which will contain the attribute
  * @param[in]      size      : buffer size in bytes
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_get_attribute_cache_by_handle( mxos_bt_smartbridge_socket_t* socket, uint16_t handle, mxos_bt_smart_attribute_t* attribute, uint16_t size );
+merr_t mxos_bt_smartbridge_get_attribute_cache_by_handle( mxos_bt_smartbridge_socket_t* socket, uint16_t handle, mxos_bt_smart_attribute_t* attribute, uint16_t size );
 
 
 /** Find and read attribute with the UUID provided from the local attribute database
@@ -656,11 +656,11 @@ mret_t mxos_bt_smartbridge_get_attribute_cache_by_handle( mxos_bt_smartbridge_so
  * @param[in,out]  attribute       : pointer to the buffer which will contain the attribute content
  * @param[in]      size            : buffer size in bytes
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_smartbridge_get_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size );
-mret_t mxos_bt_smartbridge_get_service_from_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size );
-mret_t mxos_bt_smartbridge_get_characteritics_from_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size );
+merr_t mxos_bt_smartbridge_get_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size );
+merr_t mxos_bt_smartbridge_get_service_from_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size );
+merr_t mxos_bt_smartbridge_get_characteritics_from_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size );
 
 
 /** Find and refresh Characteristic Value with the given handle in the Attribute Cache
@@ -674,9 +674,9 @@ mret_t mxos_bt_smartbridge_get_characteritics_from_attribute_cache_by_uuid( mxos
  * @param[in] socket : socket with the Characteristic Value to refresh
  * @param[in] handle : handle of the Characteritic Value to refresh
  *
- * @return mret_t
+ * @return merr_t
  */
-mret_t mxos_bt_smartbridge_refresh_attribute_cache_characteristic_value( mxos_bt_smartbridge_socket_t* socket, uint16_t handle );
+merr_t mxos_bt_smartbridge_refresh_attribute_cache_characteristic_value( mxos_bt_smartbridge_socket_t* socket, uint16_t handle );
 
 
 /** Write Characteristic Value in the Attribute Cache to the server
@@ -690,9 +690,9 @@ mret_t mxos_bt_smartbridge_refresh_attribute_cache_characteristic_value( mxos_bt
  * @param[in] socket               : socket with the Characteristic Value to write to the server
  * @param[in] characteristic_value : Characteritic Value to write to the server
  *
- * @return mret_t
+ * @return merr_t
  */
-mret_t mxos_bt_smartbridge_write_attribute_cache_characteristic_value( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_attribute_t* characteristic_value );
+merr_t mxos_bt_smartbridge_write_attribute_cache_characteristic_value( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_attribute_t* characteristic_value );
 
 /** @} */
 

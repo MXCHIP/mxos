@@ -24,9 +24,9 @@ static volatile temp_hum_sensor_type_t temp_hum_sensor_type = MXOSKIT_TEMP_HUM_S
 
 /*---------------------------------- function --------------------------------*/
 
-mret_t temp_hum_sensor_init(void)
+merr_t temp_hum_sensor_init(void)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   uint8_t ret = 0;
 
   err = bme280_sensor_init();
@@ -49,9 +49,9 @@ mret_t temp_hum_sensor_init(void)
   return err;
 }
 
-mret_t temp_hum_sensor_read(int32_t *temperature,  uint32_t *humidity)
+merr_t temp_hum_sensor_read(int32_t *temperature,  uint32_t *humidity)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   uint8_t ret = 0;
   uint8_t dht11_temp = 0;
   uint8_t dht11_hum = 0;

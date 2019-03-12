@@ -82,7 +82,7 @@ static uint16_t dns_read_uint16( dns_message_iterator_t* iter );
 static void dns_skip_name( dns_message_iterator_t* iter );
 static void dns_write_name( dns_message_iterator_t* iter, const char* src );
 
-static mret_t start_bonjour_service(void);
+static merr_t start_bonjour_service(void);
 
 static mxos_mutex_t bonjour_mutex = NULL;
 static mxos_semaphore_t update_state_sem = NULL;
@@ -602,10 +602,10 @@ static void _clean_record_resource( dns_sd_service_record_t *record )
 }
 
 
-mret_t mdns_add_record( mdns_init_t init, WiFi_Interface interface, uint32_t time_to_live )
+merr_t mdns_add_record( mdns_init_t init, WiFi_Interface interface, uint32_t time_to_live )
 {
   int len;
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   uint32_t insert_index = 0xFF;
 
   if( bonjour_instance == false ){
@@ -840,9 +840,9 @@ void BonjourNotify_SYSWillPoerOffHandler( void *arg )
 
 uint8_t *buf = NULL;
 
-static mret_t start_bonjour_service(void)
+static merr_t start_bonjour_service(void)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   ip_mreq mreq_opt;
 
 #if MXOS_CONFIG_IPV6

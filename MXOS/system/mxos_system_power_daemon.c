@@ -40,7 +40,7 @@ exit:
   return;
 }
 
-static mret_t _sys_power_state_change_handler(void *arg)
+static merr_t _sys_power_state_change_handler(void *arg)
 {  
     
   switch( sys_context->mxosStatus.current_sys_state )
@@ -63,9 +63,9 @@ static mret_t _sys_power_state_change_handler(void *arg)
   return kNoErr;
 }
 
-static mret_t _sys_will_power_off_handler(void *arg)
+static merr_t _sys_will_power_off_handler(void *arg)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   
   require_action( sys_context, exit, err = kNotPreparedErr );
 
@@ -83,9 +83,9 @@ exit:
 }
 
 
-mret_t mxos_system_power_perform( mxos_Context_t* const in_context, mxos_system_state_t new_state )
+merr_t mxos_system_power_perform( mxos_Context_t* const in_context, mxos_system_state_t new_state )
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
 
   require_action( sys_context, exit, err = kNotPreparedErr );
 

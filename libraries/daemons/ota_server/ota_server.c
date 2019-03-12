@@ -48,7 +48,7 @@ static CRC16_Context crc_context;
 static md5_context md5;
 static uint32_t offset = 0;
 
-static mret_t onReceivedData( struct _HTTPHeader_t * httpHeader,
+static merr_t onReceivedData( struct _HTTPHeader_t * httpHeader,
                                 uint32_t pos,
                                 uint8_t *data,
                                 size_t len,
@@ -87,9 +87,9 @@ static int ota_server_send( uint8_t *data, int datalen )
     return res;
 }
 
-static mret_t ota_server_connect( struct sockaddr_in *addr, socklen_t addrlen )
+static merr_t ota_server_connect( struct sockaddr_in *addr, socklen_t addrlen )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 #if OTA_USE_HTTPS
     int ssl_errno = 0;
 #endif
@@ -234,7 +234,7 @@ static void ota_server_progress_set( OTA_STATE_E state )
 
 static void ota_server_thread( void * arg )
 {
-    mret_t err;
+    merr_t err;
     uint16_t crc16 = 0;
     char md5_value[16] = {0};
     char md5_value_string[33] = {0};
@@ -357,10 +357,10 @@ DELETE:
 }
 
 /*one request may receive multi reply*/
-static mret_t onReceivedData( struct _HTTPHeader_t * inHeader, uint32_t inPos, uint8_t * inData,
+static merr_t onReceivedData( struct _HTTPHeader_t * inHeader, uint32_t inPos, uint8_t * inData,
                                 size_t inLen, void * inUserContext )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     if ( inLen == 0 )
         return err;
@@ -391,9 +391,9 @@ static mret_t onReceivedData( struct _HTTPHeader_t * inHeader, uint32_t inPos, u
     return err;
 }
 
-static mret_t ota_server_set_url( char *url )
+static merr_t ota_server_set_url( char *url )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     url_field_t *url_t;
     char *pos = NULL;
 
@@ -426,9 +426,9 @@ exit:
     return err;
 }
 
-mret_t ota_server_start( char *url, char *md5, ota_server_cb_fn call_back )
+merr_t ota_server_start( char *url, char *md5, ota_server_cb_fn call_back )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action(url, exit, err = kParamErr);
 

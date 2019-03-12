@@ -215,7 +215,7 @@ extern const mxos_block_device_driver_t tester_block_device_driver;
  *
  * @return kNoErr on success
  */
-mret_t mxos_filesystem_init ( void );
+merr_t mxos_filesystem_init ( void );
 
 
 /**
@@ -228,7 +228,7 @@ mret_t mxos_filesystem_init ( void );
  *
  * @return kNoErr on success
  */
-mret_t mxos_filesystem_mount ( mxos_block_device_t* device, mxos_filesystem_handle_type_t fs_type, mxos_filesystem_t* fs_handle_out, const char* mounted_name);
+merr_t mxos_filesystem_mount ( mxos_block_device_t* device, mxos_filesystem_handle_type_t fs_type, mxos_filesystem_t* fs_handle_out, const char* mounted_name);
 
 
 /**
@@ -238,7 +238,7 @@ mret_t mxos_filesystem_mount ( mxos_block_device_t* device, mxos_filesystem_hand
  *
  * @return kNoErr on success
  */
-mret_t mxos_filesystem_unmount ( mxos_filesystem_t* fs_handle );
+merr_t mxos_filesystem_unmount ( mxos_filesystem_t* fs_handle );
 
 
 /**
@@ -260,7 +260,7 @@ mxos_filesystem_t* mxos_filesystem_retrieve_mounted_fs_handle ( const char* moun
  *
  * @return kNoErr on success
  */
-mret_t mxos_filesystem_file_get_details ( mxos_filesystem_t* fs_handle, const char* filename, mxos_dir_entry_details_t* details_out );
+merr_t mxos_filesystem_file_get_details ( mxos_filesystem_t* fs_handle, const char* filename, mxos_dir_entry_details_t* details_out );
 
 /**
  * Open a file for reading or writing
@@ -273,7 +273,7 @@ mret_t mxos_filesystem_file_get_details ( mxos_filesystem_t* fs_handle, const ch
  *
  * @return kNoErr on success
  */
-mret_t mxos_filesystem_file_open ( mxos_filesystem_t* fs_handle, mxos_file_t* file_handle_out, const char* filename, mxos_filesystem_open_mode_t mode );
+merr_t mxos_filesystem_file_open ( mxos_filesystem_t* fs_handle, mxos_file_t* file_handle_out, const char* filename, mxos_filesystem_open_mode_t mode );
 
 /**
  * Seek to a location within a file
@@ -289,7 +289,7 @@ mret_t mxos_filesystem_file_open ( mxos_filesystem_t* fs_handle, mxos_file_t* fi
  *
  * @return kNoErr  on success
  */
-mret_t mxos_filesystem_file_seek ( mxos_file_t* file_handle, int64_t offset, mxos_filesystem_seek_type_t whence );
+merr_t mxos_filesystem_file_seek ( mxos_file_t* file_handle, int64_t offset, mxos_filesystem_seek_type_t whence );
 
 
 /**
@@ -302,7 +302,7 @@ mret_t mxos_filesystem_file_seek ( mxos_file_t* file_handle, int64_t offset, mxo
  *
  * @return kNoErr  on success
  */
-mret_t mxos_filesystem_file_tell ( mxos_file_t* file_handle, uint64_t* location );
+merr_t mxos_filesystem_file_tell ( mxos_file_t* file_handle, uint64_t* location );
 
 
 /**
@@ -316,7 +316,7 @@ mret_t mxos_filesystem_file_tell ( mxos_file_t* file_handle, uint64_t* location 
  *
  * @return kNoErr  on success
  */
-mret_t mxos_filesystem_file_read ( mxos_file_t* file_handle, void* data, uint64_t bytes_to_read, uint64_t* returned_bytes_count );
+merr_t mxos_filesystem_file_read ( mxos_file_t* file_handle, void* data, uint64_t bytes_to_read, uint64_t* returned_bytes_count );
 
 
 /**
@@ -330,7 +330,7 @@ mret_t mxos_filesystem_file_read ( mxos_file_t* file_handle, void* data, uint64_
  *
  * @return kNoErr  on success
  */
-mret_t mxos_filesystem_file_write( mxos_file_t* file_handle, const void* data, uint64_t bytes_to_write, uint64_t* written_bytes_count );
+merr_t mxos_filesystem_file_write( mxos_file_t* file_handle, const void* data, uint64_t bytes_to_write, uint64_t* written_bytes_count );
 
 
 /**
@@ -342,7 +342,7 @@ mret_t mxos_filesystem_file_write( mxos_file_t* file_handle, const void* data, u
  *
  * @return kNoErr  on success
  */
-mret_t mxos_filesystem_file_flush ( mxos_file_t* file_handle );
+merr_t mxos_filesystem_file_flush ( mxos_file_t* file_handle );
 
 
 /**
@@ -366,7 +366,7 @@ int mxos_filesystem_file_end_reached ( mxos_file_t* file_handle );
  *
  * @return kNoErr = success
  */
-mret_t mxos_filesystem_file_close ( mxos_file_t* file_handle );
+merr_t mxos_filesystem_file_close ( mxos_file_t* file_handle );
 
 
 /**
@@ -379,7 +379,7 @@ mret_t mxos_filesystem_file_close ( mxos_file_t* file_handle );
  *
  * @return kNoErr on success
  */
-mret_t mxos_filesystem_file_delete ( mxos_filesystem_t* fs_handle, const char* filename );
+merr_t mxos_filesystem_file_delete ( mxos_filesystem_t* fs_handle, const char* filename );
 
 
 /**
@@ -394,7 +394,7 @@ mret_t mxos_filesystem_file_delete ( mxos_filesystem_t* fs_handle, const char* f
  *
  * @return kNoErr on success
  */
-mret_t mxos_filesystem_dir_open ( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_handle, const char* dir_name );
+merr_t mxos_filesystem_dir_open ( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_handle, const char* dir_name );
 
 
 /**
@@ -410,7 +410,7 @@ mret_t mxos_filesystem_dir_open ( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_
  *
  * @return kNoErr on success
  */
-mret_t mxos_filesystem_dir_read( mxos_dir_t* dir_handle, char* name_buffer, unsigned int name_buffer_length, mxos_dir_entry_type_t* type, mxos_dir_entry_details_t* details );
+merr_t mxos_filesystem_dir_read( mxos_dir_t* dir_handle, char* name_buffer, unsigned int name_buffer_length, mxos_dir_entry_type_t* type, mxos_dir_entry_details_t* details );
 
 
 /**
@@ -435,7 +435,7 @@ int mxos_filesystem_dir_end_reached ( mxos_dir_t* dir_handle );
  *
  * @return kNoErr = Success
  */
-mret_t mxos_filesystem_dir_rewind ( mxos_dir_t* dir_handle );
+merr_t mxos_filesystem_dir_rewind ( mxos_dir_t* dir_handle );
 
 
 /**
@@ -445,7 +445,7 @@ mret_t mxos_filesystem_dir_rewind ( mxos_dir_t* dir_handle );
  *
  * @return kNoErr = Success
  */
-mret_t mxos_filesystem_dir_close ( mxos_dir_t* dir_handle );
+merr_t mxos_filesystem_dir_close ( mxos_dir_t* dir_handle );
 
 
 /**
@@ -456,7 +456,7 @@ mret_t mxos_filesystem_dir_close ( mxos_dir_t* dir_handle );
  *
  * @return kNoErr on success
  */
-mret_t mxos_filesystem_dir_create( mxos_filesystem_t* fs_handle, const char* directory_name );
+merr_t mxos_filesystem_dir_create( mxos_filesystem_t* fs_handle, const char* directory_name );
 
 
 /**
@@ -469,7 +469,7 @@ mret_t mxos_filesystem_dir_create( mxos_filesystem_t* fs_handle, const char* dir
  *
  * @return kNoErr on success
  */
-mret_t mxos_filesystem_format( mxos_block_device_t* device, mxos_filesystem_handle_type_t fs_type );
+merr_t mxos_filesystem_format( mxos_block_device_t* device, mxos_filesystem_handle_type_t fs_type );
 
 
 /**
@@ -481,7 +481,7 @@ mret_t mxos_filesystem_format( mxos_block_device_t* device, mxos_filesystem_hand
  *
  * @return kNoErr on success
  */
-mret_t mxos_filesystem_get_info( mxos_filesystem_t* fs_handle, mxos_filesystem_info* info, char* mounted_name );
+merr_t mxos_filesystem_get_info( mxos_filesystem_t* fs_handle, mxos_filesystem_info* info, char* mounted_name );
 
 
 /**
@@ -490,7 +490,7 @@ mret_t mxos_filesystem_get_info( mxos_filesystem_t* fs_handle, mxos_filesystem_i
  * @param[in]  arg           - scan file callback
  * @param[in]  mounted_name   - name of the mounted device
  */
-mret_t mxos_filesystem_scan_files( mxos_filesystem_t* fs_handle, char* mounted_name, mxos_scan_file_handle arg );
+merr_t mxos_filesystem_scan_files( mxos_filesystem_t* fs_handle, char* mounted_name, mxos_scan_file_handle arg );
 
 /******************************************************
  *  Opaque types - do not use directly

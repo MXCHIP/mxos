@@ -106,27 +106,27 @@ typedef struct
  *               Static Function Declarations
  ******************************************************/
 
-static mret_t smartbridge_app_notification_handler             ( void* arg );
-static mret_t smartbridge_app_disconnection_handler            ( void* arg );
+static merr_t smartbridge_app_notification_handler             ( void* arg );
+static merr_t smartbridge_app_disconnection_handler            ( void* arg );
 
 static void        smartbridge_gatt_auto_conn_handler            ( mxos_bt_device_address_t bdaddr, uint16_t connection_handle );
 static mxos_bool_t smartbridge_gap_auto_conn_user_cfg            ( const mxos_bt_device_address_t device_address, const uint8_t *device_name, const uint8_t *p_data, uint8_t length );
-static mret_t    smartbridge_gap_auto_conn_asyn_event_handler  ( void *arg );
-static mret_t    smartbridge_gap_auto_conn_scan_report_handler ( const mxos_bt_smart_advertising_report_t *report );
-static mret_t    smartbridge_gap_auto_conn_scan_cmpl_handler   ( void *arg );
-static mret_t    smartbridge_gap_auto_conn_cryption            ( void* arg );
+static merr_t    smartbridge_gap_auto_conn_asyn_event_handler  ( void *arg );
+static merr_t    smartbridge_gap_auto_conn_scan_report_handler ( const mxos_bt_smart_advertising_report_t *report );
+static merr_t    smartbridge_gap_auto_conn_scan_cmpl_handler   ( void *arg );
+static merr_t    smartbridge_gap_auto_conn_cryption            ( void* arg );
 
-static mret_t    smartbridge_auto_conn_user_parms              ( void* arg );
+static merr_t    smartbridge_auto_conn_user_parms              ( void* arg );
 static int8_t      smartbridge_auto_conn_dev_alloc               ( void );
 static int8_t      smartbridge_auto_conn_find_dev_by_addr        ( const mxos_bt_device_address_t device_address );
-static mret_t    smartbridge_auto_conn_list_init               ( void );
-static mret_t    smartbridge_auto_conn_list_deinit             ( void );
-static mret_t    smartbridge_auto_conn_list_add                ( const mxos_bt_smart_advertising_report_t *report );
-static mret_t    smartbridge_auto_conn_list_remove             ( mxos_bt_device_address_t bdaddr );
-static mret_t    smartbridge_auto_conn_list_clear              ( void );
-static mret_t    smartbridge_auto_conn_list_remove_by_state    ( smartbridge_auto_conn_state_t state );
-static mret_t    smartbridge_auto_conn_list_set_state          ( const mxos_bt_device_address_t bdaddr, smartbridge_auto_conn_state_t state );
-static mret_t    smartbridge_auto_conn_list_get_by_state       ( mxos_bt_smart_advertising_report_t **report, smartbridge_auto_conn_state_t state );
+static merr_t    smartbridge_auto_conn_list_init               ( void );
+static merr_t    smartbridge_auto_conn_list_deinit             ( void );
+static merr_t    smartbridge_auto_conn_list_add                ( const mxos_bt_smart_advertising_report_t *report );
+static merr_t    smartbridge_auto_conn_list_remove             ( mxos_bt_device_address_t bdaddr );
+static merr_t    smartbridge_auto_conn_list_clear              ( void );
+static merr_t    smartbridge_auto_conn_list_remove_by_state    ( smartbridge_auto_conn_state_t state );
+static merr_t    smartbridge_auto_conn_list_set_state          ( const mxos_bt_device_address_t bdaddr, smartbridge_auto_conn_state_t state );
+static merr_t    smartbridge_auto_conn_list_get_by_state       ( mxos_bt_smart_advertising_report_t **report, smartbridge_auto_conn_state_t state );
 
 /******************************************************
  *               Variable Definitions
@@ -318,7 +318,7 @@ static void smartbridge_gatt_read_operation_complete_handler( mxos_bt_gatt_data_
 
 }
 
-static mret_t smartbridge_gatt_notification_indication_handler( mxos_bt_gatt_operation_complete_t* operation_complete )
+static merr_t smartbridge_gatt_notification_indication_handler( mxos_bt_gatt_operation_complete_t* operation_complete )
 {
     mxos_bt_smartbridge_socket_t* socket;
     uint16_t connection_handle  = operation_complete->conn_id;
@@ -718,9 +718,9 @@ mxos_bt_gatt_status_t smartbridge_gatt_callback( mxos_bt_gatt_evt_t event, mxos_
     return status;
 }
 
-mret_t mxos_bt_smartbridge_init( uint8_t count )
+merr_t mxos_bt_smartbridge_init( uint8_t count )
 {
-    mret_t result;
+    merr_t result;
 
     if ( initialised == MXOS_TRUE )
     {
@@ -758,7 +758,7 @@ mret_t mxos_bt_smartbridge_init( uint8_t count )
     return MXOS_BT_SUCCESS;
 }
 
-mret_t mxos_bt_smartbridge_deinit( void )
+merr_t mxos_bt_smartbridge_deinit( void )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -795,7 +795,7 @@ mxos_bool_t mxos_bt_smartbridge_is_ready_to_connect( void )
     return ( initialised == MXOS_FALSE || connecting_socket != NULL ) ? MXOS_FALSE : MXOS_TRUE;
 }
 
-mret_t mxos_bt_smartbridge_start_scan( const mxos_bt_smart_scan_settings_t* settings, mxos_bt_smart_scan_complete_callback_t complete_callback, mxos_bt_smart_advertising_report_callback_t advertising_report_callback )
+merr_t mxos_bt_smartbridge_start_scan( const mxos_bt_smart_scan_settings_t* settings, mxos_bt_smart_scan_complete_callback_t complete_callback, mxos_bt_smart_advertising_report_callback_t advertising_report_callback )
 {
 
     if ( initialised == MXOS_FALSE )
@@ -806,7 +806,7 @@ mret_t mxos_bt_smartbridge_start_scan( const mxos_bt_smart_scan_settings_t* sett
     return smartbridge_bt_interface_start_scan( settings, complete_callback, advertising_report_callback );
 }
 
-mret_t mxos_bt_smartbridge_stop_scan( void )
+merr_t mxos_bt_smartbridge_stop_scan( void )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -815,7 +815,7 @@ mret_t mxos_bt_smartbridge_stop_scan( void )
     return smartbridge_bt_interface_stop_scan();
 }
 
-mret_t mxos_bt_smartbridge_get_scan_result_list( mxos_bt_smart_scan_result_t** result_list, uint32_t* count )
+merr_t mxos_bt_smartbridge_get_scan_result_list( mxos_bt_smart_scan_result_t** result_list, uint32_t* count )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -824,7 +824,7 @@ mret_t mxos_bt_smartbridge_get_scan_result_list( mxos_bt_smart_scan_result_t** r
     return smartbridge_helper_get_scan_results( result_list, count );
 }
 
-mret_t mxos_bt_smartbridge_get_background_connection_devices_size( uint8_t *size )
+merr_t mxos_bt_smartbridge_get_background_connection_devices_size( uint8_t *size )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -837,9 +837,9 @@ mret_t mxos_bt_smartbridge_get_background_connection_devices_size( uint8_t *size
     return smartbridge_bt_interface_get_background_connection_device_size( size );
 }
 
-mret_t mxos_bt_smartbridge_set_auto_connection_action( mxos_bool_t start_stop, const mxos_bt_smart_scan_settings_t *scan_settings, mxos_bt_smartbridge_auto_connection_parms_cback_t p_auto_conn_cback )
+merr_t mxos_bt_smartbridge_set_auto_connection_action( mxos_bool_t start_stop, const mxos_bt_smart_scan_settings_t *scan_settings, mxos_bt_smartbridge_auto_connection_parms_cback_t p_auto_conn_cback )
 {
-    mret_t                            err = kNoErr;
+    merr_t                            err = kNoErr;
     uint32_t                            duration;
     
     if (start_stop && !scan_settings) 
@@ -898,7 +898,7 @@ mret_t mxos_bt_smartbridge_set_auto_connection_action( mxos_bool_t start_stop, c
     return err;
 }
 
-mret_t mxos_bt_smartbridge_create_socket( mxos_bt_smartbridge_socket_t* socket )
+merr_t mxos_bt_smartbridge_create_socket( mxos_bt_smartbridge_socket_t* socket )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -916,9 +916,9 @@ mret_t mxos_bt_smartbridge_create_socket( mxos_bt_smartbridge_socket_t* socket )
     return mxos_rtos_init_semaphore( &socket->semaphore, 1 );
 }
 
-mret_t mxos_bt_smartbridge_delete_socket( mxos_bt_smartbridge_socket_t* socket )
+merr_t mxos_bt_smartbridge_delete_socket( mxos_bt_smartbridge_socket_t* socket )
 {
-    mret_t result;
+    merr_t result;
     if ( initialised == MXOS_FALSE )
     {
         return MXOS_BT_SMART_APPL_UNINITIALISED;
@@ -935,7 +935,7 @@ mret_t mxos_bt_smartbridge_delete_socket( mxos_bt_smartbridge_socket_t* socket )
     return MXOS_BT_SUCCESS;
 }
 
-mret_t mxos_bt_smartbridge_get_socket_status( mxos_bt_smartbridge_socket_t* socket, mxos_bt_smartbridge_socket_status_t* status )
+merr_t mxos_bt_smartbridge_get_socket_status( mxos_bt_smartbridge_socket_t* socket, mxos_bt_smartbridge_socket_status_t* status )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -970,10 +970,10 @@ mret_t mxos_bt_smartbridge_get_socket_status( mxos_bt_smartbridge_socket_t* sock
     return MXOS_BT_SUCCESS;
 }
 
-mret_t mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_device_t* remote_device, const mxos_bt_smart_connection_settings_t* settings, mxos_bt_smartbridge_disconnection_callback_t disconnection_callback, mxos_bt_smartbridge_notification_callback_t notification_callback )
+merr_t mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_device_t* remote_device, const mxos_bt_smart_connection_settings_t* settings, mxos_bt_smartbridge_disconnection_callback_t disconnection_callback, mxos_bt_smartbridge_notification_callback_t notification_callback )
 {
     mxos_bt_smartbridge_socket_t* found_socket;
-    mret_t result = MXOS_BT_SUCCESS;
+    merr_t result = MXOS_BT_SUCCESS;
 
     if ( initialised == MXOS_FALSE )
     {
@@ -1152,7 +1152,7 @@ mret_t mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, const 
 #endif
 }
 
-mret_t mxos_bt_smartbridge_disconnect( mxos_bt_smartbridge_socket_t* socket, mxos_bool_t remove_it_from_whitelist )
+merr_t mxos_bt_smartbridge_disconnect( mxos_bt_smartbridge_socket_t* socket, mxos_bool_t remove_it_from_whitelist )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1210,7 +1210,7 @@ mret_t mxos_bt_smartbridge_disconnect( mxos_bt_smartbridge_socket_t* socket, mxo
     return MXOS_BT_SUCCESS;
 }
 
-mret_t mxos_bt_smartbridge_set_transmit_power( mxos_bt_smartbridge_socket_t* socket, int8_t transmit_power_dbm )
+merr_t mxos_bt_smartbridge_set_transmit_power( mxos_bt_smartbridge_socket_t* socket, int8_t transmit_power_dbm )
 {
     if ( initialised == MXOS_FALSE || socket->state == SOCKET_STATE_DISCONNECTED )
     {
@@ -1220,7 +1220,7 @@ mret_t mxos_bt_smartbridge_set_transmit_power( mxos_bt_smartbridge_socket_t* soc
     return smartbridge_bt_interface_set_connection_tx_power( socket->connection_handle, transmit_power_dbm );
 }
 
-mret_t mxos_bt_smartbridge_set_bond_info( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_security_settings_t* settings, const mxos_bt_smart_bond_info_t* bond_info )
+merr_t mxos_bt_smartbridge_set_bond_info( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_security_settings_t* settings, const mxos_bt_smart_bond_info_t* bond_info )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1240,7 +1240,7 @@ mret_t mxos_bt_smartbridge_set_bond_info( mxos_bt_smartbridge_socket_t* socket, 
     return MXOS_BT_SUCCESS;
 }
 
-mret_t mxos_bt_smartbridge_clear_bond_info( mxos_bt_smartbridge_socket_t* socket )
+merr_t mxos_bt_smartbridge_clear_bond_info( mxos_bt_smartbridge_socket_t* socket )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1256,7 +1256,7 @@ mret_t mxos_bt_smartbridge_clear_bond_info( mxos_bt_smartbridge_socket_t* socket
     return MXOS_BT_SUCCESS;
 }
 
-mret_t mxos_bt_smartbridge_enable_pairing( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_security_settings_t* settings, mxos_bt_smart_bonding_callback_t bonding_callback )
+merr_t mxos_bt_smartbridge_enable_pairing( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_security_settings_t* settings, mxos_bt_smart_bonding_callback_t bonding_callback )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1281,7 +1281,7 @@ mret_t mxos_bt_smartbridge_enable_pairing( mxos_bt_smartbridge_socket_t* socket,
     return MXOS_BT_SUCCESS;
 }
 
-mret_t mxos_bt_smartbridge_disable_pairing( mxos_bt_smartbridge_socket_t* socket )
+merr_t mxos_bt_smartbridge_disable_pairing( mxos_bt_smartbridge_socket_t* socket )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1294,7 +1294,7 @@ mret_t mxos_bt_smartbridge_disable_pairing( mxos_bt_smartbridge_socket_t* socket
     return MXOS_BT_SUCCESS;
 }
 
-mret_t mxos_bt_smartbridge_enable_attribute_cache( uint32_t cache_count, mxos_bt_uuid_t cache_services[], uint32_t service_count )
+merr_t mxos_bt_smartbridge_enable_attribute_cache( uint32_t cache_count, mxos_bt_uuid_t cache_services[], uint32_t service_count )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1305,7 +1305,7 @@ mret_t mxos_bt_smartbridge_enable_attribute_cache( uint32_t cache_count, mxos_bt
     return bt_smartbridge_att_cache_enable( cache_count, cache_services, service_count );
 }
 
-mret_t mxos_bt_smartbridge_disable_attribute_cache( void )
+merr_t mxos_bt_smartbridge_disable_attribute_cache( void )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1316,7 +1316,7 @@ mret_t mxos_bt_smartbridge_disable_attribute_cache( void )
     return bt_smartbridge_att_cache_disable();
 }
 
-mret_t mxos_bt_smartbridge_remove_attribute_cache( mxos_bt_smartbridge_socket_t* socket )
+merr_t mxos_bt_smartbridge_remove_attribute_cache( mxos_bt_smartbridge_socket_t* socket )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1327,12 +1327,12 @@ mret_t mxos_bt_smartbridge_remove_attribute_cache( mxos_bt_smartbridge_socket_t*
     return bt_smartbridge_att_cache_release( socket->att_cache );
 }
 
-mret_t mxos_bt_smartbridge_enable_attribute_cache_notification( mxos_bt_smartbridge_socket_t* socket, mxos_bool_t is_notification_or_indication )
+merr_t mxos_bt_smartbridge_enable_attribute_cache_notification( mxos_bt_smartbridge_socket_t* socket, mxos_bool_t is_notification_or_indication )
 {
     mxos_bt_smart_attribute_list_t* list;
     mxos_bt_smart_attribute_t*      iterator;
     bt_smartbridge_att_cache_t*      cache;
-    mret_t                         result;
+    merr_t                         result;
 
     if ( initialised == MXOS_FALSE )
     {
@@ -1390,12 +1390,12 @@ mret_t mxos_bt_smartbridge_enable_attribute_cache_notification( mxos_bt_smartbri
     return result;
 }
 
-mret_t mxos_bt_smartbridge_disable_attribute_cache_notification( mxos_bt_smartbridge_socket_t* socket )
+merr_t mxos_bt_smartbridge_disable_attribute_cache_notification( mxos_bt_smartbridge_socket_t* socket )
 {
     mxos_bt_smart_attribute_list_t* list;
     mxos_bt_smart_attribute_t*      iterator;
     bt_smartbridge_att_cache_t*      cache;
-    mret_t                         result;
+    merr_t                         result;
 
     if ( initialised == MXOS_FALSE )
     {
@@ -1451,7 +1451,7 @@ mret_t mxos_bt_smartbridge_disable_attribute_cache_notification( mxos_bt_smartbr
     return result;
 }
 
-mret_t mxos_bt_smartbridge_get_attribute_cache_list( mxos_bt_smartbridge_socket_t* socket, mxos_bt_smart_attribute_list_t** att_cache_list )
+merr_t mxos_bt_smartbridge_get_attribute_cache_list( mxos_bt_smartbridge_socket_t* socket, mxos_bt_smart_attribute_list_t** att_cache_list )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1477,12 +1477,12 @@ mret_t mxos_bt_smartbridge_get_attribute_cache_list( mxos_bt_smartbridge_socket_
     return bt_smartbridge_att_cache_get_list( (bt_smartbridge_att_cache_t*)socket->att_cache, att_cache_list );
 }
 
-mret_t mxos_bt_smartbridge_get_attribute_cache_by_handle( mxos_bt_smartbridge_socket_t* socket, uint16_t handle, mxos_bt_smart_attribute_t* attribute, uint16_t size )
+merr_t mxos_bt_smartbridge_get_attribute_cache_by_handle( mxos_bt_smartbridge_socket_t* socket, uint16_t handle, mxos_bt_smart_attribute_t* attribute, uint16_t size )
 {
     bt_smartbridge_att_cache_t*      cache          = NULL;
     mxos_bt_smart_attribute_list_t* att_cache_list = NULL;
     mxos_bt_smart_attribute_t*      att            = NULL;
-    mret_t                         result;
+    merr_t                         result;
 
     if ( initialised == MXOS_FALSE )
     {
@@ -1528,12 +1528,12 @@ mret_t mxos_bt_smartbridge_get_attribute_cache_by_handle( mxos_bt_smartbridge_so
     return result;
 }
 
-mret_t mxos_bt_smartbridge_get_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size )
+merr_t mxos_bt_smartbridge_get_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size )
 {
     bt_smartbridge_att_cache_t*      cache          = NULL;
     mxos_bt_smart_attribute_list_t* att_cache_list = NULL;
     mxos_bt_smart_attribute_t*      att            = NULL;
-    mret_t                         result;
+    merr_t                         result;
 
     if ( initialised == MXOS_FALSE )
     {
@@ -1578,9 +1578,9 @@ mret_t mxos_bt_smartbridge_get_attribute_cache_by_uuid( mxos_bt_smartbridge_sock
     return result;
 }
 
-mret_t mxos_bt_smartbridge_get_service_from_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size )
+merr_t mxos_bt_smartbridge_get_service_from_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size )
 {
-    mret_t result;
+    merr_t result;
     uint16_t _starting_handle = starting_handle;
     uint16_t _ending_handle = ending_handle;
     mxos_bt_uuid_t service_uuid = { .len = LEN_UUID_16, .uu.uuid16 = GATT_UUID_PRI_SERVICE };
@@ -1606,9 +1606,9 @@ mret_t mxos_bt_smartbridge_get_service_from_attribute_cache_by_uuid( mxos_bt_sma
     return result;
 }
 
-mret_t mxos_bt_smartbridge_get_characteritics_from_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size )
+merr_t mxos_bt_smartbridge_get_characteritics_from_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size )
 {
-    mret_t result;
+    merr_t result;
     uint16_t _starting_handle = starting_handle;
     uint16_t _ending_handle = ending_handle;
     mxos_bt_uuid_t characteristic_uuid = { .len = LEN_UUID_16, .uu.uuid16 = GATT_UUID_CHAR_DECLARE };
@@ -1627,13 +1627,13 @@ mret_t mxos_bt_smartbridge_get_characteritics_from_attribute_cache_by_uuid( mxos
 
 
 
-mret_t mxos_bt_smartbridge_refresh_attribute_cache_characteristic_value( mxos_bt_smartbridge_socket_t* socket, uint16_t handle )
+merr_t mxos_bt_smartbridge_refresh_attribute_cache_characteristic_value( mxos_bt_smartbridge_socket_t* socket, uint16_t handle )
 {
     bt_smartbridge_att_cache_t*      cache          = NULL;
     mxos_bt_smart_attribute_list_t* att_cache_list = NULL;
     mxos_bt_smart_attribute_t*      current_att    = NULL;
     mxos_bt_smart_attribute_t*      refreshed_att  = NULL;
-    mret_t                         result;
+    merr_t                         result;
 
     if ( initialised == MXOS_FALSE )
     {
@@ -1693,12 +1693,12 @@ mret_t mxos_bt_smartbridge_refresh_attribute_cache_characteristic_value( mxos_bt
     return result;
 }
 
-mret_t mxos_bt_smartbridge_write_attribute_cache_characteristic_value( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_attribute_t* char_value )
+merr_t mxos_bt_smartbridge_write_attribute_cache_characteristic_value( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_attribute_t* char_value )
 {
     bt_smartbridge_att_cache_t*      cache          = NULL;
     mxos_bt_smart_attribute_list_t* att_cache_list = NULL;
     mxos_bt_smart_attribute_t*      att            = NULL;
-    mret_t                         result;
+    merr_t                         result;
 
     if ( initialised == MXOS_FALSE )
     {
@@ -1817,7 +1817,7 @@ mret_t mxos_bt_smartbridge_write_attribute_cache_characteristic_value( mxos_bt_s
  *               Callback Definitions
  ******************************************************/
 
-static mret_t smartbridge_app_notification_handler( void* arg )
+static merr_t smartbridge_app_notification_handler( void* arg )
 {
     mxos_bt_smartbridge_socket_t* socket = (mxos_bt_smartbridge_socket_t*)arg;
 
@@ -1830,7 +1830,7 @@ static mret_t smartbridge_app_notification_handler( void* arg )
     return MXOS_BT_ERROR;
 }
 
-static mret_t smartbridge_app_disconnection_handler( void* arg )
+static merr_t smartbridge_app_disconnection_handler( void* arg )
 {
     mxos_bt_smartbridge_socket_t* socket = (mxos_bt_smartbridge_socket_t*)arg;
 
@@ -1843,13 +1843,13 @@ static mret_t smartbridge_app_disconnection_handler( void* arg )
     return MXOS_BT_ERROR;
 }
 
-// mret_t mxos_bt_smartbridge_bond_info_update( mxos_bt_device_link_keys_t paired_device_keys )
+// merr_t mxos_bt_smartbridge_bond_info_update( mxos_bt_device_link_keys_t paired_device_keys )
 // {
 //     mxos_bt_smart_bond_info_t          bond_info;
 //     mxos_bt_ble_keys_t                  *le_security_keys;
 //     mxos_bt_device_sec_keys_t           *security_keys;
 
-//     mret_t result = MXOS_BT_ERROR;
+//     merr_t result = MXOS_BT_ERROR;
 
 //     memcpy(bond_info.peer_address, paired_device_keys.bd_addr, BD_ADDR_LEN );
 
@@ -1886,7 +1886,7 @@ static mret_t smartbridge_app_disconnection_handler( void* arg )
 //     return result;
 // }
 
-// static mret_t smartbridge_gap_bonding_handler( uint16_t connection_handle, const mxos_bt_smart_bond_info_t* bond_info )
+// static merr_t smartbridge_gap_bonding_handler( uint16_t connection_handle, const mxos_bt_smart_bond_info_t* bond_info )
 // {
 //     mxos_bt_smartbridge_socket_t* socket;
 
@@ -1906,7 +1906,7 @@ static mret_t smartbridge_app_disconnection_handler( void* arg )
 //     return MXOS_BT_ERROR;
 // }
 
-// static mret_t smartbridge_app_pairing_handler( void* arg )
+// static merr_t smartbridge_app_pairing_handler( void* arg )
 // {
 //     mxos_bt_smartbridge_socket_t* socket = (mxos_bt_smartbridge_socket_t*)arg;
 
@@ -1920,9 +1920,9 @@ static mret_t smartbridge_app_disconnection_handler( void* arg )
 // }
 
 /* Auto-Connection Connecting Event Handler */
-static mret_t smartbridge_gap_auto_conn_asyn_event_handler(void *arg)
+static merr_t smartbridge_gap_auto_conn_asyn_event_handler(void *arg)
 {
-    mret_t                             err = kNoErr;
+    merr_t                             err = kNoErr;
     mxos_bt_gatt_status_t                gatt_status;
     mxos_bt_smart_advertising_report_t  *report = NULL;
 
@@ -2014,9 +2014,9 @@ err_exit:
 }
 
 /* Auto-Connection Scanning Procedure Report Handler */
-static mret_t smartbridge_gap_auto_conn_scan_report_handler(const mxos_bt_smart_advertising_report_t *report)
+static merr_t smartbridge_gap_auto_conn_scan_report_handler(const mxos_bt_smart_advertising_report_t *report)
 {
-    mret_t                                err = kNoErr;
+    merr_t                                err = kNoErr;
     mxos_bt_smart_advertising_report_t     *match_report = NULL;
     
     bt_smartbridge_log("%s: scan result: %s[%02x:%02x:%02x:%02x:%02x:%02x]",
@@ -2060,9 +2060,9 @@ exit:
 } 
 
 /* Auto-Connection Scanning Procedure Completion Handler */
-static mret_t smartbridge_gap_auto_conn_scan_cmpl_handler(void *arg)
+static merr_t smartbridge_gap_auto_conn_scan_cmpl_handler(void *arg)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     UNUSED_PARAMETER(arg);
 
@@ -2092,9 +2092,9 @@ static mret_t smartbridge_gap_auto_conn_scan_cmpl_handler(void *arg)
     return err;
 }
 
-static mret_t smartbridge_gap_auto_conn_cryption( void *arg )
+static merr_t smartbridge_gap_auto_conn_cryption( void *arg )
 {
-    mret_t result = kNoErr;
+    merr_t result = kNoErr;
     mxos_bt_smartbridge_socket_t *socket = (mxos_bt_smartbridge_socket_t *)arg;
 
     if (socket != NULL && socket->auto_connection_callback != NULL)
@@ -2186,9 +2186,9 @@ exit:
 }
 
 
-static mret_t smartbridge_auto_conn_user_parms( void *arg )
+static merr_t smartbridge_auto_conn_user_parms( void *arg )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     mxos_bt_smartbridge_auto_conn_cback_parms_t     parm;
     smartbridge_auto_conn_dev_info_t          *p_dev_info = (smartbridge_auto_conn_dev_info_t *) arg;
     smartbridge_auto_conn_entity_t          *p_entity;
@@ -2289,13 +2289,13 @@ void smartbridge_auto_connection_encryption_check(const mxos_bt_dev_pairing_cplt
     }
 }
 
-static mret_t smartbridge_auto_conn_list_init(void)
+static merr_t smartbridge_auto_conn_list_init(void)
 {
     linked_list_init(&g_auto_conn_list.list);
     return mxos_rtos_init_mutex(&g_auto_conn_list.mutex); 
 }
 
-static mret_t smartbridge_auto_conn_list_deinit(void)
+static merr_t smartbridge_auto_conn_list_deinit(void)
 {
     return mxos_rtos_deinit_mutex(&g_auto_conn_list.mutex);
 }
@@ -2324,9 +2324,9 @@ static mxos_bool_t smartbridge_auto_conn_compare_state(linked_list_node_t *node_
     }
 }
 
-static mret_t smartbridge_auto_conn_list_add(const mxos_bt_smart_advertising_report_t *report)
+static merr_t smartbridge_auto_conn_list_add(const mxos_bt_smart_advertising_report_t *report)
 {
-    mret_t                        err = kNoErr;
+    merr_t                        err = kNoErr;
     smartbridge_auto_conn_report_t *report_found = NULL, *new_report = NULL;
 
     uint32_t                        count = 0;
@@ -2419,9 +2419,9 @@ static mret_t smartbridge_auto_conn_list_add(const mxos_bt_smart_advertising_rep
     return err;
 }
 
-static mret_t smartbridge_auto_conn_list_get_by_state(mxos_bt_smart_advertising_report_t **report, smartbridge_auto_conn_state_t state)
+static merr_t smartbridge_auto_conn_list_get_by_state(mxos_bt_smart_advertising_report_t **report, smartbridge_auto_conn_state_t state)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     smartbridge_auto_conn_report_t *current_report;
 
     require_action(report != NULL, exit, err = kParamErr);
@@ -2439,9 +2439,9 @@ exit:
     return err;
 }
 
-static mret_t smartbridge_auto_conn_list_set_state(const mxos_bt_device_address_t bdaddr, smartbridge_auto_conn_state_t state)
+static merr_t smartbridge_auto_conn_list_set_state(const mxos_bt_device_address_t bdaddr, smartbridge_auto_conn_state_t state)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     smartbridge_auto_conn_report_t *report_found;
 
     require_action(bdaddr != NULL, exit, err = kParamErr);
@@ -2460,9 +2460,9 @@ exit:
     return err;
 }
 
-static mret_t smartbridge_auto_conn_list_remove(mxos_bt_device_address_t bdaddr)
+static merr_t smartbridge_auto_conn_list_remove(mxos_bt_device_address_t bdaddr)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     smartbridge_auto_conn_report_t* current_report;
 
     mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
@@ -2477,9 +2477,9 @@ exit:
     return err;
 }
 
-static mret_t smartbridge_auto_conn_list_remove_by_state(smartbridge_auto_conn_state_t state)
+static merr_t smartbridge_auto_conn_list_remove_by_state(smartbridge_auto_conn_state_t state)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     smartbridge_auto_conn_report_t* current_report;
 
     mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
@@ -2496,9 +2496,9 @@ static mret_t smartbridge_auto_conn_list_remove_by_state(smartbridge_auto_conn_s
     return kNoErr;
 }
 
-static mret_t smartbridge_auto_conn_list_clear(void)
+static merr_t smartbridge_auto_conn_list_clear(void)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     smartbridge_auto_conn_report_t* current_report = NULL;
 
     mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);

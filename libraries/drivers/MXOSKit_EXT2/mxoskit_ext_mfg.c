@@ -94,7 +94,7 @@ void mxos_notify_WifiScanCompleteHandler( ScanResult *pApList, void * inContext 
 
 void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
 {
-    mret_t err = kUnknownErr;
+    merr_t err = kUnknownErr;
     char str[64] = { '\0' };
     uint8_t mac[6];
 

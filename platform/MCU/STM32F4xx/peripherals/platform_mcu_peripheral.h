@@ -225,8 +225,8 @@ typedef struct
     mxos_semaphore_t           sem_wakeup;
     volatile uint32_t          tx_size;
     volatile uint32_t          rx_size;
-    volatile mret_t          last_receive_result;
-    volatile mret_t          last_transmit_result;
+    volatile merr_t          last_receive_result;
+    volatile merr_t          last_transmit_result;
     volatile bool              initialized;
     volatile bool              is_flow_control;
     volatile bool              is_recv_over_flow;
@@ -255,17 +255,17 @@ typedef struct
 /******************************************************
  *               Function Declarations
  ******************************************************/
-mret_t platform_gpio_irq_manager_init      ( void );
+merr_t platform_gpio_irq_manager_init      ( void );
 uint8_t  platform_gpio_get_port_number       ( platform_gpio_port_t* gpio_port );
-mret_t platform_gpio_enable_clock          ( const platform_gpio_t* gpio );
-mret_t platform_gpio_set_alternate_function( platform_gpio_port_t* gpio_port, uint8_t pin_number, GPIOOType_TypeDef output_type, GPIOPuPd_TypeDef pull_up_down_type, uint8_t alternation_function );
+merr_t platform_gpio_enable_clock          ( const platform_gpio_t* gpio );
+merr_t platform_gpio_set_alternate_function( platform_gpio_port_t* gpio_port, uint8_t pin_number, GPIOOType_TypeDef output_type, GPIOPuPd_TypeDef pull_up_down_type, uint8_t alternation_function );
 
-mret_t platform_mcu_powersave_init         ( void );
+merr_t platform_mcu_powersave_init         ( void );
 
-mret_t platform_rtc_init                   ( void );
-mret_t platform_rtc_enter_powersave        ( void );
-mret_t platform_rtc_abort_powersave        ( void );
-mret_t platform_rtc_exit_powersave         ( uint32_t requested_sleep_time, uint32_t *cpu_sleep_time );
+merr_t platform_rtc_init                   ( void );
+merr_t platform_rtc_enter_powersave        ( void );
+merr_t platform_rtc_abort_powersave        ( void );
+merr_t platform_rtc_exit_powersave         ( uint32_t requested_sleep_time, uint32_t *cpu_sleep_time );
 
 uint8_t  platform_uart_get_port_number       ( platform_uart_port_t* uart );
 void     platform_uart_irq                   ( platform_uart_driver_t* driver );

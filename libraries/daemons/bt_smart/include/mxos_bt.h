@@ -108,7 +108,7 @@ extern mos_worker_thread_id_t mxos_bt_evt_worker_thread;
  *            MXOS_ERROR   : if an error occurred
  */
 
-mret_t mxos_bt_init( mxos_bt_mode_t mode, const char* device_name, uint8_t client_links, uint8_t server_links );
+merr_t mxos_bt_init( mxos_bt_mode_t mode, const char* device_name, uint8_t client_links, uint8_t server_links );
 
 /** Deinitialise the MXOS Bluetooth Framework
  *
@@ -118,7 +118,7 @@ mret_t mxos_bt_init( mxos_bt_mode_t mode, const char* device_name, uint8_t clien
  * @return    MXOS_SUCCESS : on success;
  *            MXOS_ERROR   : if an error occurred
  */
-mret_t mxos_bt_deinit( void );
+merr_t mxos_bt_deinit( void );
 
 /** Initialise the device address of the local Bluetooth device
  *
@@ -136,7 +136,7 @@ mret_t mxos_bt_deinit( void );
  * @return    MXOS_SUCCESS : on success;
  *            MXOS_ERROR   : if an error occurred
  */
-mret_t mxos_bt_init_address( const mxos_bt_device_address_t* address, const mxos_bt_device_address_t* mask );
+merr_t mxos_bt_init_address( const mxos_bt_device_address_t* address, const mxos_bt_device_address_t* mask );
 
 
 /** Start manufacturing test mode
@@ -146,7 +146,7 @@ mret_t mxos_bt_init_address( const mxos_bt_device_address_t* address, const mxos
  * @return    MXOS_SUCCESS : on success;
  *            MXOS_ERROR   : if an error occurred
  */
-mret_t mxos_bt_start_mfgtest_mode( const mxos_uart_config_t* config );
+merr_t mxos_bt_start_mfgtest_mode( const mxos_uart_config_t* config );
 
 /** @} */
 
@@ -168,7 +168,7 @@ mret_t mxos_bt_start_mfgtest_mode( const mxos_uart_config_t* config );
  * @return    MXOS_TRUE  : is device address successfully retrieved;
  *            MXOS_FALSE : if not or if an error occurred
  */
-mret_t mxos_bt_device_get_address( mxos_bt_device_address_t* address );
+merr_t mxos_bt_device_get_address( mxos_bt_device_address_t* address );
 
 /** Retrieve the user-friendly name of the local Bluetooth device
  *
@@ -222,7 +222,7 @@ mxos_bool_t   mxos_bt_device_is_discoverable( void );
  *          MXOS_BT_SUCCESS if already paired to the device, else
  *          error code
  */
-mret_t mxos_bt_start_pairing( mxos_bt_device_address_t address, mxos_bt_smart_address_type_t type, const mxos_bt_smart_security_settings_t* settings );
+merr_t mxos_bt_start_pairing( mxos_bt_device_address_t address, mxos_bt_smart_address_type_t type, const mxos_bt_smart_security_settings_t* settings );
 
 /** Stop a MXOS bluetooth LE pairing procedure
  *
@@ -231,7 +231,7 @@ mret_t mxos_bt_start_pairing( mxos_bt_device_address_t address, mxos_bt_smart_ad
  * @return 	 MXOS_BT_PENDING if cancel initiated,
  *           MXOS_BT_SUCCESS if cancel has completed already, else error code.
  */
-mret_t mxos_bt_stop_pairing( mxos_bt_device_address_t address );
+merr_t mxos_bt_stop_pairing( mxos_bt_device_address_t address );
 
 /** Satrt a MXOS bluetooth LE encryption procedure
  *
@@ -242,7 +242,7 @@ mret_t mxos_bt_stop_pairing( mxos_bt_device_address_t address );
  *           MXOS_BT_WRONG_MODE         : connection not up.
  *           MXOS_BT_BUSY               : security procedures are currently active
  */
-mret_t mxos_bt_start_encryption( mxos_bt_device_address_t* address );
+merr_t mxos_bt_start_encryption( mxos_bt_device_address_t* address );
 
 /** @} */
 
@@ -268,7 +268,7 @@ mret_t mxos_bt_start_encryption( mxos_bt_device_address_t* address );
  *            MXOS_BADARG  : if bad argument(s) are inserted;
  *            MXOS_ERROR   : if an error occurred.
  */
-mret_t mxos_bt_packet_delete( mxos_bt_packet_t* packet );
+merr_t mxos_bt_packet_delete( mxos_bt_packet_t* packet );
 
 /** Get a pointer to the packet data
  *
@@ -288,7 +288,7 @@ mret_t mxos_bt_packet_delete( mxos_bt_packet_t* packet );
  *            MXOS_BADARG  : if bad argument(s) are inserted;
  *            MXOS_ERROR   : if an error occurred.
  */
-mret_t mxos_bt_packet_get_data( const mxos_bt_packet_t* packet, uint8_t** data, uint32_t* current_data_size, uint32_t* available_space );
+merr_t mxos_bt_packet_get_data( const mxos_bt_packet_t* packet, uint8_t** data, uint32_t* current_data_size, uint32_t* available_space );
 
 /** Set the end of the packet data
  *
@@ -302,7 +302,7 @@ mret_t mxos_bt_packet_get_data( const mxos_bt_packet_t* packet, uint8_t** data, 
  *            MXOS_BADARG  : if bad argument(s) are inserted;
  *            MXOS_ERROR   : if an error occurred
  */
-mret_t mxos_bt_packet_set_data_end( mxos_bt_packet_t* packet, const uint8_t* data_end );
+merr_t mxos_bt_packet_set_data_end( mxos_bt_packet_t* packet, const uint8_t* data_end );
 
 /** @} */
 
@@ -327,9 +327,9 @@ mret_t mxos_bt_packet_set_data_end( mxos_bt_packet_t* packet, const uint8_t* dat
  *
  * @param[out]  size : device count
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_get_whitelist_capability( uint8_t* size );
+merr_t mxos_bt_get_whitelist_capability( uint8_t* size );
 
 
 /** Clear the whitelist
@@ -338,9 +338,9 @@ mret_t mxos_bt_get_whitelist_capability( uint8_t* size );
  * This function instructs the Bluetooth Controller to remove all devices from the
  * whitelist
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_bt_clear_whitelist( void );
+merr_t mxos_bt_clear_whitelist( void );
 
 /** @} */
 

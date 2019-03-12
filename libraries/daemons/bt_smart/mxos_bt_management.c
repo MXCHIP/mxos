@@ -90,9 +90,9 @@ extern void smartbridge_auto_connection_encryption_check(const mxos_bt_dev_pairi
  *               Function Definitions
  ******************************************************/
 
-mret_t mxos_bt_init( mxos_bt_mode_t mode, const char* device_name, uint8_t client_links, uint8_t server_links )
+merr_t mxos_bt_init( mxos_bt_mode_t mode, const char* device_name, uint8_t client_links, uint8_t server_links )
 {
-    mret_t result = MXOS_BT_SUCCESS;
+    merr_t result = MXOS_BT_SUCCESS;
 
     if ( bt_initialised == MXOS_TRUE )
     {
@@ -166,9 +166,9 @@ exit:
     return result;
 }
 
-mret_t mxos_bt_deinit( void )
+merr_t mxos_bt_deinit( void )
 {
-    mret_t result;
+    merr_t result;
 
     if ( bt_initialised == MXOS_FALSE )
     {
@@ -190,17 +190,17 @@ mret_t mxos_bt_deinit( void )
     return MXOS_BT_SUCCESS;
 }
 
-mret_t mxos_bt_init_address( const mxos_bt_device_address_t* address, const mxos_bt_device_address_t* mask )
+merr_t mxos_bt_init_address( const mxos_bt_device_address_t* address, const mxos_bt_device_address_t* mask )
 {
     UNUSED_PARAMETER(address);
     UNUSED_PARAMETER(mask);
     return MXOS_BT_UNSUPPORTED;
 }
 
-mret_t mxos_bt_start_mfgtest_mode( const mxos_uart_config_t* config )
+merr_t mxos_bt_start_mfgtest_mode( const mxos_uart_config_t* config )
 {
 #ifdef BT_MFGTEST_MODE
-    mret_t result = bt_bus_init();
+    merr_t result = bt_bus_init();
     if ( result != MXOS_BT_SUCCESS )
     {
         bt_manager_log( "Error initialising Bluetooth transport bus" );
@@ -213,7 +213,7 @@ mret_t mxos_bt_start_mfgtest_mode( const mxos_uart_config_t* config )
 #endif
 }
 
-mret_t mxos_bt_device_get_address( mxos_bt_device_address_t* address )
+merr_t mxos_bt_device_get_address( mxos_bt_device_address_t* address )
 {
     if ( bt_initialised == MXOS_FALSE )
     {
@@ -250,9 +250,9 @@ mxos_bool_t mxos_bt_device_is_discoverable( void )
 }
 
 
-mret_t mxos_bt_start_pairing( mxos_bt_device_address_t address, mxos_bt_smart_address_type_t type, const mxos_bt_smart_security_settings_t* settings )
+merr_t mxos_bt_start_pairing( mxos_bt_device_address_t address, mxos_bt_smart_address_type_t type, const mxos_bt_smart_security_settings_t* settings )
 {
-    mret_t    err = kNoErr;
+    merr_t    err = kNoErr;
     uint8_t     integer_passkey[4]        = { 0 };
 
     /* update the security settings as per passed by the application */
@@ -268,18 +268,18 @@ mret_t mxos_bt_start_pairing( mxos_bt_device_address_t address, mxos_bt_smart_ad
     return err;
 }
 
-mret_t mxos_bt_stop_pairing( mxos_bt_device_address_t address )
+merr_t mxos_bt_stop_pairing( mxos_bt_device_address_t address )
 {
-    mret_t    err = kNoErr;
+    merr_t    err = kNoErr;
 
     err = mxos_bt_dev_sec_bond_cancel( address );
     bt_manager_log( "mxos_bt_stop_pairing, ret = %d", err );
     return err;
 }
 
-mret_t mxos_bt_start_encryption( mxos_bt_device_address_t* address )
+merr_t mxos_bt_start_encryption( mxos_bt_device_address_t* address )
 {
-    mret_t    err = kNoErr;
+    merr_t    err = kNoErr;
     uint32_t security_level = INTERNAL_SECURITY_LEVEL;
 
     err = mxos_bt_dev_set_encryption( *address, BT_TRANSPORT_LE, &security_level );
@@ -287,14 +287,14 @@ mret_t mxos_bt_start_encryption( mxos_bt_device_address_t* address )
     return err;
 }
 
-mret_t mxos_bt_clear_whitelist( void )
+merr_t mxos_bt_clear_whitelist( void )
 {
     if ( TRUE != mxos_bt_ble_clear_white_list( ) )
         return kGeneralErr;
     return kNoErr;
 }
 
-mret_t mxos_bt_get_whitelist_capability( uint8_t* size )
+merr_t mxos_bt_get_whitelist_capability( uint8_t* size )
 {
     if ( size == (uint8_t *)0 ) 
     {
@@ -686,11 +686,11 @@ static mxos_bt_dev_status_t smartbridge_bt_stack_management_callback( mxos_bt_ma
  *
  *  @param[in] response     the response to current bonding event.
  *
- *  @return mret_t
+ *  @return merr_t
  */
-mret_t mxos_bt_smart_bond_reply(const mxos_bt_smart_bond_reply_t *response)
+merr_t mxos_bt_smart_bond_reply(const mxos_bt_smart_bond_reply_t *response)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     if (!response) return kParamErr;
 

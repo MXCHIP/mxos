@@ -87,7 +87,7 @@ void mxos_eth_add_dns_addr();
 const ip_addr_t *mxos_eth_get_ip_addr(bool any_addr);
 static const ip_addr_t *mxos_eth_get_ipv6_addr(void);
 
-extern mret_t mxos_network_init( void );
+extern merr_t mxos_network_init( void );
 
 extern err_t eth_arch_enetif_init(struct netif *netif);
 extern void eth_arch_enable_interrupts(void);
@@ -108,7 +108,7 @@ static char lwip_mac_address[NSAPI_MAC_SIZE];
  ******************************************************/
 
 /* This function is called after void mxos_network_init(void) */
-mret_t mxos_eth_init( void )
+merr_t mxos_eth_init( void )
 {
 
     // Check if we've already brought up lwip
@@ -153,7 +153,7 @@ static void dhcp_timeout_check(void* arg)
     autoip_start(netif);
 }
 
-mret_t mxos_eth_bringup(bool dhcp, const char *ip, const char *netmask, const char *gw)
+merr_t mxos_eth_bringup(bool dhcp, const char *ip, const char *netmask, const char *gw)
 {
     // Check if we've already connected
     if (lwip_connected) {
@@ -238,7 +238,7 @@ void mbed_lwip_clear_ipv6_addresses(struct netif *lwip_netif)
 }
 #endif
 
-mret_t mxos_eth_bringdown(void)
+merr_t mxos_eth_bringdown(void)
 {
     // Check if we've connected
     if (!lwip_connected) {
@@ -391,7 +391,7 @@ static void mxos_lwip_netif_link_irq(struct netif *lwip_netif)
     }
 }
 
-static mret_t notify_app_ethif_status_changed(void *arg)
+static merr_t notify_app_ethif_status_changed(void *arg)
 {
     uint32_t if_status = (uint32_t)arg;
     WifiStatusHandler(if_status);

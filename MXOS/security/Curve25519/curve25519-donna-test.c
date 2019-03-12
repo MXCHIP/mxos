@@ -59,7 +59,7 @@
 //	Internals
 //===========================================================================================================================
 
-mret_t	curve25519_test( int print );
+merr_t	curve25519_test( int print );
 int			curve25519_djb_test( int print );
 
 //===========================================================================================================================
@@ -158,9 +158,9 @@ static const curve25519_test_vector		kCurve25519TestVectors[] =
 //	curve25519_test
 //===========================================================================================================================
 
-mret_t	curve25519_test( int print )
+merr_t	curve25519_test( int print )
 {
-	mret_t			err;
+	merr_t			err;
 	uint8_t				e[ 32 ], k[ 32 ], ek[ 32 ], ek2[ 32 ];
 	size_t				i, j, len;
 	CFAbsoluteTime		t = 0;

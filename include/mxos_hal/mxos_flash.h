@@ -114,7 +114,7 @@ mxos_logic_partition_t* mxos_flash_get_info( mxos_partition_t inPartition );
  * @return  kNoErr        : On success.
  * @return  kGeneralErr   : If an error occurred with any step
  */
-mret_t mxos_flash_erase(mxos_partition_t inPartition, uint32_t off_set, uint32_t size);
+merr_t mxos_flash_erase(mxos_partition_t inPartition, uint32_t off_set, uint32_t size);
 
 /**@brief  Write data to an area on a Flash logical partition
  *
@@ -129,7 +129,7 @@ mret_t mxos_flash_erase(mxos_partition_t inPartition, uint32_t off_set, uint32_t
  * @return  kNoErr        : On success.
  * @return  kGeneralErr   : If an error occurred with any step
  */
-mret_t mxos_flash_write( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength);
+merr_t mxos_flash_write( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength);
 
 /**@brief    Read data from an area on a Flash to data buffer in RAM
  *
@@ -144,7 +144,7 @@ mret_t mxos_flash_write( mxos_partition_t inPartition, volatile uint32_t* off_se
  * @return    kNoErr        : On success.
  * @return    kGeneralErr   : If an error occurred with any step
  */
-mret_t mxos_flash_read( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* outBuffer, uint32_t inBufferLength);
+merr_t mxos_flash_read( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* outBuffer, uint32_t inBufferLength);
 
 
 
@@ -160,7 +160,7 @@ mret_t mxos_flash_read( mxos_partition_t inPartition, volatile uint32_t* off_set
  * @return    kNoErr        : On success.
  * @return    kGeneralErr   : If an error occurred with any step
  */
-mret_t mxos_flash_enable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size );
+merr_t mxos_flash_enable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size );
 
 
 
@@ -177,7 +177,7 @@ mret_t mxos_flash_enable_security( mxos_partition_t partition, uint32_t off_set,
  * @return   kNoErr        : On success.
  * @return   kGeneralErr   : If an error occurred with any step
  */
-mret_t mxos_flash_disable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size );
+merr_t mxos_flash_disable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size );
 #endif
 
 

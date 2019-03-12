@@ -53,8 +53,8 @@
  *               Static Function Declarations
  ******************************************************/
 
-static mret_t peripheral_app_connection_handler               ( void* arg );
-static mret_t peripheral_app_disconnection_handler            ( void* arg );
+static merr_t peripheral_app_connection_handler               ( void* arg );
+static merr_t peripheral_app_disconnection_handler            ( void* arg );
 
 /******************************************************
  *               Variable Definitions
@@ -245,13 +245,13 @@ mxos_bt_gatt_status_t bt_peripheral_gatt_callback( mxos_bt_gatt_evt_t event, mxo
     return status;
 }
 
-mret_t mxos_bt_peripheral_init(   mxos_bt_peripheral_socket_t*                   socket, 
+merr_t mxos_bt_peripheral_init(   mxos_bt_peripheral_socket_t*                   socket, 
                                     const mxos_bt_smart_security_settings_t*       settings,
                                     mxos_bt_peripheral_connection_callback_t       connection_callback,
                                     mxos_bt_peripheral_disconnection_callback_t    disconnection_callback,
                                     mxos_bt_smart_bonding_callback_t               bonding_callback )
 {
-    mret_t result;
+    merr_t result;
 
     if ( initialised == MXOS_TRUE )
     {
@@ -309,7 +309,7 @@ exit:
     return result;
 }
 
-mret_t mxos_bt_peripheral_deinit( void )
+merr_t mxos_bt_peripheral_deinit( void )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -327,9 +327,9 @@ mret_t mxos_bt_peripheral_deinit( void )
     return MXOS_BT_SUCCESS;
 }
 
-mret_t mxos_bt_peripheral_delete_socket( mxos_bt_peripheral_socket_t* socket )
+merr_t mxos_bt_peripheral_delete_socket( mxos_bt_peripheral_socket_t* socket )
 {
-    mret_t result;
+    merr_t result;
     if ( initialised == MXOS_FALSE )
     {
         return MXOS_BT_SMART_APPL_UNINITIALISED;
@@ -346,7 +346,7 @@ mret_t mxos_bt_peripheral_delete_socket( mxos_bt_peripheral_socket_t* socket )
     return MXOS_BT_SUCCESS;
 }
 
-mret_t mxos_bt_peripheral_disconnect( void )
+merr_t mxos_bt_peripheral_disconnect( void )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -390,7 +390,7 @@ mret_t mxos_bt_peripheral_disconnect( void )
     return MXOS_BT_SUCCESS;
 }
 
-mret_t mxos_bt_peripheral_gatt_indicate_attribute_value ( mxos_bt_peripheral_socket_t* socket, const mxos_bt_ext_attribute_value_t* attribute )
+merr_t mxos_bt_peripheral_gatt_indicate_attribute_value ( mxos_bt_peripheral_socket_t* socket, const mxos_bt_ext_attribute_value_t* attribute )
 {
     mxos_bt_peripheral_socket_status_t status;
 
@@ -414,7 +414,7 @@ mret_t mxos_bt_peripheral_gatt_indicate_attribute_value ( mxos_bt_peripheral_soc
 }
 
 
-mret_t mxos_bt_peripheral_gatt_notify_attribute_value ( mxos_bt_peripheral_socket_t* socket, const mxos_bt_ext_attribute_value_t* attribute )
+merr_t mxos_bt_peripheral_gatt_notify_attribute_value ( mxos_bt_peripheral_socket_t* socket, const mxos_bt_ext_attribute_value_t* attribute )
 {
     mxos_bt_peripheral_socket_status_t status;
 
@@ -441,17 +441,17 @@ mret_t mxos_bt_peripheral_gatt_notify_attribute_value ( mxos_bt_peripheral_socke
 
 
 
-mret_t mxos_bt_peripheral_start_advertisements( mxos_bt_smart_advertising_settings_t* settings, mxos_bt_smart_advertising_complete_callback_t complete_callback)
+merr_t mxos_bt_peripheral_start_advertisements( mxos_bt_smart_advertising_settings_t* settings, mxos_bt_smart_advertising_complete_callback_t complete_callback)
 {
     return peripheral_bt_interface_start_advertisements( settings, complete_callback );
 }
 
-mret_t mxos_bt_peripheral_stop_advertisements( void )
+merr_t mxos_bt_peripheral_stop_advertisements( void )
 {
     return peripheral_bt_interface_stop_advertisements();
 }
 
-mret_t mxos_bt_peripheral_update_advertisements_white_list( mxos_bool_t add, mxos_bt_device_address_t device_address )
+merr_t mxos_bt_peripheral_update_advertisements_white_list( mxos_bool_t add, mxos_bt_device_address_t device_address )
 {
     if ( initialised == MXOS_FALSE ) 
     {
@@ -460,7 +460,7 @@ mret_t mxos_bt_peripheral_update_advertisements_white_list( mxos_bool_t add, mxo
     return peripheral_bt_interface_update_advertisements_white_list( add, device_address );
 }
 
-mret_t mxos_bt_peripheral_get_advertisements_white_list_size( uint8_t *size )
+merr_t mxos_bt_peripheral_get_advertisements_white_list_size( uint8_t *size )
 {
     if ( initialised == MXOS_FALSE ) 
     {
@@ -473,7 +473,7 @@ mret_t mxos_bt_peripheral_get_advertisements_white_list_size( uint8_t *size )
     return peripheral_bt_interface_get_advertisements_white_list_size( size );
 }
 
-mret_t mxos_bt_peripheral_set_advertisements_filter_policy( mxos_bt_peripheral_adv_filter_policy_t policy )
+merr_t mxos_bt_peripheral_set_advertisements_filter_policy( mxos_bt_peripheral_adv_filter_policy_t policy )
 {
     if ( initialised == MXOS_FALSE ) 
     {
@@ -482,7 +482,7 @@ mret_t mxos_bt_peripheral_set_advertisements_filter_policy( mxos_bt_peripheral_a
     return peripheral_bt_interface_set_advertisements_filter_policy( policy );
 }
 
-mret_t mxos_bt_peripheral_get_socket_status( mxos_bt_peripheral_socket_t* socket, mxos_bt_peripheral_socket_status_t* status )
+merr_t mxos_bt_peripheral_get_socket_status( mxos_bt_peripheral_socket_t* socket, mxos_bt_peripheral_socket_status_t* status )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -513,9 +513,9 @@ mret_t mxos_bt_peripheral_get_socket_status( mxos_bt_peripheral_socket_t* socket
     return MXOS_BT_SUCCESS;
 }
 
-static mret_t bt_peripheral_get_buffer( void** buffer, uint32_t size )
+static merr_t bt_peripheral_get_buffer( void** buffer, uint32_t size )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     require_action( buffer != NULL, exit, err = kParamErr );
     /* Allocate buffer object */
     *buffer = malloc( size );
@@ -524,9 +524,9 @@ exit:
     return err;
 }
 
-static mret_t bt_peripheral_resize_buffer( void** buffer, uint32_t size )
+static merr_t bt_peripheral_resize_buffer( void** buffer, uint32_t size )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     require_action( buffer != NULL, exit, err = kParamErr );
     /* Allocate buffer object */
     *buffer = realloc( *buffer, size );
@@ -535,9 +535,9 @@ exit:
     return err;
 }
 
-static mret_t bt_peripheral_release_buffer( void* buffer )
+static merr_t bt_peripheral_release_buffer( void* buffer )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     require_action( buffer != NULL, exit, err = kParamErr );
     free( buffer );
 exit:
@@ -547,7 +547,7 @@ exit:
 mxos_bt_ext_attribute_value_t* mxos_bt_peripheral_ext_attribute_add( uint16_t handle, uint16_t value_length, const uint8_t* value, mxos_bt_peripheral_attribute_handler handler )
 {
     mxos_bt_ext_attribute_value_t* new_attribite = NULL;
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     void*          value_buffer;
 
     require_action( initialised == MXOS_TRUE, exit, err = kNotInitializedErr );
@@ -593,9 +593,9 @@ exit:
     return new_attribite;
 }
 
-mret_t mxos_bt_peripheral_ext_attribute_remove( mxos_bt_ext_attribute_value_t* attribute )
+merr_t mxos_bt_peripheral_ext_attribute_remove( mxos_bt_ext_attribute_value_t* attribute )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action( initialised == MXOS_TRUE, exit, err = kNotInitializedErr );
 
@@ -618,9 +618,9 @@ exit:
     return err;    
 }
 
-mret_t mxos_bt_peripheral_ext_attribute_value_write( mxos_bt_ext_attribute_value_t* attribute, uint16_t length, uint16_t offset, const uint8_t* value )
+merr_t mxos_bt_peripheral_ext_attribute_value_write( mxos_bt_ext_attribute_value_t* attribute, uint16_t length, uint16_t offset, const uint8_t* value )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action( initialised == MXOS_TRUE, exit, err = kNotInitializedErr );
 
@@ -663,9 +663,9 @@ static bool compare_attribute_by_handle( linked_list_node_t* node_to_compare, vo
     }
 }
 
-mret_t mxos_bt_peripheral_ext_attribute_find_by_handle( uint16_t handle, mxos_bt_ext_attribute_value_t** attribute_found )
+merr_t mxos_bt_peripheral_ext_attribute_find_by_handle( uint16_t handle, mxos_bt_ext_attribute_value_t** attribute_found )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action( ( initialised == MXOS_TRUE ) && ( attribute_found != NULL ), exit, err = kParamErr );
 
@@ -679,7 +679,7 @@ exit:
  *               Callback Definitions
  ******************************************************/
 
-static mret_t peripheral_app_connection_handler( void* arg )
+static merr_t peripheral_app_connection_handler( void* arg )
 {
     mxos_bt_peripheral_socket_t* socket = (mxos_bt_peripheral_socket_t *)arg;
 
@@ -714,7 +714,7 @@ static mret_t peripheral_app_connection_handler( void* arg )
 }
 
 
-static mret_t peripheral_app_disconnection_handler( void* arg )
+static merr_t peripheral_app_disconnection_handler( void* arg )
 {
     mxos_bt_peripheral_socket_t* socket = (mxos_bt_peripheral_socket_t *)arg;
 

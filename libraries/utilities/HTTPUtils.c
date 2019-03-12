@@ -122,9 +122,9 @@ exit:
 }
 
 
-mret_t SocketReadHTTPBody( int inSock, HTTPHeader_t *inHeader )
+merr_t SocketReadHTTPBody( int inSock, HTTPHeader_t *inHeader )
 {
-  mret_t err = kParamErr;
+  merr_t err = kParamErr;
   ssize_t readResult;
   int selectResult;
   fd_set readSet;
@@ -322,9 +322,9 @@ exit:
   return err;
 }
 
-mret_t SocketReadHTTPSBody( mxos_ssl_t ssl, HTTPHeader_t *inHeader )
+merr_t SocketReadHTTPSBody( mxos_ssl_t ssl, HTTPHeader_t *inHeader )
 {
-  mret_t err = kParamErr;
+  merr_t err = kParamErr;
   ssize_t readResult;
   int selectResult;
   fd_set readSet;
@@ -649,9 +649,9 @@ bool findHeader ( HTTPHeader_t *inHeader,  char **  outHeaderEnd)
 //  Parses an HTTP header. This assumes the "buf" and "len" fields are set. The other fields are set by this function.
 //===========================================================================================================================
 
-mret_t HTTPHeaderParse( HTTPHeader_t *ioHeader )
+merr_t HTTPHeaderParse( HTTPHeader_t *ioHeader )
 {
-  mret_t            err;
+  merr_t            err;
   const char *        src;
   const char *        end;
   const char *        ptr;
@@ -848,7 +848,7 @@ int findChunkedDataLength( const char *inChunkPtr , size_t inChunkLen, char **  
   return false;  
 }
 
-mret_t HTTPGetHeaderField( const char *inHeaderPtr, 
+merr_t HTTPGetHeaderField( const char *inHeaderPtr, 
                             size_t     inHeaderLen, 
                             const char *inName, 
                             const char **outNamePtr, 
@@ -941,7 +941,7 @@ exit:
   return( n );
 }
 
-mret_t HTTPHeaderMatchMethod( HTTPHeader_t *inHeader, const char *method )
+merr_t HTTPHeaderMatchMethod( HTTPHeader_t *inHeader, const char *method )
 {
   if( strnicmpx( inHeader->methodPtr, inHeader->methodLen, method ) == 0 )
     return kNoErr;
@@ -949,7 +949,7 @@ mret_t HTTPHeaderMatchMethod( HTTPHeader_t *inHeader, const char *method )
   return kNotFoundErr;
 }
 
-mret_t HTTPHeaderMatchURL( HTTPHeader_t *inHeader, const char *url )
+merr_t HTTPHeaderMatchURL( HTTPHeader_t *inHeader, const char *url )
 {
   if( strnicmp_suffix( inHeader->url.pathPtr, inHeader->url.pathLen, url ) == 0 )
     return kNoErr;
@@ -969,7 +969,7 @@ HTTPHeader_t * HTTPHeaderCreate( size_t bufLen )
 
 HTTPHeader_t * HTTPHeaderCreateWithCallback( size_t bufLen, onReceivedDataCallback inRecvFunc, onClearCallback onClearFunc, void * context )
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   HTTPHeader_t *httpHeader = NULL;
 
   httpHeader = calloc(1, sizeof(HTTPHeader_t));
@@ -1047,9 +1047,9 @@ void HTTPHeaderDestory( HTTPHeader_t **inHeader )
   }
 }
 
-mret_t CreateSimpleHTTPOKMessage( uint8_t **outMessage, size_t *outMessageSize )
+merr_t CreateSimpleHTTPOKMessage( uint8_t **outMessage, size_t *outMessageSize )
 {
-  mret_t err = kNoMemoryErr;
+  merr_t err = kNoMemoryErr;
   *outMessage = malloc( 200 );
   require( *outMessage, exit );
   
@@ -1066,10 +1066,10 @@ exit:
 
 
 
-mret_t CreateSimpleHTTPMessage( const char *contentType, uint8_t *inData, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize )
+merr_t CreateSimpleHTTPMessage( const char *contentType, uint8_t *inData, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize )
 {
   uint8_t *endOfHTTPHeader;  
-  mret_t err = kParamErr;
+  merr_t err = kParamErr;
   
   
   require( contentType, exit );
@@ -1099,9 +1099,9 @@ exit:
   return err;
 }
 
-mret_t CreateSimpleHTTPMessageNoCopy( const char *contentType, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize )
+merr_t CreateSimpleHTTPMessageNoCopy( const char *contentType, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize )
 {
-  mret_t err = kParamErr;
+  merr_t err = kParamErr;
   
   require( contentType, exit );
   require( inDataLen, exit );
@@ -1149,9 +1149,9 @@ char * getStatusString(int status)
     return "OK";
 }
 
-mret_t CreateHTTPRespondMessageNoCopy( int status, const char *contentType, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize )
+merr_t CreateHTTPRespondMessageNoCopy( int status, const char *contentType, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize )
 {
-  mret_t err = kParamErr;
+  merr_t err = kParamErr;
   char *statusString = getStatusString(status);
     
   err = kNoMemoryErr;
@@ -1179,10 +1179,10 @@ exit:
 }
 
 
-mret_t CreateHTTPMessage( const char *methold, const char *url, const char *contentType, uint8_t *inData, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize )
+merr_t CreateHTTPMessage( const char *methold, const char *url, const char *contentType, uint8_t *inData, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize )
 {
   uint8_t *endOfHTTPHeader;  
-  mret_t err = kParamErr;
+  merr_t err = kParamErr;
     
   err = kNoMemoryErr;
   *outMessage = malloc( inDataLen + 500 );
@@ -1211,14 +1211,14 @@ exit:
   return err;
 }
 
-mret_t CreateHTTPMessageWithHost( const char *methold, const char *url, 
+merr_t CreateHTTPMessageWithHost( const char *methold, const char *url, 
                            const char* host, uint16_t port, 
                            const char *contentType, 
                            uint8_t *inData, size_t inDataLen, 
                            uint8_t **outMessage, size_t *outMessageSize )
 {
   uint8_t *endOfHTTPHeader;  
-  mret_t err = kParamErr;
+  merr_t err = kParamErr;
     
   err = kNoMemoryErr;
   *outMessage = malloc( inDataLen + 500 );

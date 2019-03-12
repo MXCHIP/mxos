@@ -312,9 +312,9 @@ unsigned int str2hex(unsigned char *ibuf, unsigned char *obuf,
 //  (e.g. "0:1:2:3:4:5:6:7" is equivalent to "00:01:02:03:04:05:06:07").
 //===========================================================================================================================
 
-mret_t TextToHardwareAddress( const void *inText, size_t inTextSize, size_t inAddrSize, void *outAddr )
+merr_t TextToHardwareAddress( const void *inText, size_t inTextSize, size_t inAddrSize, void *outAddr )
 {
-    mret_t            err;
+    merr_t            err;
     const char *        src;
     const char *        end;
     int                 i;

@@ -63,7 +63,7 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
 
 static void easylink_usr_thread( void *inContext )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     system_context_t *Context = (system_context_t *) inContext;
 
     easylink_thread_force_exit = false;
@@ -98,9 +98,9 @@ exit:
     mos_thread_delete( NULL );
 }
 
-mret_t mxos_easylink_usr( mxos_Context_t * const in_context, mxos_bool_t enable )
+merr_t mxos_easylink_usr( mxos_Context_t * const in_context, mxos_bool_t enable )
 {
-    mret_t err = kUnknownErr;
+    merr_t err = kUnknownErr;
 
     require_action( in_context, exit, err = kNotPreparedErr );
 

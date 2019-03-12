@@ -117,8 +117,8 @@ typedef struct
     mxos_semaphore_t           sem_wakeup;
     volatile uint32_t          tx_size;
     volatile uint32_t          rx_size;
-    volatile mret_t          last_receive_result;
-    volatile mret_t          last_transmit_result;
+    volatile merr_t          last_receive_result;
+    volatile merr_t          last_transmit_result;
     platform_uart_driver_flow_control_t   flow_control;
 } platform_uart_driver_t;
 

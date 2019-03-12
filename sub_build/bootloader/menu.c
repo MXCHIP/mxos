@@ -45,9 +45,9 @@
 #define OTP_MAC_OFFSET 0
 #define OTP_SSID_OFFSET 32
 #define OTP_PWD_OFFSET 64
-mret_t iflash_otp_write(volatile uint32_t FlashAddress, uint8_t* Data ,uint32_t DataLength);
-mret_t iflash_otp_read(volatile uint32_t FlashAddress, uint8_t* Data ,uint32_t DataLength);
-mret_t iflash_otp_lock(volatile uint32_t FlashAddress, uint32_t DataLength);
+merr_t iflash_otp_write(volatile uint32_t FlashAddress, uint8_t* Data ,uint32_t DataLength);
+merr_t iflash_otp_read(volatile uint32_t FlashAddress, uint8_t* Data ,uint32_t DataLength);
+merr_t iflash_otp_lock(volatile uint32_t FlashAddress, uint32_t DataLength);
 
 
 /* Private typedef -----------------------------------------------------------*/
@@ -209,7 +209,7 @@ void Main_Menu(void)
   bool inputFlashArea = false;
   mxos_logic_partition_t *partition;
   mxos_flash_t flash_dev;
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
 
   while (1)  {                                    /* loop forever                */
     printf ("\n\rMXCHIP> ");

@@ -61,7 +61,7 @@
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-mret_t bmg160_sensor_init(void);
+merr_t bmg160_sensor_init(void);
 
 
 /**
@@ -74,7 +74,7 @@ mret_t bmg160_sensor_init(void);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-mret_t bmg160_data_readout(s16 *v_gyro_datax_s16, s16 *v_gyro_datay_s16, s16 *v_gyro_dataz_s16);
+merr_t bmg160_data_readout(s16 *v_gyro_datax_s16, s16 *v_gyro_datay_s16, s16 *v_gyro_dataz_s16);
 
 
 /**
@@ -82,7 +82,7 @@ mret_t bmg160_data_readout(s16 *v_gyro_datax_s16, s16 *v_gyro_datay_s16, s16 *v_
  *
  * @return none
  */
-mret_t bmg160_sensor_deinit(void);
+merr_t bmg160_sensor_deinit(void);
 
 /**
   * @}

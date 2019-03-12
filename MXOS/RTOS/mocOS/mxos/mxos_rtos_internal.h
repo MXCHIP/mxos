@@ -80,4 +80,4 @@
  *               Function Declarations
  ******************************************************/
 
-mret_t init_timer_thread(void);
+merr_t init_timer_thread(void);

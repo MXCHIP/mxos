@@ -63,7 +63,7 @@
 *               Function Declarations
 ******************************************************/
 
-extern mret_t host_platform_init( void );
+extern merr_t host_platform_init( void );
 
 /******************************************************
 *               Variables Definitions

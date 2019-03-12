@@ -177,7 +177,7 @@ int mdns_rand_range(int n)
 /****************************Mdns Main Entry Functions***************************/
 int mdns_start(const char *domain, char *hostname)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     err = mxos_system_notify_register(mxos_notify_WIFI_STATUS_CHANGED,
                                       (void *)net_status_changed_delegate, NULL);

@@ -57,10 +57,10 @@ void qc_test_ble( void )
 /* Scan complete handler. Scan complete event reported via this callback.
  * It runs on the MXOS_BT_WORKER_THREAD context.
  */
-static mret_t scan_complete_handler( void *arg )
+static merr_t scan_complete_handler( void *arg )
 {
     UNUSED_PARAMETER( arg );
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     uint32_t count = 0;
     mxos_bt_smart_scan_result_t *scan_result = NULL;
 
@@ -80,9 +80,9 @@ exit:
     return err;
 }
 
-static mret_t ble_scan_handler( const mxos_bt_smart_advertising_report_t* result )
+static merr_t ble_scan_handler( const mxos_bt_smart_advertising_report_t* result )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     char* bd_addr_str = NULL;
     char str[128];
 

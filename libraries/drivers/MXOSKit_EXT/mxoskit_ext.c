@@ -27,9 +27,9 @@ extern void user_key2_clicked_callback(void);
 extern void user_key2_long_pressed_callback(void);
 
 //------------------------------------- API ------------------------------------
-mret_t user_modules_init(void)
+merr_t user_modules_init(void)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   char oled_show_line[OLED_DISPLAY_MAX_CHAR_PER_ROW+1] = {'\0'};   // max char each line
 #if defined(MXOS_EXT_KEY1)||defined(MXOS_EXT_KEY2)
   button_init_t init;
@@ -96,9 +96,9 @@ mret_t user_modules_init(void)
   return err;
 }
 
-mret_t mxoskit_ext_init(void)
+merr_t mxoskit_ext_init(void)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   err = user_modules_init();
   
   return err;

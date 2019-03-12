@@ -445,9 +445,9 @@ void BMA2x2_delay_msek(u32 msek)
 #endif
 
 
-mret_t bma2x2_sensor_init(void)
+merr_t bma2x2_sensor_init(void)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   /* Local variable used to assign the bandwidth value*/
   u8 v_bw_value_u8 = 0;
   /* Local variable used to set the bandwidth value*/
@@ -503,9 +503,9 @@ exit:
 }
 
 
-mret_t bma2x2_data_readout(s16 *v_accel_x_s16, s16 *v_accel_y_s16, s16 *v_accel_z_s16)
+merr_t bma2x2_data_readout(s16 *v_accel_x_s16, s16 *v_accel_y_s16, s16 *v_accel_z_s16)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   
   /* result of communication results*/
   s32 com_rslt = BMA2x2_ERROR;
@@ -531,9 +531,9 @@ mret_t bma2x2_data_readout(s16 *v_accel_x_s16, s16 *v_accel_y_s16, s16 *v_accel_
   return err;
 }
 
-mret_t bma2x2_sensor_deinit(void)
+merr_t bma2x2_sensor_deinit(void)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   s32 com_rslt = BMA2x2_ERROR;
   
   err = mxos_i2c_deinit(&bma2x2_i2c_device);

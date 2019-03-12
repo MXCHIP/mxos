@@ -249,7 +249,7 @@ void MXOS_disconnect(Network* n)
   }
 }
 
-static mret_t usergethostbyname( const char * domain, uint8_t * addr, uint8_t addrLen )
+static merr_t usergethostbyname( const char * domain, uint8_t * addr, uint8_t addrLen )
 {
     struct hostent* host = NULL;
     struct in_addr in_addr;
@@ -287,7 +287,7 @@ int SSL_ConnectNetwork(Network* n, char* addr, int port, int ca_str_len, char* c
   unsigned long ipAddress;
   char mqtt_server_ipstr[16];
   int retVal = -1;
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   int nNetTimeout_ms = MQTT_CLIENT_SOCKET_TIMEOUT;  // socket send && recv timeout = 5s
   int opt = 0;
 #ifdef MXOS_MQTT_CLIENT_SUPPORT_SSL
@@ -391,7 +391,7 @@ int ConnectNetwork(Network* n, char* addr, int port)
   unsigned long ipAddress;
   char mqtt_server_ipstr[16];
   int retVal = -1;
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   int nNetTimeout_ms = MQTT_CLIENT_SOCKET_TIMEOUT;  // socket send && recv timeout = 5s
   int opt = 0;
 

@@ -239,7 +239,7 @@ mxos_i2c_device_t lsm9ds1_acc_gyr_i2c_device = {
   LSM9DS1_I2C_PORT, 0x6A, I2C_ADDRESS_WIDTH_7BIT, I2C_STANDARD_SPEED_MODE
 };
 
-static mret_t LSM9DS1_ACC_GYR_IO_Init(void)
+static merr_t LSM9DS1_ACC_GYR_IO_Init(void)
 {
   // I2C init
   mxos_i2c_deinit(&lsm9ds1_acc_gyr_i2c_device);   // in case error
@@ -261,10 +261,10 @@ static mret_t LSM9DS1_ACC_GYR_IO_Init(void)
 *		will be used for write the value into the register
 *	\param cnt : The no of byte of data to be write
 */
-static mret_t LSM9DS1_ACC_GYR_IO_Write(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByteToWrite)
+static merr_t LSM9DS1_ACC_GYR_IO_Write(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByteToWrite)
 {
   mxos_i2c_message_t lsm9ds1_acc_gyr_i2c_msg = {NULL, NULL, 0, 0, 0, false};
-  mret_t iError = kNoErr;
+  merr_t iError = kNoErr;
   uint8_t array[8];
   uint8_t stringpos;
   array[0] = RegisterAddr;
@@ -288,10 +288,10 @@ static mret_t LSM9DS1_ACC_GYR_IO_Write(uint8_t* pBuffer, uint8_t RegisterAddr, u
 *	\param reg_data : This data read from the sensor, which is hold in an array
 *	\param cnt : The no of byte of data to be read
 */
-static mret_t LSM9DS1_ACC_GYR_IO_Read(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByteToRead)
+static merr_t LSM9DS1_ACC_GYR_IO_Read(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByteToRead)
 {
   mxos_i2c_message_t lsm9ds1_acc_gyr_i2c_msg = {NULL, NULL, 0, 0, 0, false};
-  mret_t iError = kNoErr;
+  merr_t iError = kNoErr;
   uint8_t array[8] = {0};
   array[0] = RegisterAddr;
   
@@ -306,9 +306,9 @@ static mret_t LSM9DS1_ACC_GYR_IO_Read(uint8_t* pBuffer, uint8_t RegisterAddr, ui
   return kNoErr;
 }
 
-static mret_t LSM9DS1_ACC_POWER_ON(void)
+static merr_t LSM9DS1_ACC_POWER_ON(void)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   uint8_t temp = 0;
   
   temp = BW_XL_50;
@@ -319,9 +319,9 @@ static mret_t LSM9DS1_ACC_POWER_ON(void)
   return err;
 }
 
-static mret_t LSM9DS1_GYR_POWER_ON(void)
+static merr_t LSM9DS1_GYR_POWER_ON(void)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   uint8_t temp = 0;
   
   temp = CTRL_REG1_G_DEF;
@@ -332,9 +332,9 @@ static mret_t LSM9DS1_GYR_POWER_ON(void)
   return err;
 }
 
-static mret_t LSM9DS1_GYR_POWER_OFF(void)
+static merr_t LSM9DS1_GYR_POWER_OFF(void)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   uint8_t temp = 0;
   
   temp = LSM9DS1_ACC_ODR_OFF;
@@ -345,9 +345,9 @@ static mret_t LSM9DS1_GYR_POWER_OFF(void)
   return err;
 }
 
-static mret_t LSM9DS1_ACC_POWER_OFF(void)
+static merr_t LSM9DS1_ACC_POWER_OFF(void)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   uint8_t temp = 0;
   
   temp = CTRL_REG1_G_OFF;
@@ -358,9 +358,9 @@ static mret_t LSM9DS1_ACC_POWER_OFF(void)
   return err;
 }
 
-static mret_t LSM9DS1_ACC_GYR_Init(void)
+static merr_t LSM9DS1_ACC_GYR_Init(void)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   
   if((err = LSM9DS1_ACC_GYR_IO_Init()) != kNoErr){
     return err;
@@ -377,9 +377,9 @@ static mret_t LSM9DS1_ACC_GYR_Init(void)
   return err;
 }
 
-static mret_t LSM9DS1_ACC_GET_XYZ(int16_t *ACC_X, int16_t *ACC_Y, int16_t *ACC_Z)
+static merr_t LSM9DS1_ACC_GET_XYZ(int16_t *ACC_X, int16_t *ACC_Y, int16_t *ACC_Z)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   uint8_t temp[6] = {0};
   
   if((err = LSM9DS1_ACC_GYR_IO_Read(&temp[0], OUT_X_L_XL, 6)) != kNoErr){
@@ -393,9 +393,9 @@ static mret_t LSM9DS1_ACC_GET_XYZ(int16_t *ACC_X, int16_t *ACC_Y, int16_t *ACC_Z
   return err;
 }
 
-static mret_t LSM9DS1_GYR_GET_XYZ(int16_t *GYR_X, int16_t *GYR_Y, int16_t *GYR_Z)
+static merr_t LSM9DS1_GYR_GET_XYZ(int16_t *GYR_X, int16_t *GYR_Y, int16_t *GYR_Z)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   uint8_t temp[6] = {0};
 
   if((err = LSM9DS1_ACC_GYR_IO_Read(&temp[0], OUT_X_L_G, 6)) != kNoErr){
@@ -408,24 +408,24 @@ static mret_t LSM9DS1_GYR_GET_XYZ(int16_t *GYR_X, int16_t *GYR_Y, int16_t *GYR_Z
   return err;
 }
 
-mret_t lsm9ds1_acc_gyr_sensor_init(void)
+merr_t lsm9ds1_acc_gyr_sensor_init(void)
 {
   return LSM9DS1_ACC_GYR_Init();
 }
 
-mret_t lsm9ds1_acc_read_data(int16_t *ACC_X, int16_t *ACC_Y, int16_t *ACC_Z)
+merr_t lsm9ds1_acc_read_data(int16_t *ACC_X, int16_t *ACC_Y, int16_t *ACC_Z)
 {
   return LSM9DS1_ACC_GET_XYZ(ACC_X, ACC_Y, ACC_Z);
 }
 
-mret_t lsm9ds1_gyr_read_data(int16_t *GYR_X, int16_t *GYR_Y, int16_t *GYR_Z)
+merr_t lsm9ds1_gyr_read_data(int16_t *GYR_X, int16_t *GYR_Y, int16_t *GYR_Z)
 {
   return LSM9DS1_GYR_GET_XYZ(GYR_X, GYR_Y, GYR_Z);
 }
 
-mret_t lsm9ds1_acc_gyr_sensor_deinit(void)
+merr_t lsm9ds1_acc_gyr_sensor_deinit(void)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   
   if((err = LSM9DS1_ACC_POWER_OFF()) != kNoErr){
     return err;

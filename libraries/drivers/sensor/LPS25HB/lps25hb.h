@@ -538,7 +538,7 @@ extern PRESSURE_DrvExtTypeDef LPS25HBDrv_ext;
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-mret_t lps25hb_sensor_init(void);
+merr_t lps25hb_sensor_init(void);
 
 
 
@@ -551,7 +551,7 @@ mret_t lps25hb_sensor_init(void);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-mret_t lps25hb_Read_Data(float *temperature,float *pressure);
+merr_t lps25hb_Read_Data(float *temperature,float *pressure);
 
 
 /**
@@ -560,7 +560,7 @@ mret_t lps25hb_Read_Data(float *temperature,float *pressure);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-mret_t lps25hb_sensor_deinit(void);
+merr_t lps25hb_sensor_deinit(void);
 
 
 /**

@@ -66,7 +66,7 @@ static err_t _eth_arch_low_level_igmp_mac_filter(struct netif *netif, ip_addr_t 
 static void _eth_arch_default_mac_address(char *mac);
 
 static void ETH_AddMacFilter(ETH_HandleTypeDef *heth, uint8_t *Addr, uint8_t enable);
-static mret_t ETH_INIT( void );
+static merr_t ETH_INIT( void );
 
 MXOS_WEAK uint8_t mbed_otp_mac_address(char *mac);
 
@@ -177,9 +177,9 @@ static void ETH_AddMacFilter(ETH_HandleTypeDef *heth, uint8_t *Addr, uint8_t ena
  * @param  None
  * @retval None
  */
-static mret_t ETH_INIT( void )
+static merr_t ETH_INIT( void )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     uint8_t MACAddr[6];
     HAL_StatusTypeDef hal_eth_init_status;
 

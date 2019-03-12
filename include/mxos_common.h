@@ -127,8 +127,8 @@ typedef uint32_t  mxos_time_t;        /**< Time value in milliseconds */
 typedef uint32_t  mxos_utc_time_t;    /**< UTC Time in seconds        */
 typedef uint64_t  mxos_utc_time_ms_t; /**< UTC Time in milliseconds   */
 
-// ==== mret_t ====
-typedef int         mret_t;
+// ==== merr_t ====
+typedef int         merr_t;
 
 #define kNoErr                      0       //! No error occurred.
 #define MXOS_SUCCESS                0       //! No error occurred.

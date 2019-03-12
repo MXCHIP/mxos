@@ -71,12 +71,12 @@ static mxos_i2c_device_t MFi_CP =
 #define  AH_IPOD_CERTIFICATE_DATA_PAGE7           0x57  // Length 128 R/W
 #define  AH_IPOD_CERTIFICATE_DATA_PAGE8           0x58  // Length 128 R/W
 
-static mret_t CP_ReadBuffer(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead);
-static mret_t CP_BufferWrite(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite);
+static merr_t CP_ReadBuffer(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead);
+static merr_t CP_BufferWrite(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite);
 
-mret_t mxos_mfi_auth_init( mxos_i2c_t i2c )
+merr_t mxos_mfi_auth_init( mxos_i2c_t i2c )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     // PLATFORM_TO_DO
     bool isCPFound = false;
     MFi_CP.port = i2c;
@@ -101,12 +101,12 @@ void mxos_mfi_auth_deinit( void )
     return;
 }
 
-mret_t mxos_mfi_auth_create_sign( const void *inDigestPtr,
+merr_t mxos_mfi_auth_create_sign( const void *inDigestPtr,
                                          size_t     inDigestLen,
                                          uint8_t    **outSignaturePtr,
                                          size_t     *outSignatureLen )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     uint8_t deviceVersion;
 
     // PLATFORM_TO_DO
@@ -168,10 +168,10 @@ exit:
     return kNotPreparedErr;
 }
 
-mret_t mxos_mfi_auth_copy_cert( uint8_t **outCertificatePtr, size_t *outCertificateLen )
+merr_t mxos_mfi_auth_copy_cert( uint8_t **outCertificatePtr, size_t *outCertificateLen )
 {
     // PLATFORM_TO_DO
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     uint8_t page, pageNumber;
     uint16_t Len_big;
     uint8_t *obj;
@@ -203,9 +203,9 @@ exit:
     return kNotPreparedErr;
 }
 
-static mret_t CP_BufferWrite(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite)
+static merr_t CP_BufferWrite(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   mxos_i2c_message_t message;
   uint8_t *txData = NULL;
   txData = malloc(NumByteToWrite+1);
@@ -222,9 +222,9 @@ exit:
   return err;
 }
 
-mret_t CP_ReadBuffer(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead)
+merr_t CP_ReadBuffer(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   mxos_i2c_message_t message;
 
   err = mxos_i2c_build_comb_msg(&message, &ReadAddr, pBuffer, 1, NumByteToRead, 100);

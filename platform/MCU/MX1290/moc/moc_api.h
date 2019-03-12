@@ -88,16 +88,16 @@ typedef struct _wifi_mgmt_frame_t
 
 typedef struct
 {
-    mret_t (*pwm_init)( mxos_pwm_t pwm, uint32_t frequency, float duty_cycle );
-    mret_t (*pwm_start)( mxos_pwm_t pwm );
-    mret_t (*pwm_stop)( mxos_pwm_t pwm );
+    merr_t (*pwm_init)( mxos_pwm_t pwm, uint32_t frequency, float duty_cycle );
+    merr_t (*pwm_start)( mxos_pwm_t pwm );
+    merr_t (*pwm_stop)( mxos_pwm_t pwm );
 } pwm_api_t;
 
 typedef struct
 {
-    mret_t (*wdg_init)( uint32_t timeout );
+    merr_t (*wdg_init)( uint32_t timeout );
     void (*wdg_reload)( void );
-    mret_t (*wdg_stop)( void );
+    merr_t (*wdg_stop)( void );
 } wdg_api_t;
 
 #define LAST_RST_CAUSE_VBAT    (1<<0)
@@ -154,38 +154,38 @@ typedef enum
 
 typedef struct
 {
-    mret_t (*mxos_adc_init)( mxos_adc_t adc, uint32_t sampling_cycle );
-    mret_t (*mxos_adc_take_sample)( mxos_adc_t adc, uint16_t* output );
-    mret_t (*mxos_adc_take_sampleStreram)( mxos_adc_t adc, void* buffer, uint16_t buffer_length );
-    mret_t (*mxos_adc_deinit)( mxos_adc_t adc );
+    merr_t (*mxos_adc_init)( mxos_adc_t adc, uint32_t sampling_cycle );
+    merr_t (*mxos_adc_take_sample)( mxos_adc_t adc, uint16_t* output );
+    merr_t (*mxos_adc_take_sampleStreram)( mxos_adc_t adc, void* buffer, uint16_t buffer_length );
+    merr_t (*mxos_adc_deinit)( mxos_adc_t adc );
 } adc_api_t;
 
 typedef struct
 {
-    mret_t (*i2c_init)( mxos_i2c_device_t* device );
-    mret_t (*i2c_deinit)( mxos_i2c_device_t* device );
+    merr_t (*i2c_init)( mxos_i2c_device_t* device );
+    merr_t (*i2c_deinit)( mxos_i2c_device_t* device );
     bool (*i2c_probe_device)( mxos_i2c_device_t* device, int retries );
-    mret_t (*i2c_build_tx_msg)( mxos_i2c_message_t* message, const void* tx_buffer, uint16_t tx_buffer_length,
+    merr_t (*i2c_build_tx_msg)( mxos_i2c_message_t* message, const void* tx_buffer, uint16_t tx_buffer_length,
                                   uint16_t retries );
-    mret_t (*i2c_build_rx_msg)( mxos_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length,
+    merr_t (*i2c_build_rx_msg)( mxos_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length,
                                   uint16_t retries );
-    mret_t (*i2c_build_combined_msg)( mxos_i2c_message_t* message, const void* tx_buffer, void* rx_buffer,
+    merr_t (*i2c_build_combined_msg)( mxos_i2c_message_t* message, const void* tx_buffer, void* rx_buffer,
                                         uint16_t tx_buffer_length, uint16_t rx_buffer_length, uint16_t retries );
-    mret_t (*i2c_transfer)( mxos_i2c_device_t* device, mxos_i2c_message_t* messages, uint16_t number_of_messages );
+    merr_t (*i2c_transfer)( mxos_i2c_device_t* device, mxos_i2c_message_t* messages, uint16_t number_of_messages );
 } i2c_api_t;
 
 typedef struct
 {
-    mret_t (*spi_init)( const mxos_spi_device_t* spi );
-    mret_t (*spi_transfer)( const mxos_spi_device_t* spi, const mxos_spi_message_segment_t* segments,
+    merr_t (*spi_init)( const mxos_spi_device_t* spi );
+    merr_t (*spi_transfer)( const mxos_spi_device_t* spi, const mxos_spi_message_segment_t* segments,
                               uint16_t number_of_segments );
-    mret_t (*spi_finalize)( const mxos_spi_device_t* spi );
+    merr_t (*spi_finalize)( const mxos_spi_device_t* spi );
 } spi_api_t;
 
 typedef struct {
-	mret_t (*mxos_gtimer_init)(mxos_gtimer_t gtimer);
-	mret_t (*mxos_gtimer_start)(mxos_gtimer_t timer, mxos_gtimer_mode_t mode, uint32_t time, mxos_gtimer_irq_callback_t function, void *arg);
-	mret_t (*mxos_gtimer_stop)(mxos_gtimer_t timer);
+	merr_t (*mxos_gtimer_init)(mxos_gtimer_t gtimer);
+	merr_t (*mxos_gtimer_start)(mxos_gtimer_t timer, mxos_gtimer_mode_t mode, uint32_t time, mxos_gtimer_irq_callback_t function, void *arg);
+	merr_t (*mxos_gtimer_stop)(mxos_gtimer_t timer);
 } gtimer_api_t;
 
 /* API type define */
@@ -197,39 +197,39 @@ typedef struct mxos_api_struct
     mxos_system_config_t* (*system_config_get)( void );
     void (*system_config_set)( mxos_system_config_t *cfg );
     void (*mxos_network_init)( );
-    mret_t (*mos_thread_new)( mos_thread_id_t* thread, uint8_t priority, const char* name,
+    merr_t (*mos_thread_new)( mos_thread_id_t* thread, uint8_t priority, const char* name,
                                          mos_thread_func_t function, uint32_t stack_size, void* arg );
-    mret_t (*mos_thread_delete)( mos_thread_id_t* thread );
+    merr_t (*mos_thread_delete)( mos_thread_id_t* thread );
     void (*mos_thread_yield)( void );
     void (*mos_thread_suspend)( mos_thread_id_t* thread );
     void (*mxos_rtos_suspend_all_thread)( void );
     long (*mxos_rtos_resume_all_thread)( void );
-    mret_t (*mos_thread_join)( mos_thread_id_t* thread );
-    mret_t (*mxos_rtos_thread_force_awake)( mos_thread_id_t* thread );
+    merr_t (*mos_thread_join)( mos_thread_id_t* thread );
+    merr_t (*mxos_rtos_thread_force_awake)( mos_thread_id_t* thread );
     bool (*mxos_rtos_is_current_thread)( mos_thread_id_t* thread );
     void (*mxos_thread_sleep)( uint32_t seconds );
     void (*mxos_thread_msleep)( uint32_t milliseconds );
-    mret_t (*mxos_rtos_init_semaphore)( mxos_semaphore_t* semaphore, int count );
-    mret_t (*mxos_rtos_set_semaphore)( mxos_semaphore_t* semaphore );
-    mret_t (*mxos_rtos_get_semaphore)( mxos_semaphore_t* semaphore, uint32_t timeout_ms );
-    mret_t (*mxos_rtos_deinit_semaphore)( mxos_semaphore_t* semaphore );
-    mret_t (*mxos_rtos_init_mutex)( mxos_mutex_t* mutex );
-    mret_t (*mxos_rtos_lock_mutex)( mxos_mutex_t* mutex );
-    mret_t (*mxos_rtos_unlock_mutex)( mxos_mutex_t* mutex );
-    mret_t (*mxos_rtos_deinit_mutex)( mxos_mutex_t* mutex );
-    mret_t (*mxos_rtos_init_queue)( mxos_queue_t* queue, const char* name, uint32_t message_size,
+    merr_t (*mxos_rtos_init_semaphore)( mxos_semaphore_t* semaphore, int count );
+    merr_t (*mxos_rtos_set_semaphore)( mxos_semaphore_t* semaphore );
+    merr_t (*mxos_rtos_get_semaphore)( mxos_semaphore_t* semaphore, uint32_t timeout_ms );
+    merr_t (*mxos_rtos_deinit_semaphore)( mxos_semaphore_t* semaphore );
+    merr_t (*mxos_rtos_init_mutex)( mxos_mutex_t* mutex );
+    merr_t (*mxos_rtos_lock_mutex)( mxos_mutex_t* mutex );
+    merr_t (*mxos_rtos_unlock_mutex)( mxos_mutex_t* mutex );
+    merr_t (*mxos_rtos_deinit_mutex)( mxos_mutex_t* mutex );
+    merr_t (*mxos_rtos_init_queue)( mxos_queue_t* queue, const char* name, uint32_t message_size,
                                       uint32_t number_of_messages );
-    mret_t (*mxos_rtos_push_to_queue)( mxos_queue_t* queue, void* message, uint32_t timeout_ms );
-    mret_t (*mxos_rtos_pop_from_queue)( mxos_queue_t* queue, void* message, uint32_t timeout_ms );
-    mret_t (*mxos_rtos_deinit_queue)( mxos_queue_t* queue );
+    merr_t (*mxos_rtos_push_to_queue)( mxos_queue_t* queue, void* message, uint32_t timeout_ms );
+    merr_t (*mxos_rtos_pop_from_queue)( mxos_queue_t* queue, void* message, uint32_t timeout_ms );
+    merr_t (*mxos_rtos_deinit_queue)( mxos_queue_t* queue );
     bool (*mxos_rtos_is_queue_empty)( mxos_queue_t* queue );
-    mret_t (*mxos_rtos_is_queue_full)( mxos_queue_t* queue );
+    merr_t (*mxos_rtos_is_queue_full)( mxos_queue_t* queue );
     uint32_t (*mxos_get_time)( void );
-    mret_t (*mxos_init_timer)( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg );
-    mret_t (*mxos_start_timer)( mxos_timer_t* timer );
-    mret_t (*mxos_stop_timer)( mxos_timer_t* timer );
-    mret_t (*mxos_reload_timer)( mxos_timer_t* timer );
-    mret_t (*mxos_deinit_timer)( mxos_timer_t* timer );
+    merr_t (*mxos_init_timer)( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg );
+    merr_t (*mxos_start_timer)( mxos_timer_t* timer );
+    merr_t (*mxos_stop_timer)( mxos_timer_t* timer );
+    merr_t (*mxos_reload_timer)( mxos_timer_t* timer );
+    merr_t (*mxos_deinit_timer)( mxos_timer_t* timer );
     bool (*mxos_is_timer_running)( mxos_timer_t* timer );
     int (*mxos_create_event_fd)( mxos_event_t handle );
     int (*mxos_delete_event_fd)( int fd );
@@ -307,25 +307,25 @@ typedef struct mxos_api_struct
     int (*wlan_get_mac_address)( unsigned char *dest );
     int (*wlan_get_mac_address_by_interface)(wlan_if_t wlan_if, unsigned char *dest);
     int (*mxos_wlan_driver_version)( char* version, int length );
-    mret_t (*mxosWlanStart)( network_InitTypeDef_st* inNetworkInitPara );
-    mret_t (*mxosWlanStartAdv)( network_InitTypeDef_adv_st* inNetworkInitParaAdv );
-    mret_t (*mxosWlanGetIPStatus)( IPStatusTypedef *outNetpara, WiFi_Interface inInterface );
-    mret_t (*mxosWlanGetLinkStatus)( LinkStatusTypeDef *outStatus );
-    mret_t (*mxosWlanStartScan)( void );
-    mret_t (*mxosWlanStartScanAdv)( void );
-    mret_t (*mxosWlanPowerOff)( void );
-    mret_t (*mxosWlanPowerOn)( void );
-    mret_t (*mxosWlanSuspend)( void );
-    mret_t (*mxosWlanSuspendStation)( void );
-    mret_t (*mxosWlanSuspendSoftAP)( void );
-    mret_t (*mxosWlanStartEasyLink)( int inTimeout );
-    mret_t (*mxosWlanStartEasyLinkPlus)( int inTimeout );
-    mret_t (*mxosWlanStopEasyLink)( void );
-    mret_t (*mxosWlanStopEasyLinkPlus)( void );
-    mret_t (*mxosWlanStartWPS)( int inTimeout );
-    mret_t (*mxosWlanStopWPS)( void );
-    mret_t (*mxosWlanStartAirkiss)( int inTimeout );
-    mret_t (*mxosWlanStopAirkiss)( void );
+    merr_t (*mxosWlanStart)( network_InitTypeDef_st* inNetworkInitPara );
+    merr_t (*mxosWlanStartAdv)( network_InitTypeDef_adv_st* inNetworkInitParaAdv );
+    merr_t (*mxosWlanGetIPStatus)( IPStatusTypedef *outNetpara, WiFi_Interface inInterface );
+    merr_t (*mxosWlanGetLinkStatus)( LinkStatusTypeDef *outStatus );
+    merr_t (*mxosWlanStartScan)( void );
+    merr_t (*mxosWlanStartScanAdv)( void );
+    merr_t (*mxosWlanPowerOff)( void );
+    merr_t (*mxosWlanPowerOn)( void );
+    merr_t (*mxosWlanSuspend)( void );
+    merr_t (*mxosWlanSuspendStation)( void );
+    merr_t (*mxosWlanSuspendSoftAP)( void );
+    merr_t (*mxosWlanStartEasyLink)( int inTimeout );
+    merr_t (*mxosWlanStartEasyLinkPlus)( int inTimeout );
+    merr_t (*mxosWlanStopEasyLink)( void );
+    merr_t (*mxosWlanStopEasyLinkPlus)( void );
+    merr_t (*mxosWlanStartWPS)( int inTimeout );
+    merr_t (*mxosWlanStopWPS)( void );
+    merr_t (*mxosWlanStartAirkiss)( int inTimeout );
+    merr_t (*mxosWlanStopAirkiss)( void );
     void (*mxosWlanEnablePowerSave)( void );
     void (*mxosWlanDisablePowerSave)( void );
     void (*wifimgr_debug_enable)( bool enable );
@@ -336,8 +336,8 @@ typedef struct mxos_api_struct
     void (*mxos_wlan_register_monitor_cb)( monitor_cb_t fn );
     void (*wlan_set_channel)( int channel );
     int (*mxchip_active_scan)( char*ssid, int is_adv );
-    mret_t (*wifi_manage_custom_ie_add)(wlan_if_t wlan_if, uint8_t *custom_ie, uint32_t len);
-    mret_t (*wifi_manage_custom_ie_delete)(wlan_if_t wlan_if);
+    merr_t (*wifi_manage_custom_ie_add)(wlan_if_t wlan_if, uint8_t *custom_ie, uint32_t len);
+    merr_t (*wifi_manage_custom_ie_delete)(wlan_if_t wlan_if);
 
     /* CLI APIs */
     int (*cli_init)(void);
@@ -361,28 +361,28 @@ typedef struct mxos_api_struct
 
     /* HAL: GPIO; FLASH; UART */
     mxos_logic_partition_t* (*mxos_flash_get_info)( mxos_partition_t inPartition );
-    mret_t (*mxos_flash_erase)( mxos_partition_t inPartition, uint32_t off_set, uint32_t size );
-    mret_t (*mxos_flash_write)( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* inBuffer,
+    merr_t (*mxos_flash_erase)( mxos_partition_t inPartition, uint32_t off_set, uint32_t size );
+    merr_t (*mxos_flash_write)( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* inBuffer,
                                 uint32_t inBufferLength );
-    mret_t (*mxos_flash_read)( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* outBuffer,
+    merr_t (*mxos_flash_read)( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* outBuffer,
                                uint32_t inBufferLength );
-    mret_t (*mxos_flash_enable_security)( mxos_partition_t partition, uint32_t off_set, uint32_t size );
+    merr_t (*mxos_flash_enable_security)( mxos_partition_t partition, uint32_t off_set, uint32_t size );
 
-    mret_t (*mxos_gpio_init)( mxos_gpio_t gpio, mxos_gpio_config_t configuration );
-    mret_t (*mxos_gpio_deinit)( mxos_gpio_t gpio );
-    mret_t (*mxos_gpio_output_high)( mxos_gpio_t gpio );
-    mret_t (*mxos_gpio_output_low)( mxos_gpio_t gpio );
-    mret_t (*mxos_gpio_output_toggle)( mxos_gpio_t gpio );
+    merr_t (*mxos_gpio_init)( mxos_gpio_t gpio, mxos_gpio_config_t configuration );
+    merr_t (*mxos_gpio_deinit)( mxos_gpio_t gpio );
+    merr_t (*mxos_gpio_output_high)( mxos_gpio_t gpio );
+    merr_t (*mxos_gpio_output_low)( mxos_gpio_t gpio );
+    merr_t (*mxos_gpio_output_toggle)( mxos_gpio_t gpio );
     bool (*mxos_gpio_input_get)( mxos_gpio_t gpio );
-    mret_t (*mxos_gpio_enable_irq)( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler,
+    merr_t (*mxos_gpio_enable_irq)( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler,
                                    void* arg );
-    mret_t (*mxos_gpio_disable_irq)( mxos_gpio_t gpio );
+    merr_t (*mxos_gpio_disable_irq)( mxos_gpio_t gpio );
 
-    mret_t (*mxos_uart_init)( mxos_uart_t uart, const mxos_uart_config_t* config,
+    merr_t (*mxos_uart_init)( mxos_uart_t uart, const mxos_uart_config_t* config,
                                     ring_buffer_t* optional_rx_buffer );
-    mret_t (*mxos_uart_deinit)( mxos_uart_t uart );
-    mret_t (*mxos_uart_send)( mxos_uart_t uart, const void* data, uint32_t size );
-    mret_t (*mxos_uart_recv)( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout );
+    merr_t (*mxos_uart_deinit)( mxos_uart_t uart );
+    merr_t (*mxos_uart_send)( mxos_uart_t uart, const void* data, uint32_t size );
+    merr_t (*mxos_uart_recv)( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout );
     uint32_t (*mxos_uart_recvd_data_len)( mxos_uart_t uart );
     void (*MxosUartPinRedirect)( mxos_uart_t uart );
 
@@ -402,8 +402,8 @@ typedef struct mxos_api_struct
 
     /* RTC */
     void (*mxos_rtc_init)( void );
-    mret_t (*mxos_rtc_get_time)( time_t *t );
-    mret_t (*mxos_rtc_set_time)( time_t t );
+    merr_t (*mxos_rtc_get_time)( time_t *t );
+    merr_t (*mxos_rtc_set_time)( time_t t );
     struct tm* (*localtime)( const time_t * time );
     char * (*asctime)( const struct tm *tm );
 
@@ -488,7 +488,7 @@ typedef struct user_api_struct
     void (*easylink_user_data_result)( int datalen, char*data );
     void (*socket_connected)( int fd );
     void (*dns_ip_set)( uint8_t *hostname, uint32_t ip );
-    void (*join_fail)( mret_t err );
+    void (*join_fail)( merr_t err );
     void (*wifi_reboot_event)( void );
     void (*mxos_rtos_stack_overflow)( char *taskname );
     const platform_peripherals_pinmap_t *pinmaps;

@@ -74,7 +74,7 @@ static void easylink_remove_bonjour_from_uap(void)
 
 void easylink_softap_thread( void *inContext )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     system_context_t *context = (system_context_t *) inContext;
     network_InitTypeDef_st wNetConfig;
 
@@ -191,9 +191,9 @@ exit:
     mos_thread_delete( NULL );
 }
 
-mret_t mxos_easylink_softap( mxos_Context_t * const in_context, mxos_bool_t enable )
+merr_t mxos_easylink_softap( mxos_Context_t * const in_context, mxos_bool_t enable )
 {
-    mret_t err = kUnknownErr;
+    merr_t err = kUnknownErr;
 
     require_action( in_context, exit, err = kNotPreparedErr );
 

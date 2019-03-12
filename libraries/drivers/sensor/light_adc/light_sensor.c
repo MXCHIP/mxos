@@ -26,7 +26,7 @@
 
 int light_sensor_init(void)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   
   err = mxos_adc_init(LIGHT_SENSOR_ADC, LIGHT_SENSOR_ADC_SAMPLE_CYCLE);
   if(kNoErr != err){
@@ -39,7 +39,7 @@ int light_sensor_init(void)
 int light_sensor_read(uint16_t *data)
 {
   int ret = 0;
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   
   // init ADC
   err = mxos_adc_init(LIGHT_SENSOR_ADC, LIGHT_SENSOR_ADC_SAMPLE_CYCLE);

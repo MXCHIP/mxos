@@ -109,7 +109,7 @@ static const IRQn_Type uart_irq_vectors[NUMBER_OF_UART_PORTS] =
 /******************************************************
 *        Static Function Declarations
 ******************************************************/
-static mret_t receive_bytes       ( platform_uart_driver_t* driver, void* data, uint32_t size, uint32_t timeout );
+static merr_t receive_bytes       ( platform_uart_driver_t* driver, void* data, uint32_t size, uint32_t timeout );
 static uint32_t get_dma_irq_status  ( DMA_Stream_TypeDef* stream );
 static void     clear_dma_interrupts( DMA_Stream_TypeDef* stream, uint32_t flags );
 
@@ -117,12 +117,12 @@ static void     clear_dma_interrupts( DMA_Stream_TypeDef* stream, uint32_t flags
 *               Function Definitions
 ******************************************************/
 
-mret_t platform_uart_init( platform_uart_driver_t* driver, const platform_uart_t* peripheral, const platform_uart_config_t* config, ring_buffer_t* optional_ring_buffer )
+merr_t platform_uart_init( platform_uart_driver_t* driver, const platform_uart_t* peripheral, const platform_uart_config_t* config, ring_buffer_t* optional_ring_buffer )
 {
   DMA_InitTypeDef   dma_init_structure;
   USART_InitTypeDef uart_init_structure;
   uint32_t          uart_number;
-  mret_t          err = kNoErr;
+  merr_t          err = kNoErr;
 
   platform_mcu_powersave_disable();
 
@@ -319,10 +319,10 @@ exit:
   return err;
 }
 
-mret_t platform_uart_deinit( platform_uart_driver_t* driver )
+merr_t platform_uart_deinit( platform_uart_driver_t* driver )
 {
   uint8_t          uart_number;
-  mret_t          err = kNoErr;
+  merr_t          err = kNoErr;
 
   platform_mcu_powersave_disable();
 
@@ -377,9 +377,9 @@ exit:
     return err;
 }
 
-mret_t platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8_t* data_out, uint32_t size )
+merr_t platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8_t* data_out, uint32_t size )
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
 
   platform_mcu_powersave_disable();
   
@@ -419,9 +419,9 @@ exit:
   return err;
 }
 
-mret_t platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* data_in, uint32_t expected_data_size, uint32_t timeout_ms )
+merr_t platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* data_in, uint32_t expected_data_size, uint32_t timeout_ms )
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
 
   //platform_mcu_powersave_disable();
 
@@ -485,9 +485,9 @@ exit:
   return err;
 }
 
-static mret_t receive_bytes( platform_uart_driver_t* driver, void* data, uint32_t size, uint32_t timeout )
+static merr_t receive_bytes( platform_uart_driver_t* driver, void* data, uint32_t size, uint32_t timeout )
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
 
   if ( driver->rx_buffer != NULL )
   {

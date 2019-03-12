@@ -290,9 +290,9 @@ extern "C" {
     #define require_noerr( ERR, LABEL )                                                                     \
         do                                                                                                  \
         {                                                                                                   \
-            mret_t        localErr;                                                                       \
+            merr_t        localErr;                                                                       \
                                                                                                             \
-            localErr = (mret_t)(ERR);                                                                     \
+            localErr = (merr_t)(ERR);                                                                     \
             if( unlikely( localErr != 0 ) )                                                                 \
             {                                                                                               \
                 debug_print_assert( localErr, NULL, NULL, SHORT_FILE, __LINE__, __PRETTY_FUNCTION__ );        \
@@ -316,9 +316,9 @@ extern "C" {
     #define require_noerr_string( ERR, LABEL, STR )                                                         \
         do                                                                                                  \
         {                                                                                                   \
-            mret_t        localErr;                                                                       \
+            merr_t        localErr;                                                                       \
                                                                                                             \
-            localErr = (mret_t)(ERR);                                                                     \
+            localErr = (merr_t)(ERR);                                                                     \
             if( unlikely( localErr != 0 ) )                                                                 \
             {                                                                                               \
                 debug_print_assert( localErr, NULL, STR, SHORT_FILE, __LINE__, __PRETTY_FUNCTION__ );         \
@@ -342,9 +342,9 @@ extern "C" {
     #define require_noerr_action_string( ERR, LABEL, ACTION, STR )                                          \
         do                                                                                                  \
         {                                                                                                   \
-            mret_t        localErr;                                                                       \
+            merr_t        localErr;                                                                       \
                                                                                                             \
-            localErr = (mret_t)(ERR);                                                                     \
+            localErr = (merr_t)(ERR);                                                                     \
             if( unlikely( localErr != 0 ) )                                                                 \
             {                                                                                               \
                 debug_print_assert( localErr, NULL, STR, SHORT_FILE, __LINE__, __PRETTY_FUNCTION__ );         \
@@ -388,9 +388,9 @@ extern "C" {
     #define require_noerr_action( ERR, LABEL, ACTION )                                                      \
         do                                                                                                  \
         {                                                                                                   \
-            mret_t        localErr;                                                                       \
+            merr_t        localErr;                                                                       \
                                                                                                             \
-            localErr = (mret_t)(ERR);                                                                     \
+            localErr = (merr_t)(ERR);                                                                     \
             if( unlikely( localErr != 0 ) )                                                                 \
             {                                                                                               \
                 debug_print_assert( localErr, NULL, NULL, SHORT_FILE, __LINE__, __PRETTY_FUNCTION__ );        \

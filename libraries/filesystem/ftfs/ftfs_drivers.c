@@ -52,34 +52,34 @@
 /******************************************************
  *               Static Function Declarations
  ******************************************************/
-static mret_t ftfs_system_init( void );
+static merr_t ftfs_system_init( void );
 static struct fs * ftfs_file_init( struct ftfs_super *sb, mxos_partition_t partition );
-static mret_t ftfs_mount( mxos_block_device_t* device, mxos_filesystem_t* fs_handle_out );
-static mret_t ftfs_unmount( mxos_filesystem_t* fs_handle );
-static mret_t ftfs_file_get_details( mxos_filesystem_t* fs_handle, const char* filename,
+static merr_t ftfs_mount( mxos_block_device_t* device, mxos_filesystem_t* fs_handle_out );
+static merr_t ftfs_unmount( mxos_filesystem_t* fs_handle );
+static merr_t ftfs_file_get_details( mxos_filesystem_t* fs_handle, const char* filename,
                                        mxos_dir_entry_details_t* details_out );
-static mret_t ftfs_file_open( mxos_filesystem_t* fs_handle, mxos_file_t* file_handle_out, const char* filename,
+static merr_t ftfs_file_open( mxos_filesystem_t* fs_handle, mxos_file_t* file_handle_out, const char* filename,
                                 mxos_filesystem_open_mode_t mode );
-static mret_t ftfs_file_seek( mxos_file_t* file_handle, int64_t offset, mxos_filesystem_seek_type_t whence );
-static mret_t ftfs_file_tell( mxos_file_t* file_handle, uint64_t* location );
-static mret_t ftfs_file_read( mxos_file_t* file_handle, void* data, uint64_t bytes_to_read,
+static merr_t ftfs_file_seek( mxos_file_t* file_handle, int64_t offset, mxos_filesystem_seek_type_t whence );
+static merr_t ftfs_file_tell( mxos_file_t* file_handle, uint64_t* location );
+static merr_t ftfs_file_read( mxos_file_t* file_handle, void* data, uint64_t bytes_to_read,
                                 uint64_t* returned_bytes_count );
-static mret_t ftfs_file_write( mxos_file_t* file_handle, const void* data, uint64_t bytes_to_write,
+static merr_t ftfs_file_write( mxos_file_t* file_handle, const void* data, uint64_t bytes_to_write,
                                  uint64_t* written_bytes_count );
-static mret_t ftfs_file_flush( mxos_file_t* file_handle );
+static merr_t ftfs_file_flush( mxos_file_t* file_handle );
 static int ftfs_file_end_reached( mxos_file_t* file_handle );
-static mret_t ftfs_file_close( mxos_file_t* file_handle );
-static mret_t ftfs_file_delete( mxos_filesystem_t* fs_handle, const char* filename );
-static mret_t ftfs_dir_open( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_handle, const char* dir_name );
-static mret_t ftfs_dir_read( mxos_dir_t* dir_handle, char* name_buffer, unsigned int name_buffer_length,
+static merr_t ftfs_file_close( mxos_file_t* file_handle );
+static merr_t ftfs_file_delete( mxos_filesystem_t* fs_handle, const char* filename );
+static merr_t ftfs_dir_open( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_handle, const char* dir_name );
+static merr_t ftfs_dir_read( mxos_dir_t* dir_handle, char* name_buffer, unsigned int name_buffer_length,
                                mxos_dir_entry_type_t* type, mxos_dir_entry_details_t* details );
 static int ftfs_dir_end_reached( mxos_dir_t* dir_handle );
-static mret_t ftfs_dir_rewind( mxos_dir_t* dir_handle );
-static mret_t ftfs_dir_close( mxos_dir_t* dir_handle );
-static mret_t ftfs_dir_create( mxos_filesystem_t* fs_handle, const char* directory_name );
-static mret_t ftfs_format( mxos_block_device_t* device );
-static mret_t ftfs_scan_files( char* mounted_name, mxos_scan_file_handle arg );
-static mret_t ftfs_get_info( mxos_filesystem_info* info,char* mounted_name );
+static merr_t ftfs_dir_rewind( mxos_dir_t* dir_handle );
+static merr_t ftfs_dir_close( mxos_dir_t* dir_handle );
+static merr_t ftfs_dir_create( mxos_filesystem_t* fs_handle, const char* directory_name );
+static merr_t ftfs_format( mxos_block_device_t* device );
+static merr_t ftfs_scan_files( char* mounted_name, mxos_scan_file_handle arg );
+static merr_t ftfs_get_info( mxos_filesystem_info* info,char* mounted_name );
 
 /******************************************************
  *               Variable Definitions
@@ -116,7 +116,7 @@ mxos_filesystem_driver_t mxos_filesystem_driver_ftfs =
  *               Function Definitions
  ******************************************************/
 
-static mret_t ftfs_system_init( void )
+static merr_t ftfs_system_init( void )
 {
     return kNoErr;
 }
@@ -163,7 +163,7 @@ static struct fs * ftfs_file_init( struct ftfs_super *sb, mxos_partition_t parti
 }
 
 /* Mounts a FTFS filesystem from a block device */
-static mret_t ftfs_mount( mxos_block_device_t* device, mxos_filesystem_t* fs_handle_out )
+static merr_t ftfs_mount( mxos_block_device_t* device, mxos_filesystem_t* fs_handle_out )
 {
     UNUSED_PARAMETER( device );
     UNUSED_PARAMETER( fs_handle_out );
@@ -171,7 +171,7 @@ static mret_t ftfs_mount( mxos_block_device_t* device, mxos_filesystem_t* fs_han
 }
 
 /* Unmounts a FTFS filesystem from a block device */
-static mret_t ftfs_unmount( mxos_filesystem_t* fs_handle )
+static merr_t ftfs_unmount( mxos_filesystem_t* fs_handle )
 {
     UNUSED_PARAMETER( fs_handle );
     ftfs_driver_log( "FTFS not Support!" );
@@ -179,7 +179,7 @@ static mret_t ftfs_unmount( mxos_filesystem_t* fs_handle )
 }
 
 /* Opens a file within a FTFS filesystem */
-static mret_t ftfs_file_open( mxos_filesystem_t* fs_handle, mxos_file_t* file_handle_out, const char* filename,
+static merr_t ftfs_file_open( mxos_filesystem_t* fs_handle, mxos_file_t* file_handle_out, const char* filename,
                                 mxos_filesystem_open_mode_t mode )
 {
 
@@ -198,7 +198,7 @@ static mret_t ftfs_file_open( mxos_filesystem_t* fs_handle, mxos_file_t* file_ha
 }
 
 /* Get details of a file within a FTFS filesystem */
-static mret_t ftfs_file_get_details( mxos_filesystem_t* fs_handle, const char* filename,
+static merr_t ftfs_file_get_details( mxos_filesystem_t* fs_handle, const char* filename,
                                        mxos_dir_entry_details_t* details_out )
 {
     int file_size;
@@ -216,7 +216,7 @@ static mret_t ftfs_file_get_details( mxos_filesystem_t* fs_handle, const char* f
 }
 
 /* Close a file within a FTFS filesystem */
-static mret_t ftfs_file_close( mxos_file_t* file_handle )
+static merr_t ftfs_file_close( mxos_file_t* file_handle )
 {
     int result;
     result = ft_fclose( file_handle->data.f );
@@ -229,7 +229,7 @@ static mret_t ftfs_file_close( mxos_file_t* file_handle )
 }
 
 /* Seek to a location in an open file within a FTFS filesystem */
-static mret_t ftfs_file_seek( mxos_file_t* file_handle, int64_t offset, mxos_filesystem_seek_type_t whence )
+static merr_t ftfs_file_seek( mxos_file_t* file_handle, int64_t offset, mxos_filesystem_seek_type_t whence )
 {
     if ( ft_fseek( file_handle->data.f, offset, whence ) != 0 )
     {
@@ -239,7 +239,7 @@ static mret_t ftfs_file_seek( mxos_file_t* file_handle, int64_t offset, mxos_fil
 }
 
 /* Get the current location in an open file within a FTFS filesystem */
-static mret_t ftfs_file_tell( mxos_file_t* file_handle, uint64_t* location )
+static merr_t ftfs_file_tell( mxos_file_t* file_handle, uint64_t* location )
 {
     *location = (uint64_t) ft_ftell( file_handle->data.f );
 
@@ -247,7 +247,7 @@ static mret_t ftfs_file_tell( mxos_file_t* file_handle, uint64_t* location )
 }
 
 /* Read data from an open file within a FTFS filesystem */
-static mret_t ftfs_file_read( mxos_file_t* file_handle, void* data, uint64_t bytes_to_read,
+static merr_t ftfs_file_read( mxos_file_t* file_handle, void* data, uint64_t bytes_to_read,
                                 uint64_t* returned_bytes_count )
 {
     *returned_bytes_count = ft_fread( data, bytes_to_read, 1, file_handle->data.f );
@@ -267,7 +267,7 @@ static int ftfs_file_end_reached( mxos_file_t* file_handle )
 }
 
 /* Opens a directory within a FTFS filesystem */
-static mret_t ftfs_dir_open( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_handle, const char* dir_name )
+static merr_t ftfs_dir_open( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_handle, const char* dir_name )
 {
     UNUSED_PARAMETER( fs_handle );
     UNUSED_PARAMETER( dir_handle );
@@ -277,7 +277,7 @@ static mret_t ftfs_dir_open( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_handl
 }
 
 /* Reads directory entry from an open within a FTFS filesystem */
-static mret_t ftfs_dir_read( mxos_dir_t* dir_handle, char* name_buffer, unsigned int name_buffer_length,
+static merr_t ftfs_dir_read( mxos_dir_t* dir_handle, char* name_buffer, unsigned int name_buffer_length,
                                mxos_dir_entry_type_t* type, mxos_dir_entry_details_t* details_out )
 {
     UNUSED_PARAMETER( dir_handle );
@@ -298,7 +298,7 @@ static int ftfs_dir_end_reached( mxos_dir_t* dir_handle )
 }
 
 /* Moves the current location within a directory back to the first entry within a FTFS filesystem */
-static mret_t ftfs_dir_rewind( mxos_dir_t* dir_handle )
+static merr_t ftfs_dir_rewind( mxos_dir_t* dir_handle )
 {
     UNUSED_PARAMETER( dir_handle );
     ftfs_driver_log( "FTFS not Support!" );
@@ -306,21 +306,21 @@ static mret_t ftfs_dir_rewind( mxos_dir_t* dir_handle )
 }
 
 /* Closes an open directory within a FTFS filesystem */
-static mret_t ftfs_dir_close( mxos_dir_t* dir_handle )
+static merr_t ftfs_dir_close( mxos_dir_t* dir_handle )
 {
     UNUSED_PARAMETER( dir_handle );
     ftfs_driver_log( "FTFS not Support!" );
     return MXOS_FILESYSTEM_ERROR;
 }
-static mret_t ftfs_file_delete( mxos_filesystem_t* fs_handle, const char* filename )
+static merr_t ftfs_file_delete( mxos_filesystem_t* fs_handle, const char* filename )
 {
     UNUSED_PARAMETER( fs_handle );
     UNUSED_PARAMETER( filename );
     ftfs_driver_log( "FTFS is Read-Only!" );
-    return (mret_t) MXOS_FILESYSTEM_ATTRIBUTE_READ_ONLY;
+    return (merr_t) MXOS_FILESYSTEM_ATTRIBUTE_READ_ONLY;
 }
 
-static mret_t ftfs_file_write( mxos_file_t* file_handle, const void* data, uint64_t bytes_to_write,
+static merr_t ftfs_file_write( mxos_file_t* file_handle, const void* data, uint64_t bytes_to_write,
                                  uint64_t* written_bytes_count )
 {
     UNUSED_PARAMETER( file_handle );
@@ -331,14 +331,14 @@ static mret_t ftfs_file_write( mxos_file_t* file_handle, const void* data, uint6
     return MXOS_FILESYSTEM_WRITE_PROTECTED;
 }
 
-static mret_t ftfs_file_flush( mxos_file_t* file_handle )
+static merr_t ftfs_file_flush( mxos_file_t* file_handle )
 {
     UNUSED_PARAMETER( file_handle );
     ftfs_driver_log( "FTFS is Read-Only!" );
     return MXOS_FILESYSTEM_WRITE_PROTECTED;
 }
 
-static mret_t ftfs_dir_create( mxos_filesystem_t* fs_handle, const char* directory_name )
+static merr_t ftfs_dir_create( mxos_filesystem_t* fs_handle, const char* directory_name )
 {
     UNUSED_PARAMETER( fs_handle );
     UNUSED_PARAMETER( directory_name );
@@ -346,14 +346,14 @@ static mret_t ftfs_dir_create( mxos_filesystem_t* fs_handle, const char* directo
     return MXOS_FILESYSTEM_WRITE_PROTECTED;
 }
 
-static mret_t ftfs_format( mxos_block_device_t* device )
+static merr_t ftfs_format( mxos_block_device_t* device )
 {
     UNUSED_PARAMETER( device );
     ftfs_driver_log( "FTFS is Read-Only!" );
     return MXOS_FILESYSTEM_WRITE_PROTECTED;
 }
 
-static mret_t ftfs_scan_files( char* mounted_name, mxos_scan_file_handle arg )
+static merr_t ftfs_scan_files( char* mounted_name, mxos_scan_file_handle arg )
 {
     UNUSED_PARAMETER( mounted_name );
     char path[]="/";
@@ -371,7 +371,7 @@ static mret_t ftfs_scan_files( char* mounted_name, mxos_scan_file_handle arg )
     return kNoErr;
 }
 
-static mret_t ftfs_get_info( mxos_filesystem_info* info,char* mounted_name )
+static merr_t ftfs_get_info( mxos_filesystem_info* info,char* mounted_name )
 {
     UNUSED_PARAMETER( info );
     UNUSED_PARAMETER( mounted_name );

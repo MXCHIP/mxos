@@ -19,7 +19,7 @@
 #include "mxos.h"
 #include "platform_config.h"
 
-extern mret_t stdio_hardfault( char* data, uint32_t size );
+extern merr_t stdio_hardfault( char* data, uint32_t size );
 
 #if   defined ( __CC_ARM )
 

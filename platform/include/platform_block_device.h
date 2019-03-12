@@ -107,7 +107,7 @@ struct mxos_block_device_driver_struct
      *
      * @return kNoErr on success
      */
-    mret_t (*init)( mxos_block_device_t* device, mxos_block_device_write_mode_t write_mode );
+    merr_t (*init)( mxos_block_device_t* device, mxos_block_device_write_mode_t write_mode );
 
     /**
      * De-initialises the block device
@@ -118,7 +118,7 @@ struct mxos_block_device_driver_struct
      *
      * @return kNoErr on success
      */
-    mret_t (*deinit)( mxos_block_device_t* device );
+    merr_t (*deinit)( mxos_block_device_t* device );
 
     /**
      * Erases a block on the device
@@ -132,7 +132,7 @@ struct mxos_block_device_driver_struct
      *
      * @return kNoErr on success, Error on failure or if start/end are not on an erase block boundary
      */
-    mret_t (*erase)( mxos_block_device_t* device, uint64_t start_address, uint64_t size );
+    merr_t (*erase)( mxos_block_device_t* device, uint64_t start_address, uint64_t size );
 
     /**
      * Writes data to the device
@@ -149,7 +149,7 @@ struct mxos_block_device_driver_struct
      *
      * @return kNoErr on success, Error on failure or if start/end are not on an write block boundary
      */
-    mret_t (*write)( mxos_block_device_t* device, uint64_t start_address, const uint8_t* data, uint64_t size );
+    merr_t (*write)( mxos_block_device_t* device, uint64_t start_address, const uint8_t* data, uint64_t size );
 
     /**
      * Flushes data to the device
@@ -163,7 +163,7 @@ struct mxos_block_device_driver_struct
      *
      * @return kNoErr on success, Error on failure or if start/end are not on an write block boundary
      */
-    mret_t (*flush)( mxos_block_device_t* device );
+    merr_t (*flush)( mxos_block_device_t* device );
 
     /**
      * Reads data from the device
@@ -175,7 +175,7 @@ struct mxos_block_device_driver_struct
      *
      * @return kNoErr on success, Error on failure or if start/end are not on an read block boundary
      */
-    mret_t (*read)( mxos_block_device_t* device, uint64_t start_address, uint8_t* data, uint64_t size );
+    merr_t (*read)( mxos_block_device_t* device, uint64_t start_address, uint8_t* data, uint64_t size );
 
 
     /**
@@ -186,7 +186,7 @@ struct mxos_block_device_driver_struct
      *
      * @return kNoErr on success, Error on failure or if start/end are not on an read block boundary
      */
-    mret_t (*status)( mxos_block_device_t* device, mxos_block_device_status_t* status );
+    merr_t (*status)( mxos_block_device_t* device, mxos_block_device_status_t* status );
 
 
     /**
@@ -197,7 +197,7 @@ struct mxos_block_device_driver_struct
      *
      * @return kNoErr on success, Error on failure or if start/end are not on an read block boundary
      */
-    mret_t (*register_callback)( mxos_block_device_t* device, mxos_block_device_status_change_callback_t callback );
+    merr_t (*register_callback)( mxos_block_device_t* device, mxos_block_device_status_change_callback_t callback );
 
 };
 

@@ -101,26 +101,26 @@
  */
 
 /* Local function prototype */
-static mret_t ble_access_connection_handler       (void* arg);
-static mret_t ble_access_disconnection_handler    (mxos_bt_smartbridge_socket_t* socket);
-static mret_t ble_access_notification_handler     (mxos_bt_smartbridge_socket_t* socket, uint16_t attribute_handle);
-static mret_t ble_access_scan_complete_handler    (void *arg);
-static mret_t ble_access_scan_result_handler      (const mxos_bt_smart_advertising_report_t* result);
+static merr_t ble_access_connection_handler       (void* arg);
+static merr_t ble_access_disconnection_handler    (mxos_bt_smartbridge_socket_t* socket);
+static merr_t ble_access_notification_handler     (mxos_bt_smartbridge_socket_t* socket, uint16_t attribute_handle);
+static merr_t ble_access_scan_complete_handler    (void *arg);
+static merr_t ble_access_scan_result_handler      (const mxos_bt_smart_advertising_report_t* result);
 
-static mret_t ble_access_auto_conn_parms_handler  (const mxos_bt_device_address_t device_address,
+static merr_t ble_access_auto_conn_parms_handler  (const mxos_bt_device_address_t device_address,
                                                      const char *name,
                                                      const uint8_t *p_adv_data,
                                                      const uint8_t length,
                                                      mxos_bt_smartbridge_auto_conn_cback_parms_t *parm);
 
-static mret_t ble_access_auto_connection_handler  (mxos_bt_smartbridge_socket_t *socket);
-static mret_t ble_access_timer_event_handle       (void *arg);
+static merr_t ble_access_auto_connection_handler  (mxos_bt_smartbridge_socket_t *socket);
+static merr_t ble_access_timer_event_handle       (void *arg);
 
-static mret_t ble_access_send_bt_event            (uint8_t evt_code, const ble_access_evt_parms_t *parms );
+static merr_t ble_access_send_bt_event            (uint8_t evt_code, const ble_access_evt_parms_t *parms );
 
-static mret_t ble_access_cache_control_service    (ble_access_device_t *dev);
+static merr_t ble_access_cache_control_service    (ble_access_device_t *dev);
 
-static mret_t ble_access_send_command             (const ble_access_device_t *dev, uint8_t code,
+static merr_t ble_access_send_command             (const ble_access_device_t *dev, uint8_t code,
                                                      uint8_t length, uint8_t *p_data);
 
 /*
@@ -237,9 +237,9 @@ static mxos_bt_device_address_t     ble_access_local_address;
  *-------------------------------------------------------------------------------------------------
  */
 
-mret_t ble_access_bluetooth_init(void)
+merr_t ble_access_bluetooth_init(void)
 {
-    mret_t                         err = kNoErr;
+    merr_t                         err = kNoErr;
     
     ble_access_device_t              *dev = NULL;
     mxos_bt_dev_bonded_device_info_t paired_device_list[MAX_CONCURRENT_CONNECTIONS];
@@ -304,9 +304,9 @@ exit:
     return err;
 }
 
-mret_t ble_access_bluetooth_start(ble_access_event_callback_t callback)
+merr_t ble_access_bluetooth_start(ble_access_event_callback_t callback)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     /* Check parameters */
     require_action_string(callback != NULL, 
@@ -320,9 +320,9 @@ exit:
     return err;
 }
 
-mret_t ble_access_bluetooth_stop(void)
+merr_t ble_access_bluetooth_stop(void)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     /* Check parameters */
     require_action_string(ble_access_callback != NULL, 
@@ -337,9 +337,9 @@ exit:
     return err;
 }
 
-mret_t ble_access_bluetooth_request(uint8_t request, const ble_access_cmd_parms_t *parms)
+merr_t ble_access_bluetooth_request(uint8_t request, const ble_access_cmd_parms_t *parms)
 {
-    mret_t                            err = kNoErr;
+    merr_t                            err = kNoErr;
     uint8_t                             timeout[4];
     uint8_t                            *p_timeout = 0;
 
@@ -517,7 +517,7 @@ static void ble_access_attribute_copy_from_smart(const mxos_bt_smart_attribute_t
 }
 
 /* Get an attribute of Characteristic with the UUID provided from the local attribute database. */
-mret_t ble_access_get_characteritic_by_uuid(uint32_t dev_id, 
+merr_t ble_access_get_characteritic_by_uuid(uint32_t dev_id, 
                                               const ble_access_serv_t *serv, 
                                               const ble_access_uuid_t *uuid,
                                               ble_access_attribute_t *attr)
@@ -527,7 +527,7 @@ mret_t ble_access_get_characteritic_by_uuid(uint32_t dev_id,
 
     mxos_bt_device_address_t    device_address;
     ble_access_device_t        *dev = NULL;
-    mret_t                    err = kNoErr;
+    merr_t                    err = kNoErr;
 
     require_action_string(dev_id != 0 && serv != NULL && attr != NULL, 
                           exit,
@@ -558,13 +558,13 @@ exit:
 }
 
 /* Handle aynchrous 'GET All Characteristics' event */
-static mret_t ble_access_characteristic_aync_event(void *arg)
+static merr_t ble_access_characteristic_aync_event(void *arg)
 {
     uint8_t                     *p = (uint8_t *)arg;
     ble_access_device_t         *dev = NULL;
     uint32_t                     dev_id;
     ble_access_serv_t            serv;
-    mret_t                     err = kNoErr;
+    merr_t                     err = kNoErr;
     mxos_bt_device_address_t     device_address;
 
     uint8_t                      buf[ATTR_CHARACTERISTIC_VALUE_SIZE(BLE_ACCESS_MAX_ATTR_VALUE_LENGTH)] = {0};
@@ -628,10 +628,10 @@ exit:
 }
 
 /* Find all characteristics for 'serv' from the local attribute database */
-mret_t ble_access_get_characteristics(uint32_t dev_id, const ble_access_serv_t *serv)
+merr_t ble_access_get_characteristics(uint32_t dev_id, const ble_access_serv_t *serv)
 {
     uint8_t                     *p = NULL;
-    mret_t                    err = kNoErr;
+    merr_t                    err = kNoErr;
 
     require_action_string(dev_id != 0 && serv != NULL, 
                           exit,
@@ -654,7 +654,7 @@ exit:
 }
 
 /* Find and read attribute with the Handle provided from the Attribute Cache */
-mret_t ble_access_get_attribute_by_handle(uint32_t dev_id, 
+merr_t ble_access_get_attribute_by_handle(uint32_t dev_id, 
                                             uint16_t handle, 
                                             ble_access_attribute_t *attr)
 {
@@ -663,7 +663,7 @@ mret_t ble_access_get_attribute_by_handle(uint32_t dev_id,
 
     mxos_bt_device_address_t    device_address;
     ble_access_device_t        *dev = NULL;
-    mret_t                    err = kNoErr;
+    merr_t                    err = kNoErr;
 
     require_action_string(dev_id != 0 && handle != 0 && attr != NULL, 
                           exit,
@@ -697,13 +697,13 @@ exit:
 }
 
 /* Update Characteristic Value in the Attribute To the server */
-mret_t ble_access_update_characteristic_value(uint32_t dev_id, uint16_t handle, uint8_t length, uint8_t *data)
+merr_t ble_access_update_characteristic_value(uint32_t dev_id, uint16_t handle, uint8_t length, uint8_t *data)
 {
     uint8_t                      buf[ATTR_CHARACTERISTIC_VALUE_SIZE(BLE_ACCESS_MAX_CHAR_VALUE_LENGTH)] = {0};
     mxos_bt_smart_attribute_t   *char_value = NULL;
     mxos_bt_device_address_t     device_address;
     ble_access_device_t         *dev = NULL;
-    mret_t                     err = kNoErr;
+    merr_t                     err = kNoErr;
 
     require_action_string(dev_id != 0 && handle != 0 
                           && length > 0 && length <= BLE_ACCESS_DEVICE_NAME_MAX_LEN 
@@ -739,11 +739,11 @@ exit:
 }
 
 /* Enable Characteristic Client Configuration Indication or Notification */
-mret_t ble_access_enable_notification(uint32_t dev_id, const ble_access_attribute_t *attr, mxos_bool_t notify)
+merr_t ble_access_enable_notification(uint32_t dev_id, const ble_access_attribute_t *attr, mxos_bool_t notify)
 {
     mxos_bt_device_address_t    device_address;
     ble_access_device_t         *dev = NULL;
-    mret_t                    err = kNoErr;
+    merr_t                    err = kNoErr;
 
     /* Generate device address */
     ble_access_log("Generate device address: device_id = %lu", dev_id);
@@ -764,7 +764,7 @@ exit:
 /* Scan complete handler. Scan complete event reported via this callback.
  * It runs on the MXOS_BT_EVT_WORKER_THREAD context.
  */
-static mret_t ble_access_scan_complete_handler(void *arg)
+static merr_t ble_access_scan_complete_handler(void *arg)
 {
     UNUSED_PARAMETER(arg);
     /* Scan complete, start a new scan. Do not use a infinit scan, it may store every result in RAM. */
@@ -776,9 +776,9 @@ static mret_t ble_access_scan_complete_handler(void *arg)
 }
 
 /* Handler of Scanning result */
-static mret_t ble_access_scan_result_handler(const mxos_bt_smart_advertising_report_t* scan_result)
+static merr_t ble_access_scan_result_handler(const mxos_bt_smart_advertising_report_t* scan_result)
 {
-    mret_t                        err = kNoErr;
+    merr_t                        err = kNoErr;
     mxos_bool_t                     is_reported = MXOS_FALSE;
 
     mxos_bt_smart_device_t          *device = NULL;
@@ -866,9 +866,9 @@ exit:
  * Connect handler. SmartBridge connect is executed in this callback.
  * It runs on the connect_worker_thread context
  */
-static mret_t ble_access_connection_handler(void* arg)
+static merr_t ble_access_connection_handler(void* arg)
 {
-    mret_t                err = kNoErr;
+    merr_t                err = kNoErr;
     
     ble_access_evt_parms_t  parms;
     mxos_bt_smart_device_t *remote_device = (mxos_bt_smart_device_t *)arg;
@@ -952,7 +952,7 @@ exit:
 /* Disconnection handler. Disconnection by remote device is reported via this callback.
  * It runs on the MXOS_BT_EVT_WORKER_THREAD context.
  */
-static mret_t ble_access_disconnection_handler(mxos_bt_smartbridge_socket_t* socket)
+static merr_t ble_access_disconnection_handler(mxos_bt_smartbridge_socket_t* socket)
 {
     ble_access_evt_parms_t parms;
 
@@ -978,7 +978,7 @@ static mxos_bool_t ble_access_compare_uuid(const mxos_bt_uuid_t *uuid1, const mx
     }
 }
 
-static mret_t ble_access_cache_all_services(mxos_bt_smartbridge_socket_t *socket, ble_access_evt_parms_t *parms, uint8_t max_servs)
+static merr_t ble_access_cache_all_services(mxos_bt_smartbridge_socket_t *socket, ble_access_evt_parms_t *parms, uint8_t max_servs)
 {
     uint8_t                      buf[ATTR_CHARACTERISTIC_VALUE_SIZE(BLE_ACCESS_MAX_ATTR_VALUE_LENGTH)] = {0};
     mxos_bt_smart_attribute_t   *attribute = (mxos_bt_smart_attribute_t *)buf;
@@ -1028,12 +1028,12 @@ static mret_t ble_access_cache_all_services(mxos_bt_smartbridge_socket_t *socket
 /* Notification handler. GATT notification by remote device is reported via this callback.
  * It runs on the MXOS_BT_EVT_WORKER_THREAD context.
  */
-static mret_t ble_access_notification_handler(mxos_bt_smartbridge_socket_t* socket, uint16_t attribute_handle)
+static merr_t ble_access_notification_handler(mxos_bt_smartbridge_socket_t* socket, uint16_t attribute_handle)
 {
     /* GATT value notification event. attribute_handle is the handle
      * which value of the attribute is updated by the remote device.
      */
-    mret_t                     err = kNoErr;
+    merr_t                     err = kNoErr;
 
     uint8_t                      buf[ATTR_CHARACTERISTIC_VALUE_SIZE(BLE_ACCESS_MAX_CHAR_VALUE_LENGTH)] = {0};
     mxos_bt_smart_attribute_t   *characteristic_value = NULL;
@@ -1130,9 +1130,9 @@ exit:
     return err;
 }
 
-static mret_t ble_access_auto_connection_handler(mxos_bt_smartbridge_socket_t *socket)
+static merr_t ble_access_auto_connection_handler(mxos_bt_smartbridge_socket_t *socket)
 {
-    mret_t                            err = kNoErr;
+    merr_t                            err = kNoErr;
     ble_access_device_t                *dev = NULL;
     
     ble_access_serv_t                   servs[BLE_ACCESS_REMOTE_SERVS_NUM];
@@ -1178,13 +1178,13 @@ exit:
 }
 
 /* Get Auto Connection Parameters. */
-mret_t ble_access_auto_conn_parms_handler(const mxos_bt_device_address_t device_address,
+merr_t ble_access_auto_conn_parms_handler(const mxos_bt_device_address_t device_address,
                                             const char *name,
                                             const uint8_t *p_adv_data,
                                             const uint8_t length,
                                             mxos_bt_smartbridge_auto_conn_cback_parms_t *parm)
 {
-    mret_t                       err = kNoErr;
+    merr_t                       err = kNoErr;
     ble_access_manufactor_data_t   manufactor_data;
     ble_access_device_t           *dev = NULL;
 
@@ -1238,7 +1238,7 @@ exit:
     return err;
 }
 
-static mret_t ble_access_timer_event_handle(void *arg)
+static merr_t ble_access_timer_event_handle(void *arg)
 {
     ble_access_device_t     *dev = (ble_access_device_t *)arg;
     ble_access_evt_parms_t   parms;
@@ -1268,7 +1268,7 @@ static mret_t ble_access_timer_event_handle(void *arg)
 /*
  * Post BT Event to Host Application
  */
-static mret_t ble_access_bt_event_handler(void *arg)
+static merr_t ble_access_bt_event_handler(void *arg)
 {
     uint8_t                 evt_code;
     ble_access_evt_parms_t *parms;
@@ -1287,9 +1287,9 @@ static mret_t ble_access_bt_event_handler(void *arg)
  * Post BT Event to Host Application.
  * You should fill the parameters.
  */
-static mret_t ble_access_send_bt_event(uint8_t evt_code, const ble_access_evt_parms_t *parms)
+static merr_t ble_access_send_bt_event(uint8_t evt_code, const ble_access_evt_parms_t *parms)
 {
-    mret_t err = kGeneralErr;
+    merr_t err = kGeneralErr;
     uint8_t *arg = NULL;
 
     if (ble_access_callback != NULL) {
@@ -1309,9 +1309,9 @@ static mret_t ble_access_send_bt_event(uint8_t evt_code, const ble_access_evt_pa
 }
 
 /* Send a command which is code to the socket pointed by idx. */
-static mret_t ble_access_send_command(const ble_access_device_t *dev, uint8_t code, uint8_t length, uint8_t *p_data)
+static merr_t ble_access_send_command(const ble_access_device_t *dev, uint8_t code, uint8_t length, uint8_t *p_data)
 {
-    mret_t                   err = kNoErr;
+    merr_t                   err = kNoErr;
     uint8_t                    buf[ATTR_CHARACTERISTIC_VALUE_SIZE(BLE_ACCESS_MAX_CHAR_VALUE_LENGTH)] = {0};
     mxos_bt_smart_attribute_t *characteristic_value = NULL;
 
@@ -1346,9 +1346,9 @@ exit:
     return err;
 }
 
-static mret_t ble_access_cache_control_service(ble_access_device_t *dev)
+static merr_t ble_access_cache_control_service(ble_access_device_t *dev)
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     uint8_t buf[ATTR_CHARACTERISTIC_VALUE_SIZE(BLE_ACCESS_MAX_ATTR_VALUE_LENGTH)] = {0};
     mxos_bt_smart_attribute_t *attribute = (mxos_bt_smart_attribute_t *)buf;

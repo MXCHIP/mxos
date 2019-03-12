@@ -188,7 +188,7 @@ void mxos_mfg_test(mxos_Context_t *inContext)
   mxos_uart_config_t uart_config;
   volatile ring_buffer_t  rx_buffer;
   volatile uint8_t *       rx_data;
-  mret_t err;
+  merr_t err;
   mxos_system_status_wlan_t* wlan_status;
   
   mxos_system_get_status_wlan( &wlan_status );

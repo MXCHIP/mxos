@@ -35,10 +35,10 @@
 #define socket_utils_log(M, ...) custom_log("SocketUtils", M, ##__VA_ARGS__)
 #define socket_utils_log_trace() custom_log_trace("SocketUtils")
 
-mret_t SocketSend( int fd, const uint8_t *inBuf, size_t inBufLen )
+merr_t SocketSend( int fd, const uint8_t *inBuf, size_t inBufLen )
 {
     socket_utils_log_trace();
-    mret_t err = kParamErr;
+    merr_t err = kParamErr;
     ssize_t writeResult;
     int selectResult;
     size_t numWritten;

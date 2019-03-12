@@ -42,7 +42,7 @@ exit:
   return;
 }
 
-static void mxosNotify_ConnectFailedHandler(mret_t err, system_context_t * const inContext)
+static void mxosNotify_ConnectFailedHandler(merr_t err, system_context_t * const inContext)
 {
   (void)inContext;
   system_log("Wlan Connection Err %d", err);
@@ -139,9 +139,9 @@ exit:
   return;
 }
 
-mret_t system_notification_init( system_context_t * const inContext )
+merr_t system_notification_init( system_context_t * const inContext )
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
 
   err = mxos_system_notify_register( mxos_notify_WIFI_CONNECT_FAILED, (void *)mxosNotify_ConnectFailedHandler, inContext );
   require_noerr( err, exit );
@@ -214,7 +214,7 @@ void system_connect_wifi_fast( system_context_t * const inContext)
   mxosWlanStartAdv(&wNetConfig);
 }
 
-mret_t system_network_daemen_start( system_context_t * const inContext )
+merr_t system_network_daemen_start( system_context_t * const inContext )
 {
   IPStatusTypedef para;
   uint8_t major, minor, revision;
@@ -324,7 +324,7 @@ void mxos_sdk_version( uint8_t *major, uint8_t *minor, uint8_t *revision )
   *revision = MXOS_SDK_VERSION_REVISION;
 }
 
-mret_t mxos_system_get_status_wlan( system_status_wlan_t** status )
+merr_t mxos_system_get_status_wlan( system_status_wlan_t** status )
 {
     if( sys_context == NULL )
     {
@@ -338,7 +338,7 @@ mret_t mxos_system_get_status_wlan( system_status_wlan_t** status )
     }
 }
 
-mret_t mxos_system_wlan_get_status( mxos_system_status_wlan_t** status )
+merr_t mxos_system_wlan_get_status( mxos_system_status_wlan_t** status )
 {
     return mxos_system_get_status_wlan( status );
 }

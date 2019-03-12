@@ -437,9 +437,9 @@ void BMG160_delay_msek(u32 msek)
 #endif
 
 
-mret_t bmg160_sensor_init(void)
+merr_t bmg160_sensor_init(void)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   /* variable used for read the gyro bandwidth data*/
   u8 v_gyro_value_u8 = BMG160_INIT_VALUE;
   /* variable used for set the gyro bandwidth data*/
@@ -494,9 +494,9 @@ exit:
 }
 
 
-mret_t bmg160_data_readout(s16 *v_gyro_datax_s16, s16 *v_gyro_datay_s16, s16 *v_gyro_dataz_s16)
+merr_t bmg160_data_readout(s16 *v_gyro_datax_s16, s16 *v_gyro_datay_s16, s16 *v_gyro_dataz_s16)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   
   /* result of communication results*/
   s32 com_rslt = BMG160_ERROR;
@@ -522,9 +522,9 @@ mret_t bmg160_data_readout(s16 *v_gyro_datax_s16, s16 *v_gyro_datay_s16, s16 *v_
   return err;
 }
 
-mret_t bmg160_sensor_deinit(void)
+merr_t bmg160_sensor_deinit(void)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   s32 com_rslt = BMG160_ERROR;
   
   err = mxos_i2c_deinit(&bmg160_i2c_device);

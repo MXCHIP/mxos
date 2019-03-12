@@ -46,7 +46,7 @@ typedef enum {
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-mret_t temp_hum_sensor_init(void);
+merr_t temp_hum_sensor_init(void);
 
 
 /**
@@ -58,7 +58,7 @@ mret_t temp_hum_sensor_init(void);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-mret_t temp_hum_sensor_read(int32_t *temperature,  uint32_t *humidity);
+merr_t temp_hum_sensor_read(int32_t *temperature,  uint32_t *humidity);
 /**
   * @}
   */

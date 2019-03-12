@@ -68,11 +68,11 @@ typedef int8_t mxos_gtimer_t;
  *                 Function Declarations
  ******************************************************/
 
-mret_t mxos_gtimer_init(mxos_gtimer_t timer);
+merr_t mxos_gtimer_init(mxos_gtimer_t timer);
 
-mret_t mxos_gtimer_start(mxos_gtimer_t timer, mxos_gtimer_mode_t mode, uint32_t time, mxos_gtimer_irq_callback_t function, void *arg);
+merr_t mxos_gtimer_start(mxos_gtimer_t timer, mxos_gtimer_mode_t mode, uint32_t time, mxos_gtimer_irq_callback_t function, void *arg);
 
-mret_t mxos_gtimer_stop(mxos_gtimer_t timer);
+merr_t mxos_gtimer_stop(mxos_gtimer_t timer);
 
 /** @} */
 /** @} */

@@ -123,7 +123,7 @@ char* mxos_system_lib_version( void );
   *
   * @return kNoErr: success, kGeneralErr: fail
   */
-mret_t mxos_network_init( void );
+merr_t mxos_network_init( void );
 
 
 /**

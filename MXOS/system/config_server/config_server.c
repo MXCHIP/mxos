@@ -40,20 +40,20 @@ typedef struct _configContext_t{
   CRC16_Context crc16_contex;
 } configContext_t;
 
-extern mret_t     ConfigIncommingJsonMessage( int fd, const char *input, bool *need_reboot, mxos_Context_t * const inContext );
+extern merr_t     ConfigIncommingJsonMessage( int fd, const char *input, bool *need_reboot, mxos_Context_t * const inContext );
 extern json_object* ConfigCreateReportJsonMessage( mxos_Context_t * const inContext );
 
 static void localConfiglistener_thread(uint32_t inContext);
 static void localConfig_thread(uint32_t inFd);
-static mret_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system_context_t * const inContext);
-static mret_t onReceivedData(struct _HTTPHeader_t * httpHeader, uint32_t pos, uint8_t * data, size_t len, void * userContext );
+static merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system_context_t * const inContext);
+static merr_t onReceivedData(struct _HTTPHeader_t * httpHeader, uint32_t pos, uint8_t * data, size_t len, void * userContext );
 static void onClearHTTPHeader(struct _HTTPHeader_t * httpHeader, void * userContext );
 static config_server_uap_configured_cb _uap_configured_cb = NULL;
 
 bool is_config_server_established = false;
 
 /* Defined in uAP config mode */
-extern mret_t ConfigIncommingJsonMessageUAP( int fd, const uint8_t *input, size_t size, system_context_t * const inContext );
+extern merr_t ConfigIncommingJsonMessageUAP( int fd, const uint8_t *input, size_t size, system_context_t * const inContext );
 extern system_context_t* sys_context;
 
 static mxos_semaphore_t close_listener_sem = NULL, close_client_sem[ MAX_TCP_CLIENT_PER_SERVER ] = { NULL };
@@ -79,10 +79,10 @@ void config_server_set_uap_cb( config_server_uap_configured_cb callback )
     _uap_configured_cb = callback;
 }
 
-mret_t config_server_start ( void )
+merr_t config_server_start ( void )
 {
   int i = 0;
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   
   require( sys_context, exit );
   
@@ -103,10 +103,10 @@ exit:
   return err;
 }
 
-mret_t config_server_stop( void )
+merr_t config_server_stop( void )
 {
   int i = 0;
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
 
   if( !is_config_server_established )
     return kNoErr;
@@ -128,7 +128,7 @@ mret_t config_server_stop( void )
 
 void localConfiglistener_thread( void * arg)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   int j;
   struct sockaddr_in addr;
   int sockaddr_t_size;
@@ -195,7 +195,7 @@ exit:
 
 void localConfig_thread(uint32_t inFd)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   int clientFd = (int)inFd;
   int clientFdIsSet;
   int close_sem_index;
@@ -304,9 +304,9 @@ exit:
   return;
 }
 
-static mret_t onReceivedData(struct _HTTPHeader_t * inHeader, uint32_t inPos, uint8_t * inData, size_t inLen, void * inUserContext )
+static merr_t onReceivedData(struct _HTTPHeader_t * inHeader, uint32_t inPos, uint8_t * inData, size_t inLen, void * inUserContext )
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   const char *    value;
   size_t          valueSize;
   configContext_t *context = (configContext_t *)inUserContext;
@@ -362,9 +362,9 @@ static void onClearHTTPHeader(struct _HTTPHeader_t * inHeader, void * inUserCont
   }
  }
 
-mret_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system_context_t * const inContext)
+merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system_context_t * const inContext)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   const char *  json_str;
   uint8_t *httpResponse = NULL;
   size_t httpResponseLen = 0;

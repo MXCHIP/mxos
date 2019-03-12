@@ -70,11 +70,11 @@ static volatile platform_gpio_irq_data_t gpio_irq_data[NUMBER_OF_GPIO_IRQ_LINES]
 *               Function Definitions
 ******************************************************/
 
-mret_t platform_gpio_init( const platform_gpio_t* gpio, platform_pin_config_t config )
+merr_t platform_gpio_init( const platform_gpio_t* gpio, platform_pin_config_t config )
 {
   GPIO_InitTypeDef  gpio_init_structure;
   uint8_t           port_number;
-  mret_t          err = kNoErr;
+  merr_t          err = kNoErr;
 
   platform_mcu_powersave_disable();
   require_action_quiet( gpio != NULL, exit, err = kParamErr);
@@ -110,10 +110,10 @@ exit:
   return err;
 }
 
-mret_t platform_gpio_deinit( const platform_gpio_t* gpio )
+merr_t platform_gpio_deinit( const platform_gpio_t* gpio )
 {
   GPIO_InitTypeDef  gpio_init_structure;
-  mret_t          err = kNoErr;
+  merr_t          err = kNoErr;
 
   platform_mcu_powersave_disable();
   require_action_quiet( gpio != NULL, exit, err = kParamErr);
@@ -132,9 +132,9 @@ exit:
   return err;
 }
 
-mret_t platform_gpio_output_high( const platform_gpio_t* gpio )
+merr_t platform_gpio_output_high( const platform_gpio_t* gpio )
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
 
   platform_mcu_powersave_disable();
 
@@ -147,9 +147,9 @@ exit:
   return err;
 }
 
-mret_t platform_gpio_output_low( const platform_gpio_t* gpio )
+merr_t platform_gpio_output_low( const platform_gpio_t* gpio )
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
 
   require_action_quiet( gpio != NULL, exit, err = kParamErr);
 
@@ -162,9 +162,9 @@ exit:
   return err;
 }
 
-mret_t platform_gpio_output_trigger( const platform_gpio_t* gpio )
+merr_t platform_gpio_output_trigger( const platform_gpio_t* gpio )
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
 
   platform_mcu_powersave_disable();
 
@@ -192,11 +192,11 @@ exit:
   return result;
 }
 
-mret_t platform_gpio_irq_enable( const platform_gpio_t* gpio, platform_gpio_irq_trigger_t trigger, platform_gpio_irq_callback_t handler, void* arg )
+merr_t platform_gpio_irq_enable( const platform_gpio_t* gpio, platform_gpio_irq_trigger_t trigger, platform_gpio_irq_callback_t handler, void* arg )
 {
   uint32_t interrupt_line = (uint32_t) ( 1 << gpio->pin_number );
   EXTITrigger_TypeDef exti_trigger;
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   EXTI_InitTypeDef exti_init_structure;
   IRQn_Type        interrupt_vector = (IRQn_Type)0;
 
@@ -294,10 +294,10 @@ exit:
 }
 
 
-mret_t platform_gpio_irq_disable( const platform_gpio_t* gpio )
+merr_t platform_gpio_irq_disable( const platform_gpio_t* gpio )
 {
   uint16_t interrupt_line;
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
 
   platform_mcu_powersave_disable();
   require_action_quiet( gpio != NULL, exit, err = kParamErr);
@@ -359,7 +359,7 @@ exit:
 /******************************************************
  *      STM32F2xx Internal Function Definitions
  ******************************************************/
-mret_t platform_gpio_irq_manager_init( void )
+merr_t platform_gpio_irq_manager_init( void )
 {
     memset( (void*)gpio_irq_data, 0, sizeof( gpio_irq_data ) );
 
@@ -396,10 +396,10 @@ uint8_t platform_gpio_get_port_number( platform_gpio_port_t* gpio_port )
     }
 }
 
-mret_t platform_gpio_enable_clock( const platform_gpio_t* gpio )
+merr_t platform_gpio_enable_clock( const platform_gpio_t* gpio )
 {
   uint8_t     port_number;
-  mret_t    err = kNoErr;
+  merr_t    err = kNoErr;
 
   require_action_quiet( gpio != NULL, exit, err = kParamErr);
   
@@ -415,7 +415,7 @@ exit:
 }
 
 
-mret_t platform_gpio_set_alternate_function( platform_gpio_port_t* gpio_port, uint8_t pin_number, GPIOOType_TypeDef output_type, GPIOPuPd_TypeDef pull_up_down_type, uint8_t alternation_function )
+merr_t platform_gpio_set_alternate_function( platform_gpio_port_t* gpio_port, uint8_t pin_number, GPIOOType_TypeDef output_type, GPIOPuPd_TypeDef pull_up_down_type, uint8_t alternation_function )
 {
     GPIO_InitTypeDef  gpio_init_structure;
     uint8_t           port_number = platform_gpio_get_port_number( gpio_port );

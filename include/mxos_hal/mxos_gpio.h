@@ -91,7 +91,7 @@ typedef platform_gpio_irq_callback_t            mxos_gpio_irq_handler_t;
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t mxos_gpio_init( mxos_gpio_t gpio, mxos_gpio_config_t configuration );
+merr_t mxos_gpio_init( mxos_gpio_t gpio, mxos_gpio_config_t configuration );
 
 
 /**@brief DeInitialises a GPIO pin
@@ -103,7 +103,7 @@ mret_t mxos_gpio_init( mxos_gpio_t gpio, mxos_gpio_config_t configuration );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t mxos_gpio_deinit( mxos_gpio_t gpio );
+merr_t mxos_gpio_deinit( mxos_gpio_t gpio );
 
 
 /**@brief Sets an output GPIO pin high
@@ -115,7 +115,7 @@ mret_t mxos_gpio_deinit( mxos_gpio_t gpio );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t mxos_gpio_output_high( mxos_gpio_t gpio );
+merr_t mxos_gpio_output_high( mxos_gpio_t gpio );
 
 
 /**@brief Sets an output GPIO pin low
@@ -127,7 +127,7 @@ mret_t mxos_gpio_output_high( mxos_gpio_t gpio );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t mxos_gpio_output_low( mxos_gpio_t gpio );
+merr_t mxos_gpio_output_low( mxos_gpio_t gpio );
 
 /** Trigger an output GPIO pin 
  *
@@ -139,7 +139,7 @@ mret_t mxos_gpio_output_low( mxos_gpio_t gpio );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t mxos_gpio_output_toggle( mxos_gpio_t gpio );
+merr_t mxos_gpio_output_toggle( mxos_gpio_t gpio );
 
 
 
@@ -171,7 +171,7 @@ bool mxos_gpio_input_get( mxos_gpio_t gpio );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t mxos_gpio_enable_irq( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler, void* arg );
+merr_t mxos_gpio_enable_irq( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler, void* arg );
 
 
 /**@brief Disables an interrupt trigger for an input GPIO pin
@@ -185,7 +185,7 @@ mret_t mxos_gpio_enable_irq( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, 
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t mxos_gpio_disable_irq( mxos_gpio_t gpio );
+merr_t mxos_gpio_disable_irq( mxos_gpio_t gpio );
 
 /** @} */
 /** @} */

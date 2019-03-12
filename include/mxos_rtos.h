@@ -79,7 +79,7 @@ typedef void * mos_thread_id_t;
 typedef void * mxos_queue_t;
 typedef void * mxos_event_t;// MXOS OS event: mxos_semaphore_t, mxos_mutex_t or mxos_queue_t
 typedef void (*timer_handler_t)( void* arg );
-typedef mret_t (*event_handler_t)( void* arg );
+typedef merr_t (*event_handler_t)( void* arg );
 
 typedef struct
 {
@@ -192,7 +192,7 @@ mos_thread_id_t mos_thread_new( uint8_t priority, const char* name, mos_thread_f
   * @return  kNoErr        : on success.
   * @return  kGeneralErr   : if an error occurred
   */
-mret_t mos_thread_delete( mos_thread_id_t id );
+merr_t mos_thread_delete( mos_thread_id_t id );
 
 /** @brief   Current thread is forced yield
   * @return  None
@@ -213,7 +213,7 @@ void mos_thread_yield(void);
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-mret_t mos_worker_thread_new( mos_worker_thread_id_t* worker_thread, uint8_t priority, uint32_t stack_size, uint32_t event_queue_size );
+merr_t mos_worker_thread_new( mos_worker_thread_id_t* worker_thread, uint8_t priority, uint32_t stack_size, uint32_t event_queue_size );
 
 
 /** @brief   Deletes a worker thread
@@ -223,7 +223,7 @@ mret_t mos_worker_thread_new( mos_worker_thread_id_t* worker_thread, uint8_t pri
  * @return    kNoErr : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-mret_t mos_worker_thread_delete( mos_worker_thread_id_t* worker_thread );
+merr_t mos_worker_thread_delete( mos_worker_thread_id_t* worker_thread );
 
 
 /** @brief    Suspend a thread
@@ -266,7 +266,7 @@ long mxos_rtos_resume_all_thread(void);
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mos_thread_join( mos_thread_id_t id );
+merr_t mos_thread_join( mos_thread_id_t id );
 
 
 /** @brief    Forcibly wakes another thread
@@ -280,7 +280,7 @@ mret_t mos_thread_join( mos_thread_id_t id );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_thread_force_awake( mos_thread_id_t* thread );
+merr_t mxos_rtos_thread_force_awake( mos_thread_id_t* thread );
 
 
 /** @brief    Checks if a thread is the current thread
@@ -323,7 +323,7 @@ void mxos_rtos_thread_msleep(uint32_t milliseconds);
  *
  * @return    kNoErr.
  */
-mret_t mos_thread_delay( uint32_t num_ms );
+merr_t mos_thread_delay( uint32_t num_ms );
 
 
 /** @brief    Print Thread status into buffer
@@ -333,7 +333,7 @@ mret_t mos_thread_delay( uint32_t num_ms );
   *
   * @return   none
   */
-mret_t mxos_rtos_print_thread_status( char* buffer, int length );
+merr_t mxos_rtos_print_thread_status( char* buffer, int length );
 
 /**
   * @}
@@ -352,7 +352,7 @@ mret_t mxos_rtos_print_thread_status( char* buffer, int length );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_init_semaphore( mxos_semaphore_t* semaphore, int count );
+merr_t mxos_rtos_init_semaphore( mxos_semaphore_t* semaphore, int count );
 
 
 /** @brief    Set (post/put/increment) a semaphore
@@ -362,7 +362,7 @@ mret_t mxos_rtos_init_semaphore( mxos_semaphore_t* semaphore, int count );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_set_semaphore( mxos_semaphore_t* semaphore );
+merr_t mxos_rtos_set_semaphore( mxos_semaphore_t* semaphore );
 
 
 /** @brief    Get (wait/decrement) a semaphore
@@ -377,7 +377,7 @@ mret_t mxos_rtos_set_semaphore( mxos_semaphore_t* semaphore );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_get_semaphore( mxos_semaphore_t* semaphore, uint32_t timeout_ms );
+merr_t mxos_rtos_get_semaphore( mxos_semaphore_t* semaphore, uint32_t timeout_ms );
 
 
 /** @brief    De-initialise a semaphore
@@ -389,7 +389,7 @@ mret_t mxos_rtos_get_semaphore( mxos_semaphore_t* semaphore, uint32_t timeout_ms
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_deinit_semaphore( mxos_semaphore_t* semaphore );
+merr_t mxos_rtos_deinit_semaphore( mxos_semaphore_t* semaphore );
 /**
   * @}
   */
@@ -410,7 +410,7 @@ mret_t mxos_rtos_deinit_semaphore( mxos_semaphore_t* semaphore );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_init_mutex( mxos_mutex_t* mutex );
+merr_t mxos_rtos_init_mutex( mxos_mutex_t* mutex );
 
 
 /** @brief    Obtains the lock on a mutex
@@ -424,7 +424,7 @@ mret_t mxos_rtos_init_mutex( mxos_mutex_t* mutex );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_lock_mutex( mxos_mutex_t* mutex );
+merr_t mxos_rtos_lock_mutex( mxos_mutex_t* mutex );
 
 
 /** @brief    Releases the lock on a mutex
@@ -437,7 +437,7 @@ mret_t mxos_rtos_lock_mutex( mxos_mutex_t* mutex );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_unlock_mutex( mxos_mutex_t* mutex );
+merr_t mxos_rtos_unlock_mutex( mxos_mutex_t* mutex );
 
 
 /** @brief    De-initialise a mutex
@@ -449,7 +449,7 @@ mret_t mxos_rtos_unlock_mutex( mxos_mutex_t* mutex );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_deinit_mutex( mxos_mutex_t* mutex );
+merr_t mxos_rtos_deinit_mutex( mxos_mutex_t* mutex );
 /**
   * @}
   */
@@ -469,7 +469,7 @@ mret_t mxos_rtos_deinit_mutex( mxos_mutex_t* mutex );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_init_queue( mxos_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages );
+merr_t mxos_rtos_init_queue( mxos_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages );
 
 
 /** @brief    Pushes an object onto a queue
@@ -482,7 +482,7 @@ mret_t mxos_rtos_init_queue( mxos_queue_t* queue, const char* name, uint32_t mes
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error or timeout occurred
   */
-mret_t mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms );
+merr_t mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms );
 
 
 /** @brief    Pops an object off a queue
@@ -498,7 +498,7 @@ mret_t mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t tim
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error or timeout occurred
   */
-mret_t mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms );
+merr_t mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms );
 
 
 /** @brief    De-initialise a queue created with @ref mxos_rtos_init_queue
@@ -508,7 +508,7 @@ mret_t mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t ti
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_deinit_queue( mxos_queue_t* queue );
+merr_t mxos_rtos_deinit_queue( mxos_queue_t* queue );
 
 
 /** @brief    Check if a queue is empty
@@ -549,7 +549,7 @@ bool mxos_rtos_is_queue_full( mxos_queue_t* queue );
   * @return    kNoErr        : on success.
   * @return    kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_send_asynchronous_event( mos_worker_thread_id_t* worker_thread, event_handler_t function, void* arg );
+merr_t mxos_rtos_send_asynchronous_event( mos_worker_thread_id_t* worker_thread, event_handler_t function, void* arg );
 
 /** Requests a function be called at a regular interval
  *
@@ -568,7 +568,7 @@ mret_t mxos_rtos_send_asynchronous_event( mos_worker_thread_id_t* worker_thread,
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-mret_t mxos_rtos_register_timed_event( mxos_timed_event_t* event_object, mos_worker_thread_id_t* worker_thread, event_handler_t function, uint32_t time_ms, void* arg );
+merr_t mxos_rtos_register_timed_event( mxos_timed_event_t* event_object, mos_worker_thread_id_t* worker_thread, event_handler_t function, uint32_t time_ms, void* arg );
 
 
 /** Removes a request for a regular function execution
@@ -581,7 +581,7 @@ mret_t mxos_rtos_register_timed_event( mxos_timed_event_t* event_object, mos_wor
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-mret_t mxos_rtos_deregister_timed_event( mxos_timed_event_t* event_object );
+merr_t mxos_rtos_deregister_timed_event( mxos_timed_event_t* event_object );
 
 
 /**
@@ -617,7 +617,7 @@ uint32_t mxos_rtos_get_time(void);
   * @return    kNoErr        : on success.
   * @return    kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_init_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg );
+merr_t mxos_rtos_init_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg );
 
 
 /** @brief    Starts a RTOS timer running
@@ -629,7 +629,7 @@ mret_t mxos_rtos_init_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handle
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_start_timer( mxos_timer_t* timer );
+merr_t mxos_rtos_start_timer( mxos_timer_t* timer );
 
 
 /** @brief    Stops a running RTOS timer
@@ -641,7 +641,7 @@ mret_t mxos_rtos_start_timer( mxos_timer_t* timer );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_stop_timer( mxos_timer_t* timer );
+merr_t mxos_rtos_stop_timer( mxos_timer_t* timer );
 
 
 /** @brief    Reloads a RTOS timer that has expired
@@ -654,7 +654,7 @@ mret_t mxos_rtos_stop_timer( mxos_timer_t* timer );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_reload_timer( mxos_timer_t* timer );
+merr_t mxos_rtos_reload_timer( mxos_timer_t* timer );
 
 
 /** @brief    De-initialise a RTOS timer
@@ -666,7 +666,7 @@ mret_t mxos_rtos_reload_timer( mxos_timer_t* timer );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-mret_t mxos_rtos_deinit_timer( mxos_timer_t* timer );
+merr_t mxos_rtos_deinit_timer( mxos_timer_t* timer );
 
 
 /** @brief    Check if an RTOS timer is running

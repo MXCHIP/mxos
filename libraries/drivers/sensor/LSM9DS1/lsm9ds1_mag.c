@@ -85,7 +85,7 @@ mxos_i2c_device_t lsm9ds1_mag_i2c_device = {
   LSM9DS1_I2C_PORT, 0x1C, I2C_ADDRESS_WIDTH_7BIT, I2C_STANDARD_SPEED_MODE
 };
 
-static mret_t LSM9DS1_MAG_IO_Init(void)
+static merr_t LSM9DS1_MAG_IO_Init(void)
 {
   // I2C init
   mxos_i2c_deinit(&lsm9ds1_mag_i2c_device);   // in case error
@@ -107,10 +107,10 @@ static mret_t LSM9DS1_MAG_IO_Init(void)
 *		will be used for write the value into the register
 *	\param cnt : The no of byte of data to be write
 */
-static mret_t LSM9DS1_MAG_IO_Write(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByteToWrite)
+static merr_t LSM9DS1_MAG_IO_Write(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByteToWrite)
 {
   mxos_i2c_message_t lsm9ds1_mag_i2c_msg = {NULL, NULL, 0, 0, 0, false};
-  mret_t iError = kNoErr;
+  merr_t iError = kNoErr;
   uint8_t array[8];
   uint8_t stringpos;
   array[0] = RegisterAddr;
@@ -134,10 +134,10 @@ static mret_t LSM9DS1_MAG_IO_Write(uint8_t* pBuffer, uint8_t RegisterAddr, uint1
 *	\param reg_data : This data read from the sensor, which is hold in an array
 *	\param cnt : The no of byte of data to be read
 */
-static mret_t LSM9DS1_MAG_IO_Read(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByteToRead)
+static merr_t LSM9DS1_MAG_IO_Read(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByteToRead)
 {
   mxos_i2c_message_t lsm9ds1_mag_i2c_msg = {NULL, NULL, 0, 0, 0, false};
-  mret_t iError = kNoErr;
+  merr_t iError = kNoErr;
   uint8_t array[8] = {0};
   array[0] = RegisterAddr;
   
@@ -152,9 +152,9 @@ static mret_t LSM9DS1_MAG_IO_Read(uint8_t* pBuffer, uint8_t RegisterAddr, uint16
   return kNoErr;
 }
 
-static mret_t LSM9DS1_MAG_POWER_ON(void)
+static merr_t LSM9DS1_MAG_POWER_ON(void)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   uint8_t temp = 0;
   
   temp = CTRL_REG1_M_DEF;
@@ -175,9 +175,9 @@ static mret_t LSM9DS1_MAG_POWER_ON(void)
   return err;
 }
 
-static mret_t LSM9DS1_MAG_POWER_OFF(void)
+static merr_t LSM9DS1_MAG_POWER_OFF(void)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   uint8_t temp = 0;
   
   temp = CTRL_REG3_M_MD_OFF;
@@ -188,9 +188,9 @@ static mret_t LSM9DS1_MAG_POWER_OFF(void)
   return err;
 }
 
-static mret_t LSM9DS1_MAG_Init(void)
+static merr_t LSM9DS1_MAG_Init(void)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   
   if((err = LSM9DS1_MAG_IO_Init()) != kNoErr){
     return err;
@@ -203,9 +203,9 @@ static mret_t LSM9DS1_MAG_Init(void)
   return err;
 }
 
-static mret_t LSM9DS1_MAG_GET_XYZ(int16_t *MAG_X, int16_t *MAG_Y, int16_t *MAG_Z)
+static merr_t LSM9DS1_MAG_GET_XYZ(int16_t *MAG_X, int16_t *MAG_Y, int16_t *MAG_Z)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   uint8_t temp[6] = {0};
   
   if((err = LSM9DS1_MAG_IO_Read(&temp[0], REG_MAG_OUT_X_L_ADDR, 1)) != kNoErr){
@@ -241,19 +241,19 @@ static mret_t LSM9DS1_MAG_GET_XYZ(int16_t *MAG_X, int16_t *MAG_Y, int16_t *MAG_Z
   return err;
 }
 
-mret_t lsm9ds1_mag_sensor_init(void)
+merr_t lsm9ds1_mag_sensor_init(void)
 {
   return LSM9DS1_MAG_Init();
 }
 
-mret_t lsm9ds1_mag_read_data(int16_t *MAG_X, int16_t *MAG_Y, int16_t *MAG_Z)
+merr_t lsm9ds1_mag_read_data(int16_t *MAG_X, int16_t *MAG_Y, int16_t *MAG_Z)
 {
   return LSM9DS1_MAG_GET_XYZ(MAG_X, MAG_Y, MAG_Z);
 }
 
-mret_t lsm9ds1_mag_sensor_deinit(void)
+merr_t lsm9ds1_mag_sensor_deinit(void)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   
   if((err = LSM9DS1_MAG_POWER_OFF()) != kNoErr){
     return err;

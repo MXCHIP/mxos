@@ -87,7 +87,7 @@
  *  @return    kNoErr        : on success.
  *  @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t mxos_mfi_auth_init( mxos_i2c_t i2c );
+merr_t mxos_mfi_auth_init( mxos_i2c_t i2c );
 
 
 /** @brief    PlatformMFiAuthFinalize
@@ -117,7 +117,7 @@ void mxos_mfi_auth_deinit( void );
  *  @return    kNoErr         :    on success.
  *  @return    kGeneralErr    :    if an error occurred with any step
  */
-mret_t mxos_mfi_auth_create_sign( const  void      *inDigestPtr,
+merr_t mxos_mfi_auth_create_sign( const  void      *inDigestPtr,
                                             size_t     inDigestLen,
                                             uint8_t  **outSignaturePtr,
                                             size_t    *outSignatureLen );
@@ -135,7 +135,7 @@ mret_t mxos_mfi_auth_create_sign( const  void      *inDigestPtr,
  *  @return    kNoErr         :    on success.
  *  @return    kGeneralErr    :    if an error occurred with any step
  */
-mret_t mxos_mfi_auth_copy_cert( uint8_t **outCertificatePtr, size_t *outCertificateLen );
+merr_t mxos_mfi_auth_copy_cert( uint8_t **outCertificatePtr, size_t *outCertificateLen );
 
 /** @} */
 /** @} */

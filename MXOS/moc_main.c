@@ -64,7 +64,7 @@ extern void RptConfigmodeRslt( network_InitTypeDef_st *nwkpara );
 extern void easylink_user_data_result( int datalen, char*data );
 extern void socket_connected( int fd );
 extern void dns_ip_set( uint8_t *hostname, uint32_t ip );
-extern void join_fail( mret_t err );
+extern void join_fail( merr_t err );
 extern void wifi_reboot_event( void );
 extern void mxos_rtos_stack_overflow( char *taskname );
 

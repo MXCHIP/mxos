@@ -84,7 +84,7 @@ static mxos_time_t        last_utc_time_mxos_reference = 0;
  *               Function Definitions
  ******************************************************/
 
-mret_t mxos_time_get_utc_time( mxos_utc_time_t* utc_time )
+merr_t mxos_time_get_utc_time( mxos_utc_time_t* utc_time )
 {
     mxos_utc_time_ms_t utc_time_ms;
 
@@ -94,7 +94,7 @@ mret_t mxos_time_get_utc_time( mxos_utc_time_t* utc_time )
     return kNoErr;
 }
 
-mret_t mxos_time_get_utc_time_ms( mxos_utc_time_ms_t* utc_time_ms )
+merr_t mxos_time_get_utc_time_ms( mxos_utc_time_ms_t* utc_time_ms )
 {
     mxos_time_t temp_mxos_time;
     uint32_t     time_since_last_reference;
@@ -113,7 +113,7 @@ mret_t mxos_time_get_utc_time_ms( mxos_utc_time_ms_t* utc_time_ms )
     return kNoErr;
 }
 
-mret_t mxos_time_set_utc_time_ms( const mxos_utc_time_ms_t* utc_time_ms )
+merr_t mxos_time_set_utc_time_ms( const mxos_utc_time_ms_t* utc_time_ms )
 {
     mxos_time_get_time( &last_utc_time_mxos_reference );
     current_utc_time = *utc_time_ms;
@@ -121,7 +121,7 @@ mret_t mxos_time_set_utc_time_ms( const mxos_utc_time_ms_t* utc_time_ms )
 }
 
 
-mret_t mxos_time_get_iso8601_time(iso8601_time_t* iso8601_time)
+merr_t mxos_time_get_iso8601_time(iso8601_time_t* iso8601_time)
 {
     mxos_utc_time_ms_t utc_time_ms;
 
@@ -129,7 +129,7 @@ mret_t mxos_time_get_iso8601_time(iso8601_time_t* iso8601_time)
     return mxos_time_convert_utc_ms_to_iso8601( utc_time_ms, iso8601_time );
 }
 
-mret_t mxos_time_convert_utc_ms_to_iso8601( mxos_utc_time_ms_t utc_time_ms, iso8601_time_t* iso8601_time )
+merr_t mxos_time_convert_utc_ms_to_iso8601( mxos_utc_time_ms_t utc_time_ms, iso8601_time_t* iso8601_time )
 {
     uint32_t            a;
     uint16_t            year;

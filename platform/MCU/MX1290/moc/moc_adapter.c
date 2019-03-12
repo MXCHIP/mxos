@@ -487,7 +487,7 @@ int mxos_init_once_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t
     return _kernel_api.os_apis->mxos_init_once_timer( timer, time_ms, function, arg );
 }
 
-mret_t MxosRtcSetalarm(time_t *time, rtc_irq_handler handler)
+merr_t MxosRtcSetalarm(time_t *time, rtc_irq_handler handler)
 {
     return _kernel_api.rtc_apis->MxosRtcSetalarm( time, handler );
 }

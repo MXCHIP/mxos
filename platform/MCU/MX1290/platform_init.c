@@ -446,7 +446,7 @@ uint32_t stdio_hardfault( char* data, uint32_t size )
     return 0;
 }
 
-mret_t platform_watchdog_kick( void )
+merr_t platform_watchdog_kick( void )
 {
 #ifndef MXOS_DISABLE_WATCHDOG
   IWDG_ReloadCounter();

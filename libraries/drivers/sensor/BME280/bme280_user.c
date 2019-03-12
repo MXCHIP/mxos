@@ -466,9 +466,9 @@ void BME280_delay_msek(u16 msek)
 
 
 // bme280_sensor_init
-mret_t bme280_sensor_init(void)
+merr_t bme280_sensor_init(void)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   s32 com_rslt = BME280_ERROR;  // result of communication results
  // u8 v_stand_by_time_u8 = BME280_INIT_VALUE;  //  The variable used to assign the standby time
   
@@ -512,9 +512,9 @@ exit:
 }
 
 
-mret_t bme280_data_readout(s32 *v_actual_temp_s32, u32 *v_actual_press_u32, u32 *v_actual_humity_u32)
+merr_t bme280_data_readout(s32 *v_actual_temp_s32, u32 *v_actual_press_u32, u32 *v_actual_humity_u32)
 {
-    mret_t err = kUnknownErr;
+    merr_t err = kUnknownErr;
     
 	/* result of communication results*/
 	s32 com_rslt = BME280_ERROR;
@@ -543,7 +543,7 @@ mret_t bme280_data_readout(s32 *v_actual_temp_s32, u32 *v_actual_press_u32, u32 
         return err;
 }
 
-mret_t bme280_read_temperature(s32 *v_actual_temp_s32)
+merr_t bme280_read_temperature(s32 *v_actual_temp_s32)
 {
 	s32 com_rslt = BME280_ERROR;  // result of communication results
 	s32 v_data_uncomp_tem_s32 = BME280_INIT_VALUE;  // uncompensated temperature
@@ -563,7 +563,7 @@ mret_t bme280_read_temperature(s32 *v_actual_temp_s32)
         return kNoErr;
 }
 
-mret_t bme280_read_humidity(u32 *v_actual_humity_u32)
+merr_t bme280_read_humidity(u32 *v_actual_humity_u32)
 {
   	s32 com_rslt = BME280_ERROR;  // result of communication results
 	s32 v_data_uncomp_hum_s32 = BME280_INIT_VALUE;  // uncompensated humidity
@@ -583,7 +583,7 @@ mret_t bme280_read_humidity(u32 *v_actual_humity_u32)
         return kNoErr;
 }
 
-mret_t bme280_data_pressure(u32 *v_actual_press_u32)
+merr_t bme280_data_pressure(u32 *v_actual_press_u32)
 {
     	s32 com_rslt = BME280_ERROR;  // result of communication results
 	s32 v_data_uncomp_pres_s32 = BME280_INIT_VALUE;  // uncompensated humidity
@@ -605,9 +605,9 @@ mret_t bme280_data_pressure(u32 *v_actual_press_u32)
 
 
 // bme280_sensor_init
-mret_t bme280_sensor_deinit(void)
+merr_t bme280_sensor_deinit(void)
 {
-  mret_t err = kUnknownErr;
+  merr_t err = kUnknownErr;
   s32 com_rslt = BME280_ERROR;
   
   err = mxos_i2c_deinit(&user_i2c_device);

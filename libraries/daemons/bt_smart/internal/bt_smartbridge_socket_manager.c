@@ -56,9 +56,9 @@ static uint8_t       max_number_of_connections = 0;
  *               Function Definitions
  ******************************************************/
 
-mret_t bt_smartbridge_socket_manager_init( void )
+merr_t bt_smartbridge_socket_manager_init( void )
 {
-    mret_t result;
+    merr_t result;
 
     result = linked_list_init( &connected_socket_list );
     if ( result != kNoErr )
@@ -79,7 +79,7 @@ mret_t bt_smartbridge_socket_manager_init( void )
     return MXOS_BT_SUCCESS;
 }
 
-mret_t bt_smartbridge_socket_manager_deinit( void )
+merr_t bt_smartbridge_socket_manager_deinit( void )
 {
     mxos_rtos_deinit_mutex( &connected_socket_list_mutex );
     linked_list_deinit( &connected_socket_list );
@@ -87,7 +87,7 @@ mret_t bt_smartbridge_socket_manager_deinit( void )
     return MXOS_BT_SUCCESS;
 }
 
-mret_t bt_smartbridge_socket_manager_set_max_concurrent_connections( uint8_t count )
+merr_t bt_smartbridge_socket_manager_set_max_concurrent_connections( uint8_t count )
 {
     max_number_of_connections = count;
     return MXOS_BT_SUCCESS;
@@ -102,9 +102,9 @@ mxos_bool_t   bt_smartbridge_socket_manager_is_full( void )
     return ( active_connection_count == max_number_of_connections ) ? MXOS_TRUE : MXOS_FALSE;
 }
 
-mret_t bt_smartbridge_socket_manager_insert_socket( mxos_bt_smartbridge_socket_t* socket )
+merr_t bt_smartbridge_socket_manager_insert_socket( mxos_bt_smartbridge_socket_t* socket )
 {
-    mret_t  result;
+    merr_t  result;
     uint32_t  count;
 
     linked_list_get_count( &connected_socket_list, &count );
@@ -125,9 +125,9 @@ mret_t bt_smartbridge_socket_manager_insert_socket( mxos_bt_smartbridge_socket_t
     return result;
 }
 
-mret_t bt_smartbridge_socket_manager_remove_socket( uint16_t connection_handle, mxos_bt_smartbridge_socket_t** socket )
+merr_t bt_smartbridge_socket_manager_remove_socket( uint16_t connection_handle, mxos_bt_smartbridge_socket_t** socket )
 {
-    mret_t            result;
+    merr_t            result;
     uint32_t            count;
     linked_list_node_t* node_found;
     uint32_t            user_data = connection_handle;
@@ -159,9 +159,9 @@ mret_t bt_smartbridge_socket_manager_remove_socket( uint16_t connection_handle, 
     return result;
 }
 
-mret_t bt_smartbridge_socket_manager_find_socket_by_handle( uint16_t connection_handle, mxos_bt_smartbridge_socket_t** socket )
+merr_t bt_smartbridge_socket_manager_find_socket_by_handle( uint16_t connection_handle, mxos_bt_smartbridge_socket_t** socket )
 {
-    mret_t            result;
+    merr_t            result;
     uint32_t            count;
     linked_list_node_t* node_found;
     uint32_t            user_data = connection_handle;
@@ -189,9 +189,9 @@ mret_t bt_smartbridge_socket_manager_find_socket_by_handle( uint16_t connection_
     return result;
 }
 
-mret_t bt_smartbridge_socket_manager_find_socket_by_address( const mxos_bt_device_address_t* address, mxos_bt_smartbridge_socket_t** socket )
+merr_t bt_smartbridge_socket_manager_find_socket_by_address( const mxos_bt_device_address_t* address, mxos_bt_smartbridge_socket_t** socket )
 {
-    mret_t            result;
+    merr_t            result;
     uint32_t            count;
     linked_list_node_t* node_found;
 

@@ -92,7 +92,7 @@ typedef int8_t mxos_adc_t;   /**< MXOS ADC peripheral handle, MXOS_ADC_XX define
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t mxos_adc_init( mxos_adc_t adc, uint32_t sampling_cycle );
+merr_t mxos_adc_init( mxos_adc_t adc, uint32_t sampling_cycle );
 
 /**@biref Get ADC sample bit ranges
  *
@@ -113,7 +113,7 @@ uint16_t mxos_adc_get_bit_range( mxos_adc_t adc );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t mxos_adc_take_sample( mxos_adc_t adc, uint16_t* output );
+merr_t mxos_adc_take_sample( mxos_adc_t adc, uint16_t* output );
 
 
 /**@biref Takes multiple samples from an ADC interface
@@ -130,7 +130,7 @@ mret_t mxos_adc_take_sample( mxos_adc_t adc, uint16_t* output );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t mxos_adc_take_sample_streram( mxos_adc_t adc, void* buffer, uint16_t buffer_length );
+merr_t mxos_adc_take_sample_streram( mxos_adc_t adc, void* buffer, uint16_t buffer_length );
 
 
 /**@biref     De-initialises an ADC interface
@@ -142,7 +142,7 @@ mret_t mxos_adc_take_sample_streram( mxos_adc_t adc, void* buffer, uint16_t buff
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t  mxos_adc_deinit( mxos_adc_t adc );
+merr_t  mxos_adc_deinit( mxos_adc_t adc );
 
 /** @} */
 /** @} */

@@ -44,33 +44,33 @@
 /******************************************************
  *               Static Function Declarations
  ******************************************************/
-static mret_t fatfs_init( void );
-static mret_t fatfs_mount( mxos_block_device_t* device, mxos_filesystem_t* fs_handle_out );
-static mret_t fatfs_unmount( mxos_filesystem_t* fs_handle );
-static mret_t fatfs_file_get_details( mxos_filesystem_t* fs_handle, const char* filename,
+static merr_t fatfs_init( void );
+static merr_t fatfs_mount( mxos_block_device_t* device, mxos_filesystem_t* fs_handle_out );
+static merr_t fatfs_unmount( mxos_filesystem_t* fs_handle );
+static merr_t fatfs_file_get_details( mxos_filesystem_t* fs_handle, const char* filename,
                                         mxos_dir_entry_details_t* details_out );
-static mret_t fatfs_file_open( mxos_filesystem_t* fs_handle, mxos_file_t* file_handle_out, const char* filename,
+static merr_t fatfs_file_open( mxos_filesystem_t* fs_handle, mxos_file_t* file_handle_out, const char* filename,
                                  mxos_filesystem_open_mode_t mode );
-static mret_t fatfs_file_seek( mxos_file_t* file_handle, int64_t offset, mxos_filesystem_seek_type_t whence );
-static mret_t fatfs_file_tell( mxos_file_t* file_handle, uint64_t* location );
-static mret_t fatfs_file_read( mxos_file_t* file_handle, void* data, uint64_t bytes_to_read,
+static merr_t fatfs_file_seek( mxos_file_t* file_handle, int64_t offset, mxos_filesystem_seek_type_t whence );
+static merr_t fatfs_file_tell( mxos_file_t* file_handle, uint64_t* location );
+static merr_t fatfs_file_read( mxos_file_t* file_handle, void* data, uint64_t bytes_to_read,
                                  uint64_t* returned_bytes_count );
-static mret_t fatfs_file_write( mxos_file_t* file_handle, const void* data, uint64_t bytes_to_write,
+static merr_t fatfs_file_write( mxos_file_t* file_handle, const void* data, uint64_t bytes_to_write,
                                   uint64_t* written_bytes_count );
-static mret_t fatfs_file_flush( mxos_file_t* file_handle );
+static merr_t fatfs_file_flush( mxos_file_t* file_handle );
 static int fatfs_file_end_reached( mxos_file_t* file_handle );
-static mret_t fatfs_file_close( mxos_file_t* file_handle );
-static mret_t fatfs_file_delete( mxos_filesystem_t* fs_handle, const char* filename );
-static mret_t fatfs_dir_open( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_handle, const char* dir_name );
-static mret_t fatfs_dir_read( mxos_dir_t* dir_handle, char* name_buffer, unsigned int name_buffer_length,
+static merr_t fatfs_file_close( mxos_file_t* file_handle );
+static merr_t fatfs_file_delete( mxos_filesystem_t* fs_handle, const char* filename );
+static merr_t fatfs_dir_open( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_handle, const char* dir_name );
+static merr_t fatfs_dir_read( mxos_dir_t* dir_handle, char* name_buffer, unsigned int name_buffer_length,
                                 mxos_dir_entry_type_t* type, mxos_dir_entry_details_t* details );
 static int fatfs_dir_end_reached( mxos_dir_t* dir_handle );
-static mret_t fatfs_dir_rewind( mxos_dir_t* dir_handle );
-static mret_t fatfs_dir_close( mxos_dir_t* dir_handle );
-static mret_t fatfs_dir_create( mxos_filesystem_t* fs_handle, const char* directory_name );
-static mret_t fatfs_format( mxos_block_device_t* device );
-static mret_t fatfs_get_info( mxos_filesystem_info* info,char* mounted_name );
-static mret_t fatfs_scan_files( char* mounted_name, mxos_scan_file_handle arg );
+static merr_t fatfs_dir_rewind( mxos_dir_t* dir_handle );
+static merr_t fatfs_dir_close( mxos_dir_t* dir_handle );
+static merr_t fatfs_dir_create( mxos_filesystem_t* fs_handle, const char* directory_name );
+static merr_t fatfs_format( mxos_block_device_t* device );
+static merr_t fatfs_get_info( mxos_filesystem_info* info,char* mounted_name );
+static merr_t fatfs_scan_files( char* mounted_name, mxos_scan_file_handle arg );
 
 /******************************************************
  *               Variable Definitions
@@ -108,13 +108,13 @@ mxos_filesystem_driver_t mxos_filesystem_driver_fatfs =
  ******************************************************/
 
 /* Initialises FatFS shim - nothing to be done */
-static mret_t fatfs_init( void )
+static merr_t fatfs_init( void )
 {
     return kNoErr;
 }
 
 /* Internal function for mounting a FatFS filesystem from a block device (with a "mount_now" parameter) */
-static mret_t fatfs_internal_mount( mxos_block_device_t* device, mxos_filesystem_t* fs_handle_out,
+static merr_t fatfs_internal_mount( mxos_block_device_t* device, mxos_filesystem_t* fs_handle_out,
                                       mxos_bool_t mount_now )
 {
     static uint8_t next_drive_id = 0;
@@ -137,7 +137,7 @@ static mret_t fatfs_internal_mount( mxos_block_device_t* device, mxos_filesystem
 }
 
 /* Unmounts a FatFS filesystem from a block device */
-static mret_t fatfs_unmount( mxos_filesystem_t* fs_handle )
+static merr_t fatfs_unmount( mxos_filesystem_t* fs_handle )
 {
     FRESULT fatfs_result;
 
@@ -151,10 +151,10 @@ static mret_t fatfs_unmount( mxos_filesystem_t* fs_handle )
 }
 
 /* Formats a block device with a FatFS filesystem */
-static mret_t fatfs_format( mxos_block_device_t* device )
+static merr_t fatfs_format( mxos_block_device_t* device )
 {
     FRESULT fatfs_result;
-    mret_t result;
+    merr_t result;
     mxos_filesystem_t fs_handle;
 
     /* Check that the block sizes are OK */
@@ -217,9 +217,9 @@ static mret_t fatfs_format( mxos_block_device_t* device )
 }
 
 /* Mounts a FatFS filesystem from a block device */
-static mret_t fatfs_mount( mxos_block_device_t* device, mxos_filesystem_t* fs_handle_out )
+static merr_t fatfs_mount( mxos_block_device_t* device, mxos_filesystem_t* fs_handle_out )
 {
-    mret_t result;
+    merr_t result;
 
     /* Format if required */
     if ( device->init_data->volatile_and_requires_format_when_mounting == MXOS_TRUE )
@@ -239,7 +239,7 @@ static mret_t fatfs_mount( mxos_block_device_t* device, mxos_filesystem_t* fs_ha
 }
 
 /* Opens a file within a FatFS filesystem */
-static mret_t fatfs_file_open( mxos_filesystem_t* fs_handle, mxos_file_t* file_handle_out, const char* filename,
+static merr_t fatfs_file_open( mxos_filesystem_t* fs_handle, mxos_file_t* file_handle_out, const char* filename,
                                  mxos_filesystem_open_mode_t mode )
 {
     FRESULT fatfs_result;
@@ -302,7 +302,7 @@ static mret_t fatfs_file_open( mxos_filesystem_t* fs_handle, mxos_file_t* file_h
 }
 
 /* Get details of a file within a FatFS filesystem */
-static mret_t fatfs_file_get_details( mxos_filesystem_t* fs_handle, const char* filename,
+static merr_t fatfs_file_get_details( mxos_filesystem_t* fs_handle, const char* filename,
                                         mxos_dir_entry_details_t* details_out )
 {
     FILINFO file_stat;
@@ -333,7 +333,7 @@ static mret_t fatfs_file_get_details( mxos_filesystem_t* fs_handle, const char* 
 }
 
 /* Close a file within a FatFS filesystem */
-static mret_t fatfs_file_close( mxos_file_t* file_handle )
+static merr_t fatfs_file_close( mxos_file_t* file_handle )
 {
     FRESULT fatfs_result;
 
@@ -347,7 +347,7 @@ static mret_t fatfs_file_close( mxos_file_t* file_handle )
 }
 
 /* Delete a file within a FatFS filesystem */
-static mret_t fatfs_file_delete( mxos_filesystem_t* fs_handle, const char* filename )
+static merr_t fatfs_file_delete( mxos_filesystem_t* fs_handle, const char* filename )
 {
     FRESULT fatfs_result;
 
@@ -369,7 +369,7 @@ static mret_t fatfs_file_delete( mxos_filesystem_t* fs_handle, const char* filen
 }
 
 /* Seek to a location in an open file within a FatFS filesystem */
-static mret_t fatfs_file_seek( mxos_file_t* file_handle, int64_t offset, mxos_filesystem_seek_type_t whence )
+static merr_t fatfs_file_seek( mxos_file_t* file_handle, int64_t offset, mxos_filesystem_seek_type_t whence )
 {
     FRESULT fatfs_result;
     FATFS_DWORD new_location;
@@ -410,14 +410,14 @@ static mret_t fatfs_file_seek( mxos_file_t* file_handle, int64_t offset, mxos_fi
 }
 
 /* Get the current location in an open file within a FatFS filesystem */
-static mret_t fatfs_file_tell( mxos_file_t* file_handle, uint64_t* location )
+static merr_t fatfs_file_tell( mxos_file_t* file_handle, uint64_t* location )
 {
     *location = f_tell( &file_handle->data.fatfs );
     return kNoErr;
 }
 
 /* Read data from an open file within a FatFS filesystem */
-static mret_t fatfs_file_read( mxos_file_t* file_handle, void* data, uint64_t bytes_to_read,
+static merr_t fatfs_file_read( mxos_file_t* file_handle, void* data, uint64_t bytes_to_read,
                                  uint64_t* returned_bytes_count )
 {
     FRESULT fatfs_result;
@@ -435,7 +435,7 @@ static mret_t fatfs_file_read( mxos_file_t* file_handle, void* data, uint64_t by
 }
 
 /* Write data to an open file within a FatFS filesystem */
-static mret_t fatfs_file_write( mxos_file_t* file_handle, const void* data, uint64_t bytes_to_write,
+static merr_t fatfs_file_write( mxos_file_t* file_handle, const void* data, uint64_t bytes_to_write,
                                   uint64_t* written_bytes_count )
 {
     FRESULT fatfs_result;
@@ -453,7 +453,7 @@ static mret_t fatfs_file_write( mxos_file_t* file_handle, const void* data, uint
 }
 
 /* Flush unwritten data in an open file within a FatFS filesystem */
-static mret_t fatfs_file_flush( mxos_file_t* file_handle )
+static merr_t fatfs_file_flush( mxos_file_t* file_handle )
 {
     FRESULT fatfs_result;
 
@@ -473,7 +473,7 @@ static int fatfs_file_end_reached( mxos_file_t* file_handle )
 }
 
 /* Opens a directory within a FatFS filesystem */
-static mret_t fatfs_dir_open( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_handle, const char* dir_name )
+static merr_t fatfs_dir_open( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_handle, const char* dir_name )
 {
     FRESULT fatfs_result;
 
@@ -496,7 +496,7 @@ static mret_t fatfs_dir_open( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_hand
 }
 
 /* Reads directory entry from an open within a FatFS filesystem */
-static mret_t fatfs_dir_read( mxos_dir_t* dir_handle, char* name_buffer, unsigned int name_buffer_length,
+static merr_t fatfs_dir_read( mxos_dir_t* dir_handle, char* name_buffer, unsigned int name_buffer_length,
                                 mxos_dir_entry_type_t* type, mxos_dir_entry_details_t* details )
 {
     FRESULT fatfs_result;
@@ -548,7 +548,7 @@ static int fatfs_dir_end_reached( mxos_dir_t* dir_handle )
 }
 
 /* Moves the current location within a directory back to the first entry within a FatFS filesystem */
-static mret_t fatfs_dir_rewind( mxos_dir_t* dir_handle )
+static merr_t fatfs_dir_rewind( mxos_dir_t* dir_handle )
 {
     FRESULT fatfs_result;
 
@@ -565,7 +565,7 @@ static mret_t fatfs_dir_rewind( mxos_dir_t* dir_handle )
 }
 
 /* Closes an open directory within a FatFS filesystem */
-static mret_t fatfs_dir_close( mxos_dir_t* dir_handle )
+static merr_t fatfs_dir_close( mxos_dir_t* dir_handle )
 {
     FRESULT fatfs_result;
 
@@ -579,7 +579,7 @@ static mret_t fatfs_dir_close( mxos_dir_t* dir_handle )
 }
 
 /* Creates a new directory within a FatFS filesystem */
-static mret_t fatfs_dir_create( mxos_filesystem_t* fs_handle, const char* directory_name )
+static merr_t fatfs_dir_create( mxos_filesystem_t* fs_handle, const char* directory_name )
 {
     FRESULT fatfs_result;
 
@@ -600,7 +600,7 @@ static mret_t fatfs_dir_create( mxos_filesystem_t* fs_handle, const char* direct
     return kNoErr;
 }
 
-static mret_t fatfs_get_info( mxos_filesystem_info* info,char* mounted_name )
+static merr_t fatfs_get_info( mxos_filesystem_info* info,char* mounted_name )
 {
     FATFS *fs;
     uint8_t res;
@@ -633,7 +633,7 @@ static mret_t fatfs_get_info( mxos_filesystem_info* info,char* mounted_name )
     return kNoErr;
 }
 
-static mret_t fatfs_scan_files( char* mounted_name, mxos_scan_file_handle arg )
+static merr_t fatfs_scan_files( char* mounted_name, mxos_scan_file_handle arg )
 {
     FRESULT res;
     FILINFO fno;

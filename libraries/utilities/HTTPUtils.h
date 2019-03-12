@@ -132,14 +132,14 @@ typedef struct _HTTPHeader_t
 
     void *              userContext;
     bool                isCallbackSupported;
-    mret_t            (*onReceivedDataCallback) ( struct _HTTPHeader_t * , uint32_t, uint8_t *, size_t, void * ); 
+    merr_t            (*onReceivedDataCallback) ( struct _HTTPHeader_t * , uint32_t, uint8_t *, size_t, void * ); 
     void                (*onClearCallback) ( struct _HTTPHeader_t * httpHeader, void * userContext );
 
 
 
 } HTTPHeader_t;
 
-typedef mret_t (*onReceivedDataCallback) ( struct _HTTPHeader_t * httpHeader, uint32_t pos, uint8_t * data, size_t len, void * userContext );
+typedef merr_t (*onReceivedDataCallback) ( struct _HTTPHeader_t * httpHeader, uint32_t pos, uint8_t * data, size_t len, void * userContext );
 
 typedef void (*onClearCallback) ( struct _HTTPHeader_t * httpHeader, void * userContext );
 
@@ -189,15 +189,15 @@ void HTTPHeaderDestory( HTTPHeader_t **inHeader );
 
 int CreateSimpleHTTPOKMessage( uint8_t **outMessage, size_t *outMessageSize );
 
-mret_t CreateSimpleHTTPMessage      ( const char *contentType, uint8_t *inData, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize );
-mret_t CreateSimpleHTTPMessageNoCopy( const char *contentType, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize );
+merr_t CreateSimpleHTTPMessage      ( const char *contentType, uint8_t *inData, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize );
+merr_t CreateSimpleHTTPMessageNoCopy( const char *contentType, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize );
 
-mret_t CreateHTTPRespondMessageNoCopy( int status, const char *contentType, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize );
+merr_t CreateHTTPRespondMessageNoCopy( int status, const char *contentType, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize );
 
 
-mret_t CreateHTTPMessage( const char *methold, const char *url, const char *contentType, uint8_t *inData, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize );
+merr_t CreateHTTPMessage( const char *methold, const char *url, const char *contentType, uint8_t *inData, size_t inDataLen, uint8_t **outMessage, size_t *outMessageSize );
 
-mret_t CreateHTTPMessageWithHost( const char *methold, const char *url,
+merr_t CreateHTTPMessageWithHost( const char *methold, const char *url,
                            const char* host, uint16_t port, 
                            const char *contentType, 
                            uint8_t *inData, size_t inDataLen, 

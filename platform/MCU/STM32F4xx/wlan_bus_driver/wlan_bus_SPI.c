@@ -56,9 +56,9 @@ static mxos_semaphore_t spi_transfer_finished_semaphore = NULL;
  ******************************************************/
 extern void wlan_notify_irq( void );
 
-static mret_t wlan_spi_init( void );
-static mret_t wlan_spi_deinit( void );
-static mret_t wlan_spi_transfer( const mxos_spi_message_segment_t segment );
+static merr_t wlan_spi_init( void );
+static merr_t wlan_spi_deinit( void );
+static merr_t wlan_spi_transfer( const mxos_spi_message_segment_t segment );
 
 /******************************************************
  *             Function definitions
@@ -102,7 +102,7 @@ void platform_wifi_spi_rx_dma_irq( void )
 }
 
 /* This function is called by wlan driver */
-mret_t host_platform_bus_init( void )
+merr_t host_platform_bus_init( void )
 {
     /* Setup the interrupt input for WLAN_IRQ */
     platform_gpio_init( &wifi_spi_pins[WIFI_PIN_SPI_IRQ], INPUT_HIGH_IMPEDANCE );
@@ -112,12 +112,12 @@ mret_t host_platform_bus_init( void )
 }
 
 /* This function is called by wlan driver */
-mret_t host_platform_bus_deinit( void )
+merr_t host_platform_bus_deinit( void )
 {
     return platform_wlan_spi_deinit( &wifi_spi_pins[WIFI_PIN_SPI_CS] );
 }
 
-mret_t host_platform_spi_transfer( bus_transfer_direction_t dir, uint8_t* buffer, uint16_t buffer_length )
+merr_t host_platform_spi_transfer( bus_transfer_direction_t dir, uint8_t* buffer, uint16_t buffer_length )
 {
     platform_spi_message_segment_t segment = { buffer, NULL, buffer_length };
 
@@ -127,7 +127,7 @@ mret_t host_platform_spi_transfer( bus_transfer_direction_t dir, uint8_t* buffer
     return platform_wlan_spi_transfer( &wifi_spi_pins[WIFI_PIN_SPI_CS], &segment, 1 );
 }
 
-mret_t wlan_spi_init()
+merr_t wlan_spi_init()
 {
     SPI_InitTypeDef  spi_init;
     DMA_InitTypeDef  dma_init_structure;
@@ -255,7 +255,7 @@ mret_t wlan_spi_init()
     return kNoErr;
 }
 
-mret_t wlan_spi_deinit()
+merr_t wlan_spi_deinit()
 {
     uint32_t         a;
     
@@ -292,9 +292,9 @@ mret_t wlan_spi_deinit()
     return kNoErr;
 }
 
-mret_t wlan_spi_transfer( const mxos_spi_message_segment_t segment )
+merr_t wlan_spi_transfer( const mxos_spi_message_segment_t segment )
 {
-    mret_t result;
+    merr_t result;
     static uint8_t  dummy = 0xFF;
   
     platform_mcu_powersave_disable();
@@ -345,9 +345,9 @@ mret_t wlan_spi_transfer( const mxos_spi_message_segment_t segment )
 
 
 /* This function is called by other spi devices use the same port as wlan spi bus*/
-mret_t platform_wlan_spi_init( const platform_gpio_t* chip_select )
+merr_t platform_wlan_spi_init( const platform_gpio_t* chip_select )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     if( Spi_mutex == NULL)
     {
@@ -373,9 +373,9 @@ exit:
 }
 
 /* This function is called by other spi devices use the same port as wlan spi bus*/
-mret_t platform_wlan_spi_deinit( const platform_gpio_t* chip_select )
+merr_t platform_wlan_spi_deinit( const platform_gpio_t* chip_select )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
 
     require_quiet( Spi_mutex, exit );
 
@@ -391,9 +391,9 @@ exit:
 }
 
 /* This function is called by other spi devices use the same port as wlan spi bus*/
-mret_t platform_wlan_spi_transfer( const platform_gpio_t* chip_select, const platform_spi_message_segment_t* segments, uint16_t number_of_segments )
+merr_t platform_wlan_spi_transfer( const platform_gpio_t* chip_select, const platform_spi_message_segment_t* segments, uint16_t number_of_segments )
 {
-    mret_t err = kNoErr;
+    merr_t err = kNoErr;
     uint8_t i;
 
     if( Spi_mutex == NULL)

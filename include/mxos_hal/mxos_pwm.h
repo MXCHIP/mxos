@@ -79,7 +79,7 @@ typedef int8_t mxos_pwm_t;   /**< MXOS PWM peripheral handle, MXOS_PWM_XX define
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t mxos_pwm_init(mxos_pwm_t pwm, uint32_t frequency, float duty_cycle);
+merr_t mxos_pwm_init(mxos_pwm_t pwm, uint32_t frequency, float duty_cycle);
 
 
 /**@brief Starts PWM output on a PWM interface
@@ -91,7 +91,7 @@ mret_t mxos_pwm_init(mxos_pwm_t pwm, uint32_t frequency, float duty_cycle);
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t mxos_pwm_start(mxos_pwm_t pwm);
+merr_t mxos_pwm_start(mxos_pwm_t pwm);
 
 
 /**@brief Stops output on a PWM pin
@@ -103,7 +103,7 @@ mret_t mxos_pwm_start(mxos_pwm_t pwm);
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t mxos_pwm_stop(mxos_pwm_t pwm);
+merr_t mxos_pwm_stop(mxos_pwm_t pwm);
 
 /** @} */
 /** @} */

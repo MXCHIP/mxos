@@ -74,7 +74,7 @@
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-mret_t MxosRandomNumberRead( void *inBuffer, int inByteCount );
+merr_t MxosRandomNumberRead( void *inBuffer, int inByteCount );
 
 /** @} */
 /** @} */

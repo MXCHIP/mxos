@@ -73,33 +73,33 @@ typedef bool (*linked_list_compare_callback_t)( linked_list_node_t* node_to_comp
  *               Function Declarations
  ******************************************************/
 
-mret_t linked_list_init( linked_list_t* list );
+merr_t linked_list_init( linked_list_t* list );
 
-mret_t linked_list_deinit( linked_list_t* list );
+merr_t linked_list_deinit( linked_list_t* list );
 
-mret_t linked_list_get_count( linked_list_t* list, uint32_t* count );
+merr_t linked_list_get_count( linked_list_t* list, uint32_t* count );
 
-mret_t linked_list_set_node_data( linked_list_node_t* node, const void* data );
+merr_t linked_list_set_node_data( linked_list_node_t* node, const void* data );
 
-mret_t linked_list_get_front_node( linked_list_t* list, linked_list_node_t** front_node );
+merr_t linked_list_get_front_node( linked_list_t* list, linked_list_node_t** front_node );
 
-mret_t linked_list_get_rear_node( linked_list_t* list, linked_list_node_t** rear_node );
+merr_t linked_list_get_rear_node( linked_list_t* list, linked_list_node_t** rear_node );
 
-mret_t linked_list_find_node( linked_list_t* list, linked_list_compare_callback_t callback, void* user_data, linked_list_node_t** node_found );
+merr_t linked_list_find_node( linked_list_t* list, linked_list_compare_callback_t callback, void* user_data, linked_list_node_t** node_found );
 
-mret_t linked_list_insert_node_at_front( linked_list_t* list, linked_list_node_t* node );
+merr_t linked_list_insert_node_at_front( linked_list_t* list, linked_list_node_t* node );
 
-mret_t linked_list_insert_node_at_rear( linked_list_t* list, linked_list_node_t* node );
+merr_t linked_list_insert_node_at_rear( linked_list_t* list, linked_list_node_t* node );
 
-mret_t linked_list_insert_node_before( linked_list_t* list, linked_list_node_t* reference_node, linked_list_node_t* node_to_insert );
+merr_t linked_list_insert_node_before( linked_list_t* list, linked_list_node_t* reference_node, linked_list_node_t* node_to_insert );
 
-mret_t linked_list_insert_node_after( linked_list_t* list, linked_list_node_t* reference_node, linked_list_node_t* node_to_insert );
+merr_t linked_list_insert_node_after( linked_list_t* list, linked_list_node_t* reference_node, linked_list_node_t* node_to_insert );
 
-mret_t linked_list_remove_node( linked_list_t* list, linked_list_node_t* node );
+merr_t linked_list_remove_node( linked_list_t* list, linked_list_node_t* node );
 
-mret_t linked_list_remove_node_from_front( linked_list_t* list, linked_list_node_t** removed_node );
+merr_t linked_list_remove_node_from_front( linked_list_t* list, linked_list_node_t** removed_node );
 
-mret_t linked_list_remove_node_from_rear( linked_list_t* list, linked_list_node_t** removed_node );
+merr_t linked_list_remove_node_from_rear( linked_list_t* list, linked_list_node_t** removed_node );
 
 
 

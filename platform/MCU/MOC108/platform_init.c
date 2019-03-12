@@ -56,7 +56,7 @@
 *               Function Declarations
 ******************************************************/
 
-extern mret_t host_platform_init( void );
+extern merr_t host_platform_init( void );
 extern void system_reload(void);
 /******************************************************
 *               Variables Definitions
@@ -117,7 +117,7 @@ void software_init_hook(void)
     software_init_hook_rtos();
 }
 
-mret_t stdio_hardfault( char* data, uint32_t size )
+merr_t stdio_hardfault( char* data, uint32_t size )
 {
   return kNoErr;
 }

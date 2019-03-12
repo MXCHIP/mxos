@@ -80,9 +80,9 @@ mos_worker_thread_id_t mxos_worker_thread;
 /* Entry point for user Application */
 extern int application_start( void );
 
-mret_t mxos_rtos_init( void )
+merr_t mxos_rtos_init( void )
 {
-    mret_t result = kNoErr;
+    merr_t result = kNoErr;
 
     rtos_log("Started MXOS RTOS interface for %s %s", RTOS_NAME, RTOS_VERSION );
 
@@ -104,9 +104,9 @@ mret_t mxos_rtos_init( void )
 }
 
 
-mret_t mxos_rtos_deinit( void )
+merr_t mxos_rtos_deinit( void )
 {
-    mret_t result = mos_worker_thread_delete( MXOS_HARDWARE_IO_WORKER_THREAD );
+    merr_t result = mos_worker_thread_delete( MXOS_HARDWARE_IO_WORKER_THREAD );
 
     if ( result == kNoErr )
     {
@@ -117,7 +117,7 @@ mret_t mxos_rtos_deinit( void )
 }
 
 
-mret_t mxos_rtos_delay_microseconds( uint32_t microseconds )
+merr_t mxos_rtos_delay_microseconds( uint32_t microseconds )
 {
     uint32_t current_time;
     uint32_t duration;
@@ -149,7 +149,7 @@ static void worker_thread_main( void *arg )
 }
 
 
-mret_t mos_worker_thread_new( mos_worker_thread_id_t* worker_thread, uint8_t priority, uint32_t stack_size, uint32_t event_queue_size )
+merr_t mos_worker_thread_new( mos_worker_thread_id_t* worker_thread, uint8_t priority, uint32_t stack_size, uint32_t event_queue_size )
 {
     memset( worker_thread, 0, sizeof( *worker_thread ) );
 
@@ -167,7 +167,7 @@ mret_t mos_worker_thread_new( mos_worker_thread_id_t* worker_thread, uint8_t pri
     return kNoErr;
 }
 
-mret_t mos_worker_thread_delete( mos_worker_thread_id_t* worker_thread )
+merr_t mos_worker_thread_delete( mos_worker_thread_id_t* worker_thread )
 {
     if ( mos_thread_delete( worker_thread->thread ) != kNoErr )
     {
@@ -182,7 +182,7 @@ mret_t mos_worker_thread_delete( mos_worker_thread_id_t* worker_thread )
     return kNoErr;
 }
 
-mret_t mxos_rtos_register_timed_event( mxos_timed_event_t* event_object, mos_worker_thread_id_t* worker_thread, event_handler_t function, uint32_t time_ms, void* arg )
+merr_t mxos_rtos_register_timed_event( mxos_timed_event_t* event_object, mos_worker_thread_id_t* worker_thread, event_handler_t function, uint32_t time_ms, void* arg )
 {
     if( worker_thread->thread == NULL )
         return kNotInitializedErr;
@@ -205,7 +205,7 @@ mret_t mxos_rtos_register_timed_event( mxos_timed_event_t* event_object, mos_wor
     return kNoErr;
 }
 
-mret_t mxos_rtos_deregister_timed_event( mxos_timed_event_t* event_object )
+merr_t mxos_rtos_deregister_timed_event( mxos_timed_event_t* event_object )
 {
     if ( mxos_rtos_deinit_timer( &event_object->timer ) != kNoErr )
     {
@@ -216,7 +216,7 @@ mret_t mxos_rtos_deregister_timed_event( mxos_timed_event_t* event_object )
     return kNoErr;
 }
 
-mret_t mxos_rtos_send_asynchronous_event( mos_worker_thread_id_t* worker_thread, event_handler_t function, void* arg )
+merr_t mxos_rtos_send_asynchronous_event( mos_worker_thread_id_t* worker_thread, event_handler_t function, void* arg )
 {
     mxos_event_message_t message;
 

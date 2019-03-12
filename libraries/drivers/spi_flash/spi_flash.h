@@ -78,7 +78,7 @@ int sflash_enter_dpmode( const sflash_handle_t* const handle );
  *
  * @param[in] handle            Handle structure that will be used for this sflash instance - allocated by caller.
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
 int deinit_sflash       ( /*@out@*/ sflash_handle_t* const handle);
 

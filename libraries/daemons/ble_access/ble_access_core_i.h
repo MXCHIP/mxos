@@ -188,15 +188,15 @@ typedef struct {
 /* 
  * Remote device list management 
  */
-extern mret_t ble_access_connect_list_init           (void);
-extern mret_t ble_access_connect_list_deinit         (void);
+extern merr_t ble_access_connect_list_init           (void);
+extern merr_t ble_access_connect_list_deinit         (void);
 
-extern mret_t ble_access_connect_list_add            (const mxos_bt_smart_device_t *remote_device, mxos_bool_t is_reported);
-extern mret_t ble_access_connect_list_get            (mxos_bt_smart_device_t **address, mxos_bool_t *reported);
-extern mret_t ble_access_connect_list_get_by_address (mxos_bt_smart_device_t **device, mxos_bool_t *reported, const mxos_bt_device_address_t address);
-extern mret_t ble_access_connect_list_find_by_address(const mxos_bt_device_address_t address);
-extern mret_t ble_access_connect_list_remove         (mxos_bt_smart_device_t* device);
-extern mret_t ble_access_connect_list_set_report     (const mxos_bt_smart_device_t *device, mxos_bool_t is_reported);
+extern merr_t ble_access_connect_list_add            (const mxos_bt_smart_device_t *remote_device, mxos_bool_t is_reported);
+extern merr_t ble_access_connect_list_get            (mxos_bt_smart_device_t **address, mxos_bool_t *reported);
+extern merr_t ble_access_connect_list_get_by_address (mxos_bt_smart_device_t **device, mxos_bool_t *reported, const mxos_bt_device_address_t address);
+extern merr_t ble_access_connect_list_find_by_address(const mxos_bt_device_address_t address);
+extern merr_t ble_access_connect_list_remove         (mxos_bt_smart_device_t* device);
+extern merr_t ble_access_connect_list_set_report     (const mxos_bt_smart_device_t *device, mxos_bool_t is_reported);
 
 /*
  * Utils function
@@ -204,11 +204,11 @@ extern mret_t ble_access_connect_list_set_report     (const mxos_bt_smart_device
 
 const char *print_request_str(uint8_t request);
 
-extern mret_t ble_access_get_manufactor_adv_data(uint8_t *eir_data,
+extern merr_t ble_access_get_manufactor_adv_data(uint8_t *eir_data,
                                                      uint8_t  eir_data_length,
                                                      ble_access_manufactor_data_t *manufactor_data);
 
-extern mret_t ble_access_check_adv_type         (const uint8_t *adv_data,
+extern merr_t ble_access_check_adv_type         (const uint8_t *adv_data,
                                                    uint8_t length,
                                                    uint8_t adv_type,
                                                    ble_access_manufactor_data_t *manu_data);
@@ -216,8 +216,8 @@ extern mret_t ble_access_check_adv_type         (const uint8_t *adv_data,
 extern void ble_access_set_scan_cfg               (mxos_bt_smart_scan_settings_t *scan_cfg, 
                                                    mxos_bool_t is_auto_scanning);
 
-extern mret_t ble_access_start_timer            (ble_access_device_t *dev, event_handler_t timer_event_handle, void *arg);
-extern mret_t ble_access_stop_timer             (ble_access_device_t *dev);
+extern merr_t ble_access_start_timer            (ble_access_device_t *dev, event_handler_t timer_event_handle, void *arg);
+extern merr_t ble_access_stop_timer             (ble_access_device_t *dev);
 
 /*
  * Local Devices Pool
@@ -229,7 +229,7 @@ extern void                 ble_access_release_device         (mxos_bool_t free,
 //extern ble_access_device_t *ble_access_find_device_by_socket  (const mxos_bt_smartbridge_socket_t *socket);
 extern ble_access_device_t *ble_access_find_device_by_address (const mxos_bt_device_address_t address);
 
-extern mret_t ble_access_create_worker_thread(void);
-extern mret_t ble_access_send_aync_event(event_handler_t event_handle, void *arg);
+extern merr_t ble_access_create_worker_thread(void);
+extern merr_t ble_access_send_aync_event(event_handler_t event_handle, void *arg);
 
 #endif /* __BLE_ACCESS_CORE_I_H__ */

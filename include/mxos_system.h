@@ -130,7 +130,7 @@ void* mxos_system_context_get_user_data( mxos_Context_t* const in_context );
   * @param  in_context: The address of the core data.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_system_context_restore( mxos_Context_t* const in_context );
+merr_t mxos_system_context_restore( mxos_Context_t* const in_context );
 
 /**
   * @brief  Application should give a default value for application's config data
@@ -147,11 +147,11 @@ void appRestoreDefault_callback(void * const user_config_data, uint32_t size);
   * @param  in_context: The address of the core data.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_system_context_update( mxos_Context_t* const in_context );
+merr_t mxos_system_context_update( mxos_Context_t* const in_context );
 
-mret_t mxos_system_para_read(void** info_ptr, int section, uint32_t offset, uint32_t size);
-mret_t mxos_system_para_write(const void* info_ptr, int section, uint32_t offset, uint32_t size);
-mret_t mxos_system_para_read_release( void* info_ptr );
+merr_t mxos_system_para_read(void** info_ptr, int section, uint32_t offset, uint32_t size);
+merr_t mxos_system_para_write(const void* info_ptr, int section, uint32_t offset, uint32_t size);
+merr_t mxos_system_para_read_release( void* info_ptr );
 
 /** @} */
 
@@ -166,7 +166,7 @@ mret_t mxos_system_para_read_release( void* info_ptr );
   * @param  ota_data_crc: the crc result of the new firmware 
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_ota_switch_to_new_fw(int ota_data_len, uint16_t ota_data_crc);
+merr_t mxos_ota_switch_to_new_fw(int ota_data_len, uint16_t ota_data_crc);
 
 /** @} */
 
@@ -200,21 +200,21 @@ typedef enum{
   * @param  in_context: The address of the core data.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_system_init( mxos_Context_t* const in_context );
+merr_t mxos_system_init( mxos_Context_t* const in_context );
 
 /**
   * @brief  Get IP, MAC, driver info for wlan interface
   * @param  status: The memory to store wlan status's address.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_system_wlan_get_status( mxos_system_status_wlan_t** status );
+merr_t mxos_system_wlan_get_status( mxos_system_status_wlan_t** status );
 
 /**
   * @brief  Start wlan configuration mode, EasyLink, SoftAP, Airkiss...
   *         according to macro: MXOS_WLAN_CONFIG_MODE
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_system_wlan_start_autoconf( void );
+merr_t mxos_system_wlan_start_autoconf( void );
 
 /**
   * @brief  Inform the application that EasyLink configuration will start
@@ -247,7 +247,7 @@ void mxos_system_delegate_config_recv_ssid ( char *ssid, char *key );
   * @param  userInfo: Authentication data string.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_system_delegate_config_recv_auth_data( char * userInfo );
+merr_t mxos_system_delegate_config_recv_auth_data( char * userInfo );
 
 /**
   * @brief  easylink timeout callback
@@ -296,14 +296,14 @@ void mxos_easylink_aws_delegate_recv_notify_msg(char *aws_notify_msg);
   * @param  inContext: MXOS system core data, initialized by @ref mxos_system_context_init
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_easylink_wac( mxos_Context_t * const inContext, mxos_bool_t enable );
+merr_t mxos_easylink_wac( mxos_Context_t * const inContext, mxos_bool_t enable );
 
 /**
   * @brief  Start wlan configuration mode: WPS, Wi-Fi protected setup
   * @param  inContext: MXOS system core data, initialized by @ref mxos_system_context_init
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_easylink_wps( mxos_Context_t * const inContext, mxos_bool_t enable );
+merr_t mxos_easylink_wps( mxos_Context_t * const inContext, mxos_bool_t enable );
 
 /**
   * @brief  Start wlan configuration mode: EasyLink protocol
@@ -311,7 +311,7 @@ mret_t mxos_easylink_wps( mxos_Context_t * const inContext, mxos_bool_t enable )
   * @param  enable: MXOS_TRUE to start and MXOS_FALSE to stop
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_easylink( mxos_Context_t * const in_context, mxos_bool_t enable );
+merr_t mxos_easylink( mxos_Context_t * const in_context, mxos_bool_t enable );
 
 /**
   * @brief  Start wlan configuration mode: EasyLink AWS protocol
@@ -319,7 +319,7 @@ mret_t mxos_easylink( mxos_Context_t * const in_context, mxos_bool_t enable );
   * @param  enable: MXOS_TRUE to start and MXOS_FALSE to stop
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enable );
+merr_t mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enable );
 
 /**
   * @brief  Start wlan configuration mode: User mode, setup a routine that monitor wlan
@@ -330,14 +330,14 @@ mret_t mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enable 
   * @param  enable: MXOS_TRUE to start and MXOS_FALSE to stop
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_easylink_usr( mxos_Context_t * const in_context, mxos_bool_t enable );
+merr_t mxos_easylink_usr( mxos_Context_t * const in_context, mxos_bool_t enable );
 
 /**
   * @brief  Tell EasyLink usr routine that wlan configuration is received.
   * @param  nwkpara: Wlan configurations
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_easylink_usr_save_result( network_InitTypeDef_st *nwkpara );
+merr_t mxos_easylink_usr_save_result( network_InitTypeDef_st *nwkpara );
 
 /**
   * @brief  Start wlan configuration mode: EasyLink softap protocol
@@ -345,7 +345,7 @@ mret_t mxos_easylink_usr_save_result( network_InitTypeDef_st *nwkpara );
   * @param  enable: MXOS_TRUE to start and MXOS_FALSE to stop
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_easylink_softap( mxos_Context_t * const in_context, mxos_bool_t enable );
+merr_t mxos_easylink_softap( mxos_Context_t * const in_context, mxos_bool_t enable );
 
 /**
   * @brief  Start wlan configuration mode: EasyLink monitor protocol. Developer should
@@ -355,7 +355,7 @@ mret_t mxos_easylink_softap( mxos_Context_t * const in_context, mxos_bool_t enab
   * @param  enable: MXOS_TRUE to start and MXOS_FALSE to stop
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_easylink_monitor( mxos_Context_t * const in_context, mxos_bool_t enable );
+merr_t mxos_easylink_monitor( mxos_Context_t * const in_context, mxos_bool_t enable );
 
 /**
   * @brief  Start wlan configuration mode: EasyLink monitor protocol with EasyLink compatible
@@ -363,7 +363,7 @@ mret_t mxos_easylink_monitor( mxos_Context_t * const in_context, mxos_bool_t ena
   * @param  enable: MXOS_TRUE to start and MXOS_FALSE to stop
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_easylink_monitor_with_easylink( mxos_Context_t * const in_context, mxos_bool_t enable );
+merr_t mxos_easylink_monitor_with_easylink( mxos_Context_t * const in_context, mxos_bool_t enable );
 
 /**
   * @brief  Tell EasyLink monitor routine that wlan configuration is received.
@@ -372,7 +372,7 @@ mret_t mxos_easylink_monitor_with_easylink( mxos_Context_t * const in_context, m
   * @param  nwkpara: Wlan configurations
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_easylink_monitor_save_result( network_InitTypeDef_st *nwkpara );
+merr_t mxos_easylink_monitor_save_result( network_InitTypeDef_st *nwkpara );
 
 /**
   * @brief  Tell EasyLink monitor routine that change wlan channel periodically
@@ -380,7 +380,7 @@ mret_t mxos_easylink_monitor_save_result( network_InitTypeDef_st *nwkpara );
   * @param  interval: Time internal channel is changed, unit: milliseconds
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_easylink_monitor_channel_walker( mxos_bool_t enable, uint32_t interval );
+merr_t mxos_easylink_monitor_channel_walker( mxos_bool_t enable, uint32_t interval );
 
 /**
   * @brief  Execute before wlan monitor mode will start
@@ -464,7 +464,7 @@ typedef struct _mxos_system_monitor_t
   *         if macro: MXOS_SYSTEM_MONITOR_ENABLE is defined  
   * @retval None
   */
-mret_t mxos_system_monitor_daemen_start( void );
+merr_t mxos_system_monitor_daemen_start( void );
 
 /**
   * @brief  Register a system monitor point
@@ -472,7 +472,7 @@ mret_t mxos_system_monitor_daemen_start( void );
   * @param  initial_permitted_delay: Longest permitted delay between checkins with the system monitor.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_system_monitor_register( mxos_system_monitor_t* system_monitor, uint32_t initial_permitted_delay );
+merr_t mxos_system_monitor_register( mxos_system_monitor_t* system_monitor, uint32_t initial_permitted_delay );
 
 /**
   * @brief  Perform a system monitor point checkin
@@ -480,7 +480,7 @@ mret_t mxos_system_monitor_register( mxos_system_monitor_t* system_monitor, uint
   * @param  permitted_delay: The next permitted delay on the next checkin with the system monitor.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_system_monitor_update ( mxos_system_monitor_t* system_monitor, uint32_t permitted_delay );
+merr_t mxos_system_monitor_update ( mxos_system_monitor_t* system_monitor, uint32_t permitted_delay );
 
 /** 
   *
@@ -500,7 +500,7 @@ mret_t mxos_system_monitor_update ( mxos_system_monitor_t* system_monitor, uint3
   * @param  in_context: The address of the core data.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_system_power_perform( mxos_Context_t* const in_context, mxos_system_state_t new_state );
+merr_t mxos_system_power_perform( mxos_Context_t* const in_context, mxos_system_state_t new_state );
 /** @} */
 
 /*****************************************************************************/
@@ -525,7 +525,7 @@ typedef enum{
   mxos_notify_TCP_CLIENT_CONNECTED,       /**< A tcp client has connected to TCP server, type: void (*function)(int fd, void* arg)*/
   mxos_notify_DNS_RESOLVE_COMPLETED,      /**< A DNS host address has resolved, type: void (*function)(uint8_t *hostname, uint32_t ip,  void* arg)*/
   mxos_notify_SYS_WILL_POWER_OFF,         /**< System power will be turned off, type: void (*function)(void* arg)*/
-  mxos_notify_WIFI_CONNECT_FAILED,        /**< A wlan connection attemption is failed, type: void join_fail(mret_t err, void* arg)*/
+  mxos_notify_WIFI_CONNECT_FAILED,        /**< A wlan connection attemption is failed, type: void join_fail(merr_t err, void* arg)*/
   mxos_notify_WIFI_SCAN_ADV_COMPLETED,    /**< A anvanced wlan scan is completed, type: void (*function)(ScanResult_adv *pApList, void* arg)*/
   mxos_notify_WIFI_Fatal_ERROR,           /**< A fatal error occured when communicating with wlan sub-system, type: void (*function)(void* arg)*/
   mxos_notify_Stack_Overflow_ERROR,       /**< A MXOS RTOS thread's stack is over-flowed, type: void (*function)(char *taskname, void* arg)*/
@@ -541,7 +541,7 @@ typedef enum{
   * @param  arg: The address of argument, which will be called by registered user function.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_system_notify_register( mxos_notify_types_t notify_type, void* functionAddress, void* arg );
+merr_t mxos_system_notify_register( mxos_notify_types_t notify_type, void* functionAddress, void* arg );
 
 /**
   * @brief  Remove a user function from a MXOS notification.
@@ -549,14 +549,14 @@ mret_t mxos_system_notify_register( mxos_notify_types_t notify_type, void* funct
   * @param  functionAddress: The address of user function.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_system_notify_remove( mxos_notify_types_t notify_type, void *functionAddress );
+merr_t mxos_system_notify_remove( mxos_notify_types_t notify_type, void *functionAddress );
 
 /**
   * @brief  Remove all user function from a MXOS notification.
   * @param  notify_type: The type of MXOS notification.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t mxos_system_notify_remove_all( mxos_notify_types_t notify_type);
+merr_t mxos_system_notify_remove_all( mxos_notify_types_t notify_type);
 
 
 /** @} */
@@ -575,13 +575,13 @@ mret_t mxos_system_notify_remove_all( mxos_notify_types_t notify_type);
   * @param  in_context: The address of the core data.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t config_server_start ( void );
+merr_t config_server_start ( void );
 
 /**
   * @brief  Stop local config server.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t config_server_stop ( void );
+merr_t config_server_stop ( void );
 
 /**
   * @brief  Inform the application that configuration data is received from 
@@ -616,7 +616,7 @@ void config_server_delegate_report( json_object *config_cell_list, mxos_Context_
   * @param  secectionArray: Generate a selection list for possible value, input NULL if not exist
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t config_server_create_string_cell   (json_object* config_cell_list, char* const name, char* const content, char* const privilege, json_object* secectionArray);
+merr_t config_server_create_string_cell   (json_object* config_cell_list, char* const name, char* const content, char* const privilege, json_object* secectionArray);
 
 /**
   * @brief  Add a cell UI holds a integer value. config_cell_list(1)<=config_cell(1).
@@ -628,7 +628,7 @@ mret_t config_server_create_string_cell   (json_object* config_cell_list, char* 
   * @param  secectionArray: Generate a selection list for possible value, input NULL if not exist
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t config_server_create_number_cell   (json_object* config_cell_list, char* const name, int content, char* const privilege, json_object* secectionArray);
+merr_t config_server_create_number_cell   (json_object* config_cell_list, char* const name, int content, char* const privilege, json_object* secectionArray);
 
 /**
   * @brief  Add a cell UI holds a float value. config_cell_list(1)<=config_cell(1).
@@ -640,7 +640,7 @@ mret_t config_server_create_number_cell   (json_object* config_cell_list, char* 
   * @param  secectionArray: Generate a selection list for possible value
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t config_server_create_float_cell    (json_object* config_cell_list, char* const name, float content, char* const privilege, json_object* secectionArray);
+merr_t config_server_create_float_cell    (json_object* config_cell_list, char* const name, float content, char* const privilege, json_object* secectionArray);
 
 /**
   * @brief  Add a cell UI holds a bool value. config_cell_list(1)<=config_cell(1).
@@ -652,7 +652,7 @@ mret_t config_server_create_float_cell    (json_object* config_cell_list, char* 
   * @param  secectionArray: Generate a selection list for possible value
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t config_server_create_bool_cell     (json_object* config_cell_list, char* const name, boolean content, char* const privilege);
+merr_t config_server_create_bool_cell     (json_object* config_cell_list, char* const name, boolean content, char* const privilege);
 
 /**
   * @brief  Add a cell UI holds a sub menu, config_cell_list(1)<=sub_menu_array(1).
@@ -661,7 +661,7 @@ mret_t config_server_create_bool_cell     (json_object* config_cell_list, char* 
   * @param  sub_menu_array: An array that buids a sub menu list.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t config_server_create_sub_menu_cell (json_object* config_cell_list, char* const name, json_object* sub_menu_array);
+merr_t config_server_create_sub_menu_cell (json_object* config_cell_list, char* const name, json_object* sub_menu_array);
 
 /**
   * @brief  Create a new config cell list to an exist menu. sub_menu_array(1)<=config_cell_list(n)
@@ -670,7 +670,7 @@ mret_t config_server_create_sub_menu_cell (json_object* config_cell_list, char* 
   * @param  config_cell_list: The config cell container.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-mret_t config_server_create_sector        (json_object* sub_menu_array, char* const name, json_object *config_cell_list);
+merr_t config_server_create_sector        (json_object* sub_menu_array, char* const name, json_object *config_cell_list);
 
 /** @} */
 
@@ -729,18 +729,18 @@ typedef struct
  *
  * @param[out] time : A pointer to the variable which will receive the time value
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_time_get_time( mxos_time_t* time );
+merr_t mxos_time_get_time( mxos_time_t* time );
 
 
 /** Set the current system tick time in milliseconds
  *
  * @param[in] time : the time value to set
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_time_set_time( const mxos_time_t* time );
+merr_t mxos_time_set_time( const mxos_time_t* time );
 
 
 /** Get the current UTC time in seconds
@@ -749,9 +749,9 @@ mret_t mxos_time_set_time( const mxos_time_t* time );
  *
  * @param[out] utc_time : A pointer to the variable which will receive the time value
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_time_get_utc_time( mxos_utc_time_t* utc_time );
+merr_t mxos_time_get_utc_time( mxos_utc_time_t* utc_time );
 
 
 /** Get the current UTC time in milliseconds
@@ -760,18 +760,18 @@ mret_t mxos_time_get_utc_time( mxos_utc_time_t* utc_time );
  *
  * @param[out] utc_time_ms : A pointer to the variable which will receive the time value
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_time_get_utc_time_ms( mxos_utc_time_ms_t* utc_time_ms );
+merr_t mxos_time_get_utc_time_ms( mxos_utc_time_ms_t* utc_time_ms );
 
 
 /** Set the current UTC time in milliseconds
  *
  * @param[in] utc_time_ms : the time value to set
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_time_set_utc_time_ms( const mxos_utc_time_ms_t* utc_time_ms );
+merr_t mxos_time_set_utc_time_ms( const mxos_utc_time_ms_t* utc_time_ms );
 
 
 /** Get the current UTC time in iso 8601 format e.g. "2012-07-02T17:12:34.567890Z"
@@ -781,9 +781,9 @@ mret_t mxos_time_set_utc_time_ms( const mxos_utc_time_ms_t* utc_time_ms );
  * @param[out] iso8601_time : A pointer to the structure variable that
  *                            will receive the time value
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_time_get_iso8601_time( iso8601_time_t* iso8601_time );
+merr_t mxos_time_get_iso8601_time( iso8601_time_t* iso8601_time );
 
 
 /** Convert a time from UTC milliseconds to iso 8601 format e.g. "2012-07-02T17:12:34.567890Z"
@@ -792,9 +792,9 @@ mret_t mxos_time_get_iso8601_time( iso8601_time_t* iso8601_time );
  * @param[out] iso8601_time : A pointer to the structure variable that
  *                            will receive the time value
  *
- * @return @ref mret_t
+ * @return @ref merr_t
  */
-mret_t mxos_time_convert_utc_ms_to_iso8601( mxos_utc_time_ms_t utc_time_ms, iso8601_time_t* iso8601_time );
+merr_t mxos_time_convert_utc_ms_to_iso8601( mxos_utc_time_ms_t utc_time_ms, iso8601_time_t* iso8601_time );
 
 
 #define MxosNanosendDelay mxos_nanosecond_delay

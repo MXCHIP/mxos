@@ -32,9 +32,9 @@ mxos_i2c_device_t ssd1106_i2c_device = {
   OLED_I2C_PORT, 0x3C, I2C_ADDRESS_WIDTH_7BIT, I2C_STANDARD_SPEED_MODE
 };
 
-mret_t ssd1106_i2c_bus_write(uint8_t reg_addr, uint8_t *reg_data, uint8_t cnt)
+merr_t ssd1106_i2c_bus_write(uint8_t reg_addr, uint8_t *reg_data, uint8_t cnt)
 {
-  mret_t err = kNoErr;
+  merr_t err = kNoErr;
   require_action_quiet(_oled_avalid == 1, exit, err = kNotFoundErr);
   mxos_i2c_message_t ssd1106_i2c_msg = {NULL, NULL, 0, 0, 10, false};
 

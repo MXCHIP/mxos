@@ -36,18 +36,18 @@ typedef struct _pair_list_in_flash_t {
 } pair_list_in_flash_t;
 
 /* Malloc a memory and */
-//mret_t HKReadPairList(pair_list_in_flash_t **pPairList);
+//merr_t HKReadPairList(pair_list_in_flash_t **pPairList);
 
 uint32_t HKPairInfoCount(void);
 
-mret_t HKPairInfoClear(void);
+merr_t HKPairInfoClear(void);
 
-mret_t HKPairInfoInsert(char controllerIdentifier[64], uint8_t controllerLTPK[32], bool admin);
+merr_t HKPairInfoInsert(char controllerIdentifier[64], uint8_t controllerLTPK[32], bool admin);
 
-mret_t HKPairInfoFindByName(char controllerIdentifier[64], uint8_t foundControllerLTPK[32], bool *isAdmin );
+merr_t HKPairInfoFindByName(char controllerIdentifier[64], uint8_t foundControllerLTPK[32], bool *isAdmin );
 
-mret_t HKPairInfoFindByIndex(uint32_t index, char controllerIdentifier[64], uint8_t foundControllerLTPK[32], bool *isAdmin );
+merr_t HKPairInfoFindByIndex(uint32_t index, char controllerIdentifier[64], uint8_t foundControllerLTPK[32], bool *isAdmin );
 
-mret_t HKPairInfoRemove(char controllerIdentifier[64]);
+merr_t HKPairInfoRemove(char controllerIdentifier[64]);
 
 

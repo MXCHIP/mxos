@@ -77,9 +77,9 @@ extern mxos_bt_gatt_status_t   smartbridge_gatt_callback                   ( mxo
  *               Function Definitions
  ******************************************************/
 
-mret_t smartbridge_bt_interface_initialize( void )
+merr_t smartbridge_bt_interface_initialize( void )
 {
-    mret_t result;
+    merr_t result;
 
     bt_smartbridge_log( "Initializing Bluetooth Interface..." );
 
@@ -102,7 +102,7 @@ mret_t smartbridge_bt_interface_initialize( void )
     return MXOS_BT_SUCCESS;
 }
 
-mret_t smartbridge_bt_interface_deinitialize( void )
+merr_t smartbridge_bt_interface_deinitialize( void )
 {
     bt_smartbridge_log( "Deinitializing Bluetooth Interface..." );
 
@@ -113,7 +113,7 @@ mret_t smartbridge_bt_interface_deinitialize( void )
     return MXOS_BT_SUCCESS;
 }
 
-mret_t smartbridge_bt_interface_discover_all_primary_services( uint16_t connection_handle, mxos_bt_smart_attribute_list_t* service_list )
+merr_t smartbridge_bt_interface_discover_all_primary_services( uint16_t connection_handle, mxos_bt_smart_attribute_list_t* service_list )
 {
     mxos_bt_gatt_discovery_param_t parameter;
     bt_smartbridge_log( "Discover all Primary Services" );
@@ -156,7 +156,7 @@ mret_t smartbridge_bt_interface_discover_all_primary_services( uint16_t connecti
     return smartbridge_subprocedure.result;
 }
 
-mret_t smartbridge_bt_interface_discover_primary_services_by_uuid( uint16_t connection_handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_list_t* service_list )
+merr_t smartbridge_bt_interface_discover_primary_services_by_uuid( uint16_t connection_handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_list_t* service_list )
 {
     mxos_bt_gatt_discovery_param_t parameter;
     bt_smartbridge_log( "Discover all Primary Services(By-UUID)" );
@@ -197,7 +197,7 @@ mret_t smartbridge_bt_interface_discover_primary_services_by_uuid( uint16_t conn
     return smartbridge_subprocedure.result;
 }
 
-mret_t smartbridge_bt_interface_find_included_services( uint16_t connection_handle, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* include_list )
+merr_t smartbridge_bt_interface_find_included_services( uint16_t connection_handle, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* include_list )
 {
 
     mxos_bt_gatt_discovery_param_t parameter;
@@ -239,7 +239,7 @@ mret_t smartbridge_bt_interface_find_included_services( uint16_t connection_hand
     return smartbridge_subprocedure.result;
 }
 
-mret_t smartbridge_bt_interface_discover_all_characteristics_in_a_service( uint16_t connection_handle, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* characteristic_list )
+merr_t smartbridge_bt_interface_discover_all_characteristics_in_a_service( uint16_t connection_handle, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* characteristic_list )
 {
     mxos_bt_gatt_discovery_param_t parameter;
 
@@ -282,7 +282,7 @@ mret_t smartbridge_bt_interface_discover_all_characteristics_in_a_service( uint1
     return smartbridge_subprocedure.result;
 }
 
-mret_t smartbridge_bt_interface_discover_characteristic_by_uuid( uint16_t connection_handle, const mxos_bt_uuid_t* uuid, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* characteristic_list )
+merr_t smartbridge_bt_interface_discover_characteristic_by_uuid( uint16_t connection_handle, const mxos_bt_uuid_t* uuid, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* characteristic_list )
 {
     UNUSED_PARAMETER(characteristic_list);
     mxos_bt_gatt_discovery_param_t parameter;
@@ -324,7 +324,7 @@ mret_t smartbridge_bt_interface_discover_characteristic_by_uuid( uint16_t connec
     return smartbridge_subprocedure.result;
 }
 
-mret_t smartbridge_bt_interface_discover_all_characteristic_descriptors( uint16_t connection_handle, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* no_value_descriptor_list )
+merr_t smartbridge_bt_interface_discover_all_characteristic_descriptors( uint16_t connection_handle, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* no_value_descriptor_list )
 {
 
     mxos_bt_gatt_discovery_param_t parameter;
@@ -368,7 +368,7 @@ mret_t smartbridge_bt_interface_discover_all_characteristic_descriptors( uint16_
 
 }
 
-mret_t smartbridge_bt_interface_read_characteristic_descriptor( uint16_t connection_handle, uint16_t handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_t** descriptor )
+merr_t smartbridge_bt_interface_read_characteristic_descriptor( uint16_t connection_handle, uint16_t handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_t** descriptor )
 {
     mxos_bt_gatt_read_param_t parameter;
     bt_smartbridge_log( "Read Characteristic Descriptor" );
@@ -414,7 +414,7 @@ mret_t smartbridge_bt_interface_read_characteristic_descriptor( uint16_t connect
     return smartbridge_subprocedure.result;
 }
 
-mret_t smartbridge_bt_interface_read_characteristic_value( uint16_t connection_handle, uint16_t handle, const mxos_bt_uuid_t* type, mxos_bt_smart_attribute_t** characteristic_value )
+merr_t smartbridge_bt_interface_read_characteristic_value( uint16_t connection_handle, uint16_t handle, const mxos_bt_uuid_t* type, mxos_bt_smart_attribute_t** characteristic_value )
 {
     mxos_bt_gatt_read_param_t parameter;
     bt_smartbridge_log( "Read Characteristic Value" );
@@ -459,7 +459,7 @@ mret_t smartbridge_bt_interface_read_characteristic_value( uint16_t connection_h
     return smartbridge_subprocedure.result;
 }
 
-mret_t smartbridge_bt_interface_read_characteristic_values_using_uuid( uint16_t connection_handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_list_t* characteristic_value_list )
+merr_t smartbridge_bt_interface_read_characteristic_values_using_uuid( uint16_t connection_handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_list_t* characteristic_value_list )
 {
     mxos_bt_gatt_read_param_t parameter;
     bt_smartbridge_log( "Read Characteristic Value" );
@@ -509,7 +509,7 @@ mret_t smartbridge_bt_interface_read_characteristic_values_using_uuid( uint16_t 
     return smartbridge_subprocedure.result;
 }
 
-mret_t smartbridge_bt_interface_read_long_characteristic_value( uint16_t connection_handle, uint16_t handle, const mxos_bt_uuid_t* type, mxos_bt_smart_attribute_t** characteristic_value )
+merr_t smartbridge_bt_interface_read_long_characteristic_value( uint16_t connection_handle, uint16_t handle, const mxos_bt_uuid_t* type, mxos_bt_smart_attribute_t** characteristic_value )
 {
     mxos_bt_gatt_read_param_t parameter;
     bt_smartbridge_log( "Read Long Characteristic Value" );
@@ -555,7 +555,7 @@ mret_t smartbridge_bt_interface_read_long_characteristic_value( uint16_t connect
     return smartbridge_subprocedure.result;
 }
 
-mret_t smartbridge_bt_interface_read_long_characteristic_descriptor( uint16_t connection_handle, uint16_t handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_t** descriptor )
+merr_t smartbridge_bt_interface_read_long_characteristic_descriptor( uint16_t connection_handle, uint16_t handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_t** descriptor )
 {
 
     UNUSED_PARAMETER(connection_handle);
@@ -565,7 +565,7 @@ mret_t smartbridge_bt_interface_read_long_characteristic_descriptor( uint16_t co
     return MXOS_BT_UNSUPPORTED;
 }
 
-mret_t smartbridge_bt_interface_write_characteristic_descriptor(  uint16_t connection_handle, mxos_bt_smart_attribute_t* attribute )
+merr_t smartbridge_bt_interface_write_characteristic_descriptor(  uint16_t connection_handle, mxos_bt_smart_attribute_t* attribute )
 {
     uint8_t                buffer[100] = { 0 };
     mxos_bt_gatt_value_t*  write_value = (mxos_bt_gatt_value_t*)buffer;
@@ -599,9 +599,9 @@ mret_t smartbridge_bt_interface_write_characteristic_descriptor(  uint16_t conne
     return smartbridge_subprocedure.result;
 }
 
-mret_t smartbridge_bt_interface_write_characteristic_value( uint16_t connection_handle, mxos_bt_smart_attribute_t* attribute )
+merr_t smartbridge_bt_interface_write_characteristic_value( uint16_t connection_handle, mxos_bt_smart_attribute_t* attribute )
 {
-    mret_t               err = kNoErr;
+    merr_t               err = kNoErr;
     uint8_t                buffer[100] = { 0 };
     mxos_bt_gatt_value_t*  write_value = (mxos_bt_gatt_value_t*)buffer;
 
@@ -630,14 +630,14 @@ exit:
     return err;
 }
 
-mret_t smartbridge_bt_interface_write_long_characteristic_value( uint16_t connection_handle, mxos_bt_smart_attribute_t* attribute )
+merr_t smartbridge_bt_interface_write_long_characteristic_value( uint16_t connection_handle, mxos_bt_smart_attribute_t* attribute )
 {
     UNUSED_PARAMETER(connection_handle);
     UNUSED_PARAMETER(attribute);
     return MXOS_BT_UNSUPPORTED;
 }
 
-mret_t smartbridge_bt_interface_write_long_characteristic_descriptor( uint16_t connection_handle, const mxos_bt_smart_attribute_t* descriptor )
+merr_t smartbridge_bt_interface_write_long_characteristic_descriptor( uint16_t connection_handle, const mxos_bt_smart_attribute_t* descriptor )
 {
 
     UNUSED_PARAMETER( connection_handle );
@@ -769,13 +769,13 @@ static void smartbridge_scan_result_callback( mxos_bt_ble_scan_results_t *p_scan
     }
 }
 
-mret_t smartbridge_bt_interface_set_attribute_timeout( uint32_t timeout_seconds )
+merr_t smartbridge_bt_interface_set_attribute_timeout( uint32_t timeout_seconds )
 {
     UNUSED_PARAMETER(timeout_seconds);
     return MXOS_BT_UNSUPPORTED;
 }
 
-mret_t smartbridge_bt_interface_update_background_connection_device( mxos_bool_t add, mxos_bt_device_address_t device_address )
+merr_t smartbridge_bt_interface_update_background_connection_device( mxos_bool_t add, mxos_bt_device_address_t device_address )
 {
     if ( device_address == 0 ) 
     {
@@ -794,9 +794,9 @@ mret_t smartbridge_bt_interface_update_background_connection_device( mxos_bool_t
     return kNoErr;
 }
 
-mret_t smartbridge_bt_interface_get_background_connection_device_size( uint8_t *size )
+merr_t smartbridge_bt_interface_get_background_connection_device_size( uint8_t *size )
 {
-    mret_t status = kNoErr;
+    merr_t status = kNoErr;
     if (TRUE != mxos_bt_ble_get_background_connection_device_size(size)) 
     {
         status = kGeneralErr;
@@ -804,9 +804,9 @@ mret_t smartbridge_bt_interface_get_background_connection_device_size( uint8_t *
     return status;
 }
 
-mret_t smartbridge_bt_interface_set_background_connection_type(mxos_bt_smartbridge_auto_connection_type_t type, const mxos_bt_smart_scan_settings_t* settings, mxos_bt_smartbridge_auto_connection_parms_cback_t p_select_cback)
+merr_t smartbridge_bt_interface_set_background_connection_type(mxos_bt_smartbridge_auto_connection_type_t type, const mxos_bt_smart_scan_settings_t* settings, mxos_bt_smartbridge_auto_connection_parms_cback_t p_select_cback)
 {
-    mret_t status = kNoErr;
+    merr_t status = kNoErr;
     mxos_bt_ble_conn_type_t conn_type;
     
     switch (type) 
@@ -838,12 +838,12 @@ mret_t smartbridge_bt_interface_set_background_connection_type(mxos_bt_smartbrid
     return status;
 }
 
-mret_t smartbridge_bt_interface_cancel_last_connect( mxos_bt_device_address_t address )
+merr_t smartbridge_bt_interface_cancel_last_connect( mxos_bt_device_address_t address )
 {
     return mxos_bt_gatt_cancel_connect( address, MXOS_TRUE );
 }
 
-mret_t smartbridge_bt_interface_set_connection_tx_power( uint16_t connection_handle, int8_t transmit_power_dbm )
+merr_t smartbridge_bt_interface_set_connection_tx_power( uint16_t connection_handle, int8_t transmit_power_dbm )
 {
     return MXOS_BT_UNSUPPORTED;
 }
@@ -862,7 +862,7 @@ mxos_bool_t smartbridge_bt_interface_is_scanning( void )
     return MXOS_FALSE;
 }
 
-mret_t smartbridge_bt_interface_set_max_concurrent_connections( uint8_t count )
+merr_t smartbridge_bt_interface_set_max_concurrent_connections( uint8_t count )
 {
     /* Just update the Stack's configuration settings */
     mxos_bt_cfg_settings.max_simultaneous_links = count;
@@ -870,7 +870,7 @@ mret_t smartbridge_bt_interface_set_max_concurrent_connections( uint8_t count )
     return MXOS_BT_SUCCESS;
 }
 
-mret_t smartbridge_bt_interface_stop_scan( )
+merr_t smartbridge_bt_interface_stop_scan( )
 {
     app_scan_complete_callback = NULL;
     app_scan_report_callback   = NULL;
@@ -878,7 +878,7 @@ mret_t smartbridge_bt_interface_stop_scan( )
     return mxos_bt_ble_scan( BTM_BLE_SCAN_TYPE_NONE, MXOS_TRUE, smartbridge_scan_result_callback );
 }
 
-mret_t smartbridge_bt_interface_start_scan( const mxos_bt_smart_scan_settings_t* settings, mxos_bt_smart_scan_complete_callback_t complete_callback, mxos_bt_smart_advertising_report_callback_t advertising_report_callback )
+merr_t smartbridge_bt_interface_start_scan( const mxos_bt_smart_scan_settings_t* settings, mxos_bt_smart_scan_complete_callback_t complete_callback, mxos_bt_smart_advertising_report_callback_t advertising_report_callback )
 {
     mxos_bool_t duplicate_filter_enabled = MXOS_FALSE;
 
@@ -899,7 +899,7 @@ mret_t smartbridge_bt_interface_start_scan( const mxos_bt_smart_scan_settings_t*
     return mxos_bt_ble_scan( BTM_BLE_SCAN_TYPE_HIGH_DUTY, duplicate_filter_enabled, smartbridge_scan_result_callback );
 }
 
-mret_t smartbridge_bt_interface_connect( const mxos_bt_smart_device_t* remote_device, const mxos_bt_smart_connection_settings_t* settings, mxos_bt_smartbridge_disconnection_callback_t disconnection_callback, mxos_bt_smartbridge_notification_callback_t notification_callback )
+merr_t smartbridge_bt_interface_connect( const mxos_bt_smart_device_t* remote_device, const mxos_bt_smart_connection_settings_t* settings, mxos_bt_smartbridge_disconnection_callback_t disconnection_callback, mxos_bt_smartbridge_notification_callback_t notification_callback )
 {
     mxos_bool_t gatt_connect_result;
 
@@ -920,7 +920,7 @@ mret_t smartbridge_bt_interface_connect( const mxos_bt_smart_device_t* remote_de
     return gatt_connect_result;
 }
 
-mret_t smartbridge_bt_interface_disconnect( uint16_t connection_handle )
+merr_t smartbridge_bt_interface_disconnect( uint16_t connection_handle )
 {
     /* First delete the previous scan result list */
     smartbridge_helper_delete_scan_result_list();
