@@ -46,14 +46,14 @@
 *               Function Definitions
 ******************************************************/
 
-OSStatus platform_pwm_init( const platform_pwm_t* pwm, uint32_t frequency, float duty_cycle )
+mret_t platform_pwm_init( const platform_pwm_t* pwm, uint32_t frequency, float duty_cycle )
 {
   TIM_TimeBaseInitTypeDef tim_time_base_structure;
   TIM_OCInitTypeDef       tim_oc_init_structure;
   RCC_ClocksTypeDef       rcc_clock_frequencies;
   uint16_t                period              = 0;
   float                   adjusted_duty_cycle = ( ( duty_cycle > 100.0f ) ? 100.0f : duty_cycle );
-  OSStatus                err                 = kNoErr;
+  mret_t                err                 = kNoErr;
   
   require_action_quiet( pwm != NULL, exit, err = kParamErr);
 
@@ -136,9 +136,9 @@ exit:
   return err;
 }
 
-OSStatus platform_pwm_start( const platform_pwm_t* pwm )
+mret_t platform_pwm_start( const platform_pwm_t* pwm )
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   
   platform_mcu_powersave_disable();
 
@@ -152,9 +152,9 @@ exit:
   return err;
 }
 
-OSStatus platform_pwm_stop( const platform_pwm_t* pwm )
+mret_t platform_pwm_stop( const platform_pwm_t* pwm )
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   
   platform_mcu_powersave_disable();
 

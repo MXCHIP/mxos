@@ -104,7 +104,7 @@ extern const platform_spi_t  wifi_spi;
  ******************************************************/
 
 extern void platform_wifi_spi_rx_dma_irq( void );
-extern OSStatus host_platform_deinit_wlan_powersave_clock( void );
+extern mret_t host_platform_deinit_wlan_powersave_clock( void );
 
 extern void set_wifi_chip_id(int type);
 

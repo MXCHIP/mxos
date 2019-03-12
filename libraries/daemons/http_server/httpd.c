@@ -48,7 +48,7 @@ typedef enum
 
 httpd_state_t httpd_state;
 
-static mxos_thread_t httpd_main_thread;
+static mos_thread_id_t httpd_main_thread;
 
 #define http_server_thread_stack_size 0x2000
 
@@ -138,7 +138,7 @@ static void httpd_suspend_thread( bool warn )
     }
     httpd_close_sockets( );
     httpd_state = HTTPD_THREAD_SUSPENDED;
-    mxos_rtos_suspend_thread( NULL );
+    mos_thread_suspend( NULL );
 }
 
 static int httpd_setup_new_socket( int port )
@@ -397,7 +397,7 @@ static void httpd_handle_client_connection( const fd_set *active_readfds )
     }
 }
 
-static void httpd_main( mxos_thread_arg_t arg )
+static void httpd_main( void * arg )
 {
     UNUSED_PARAMETER( arg );
     int status, max_sockfd = -1;
@@ -523,7 +523,7 @@ static int httpd_thread_cleanup( void )
                 httpd_d("Unable to stop thread. Force killing it.");
             /* No break here on purpose */
         case HTTPD_THREAD_SUSPENDED:
-            status = mxos_rtos_delete_thread( &httpd_main_thread );
+            status = mos_thread_delete( httpd_main_thread );
             if ( status != kNoErr )
                 httpd_d("Failed to delete thread.");
             status = httpd_close_sockets( );
@@ -552,11 +552,11 @@ int httpd_start( void )
         return kNoErr;
     }
 
-    status = mxos_rtos_create_thread( &httpd_main_thread, MXOS_APPLICATION_PRIORITY, "httpd",
+    httpd_main_thread = mos_thread_new( MXOS_APPLICATION_PRIORITY, "httpd",
                                       httpd_main,
-                                      http_server_thread_stack_size, 0 );
+                                      http_server_thread_stack_size, NULL );
 
-    if ( status != kNoErr )
+    if ( httpd_main_thread == NULL )
     {
         httpd_d("Failed to create httpd thread: %d", status);
         return -kInProgressErr;

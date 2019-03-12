@@ -48,7 +48,7 @@
 
 typedef mxos_semaphore_t  sys_sem_t;
 typedef mxos_queue_t      sys_mbox_t;
-typedef mxos_thread_t     sys_thread_t;
+typedef mos_thread_id_t     sys_thread_t;
 
 #endif /* __SYS_RTXC_H__ */
 

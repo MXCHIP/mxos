@@ -48,7 +48,7 @@ static void mxosNotify_WifiStatusHandler(WiFiEvent event,  void* inContext)
   }
 }
 
-static void station_monitro_func( mxos_thread_arg_t arg )
+static void station_monitro_func( void * arg )
 {
     while(1) {
         mxos_rtos_get_semaphore(&sem, MXOS_WAIT_FOREVER);
@@ -82,7 +82,7 @@ static void station_monitro_func( mxos_thread_arg_t arg )
         }
     }
 
-    mxos_rtos_delete_thread(NULL);
+    mos_thread_delete(NULL);
 }
 
 /* Start a softap if station is disconnected more than trigger_seconds.
@@ -103,8 +103,8 @@ int mxos_station_status_monitor(char *ssid, char*key, int trigger_seconds)
     strncpy(softap_key, key, 64);
     softap_wait_seconds = trigger_seconds;
     
-    mxos_rtos_create_thread(NULL, MXOS_APPLICATION_PRIORITY, "station monitor",
-        station_monitro_func, 1024, 0);
+    mos_thread_new( MXOS_APPLICATION_PRIORITY, "station monitor",
+        station_monitro_func, 1024, NULL);
 exit:
     return err;
 }

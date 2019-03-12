@@ -60,13 +60,13 @@ static const uint16_t adc_sampling_cycle[] =
  ******************************************************/
 
 
-OSStatus platform_adc_init( const platform_adc_t* adc, uint32_t sample_cycle )
+mret_t platform_adc_init( const platform_adc_t* adc, uint32_t sample_cycle )
 {
     GPIO_InitTypeDef      gpio_init_structure;
     ADC_InitTypeDef       adc_init_structure;
     ADC_CommonInitTypeDef adc_common_init_structure;
     uint8_t     a;
-    OSStatus    err = kNoErr;
+    mret_t    err = kNoErr;
 
     platform_mcu_powersave_disable();
 
@@ -118,9 +118,9 @@ exit:
     return err;
 }
 
-OSStatus platform_adc_take_sample( const platform_adc_t* adc, uint16_t* output )
+mret_t platform_adc_take_sample( const platform_adc_t* adc, uint16_t* output )
 {
-    OSStatus    err = kNoErr;
+    mret_t    err = kNoErr;
 
     platform_mcu_powersave_disable();
 
@@ -147,7 +147,7 @@ uint16_t platform_adc_get_bit_range( const platform_adc_t* adc )
     return 0xFFF;
 }
 
-OSStatus platform_adc_take_sample_stream( const platform_adc_t* adc, void* buffer, uint16_t buffer_length )
+mret_t platform_adc_take_sample_stream( const platform_adc_t* adc, void* buffer, uint16_t buffer_length )
 {
     UNUSED_PARAMETER(adc);
     UNUSED_PARAMETER(buffer);
@@ -156,7 +156,7 @@ OSStatus platform_adc_take_sample_stream( const platform_adc_t* adc, void* buffe
     return kNotPreparedErr;
 }
 
-OSStatus platform_adc_deinit( const platform_adc_t* adc )
+mret_t platform_adc_deinit( const platform_adc_t* adc )
 {
     UNUSED_PARAMETER(adc);
     platform_log("unimplemented");

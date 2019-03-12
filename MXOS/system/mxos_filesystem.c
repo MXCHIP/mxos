@@ -66,8 +66,8 @@ static uint32_t total_mounted_index = 0;
  *               Static Function Declarations
  ******************************************************/
 
-static OSStatus mxos_filesystem_add_mounted_device ( mxos_filesystem_t* fs_handle, const char* mounted_name);
-static OSStatus mxos_filesystem_del_mounted_device ( mxos_filesystem_t* fs_handle );
+static mret_t mxos_filesystem_add_mounted_device ( mxos_filesystem_t* fs_handle, const char* mounted_name);
+static mret_t mxos_filesystem_del_mounted_device ( mxos_filesystem_t* fs_handle );
 
 /******************************************************
  *               Variable Definitions
@@ -78,7 +78,7 @@ static OSStatus mxos_filesystem_del_mounted_device ( mxos_filesystem_t* fs_handl
  *               Function Definitions
  ******************************************************/
 
-OSStatus mxos_filesystem_init ( void )
+mret_t mxos_filesystem_init ( void )
 {
     if ( mxos_filesystem_inited == true )
     {
@@ -98,7 +98,7 @@ OSStatus mxos_filesystem_init ( void )
     return kNoErr;
 }
 
-static OSStatus mxos_filesystem_add_mounted_device ( mxos_filesystem_t* fs_handle, const char* mounted_name)
+static mret_t mxos_filesystem_add_mounted_device ( mxos_filesystem_t* fs_handle, const char* mounted_name)
 {
     uint32_t i;
 
@@ -157,7 +157,7 @@ static OSStatus mxos_filesystem_add_mounted_device ( mxos_filesystem_t* fs_handl
     return kNoErr;
 }
 
-static OSStatus mxos_filesystem_del_mounted_device ( mxos_filesystem_t* fs_handle )
+static mret_t mxos_filesystem_del_mounted_device ( mxos_filesystem_t* fs_handle )
 {
     mxos_bool_t is_handle_found = MXOS_FALSE;
     uint32_t shift_up_num = 0;
@@ -212,9 +212,9 @@ static OSStatus mxos_filesystem_del_mounted_device ( mxos_filesystem_t* fs_handl
     return kNoErr;
 }
 
-OSStatus mxos_filesystem_mount ( mxos_block_device_t* device, mxos_filesystem_handle_type_t fs_type, mxos_filesystem_t* fs_handle_out, const char* mounted_name )
+mret_t mxos_filesystem_mount ( mxos_block_device_t* device, mxos_filesystem_handle_type_t fs_type, mxos_filesystem_t* fs_handle_out, const char* mounted_name )
 {
-    OSStatus result;
+    mret_t result;
 
     /* These ifdefs ensure that the drivers are only pulled in if they are used */
     switch ( fs_type )
@@ -251,9 +251,9 @@ OSStatus mxos_filesystem_mount ( mxos_block_device_t* device, mxos_filesystem_ha
     return result;
 }
 
-OSStatus mxos_filesystem_unmount ( mxos_filesystem_t* fs_handle )
+mret_t mxos_filesystem_unmount ( mxos_filesystem_t* fs_handle )
 {
-    OSStatus result;
+    mret_t result;
 
     result = fs_handle->driver->unmount( fs_handle );
     if ( result == kNoErr )
@@ -283,49 +283,49 @@ mxos_filesystem_t* mxos_filesystem_retrieve_mounted_fs_handle ( const char* moun
     return fs_handle_get;
 }
 
-OSStatus mxos_filesystem_file_open ( mxos_filesystem_t* fs_handle, mxos_file_t* file_handle_out, const char* filename, mxos_filesystem_open_mode_t mode )
+mret_t mxos_filesystem_file_open ( mxos_filesystem_t* fs_handle, mxos_file_t* file_handle_out, const char* filename, mxos_filesystem_open_mode_t mode )
 {
     file_handle_out->filesystem = fs_handle;
     file_handle_out->driver     = fs_handle->driver;
     return fs_handle->driver->file_open( fs_handle, file_handle_out, filename, mode );
 }
 
-OSStatus mxos_filesystem_file_get_details ( mxos_filesystem_t* fs_handle, const char* filename, mxos_dir_entry_details_t* details_out )
+mret_t mxos_filesystem_file_get_details ( mxos_filesystem_t* fs_handle, const char* filename, mxos_dir_entry_details_t* details_out )
 {
     return fs_handle->driver->file_get_details( fs_handle, filename, details_out );
 }
 
-OSStatus mxos_filesystem_file_close ( mxos_file_t* file_handle )
+mret_t mxos_filesystem_file_close ( mxos_file_t* file_handle )
 {
     return file_handle->driver->file_close( file_handle );
 }
 
-OSStatus mxos_filesystem_file_delete ( mxos_filesystem_t* fs_handle, const char* filename )
+mret_t mxos_filesystem_file_delete ( mxos_filesystem_t* fs_handle, const char* filename )
 {
     return fs_handle->driver->file_delete( fs_handle, filename );
 }
 
-OSStatus mxos_filesystem_file_seek ( mxos_file_t* file_handle, int64_t offset, mxos_filesystem_seek_type_t whence )
+mret_t mxos_filesystem_file_seek ( mxos_file_t* file_handle, int64_t offset, mxos_filesystem_seek_type_t whence )
 {
     return file_handle->driver->file_seek( file_handle, offset, whence );
 }
 
-OSStatus mxos_filesystem_file_tell ( mxos_file_t* file_handle, uint64_t* location )
+mret_t mxos_filesystem_file_tell ( mxos_file_t* file_handle, uint64_t* location )
 {
     return file_handle->driver->file_tell( file_handle, location );
 }
 
-OSStatus mxos_filesystem_file_read ( mxos_file_t* file_handle, void* data, uint64_t bytes_to_read, uint64_t* returned_bytes_count )
+mret_t mxos_filesystem_file_read ( mxos_file_t* file_handle, void* data, uint64_t bytes_to_read, uint64_t* returned_bytes_count )
 {
     return file_handle->driver->file_read( file_handle, data, bytes_to_read, returned_bytes_count );
 }
 
-OSStatus mxos_filesystem_file_write( mxos_file_t* file_handle, const void* data, uint64_t bytes_to_write, uint64_t* written_bytes_count )
+mret_t mxos_filesystem_file_write( mxos_file_t* file_handle, const void* data, uint64_t bytes_to_write, uint64_t* written_bytes_count )
 {
     return file_handle->driver->file_write( file_handle, data, bytes_to_write, written_bytes_count );
 }
 
-OSStatus mxos_filesystem_file_flush ( mxos_file_t* file_handle )
+mret_t mxos_filesystem_file_flush ( mxos_file_t* file_handle )
 {
     return file_handle->driver->file_flush( file_handle );
 }
@@ -336,7 +336,7 @@ int mxos_filesystem_file_end_reached ( mxos_file_t* file_handle )
     return file_handle->driver->file_end_reached( file_handle );
 }
 
-OSStatus mxos_filesystem_dir_open ( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_handle, const char* dir_name )
+mret_t mxos_filesystem_dir_open ( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_handle, const char* dir_name )
 {
     dir_handle->filesystem = fs_handle;
     dir_handle->driver     = fs_handle->driver;
@@ -349,12 +349,12 @@ OSStatus mxos_filesystem_dir_open ( mxos_filesystem_t* fs_handle, mxos_dir_t* di
     return fs_handle->driver->dir_open( fs_handle, dir_handle, dir_name );
 }
 
-OSStatus mxos_filesystem_dir_close ( mxos_dir_t* dir_handle )
+mret_t mxos_filesystem_dir_close ( mxos_dir_t* dir_handle )
 {
     return dir_handle->driver->dir_close( dir_handle );
 }
 
-OSStatus mxos_filesystem_dir_read( mxos_dir_t* dir_handle, char* name_buffer, unsigned int name_buffer_length, mxos_dir_entry_type_t* type, mxos_dir_entry_details_t* details )
+mret_t mxos_filesystem_dir_read( mxos_dir_t* dir_handle, char* name_buffer, unsigned int name_buffer_length, mxos_dir_entry_type_t* type, mxos_dir_entry_details_t* details )
 {
     return dir_handle->driver->dir_read( dir_handle, name_buffer, name_buffer_length, type, details );
 }
@@ -364,17 +364,17 @@ int mxos_filesystem_dir_end_reached ( mxos_dir_t* dir_handle )
     return dir_handle->driver->dir_end_reached( dir_handle );
 }
 
-OSStatus mxos_filesystem_dir_rewind ( mxos_dir_t* dir_handle )
+mret_t mxos_filesystem_dir_rewind ( mxos_dir_t* dir_handle )
 {
     return dir_handle->driver->dir_rewind( dir_handle );
 }
 
-OSStatus mxos_filesystem_dir_create( mxos_filesystem_t* fs_handle, const char* directory_name )
+mret_t mxos_filesystem_dir_create( mxos_filesystem_t* fs_handle, const char* directory_name )
 {
     return fs_handle->driver->dir_create( fs_handle, directory_name );
 }
 
-OSStatus mxos_filesystem_format( mxos_block_device_t* device, mxos_filesystem_handle_type_t fs_type )
+mret_t mxos_filesystem_format( mxos_block_device_t* device, mxos_filesystem_handle_type_t fs_type )
 {
     mxos_filesystem_driver_t* driver;
     /* These ifdefs ensure that the drivers are only pulled in if they are used */
@@ -404,12 +404,12 @@ OSStatus mxos_filesystem_format( mxos_block_device_t* device, mxos_filesystem_ha
     return driver->format( device );
 }
 
-OSStatus mxos_filesystem_get_info( mxos_filesystem_t* fs_handle,mxos_filesystem_info* info,char* mounted_name )
+mret_t mxos_filesystem_get_info( mxos_filesystem_t* fs_handle,mxos_filesystem_info* info,char* mounted_name )
 {
     return fs_handle->driver->get_info( info,mounted_name );
 }
 
-OSStatus mxos_filesystem_scan_files( mxos_filesystem_t* fs_handle, char* mounted_name, mxos_scan_file_handle arg )
+mret_t mxos_filesystem_scan_files( mxos_filesystem_t* fs_handle, char* mounted_name, mxos_scan_file_handle arg )
 {
     return fs_handle->driver->scan_files( mounted_name, arg );
 }

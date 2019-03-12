@@ -459,7 +459,7 @@ typedef struct _USBH_HandleTypeDef
   
 #if (USBH_USE_OS == 1)
   mxos_queue_t          os_event;   
-  mxos_thread_t         thread; 
+  mos_thread_id_t         thread; 
 #endif  
   
 } USBH_HandleTypeDef;

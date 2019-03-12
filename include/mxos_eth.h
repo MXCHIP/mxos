@@ -71,7 +71,7 @@ const char *mxos_eth_get_mac_address(void);
  *
  *  @return kNoErr
  */
-OSStatus mxos_eth_bringup(bool dhcp, const char *ip, const char *netmask, const char *gw);
+mret_t mxos_eth_bringup(bool dhcp, const char *ip, const char *netmask, const char *gw);
 
 /**
  *  @brief  Power on ethernet mac and PHY

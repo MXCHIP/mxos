@@ -34,10 +34,10 @@ static int gpio_result = 0;
 *               Function Definitions
 ******************************************************/
 
-static OSStatus _gpio_test_one( const qc_test_gpio_pair_t* gpio_test_pair )
+static mret_t _gpio_test_one( const qc_test_gpio_pair_t* gpio_test_pair )
 {
     mxos_gpio_t in, out;
-    OSStatus err = kGeneralErr;
+    mret_t err = kGeneralErr;
 
     in  = gpio_test_pair->input_pin;
     out = gpio_test_pair->output_pin;
@@ -64,10 +64,10 @@ EXIT:
     return err;
 }
 
-static OSStatus _gpio_test( const qc_test_gpio_pair_t* gpio_test_pair, int num )
+static mret_t _gpio_test( const qc_test_gpio_pair_t* gpio_test_pair, int num )
 {
     int i;
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
     mxos_gpio_t in, out;
     qc_test_gpio_pair_t * gpio_test = (qc_test_gpio_pair_t *)gpio_test_pair;
     

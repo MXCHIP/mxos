@@ -67,9 +67,9 @@ extern "C" {
  *                            Primary Services from
  * @param[out] service_list : pointer that will receive the list of Primary Services
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus mxos_bt_smartbridge_gatt_discover_all_primary_services( const mxos_bt_smartbridge_socket_t* socket, mxos_bt_smart_attribute_list_t* service_list );
+mret_t mxos_bt_smartbridge_gatt_discover_all_primary_services( const mxos_bt_smartbridge_socket_t* socket, mxos_bt_smart_attribute_list_t* service_list );
 
 
 /** Discover Primary Services by the given UUID
@@ -79,9 +79,9 @@ OSStatus mxos_bt_smartbridge_gatt_discover_all_primary_services( const mxos_bt_s
  * @param[in]  uuid         : unique identifier of the Primary Services to discover
  * @param[out] service_list : pointer that will receive the list of Primary Services
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus mxos_bt_smartbridge_gatt_discover_primary_services_by_uuid( const mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_list_t* service_list );
+mret_t mxos_bt_smartbridge_gatt_discover_primary_services_by_uuid( const mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_list_t* service_list );
 
 
 /** Find Included Services
@@ -94,9 +94,9 @@ OSStatus mxos_bt_smartbridge_gatt_discover_primary_services_by_uuid( const mxos_
  *                            find the Included Services from
  * @param[out] include_list : pointer that will receive the list of Included Services
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus mxos_bt_smartbridge_gatt_find_included_services( const mxos_bt_smartbridge_socket_t* socket, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* include_list );
+mret_t mxos_bt_smartbridge_gatt_find_included_services( const mxos_bt_smartbridge_socket_t* socket, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* include_list );
 
 
 /** Discover All Characterisitics in a Service
@@ -109,9 +109,9 @@ OSStatus mxos_bt_smartbridge_gatt_find_included_services( const mxos_bt_smartbri
  *                                   discover Characteristics from
  * @param[out] characteristic_list : pointer that will receive the list of Characteristics
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus mxos_bt_smartbridge_gatt_discover_all_characteristics_in_a_service( const mxos_bt_smartbridge_socket_t* socket, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* characteristic_list );
+mret_t mxos_bt_smartbridge_gatt_discover_all_characteristics_in_a_service( const mxos_bt_smartbridge_socket_t* socket, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* characteristic_list );
 
 
 /** Discover Characterisitics by the given UUID
@@ -125,9 +125,9 @@ OSStatus mxos_bt_smartbridge_gatt_discover_all_characteristics_in_a_service( con
  *                                   discover Characteristics from
  * @param[out] characteristic_list : pointer that will receive the list of Characteristics
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus mxos_bt_smartbridge_gatt_discover_characteristic_by_uuid( const mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* characteristic_list );
+mret_t mxos_bt_smartbridge_gatt_discover_characteristic_by_uuid( const mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* characteristic_list );
 
 
 /** Discover Attribute Handle and Type of all Characteristic Descriptors
@@ -144,9 +144,9 @@ OSStatus mxos_bt_smartbridge_gatt_discover_characteristic_by_uuid( const mxos_bt
  *                               discover Characteristic Descriptors from
  * @param[out] descriptor_list : pointer that will receive the list of Descriptors
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus mxos_bt_smartbridge_gatt_discover_handle_and_type_of_all_characteristic_descriptors( const mxos_bt_smartbridge_socket_t* socket, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* descriptor_list );
+mret_t mxos_bt_smartbridge_gatt_discover_handle_and_type_of_all_characteristic_descriptors( const mxos_bt_smartbridge_socket_t* socket, uint16_t start_handle, uint16_t end_handle, mxos_bt_smart_attribute_list_t* descriptor_list );
 
 
 /** Read Characteristic Descriptor
@@ -157,9 +157,9 @@ OSStatus mxos_bt_smartbridge_gatt_discover_handle_and_type_of_all_characteristic
  * @param[in]  uuid       : unique identifier of the Characteristic Descriptor to read
  * @param[out] descriptor : pointer that will receive the Descriptors
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus mxos_bt_smartbridge_gatt_read_characteristic_descriptor( const mxos_bt_smartbridge_socket_t* socket, uint16_t handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_t** descriptor );
+mret_t mxos_bt_smartbridge_gatt_read_characteristic_descriptor( const mxos_bt_smartbridge_socket_t* socket, uint16_t handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_t** descriptor );
 
 
 /** Read Long Characteristic Descriptor
@@ -170,9 +170,9 @@ OSStatus mxos_bt_smartbridge_gatt_read_characteristic_descriptor( const mxos_bt_
  * @param[in]  uuid       : unique identifier of the Characteristic Descriptor to read
  * @param[out] descriptor : pointer that will receive the Descriptors
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus mxos_bt_smartbridge_gatt_read_long_characteristic_descriptor( const mxos_bt_smartbridge_socket_t* socket, uint16_t handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_t** descriptor );
+mret_t mxos_bt_smartbridge_gatt_read_long_characteristic_descriptor( const mxos_bt_smartbridge_socket_t* socket, uint16_t handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_t** descriptor );
 
 
 /** Write Characteristic Descriptor
@@ -181,9 +181,9 @@ OSStatus mxos_bt_smartbridge_gatt_read_long_characteristic_descriptor( const mxo
  *                         Characteristic Descriptor to
  * @param[in] descriptor : Characteristic Descriptor to write
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus mxos_bt_smartbridge_gatt_write_characteristic_descriptor( const mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_attribute_t* descriptor );
+mret_t mxos_bt_smartbridge_gatt_write_characteristic_descriptor( const mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_attribute_t* descriptor );
 
 
 /** Write Long Characteristic Descriptor
@@ -192,9 +192,9 @@ OSStatus mxos_bt_smartbridge_gatt_write_characteristic_descriptor( const mxos_bt
  *                         Characteristic Descriptor to
  * @param[in] descriptor : Characteristic Descriptor to write
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus mxos_bt_smartbridge_gatt_write_long_characteristic_descriptor( const mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_attribute_t* descriptor );
+mret_t mxos_bt_smartbridge_gatt_write_long_characteristic_descriptor( const mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_attribute_t* descriptor );
 
 
 /** Read Characteristic Value
@@ -205,9 +205,9 @@ OSStatus mxos_bt_smartbridge_gatt_write_long_characteristic_descriptor( const mx
  * @param[in]  uuid                 : unique identifier of the Characteristic Value to read
  * @param[out] characteristic_value : pointer that will receive the Characteristic Value
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus mxos_bt_smartbridge_gatt_read_characteristic_value( const mxos_bt_smartbridge_socket_t* socket, uint16_t handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_t** characteristic_value );
+mret_t mxos_bt_smartbridge_gatt_read_characteristic_value( const mxos_bt_smartbridge_socket_t* socket, uint16_t handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_t** characteristic_value );
 
 
 /** Read Characteristic Value
@@ -217,9 +217,9 @@ OSStatus mxos_bt_smartbridge_gatt_read_characteristic_value( const mxos_bt_smart
  * @param[in]  uuid                      : unique identifier of the Characteristic Values to read
  * @param[out] characteristic_value_list : pointer that will receive the Characteristic Value list
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus mxos_bt_smartbridge_gatt_read_characteristic_values_using_uuid( const mxos_bt_smartbridge_socket_t* socket,  const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_list_t* characteristic_value_list );
+mret_t mxos_bt_smartbridge_gatt_read_characteristic_values_using_uuid( const mxos_bt_smartbridge_socket_t* socket,  const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_list_t* characteristic_value_list );
 
 
 /** Read Long Characteristic Value
@@ -230,9 +230,9 @@ OSStatus mxos_bt_smartbridge_gatt_read_characteristic_values_using_uuid( const m
  * @param[in]  uuid                 : unique identifier of the Characteristic Value to read
  * @param[out] characteristic_value : pointer that will receive the Characteristic Value
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus mxos_bt_smartbridge_gatt_read_long_characteristic_value( const mxos_bt_smartbridge_socket_t* socket, uint16_t handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_t** characteristic_value );
+mret_t mxos_bt_smartbridge_gatt_read_long_characteristic_value( const mxos_bt_smartbridge_socket_t* socket, uint16_t handle, const mxos_bt_uuid_t* uuid, mxos_bt_smart_attribute_t** characteristic_value );
 
 
 /** Write Characteristic Value
@@ -241,9 +241,9 @@ OSStatus mxos_bt_smartbridge_gatt_read_long_characteristic_value( const mxos_bt_
  *                                    Characteristic Value to
  * @param[in]  characteristic_value : Characteristic Value to write
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus mxos_bt_smartbridge_gatt_write_characteristic_value( const mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_attribute_t* characteristic_value );
+mret_t mxos_bt_smartbridge_gatt_write_characteristic_value( const mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_attribute_t* characteristic_value );
 
 
 /** Write Long Characteristic Value
@@ -252,9 +252,9 @@ OSStatus mxos_bt_smartbridge_gatt_write_characteristic_value( const mxos_bt_smar
  *                                   Characteristic Value to
  * @param[in] characteristic_value : Characteristic Value to write
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus mxos_bt_smartbridge_gatt_write_long_characteristic_value( const mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_attribute_t* characteristic_value );
+mret_t mxos_bt_smartbridge_gatt_write_long_characteristic_value( const mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_attribute_t* characteristic_value );
 
 
 /** @} */

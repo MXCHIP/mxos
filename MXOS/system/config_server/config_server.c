@@ -40,20 +40,20 @@ typedef struct _configContext_t{
   CRC16_Context crc16_contex;
 } configContext_t;
 
-extern OSStatus     ConfigIncommingJsonMessage( int fd, const char *input, bool *need_reboot, mxos_Context_t * const inContext );
+extern mret_t     ConfigIncommingJsonMessage( int fd, const char *input, bool *need_reboot, mxos_Context_t * const inContext );
 extern json_object* ConfigCreateReportJsonMessage( mxos_Context_t * const inContext );
 
 static void localConfiglistener_thread(uint32_t inContext);
 static void localConfig_thread(uint32_t inFd);
-static OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system_context_t * const inContext);
-static OSStatus onReceivedData(struct _HTTPHeader_t * httpHeader, uint32_t pos, uint8_t * data, size_t len, void * userContext );
+static mret_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system_context_t * const inContext);
+static mret_t onReceivedData(struct _HTTPHeader_t * httpHeader, uint32_t pos, uint8_t * data, size_t len, void * userContext );
 static void onClearHTTPHeader(struct _HTTPHeader_t * httpHeader, void * userContext );
 static config_server_uap_configured_cb _uap_configured_cb = NULL;
 
 bool is_config_server_established = false;
 
 /* Defined in uAP config mode */
-extern OSStatus ConfigIncommingJsonMessageUAP( int fd, const uint8_t *input, size_t size, system_context_t * const inContext );
+extern mret_t ConfigIncommingJsonMessageUAP( int fd, const uint8_t *input, size_t size, system_context_t * const inContext );
 extern system_context_t* sys_context;
 
 static mxos_semaphore_t close_listener_sem = NULL, close_client_sem[ MAX_TCP_CLIENT_PER_SERVER ] = { NULL };
@@ -79,10 +79,10 @@ void config_server_set_uap_cb( config_server_uap_configured_cb callback )
     _uap_configured_cb = callback;
 }
 
-OSStatus config_server_start ( void )
+mret_t config_server_start ( void )
 {
   int i = 0;
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   
   require( sys_context, exit );
   
@@ -94,8 +94,8 @@ OSStatus config_server_start ( void )
   close_listener_sem = NULL;
   for (; i < MAX_TCP_CLIENT_PER_SERVER; i++)
     close_client_sem[ i ] = NULL;
-  err = mxos_rtos_create_thread( NULL, MXOS_APPLICATION_PRIORITY, "Config Server", localConfiglistener_thread, STACK_SIZE_LOCAL_CONFIG_SERVER_THREAD, 0 );
-  require_noerr(err, exit);
+  require_action(mos_thread_new( MXOS_APPLICATION_PRIORITY, "Config Server", localConfiglistener_thread, 
+  STACK_SIZE_LOCAL_CONFIG_SERVER_THREAD, NULL ) != NULL, exit, err = kGeneralErr);
   
   mxos_thread_msleep(200);
 
@@ -103,10 +103,10 @@ exit:
   return err;
 }
 
-OSStatus config_server_stop( void )
+mret_t config_server_stop( void )
 {
   int i = 0;
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
 
   if( !is_config_server_established )
     return kNoErr;
@@ -126,9 +126,9 @@ OSStatus config_server_stop( void )
   return err;
 }
 
-void localConfiglistener_thread( mxos_thread_arg_t arg)
+void localConfiglistener_thread( void * arg)
 {
-  OSStatus err = kUnknownErr;
+  mret_t err = kUnknownErr;
   int j;
   struct sockaddr_in addr;
   int sockaddr_t_size;
@@ -174,7 +174,7 @@ void localConfiglistener_thread( mxos_thread_arg_t arg)
       if ( IsValidSocket( j ) ) {
         strcpy(ip_address,inet_ntoa( addr.sin_addr ));
         system_log("Config Client %s:%d connected, fd: %d", ip_address, addr.sin_port, j);
-        if(kNoErr !=  mxos_rtos_create_thread(NULL, MXOS_APPLICATION_PRIORITY, "Config Clients", localConfig_thread, STACK_SIZE_LOCAL_CONFIG_CLIENT_THREAD, (mxos_thread_arg_t)j) )
+        if(NULL ==  mos_thread_new( MXOS_APPLICATION_PRIORITY, "Config Clients", localConfig_thread, STACK_SIZE_LOCAL_CONFIG_CLIENT_THREAD, (void *)j) )
           SocketClose(&j);
       }
     }
@@ -189,13 +189,13 @@ exit:
     system_log("Exit: Config listener exit with err = %d", err);
     SocketClose( &localConfiglistener_fd );
     is_config_server_established = false;
-    mxos_rtos_delete_thread(NULL);
+    mos_thread_delete(NULL);
     return;
 }
 
 void localConfig_thread(uint32_t inFd)
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   int clientFd = (int)inFd;
   int clientFdIsSet;
   int close_sem_index;
@@ -211,7 +211,7 @@ void localConfig_thread(uint32_t inFd)
   }
 
   if( close_sem_index == MAX_TCP_CLIENT_PER_SERVER){
-    mxos_rtos_delete_thread(NULL);
+    mos_thread_delete(NULL);
     return;
   }
 
@@ -300,13 +300,13 @@ exit:
   };
 
   HTTPHeaderDestory( &httpHeader );
-  mxos_rtos_delete_thread(NULL);
+  mos_thread_delete(NULL);
   return;
 }
 
-static OSStatus onReceivedData(struct _HTTPHeader_t * inHeader, uint32_t inPos, uint8_t * inData, size_t inLen, void * inUserContext )
+static mret_t onReceivedData(struct _HTTPHeader_t * inHeader, uint32_t inPos, uint8_t * inData, size_t inLen, void * inUserContext )
 {
-  OSStatus err = kUnknownErr;
+  mret_t err = kUnknownErr;
   const char *    value;
   size_t          valueSize;
   configContext_t *context = (configContext_t *)inUserContext;
@@ -362,9 +362,9 @@ static void onClearHTTPHeader(struct _HTTPHeader_t * inHeader, void * inUserCont
   }
  }
 
-OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system_context_t * const inContext)
+mret_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system_context_t * const inContext)
 {
-  OSStatus err = kUnknownErr;
+  mret_t err = kUnknownErr;
   const char *  json_str;
   uint8_t *httpResponse = NULL;
   size_t httpResponseLen = 0;
@@ -601,7 +601,7 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
       require_noerr( err, exit );
 
       if ( _uap_configured_cb ) {
-          mxos_rtos_delay_milliseconds( 1000 );
+          mos_thread_delay( 1000 );
           _uap_configured_cb( easylinkIndentifier );
       }
   }

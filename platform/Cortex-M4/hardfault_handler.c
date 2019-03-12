@@ -91,7 +91,7 @@ void HardFaultException_handler( uint32_t MSP, uint32_t PSP, uint32_t LR );
 /******************************************************
  *               Function Definitions
  ******************************************************/
-OSStatus stdio_hardfault( char* data, uint32_t size );
+mret_t stdio_hardfault( char* data, uint32_t size );
 
 #ifdef DEBUG_HARDFAULT
 

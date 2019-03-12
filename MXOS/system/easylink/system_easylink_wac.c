@@ -28,9 +28,9 @@
 
 const char *eaProtocols[1] = {EA_PROTOCOL};
 
-OSStatus mxos_easylink_wac( mxos_Context_t * const inContext, mxos_bool_t enable )
+mret_t mxos_easylink_wac( mxos_Context_t * const inContext, mxos_bool_t enable )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
     IPStatusTypedef para;
     uint8_t major_ver, minor_ver, revision;
     

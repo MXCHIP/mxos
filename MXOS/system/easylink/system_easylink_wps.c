@@ -33,7 +33,7 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
 static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t * const inContext );
 
 /* Thread perform wps and connect to wlan */
-static void easylink_wps_thread( uint32_t inContext ); /* Perform easylink and connect to wlan */
+static void easylink_wps_thread( void *inContext ); /* Perform easylink and connect to wlan */
 
 /******************************************************
  *               Variables Definitions
@@ -42,7 +42,7 @@ static mxos_semaphore_t easylink_sem;         /**< Used to suspend thread while 
 static mxos_semaphore_t easylink_connect_sem; /**< Used to suspend thread while connection. */
 static bool easylink_success = false;         /**< true: connect to wlan, false: start soft ap mode or roll back to previous settings */
 static uint32_t easylinkIndentifier = 0;      /**< Unique for an easylink instance. */
-static mxos_thread_t easylink_wps_thread_handler = NULL;
+static mos_thread_id_t easylink_wps_thread_handler = NULL;
 static bool easylink_thread_force_exit = false;
 
 static mxos_config_source_t source = CONFIG_BY_NONE;
@@ -82,7 +82,7 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
 /* MXOS callback when EasyLink is finished step 1, return SSID and KEY */
 static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t * const inContext )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action_string( nwkpara, exit, err = kTimeoutErr, "EasyLink Timeout or terminated" );
 
@@ -122,9 +122,9 @@ static void easylink_remove_bonjour_from_sta(void)
     easylink_remove_bonjour(INTERFACE_STA);
 }
 
-static void easylink_wps_thread( uint32_t arg )
+static void easylink_wps_thread( void *arg )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
     system_context_t *context = (system_context_t *) arg;
 
     easylinkIndentifier = 0x0;
@@ -210,12 +210,12 @@ exit:
     mxos_rtos_deinit_semaphore( &easylink_sem );
     mxos_rtos_deinit_semaphore( &easylink_connect_sem );
     easylink_wps_thread_handler = NULL;
-    mxos_rtos_delete_thread( NULL );
+    mos_thread_delete( NULL );
 }
 
-OSStatus mxos_easylink_wps( mxos_Context_t * const in_context, mxos_bool_t enable )
+mret_t mxos_easylink_wps( mxos_Context_t * const in_context, mxos_bool_t enable )
 {
-    OSStatus err = kUnknownErr;
+    mret_t err = kUnknownErr;
 
     require_action( in_context, exit, err = kNotPreparedErr );
 
@@ -226,16 +226,16 @@ OSStatus mxos_easylink_wps( mxos_Context_t * const in_context, mxos_bool_t enabl
         system_log("WPS processing, force stop..");
         easylink_thread_force_exit = true;
         mxos_rtos_thread_force_awake( &easylink_wps_thread_handler );
-        mxos_rtos_thread_join( &easylink_wps_thread_handler );
+        mos_thread_join( easylink_wps_thread_handler );
     }
 
     if ( enable == MXOS_TRUE ) {
-        err = mxos_rtos_create_thread( &easylink_wps_thread_handler, MXOS_APPLICATION_PRIORITY, "WPS", easylink_wps_thread,
-                                       0x1000, (mxos_thread_arg_t) in_context );
-        require_noerr_string( err, exit, "ERROR: Unable to start the WPS thread." );
+        easylink_wps_thread_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "WPS", easylink_wps_thread,
+                                       0x1000, (void *) in_context );
+        require_action_string( easylink_wps_thread_handler != NULL, exit, err = kGeneralErr, "ERROR: Unable to start the WPS thread." );
 
         /* Make sure easylink is already running, and waiting for sem trigger */
-        mxos_rtos_delay_milliseconds( 100 );
+        mos_thread_delay( 100 );
     }
 
     exit:

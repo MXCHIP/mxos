@@ -21,7 +21,7 @@
 #include "wlan_platform_common.h"
 
 /* Used to give a 32k clock to EMW1062 wifi rf module */
-OSStatus host_platform_init_wlan_powersave_clock( void )
+mret_t host_platform_init_wlan_powersave_clock( void )
 {
 #if defined ( MXOS_USE_WIFI_32K_CLOCK_MCO ) && defined ( MXOS_USE_WIFI_32K_PIN )
     platform_gpio_set_alternate_function( wifi_control_pins[WIFI_PIN_32K_CLK].port, wifi_control_pins[WIFI_PIN_32K_CLK].pin_number, GPIO_OType_PP, GPIO_PuPd_NOPULL, GPIO_AF_MCO );

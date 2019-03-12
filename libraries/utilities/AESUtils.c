@@ -52,14 +52,14 @@ void AES_cbc_encrypt(const unsigned char *in, unsigned char *out,
 //  AES_CTR_Init
 //===========================================================================================================================
 
-OSStatus
+mret_t
     AES_CTR_Init( 
         AES_CTR_Context *   inContext, 
         const uint8_t       inKey[ kAES_CTR_Size ], 
         const uint8_t       inNonce[ kAES_CTR_Size ] )
 {
 #if( AES_UTILS_USE_COMMON_CRYPTO )
-    OSStatus        err;
+    mret_t        err;
     
     inContext->cryptor = NULL;
     err = CCCryptorCreate( kCCEncrypt, kCCAlgorithmAES128, kCCOptionECBMode, inKey, kAES_CTR_Size, NULL, 
@@ -105,9 +105,9 @@ static inline void AES_CTR_Increment( uint8_t *inCounter )
 //  AES_CTR_Update
 //===========================================================================================================================
 
-OSStatus    AES_CTR_Update( AES_CTR_Context *inContext, const void *inSrc, size_t inLen, void *inDst )
+mret_t    AES_CTR_Update( AES_CTR_Context *inContext, const void *inSrc, size_t inLen, void *inDst )
 {
-    OSStatus            err;
+    mret_t            err;
     const uint8_t *     src;
     uint8_t *           dst;
     uint8_t *           buf;
@@ -222,7 +222,7 @@ void    AES_CTR_Final( AES_CTR_Context *inContext )
 //  AES_CBCFrame_Init
 //===========================================================================================================================
 
-OSStatus
+mret_t
     AES_CBCFrame_Init( 
         AES_CBCFrame_Context *  inContext, 
         const uint8_t           inKey[ kAES_CBCFrame_Size ], 
@@ -230,7 +230,7 @@ OSStatus
         Boolean                 inEncrypt )
 {
 #if( AES_UTILS_USE_COMMON_CRYPTO )
-    OSStatus        err;
+    mret_t        err;
     
     inContext->cryptor = NULL;
     err = CCCryptorCreate( inEncrypt ? kCCEncrypt : kCCDecrypt, kCCAlgorithmAES128, 0, inKey, kAES_CTR_Size, 
@@ -262,9 +262,9 @@ OSStatus
 //  AES_CBCFrame_Update
 //===========================================================================================================================
 
-OSStatus    AES_CBCFrame_Update( AES_CBCFrame_Context *inContext, const void *inSrc, size_t inSrcLen, void *inDst )
+mret_t    AES_CBCFrame_Update( AES_CBCFrame_Context *inContext, const void *inSrc, size_t inSrcLen, void *inDst )
 {
-    OSStatus            err;
+    mret_t            err;
     const uint8_t *     src;
     const uint8_t *     end;
     uint8_t *           dst;
@@ -324,7 +324,7 @@ exit:
 //  AES_CBCFrame_Update2
 //===========================================================================================================================
 
-OSStatus
+mret_t
     AES_CBCFrame_Update2( 
         AES_CBCFrame_Context *  inContext, 
         const void *            inSrc1, 
@@ -338,7 +338,7 @@ OSStatus
     const uint8_t *     src2 = (const uint8_t *) inSrc2;
     const uint8_t *     end2 = src2 + inLen2;
     uint8_t *           dst  = (uint8_t *) inDst;
-    OSStatus            err;
+    mret_t            err;
     size_t              len;
     size_t              i;
 #if( !AES_UTILS_USE_COMMON_CRYPTO )
@@ -541,10 +541,10 @@ void AES_cbc_encrypt(const unsigned char *in, unsigned char *out,
 //  AES_ECB_Init
 //===========================================================================================================================
 
-OSStatus    AES_ECB_Init( AES_ECB_Context *inContext, uint32_t inMode, const uint8_t inKey[ kAES_ECB_Size ] )
+mret_t    AES_ECB_Init( AES_ECB_Context *inContext, uint32_t inMode, const uint8_t inKey[ kAES_ECB_Size ] )
 {
 #if( AES_UTILS_USE_COMMON_CRYPTO )
-    OSStatus        err;
+    mret_t        err;
     
     inContext->cryptor = NULL;
     err = CCCryptorCreate( inMode, kCCAlgorithmAES128, kCCOptionECBMode, inKey, kAES_ECB_Size, NULL, &inContext->cryptor );
@@ -573,9 +573,9 @@ OSStatus    AES_ECB_Init( AES_ECB_Context *inContext, uint32_t inMode, const uin
 //  AES_ECB_Update
 //===========================================================================================================================
 
-OSStatus    AES_ECB_Update( AES_ECB_Context *inContext, const void *inSrc, size_t inLen, void *inDst )
+mret_t    AES_ECB_Update( AES_ECB_Context *inContext, const void *inSrc, size_t inLen, void *inDst )
 {
-    OSStatus            err;
+    mret_t            err;
     const uint8_t *     src;
     uint8_t *           dst;
     size_t              n;
@@ -640,13 +640,13 @@ void    AES_ECB_Final( AES_ECB_Context *inContext )
 //  AES_GCM_Init
 //===========================================================================================================================
 
-OSStatus
+mret_t
     AES_GCM_Init( 
         AES_GCM_Context *   inContext, 
         const uint8_t       inKey[ kAES_CGM_Size ], 
         const uint8_t       inNonce[ kAES_CGM_Size ] )
 {
-    OSStatus        err;
+    mret_t        err;
     
 #if( AES_UTILS_HAS_COMMON_CRYPTO_GCM )
     err = CCCryptorCreateWithMode( kCCEncrypt, kCCModeGCM, kCCAlgorithmAES128, ccNoPadding, NULL, 
@@ -686,10 +686,10 @@ void    AES_GCM_Final( AES_GCM_Context *inContext )
 //===========================================================================================================================
 
 #if( AES_UTILS_HAS_COMMON_CRYPTO_GCM )
-OSStatus    AES_GCM_InitMessage( AES_GCM_Context *inContext, const uint8_t inNonce[ kAES_CGM_Size ] )
+mret_t    AES_GCM_InitMessage( AES_GCM_Context *inContext, const uint8_t inNonce[ kAES_CGM_Size ] )
 {
     CCCryptorRef const      cryptor = inContext->cryptor;
-    OSStatus                err;
+    mret_t                err;
     
     err = CCCryptorGCMReset( cryptor );
     require_noerr( err, exit );
@@ -706,9 +706,9 @@ exit:
     return( err );
 }
 #elif( AES_UTILS_HAS_GLADMAN_GCM )
-OSStatus    AES_GCM_InitMessage( AES_GCM_Context *inContext, const uint8_t inNonce[ kAES_CGM_Size ] )
+mret_t    AES_GCM_InitMessage( AES_GCM_Context *inContext, const uint8_t inNonce[ kAES_CGM_Size ] )
 {
-    OSStatus        err;
+    mret_t        err;
     
     if( inNonce == kAES_CGM_Nonce_Auto )
     {
@@ -728,9 +728,9 @@ exit:
 //===========================================================================================================================
 
 #if( AES_UTILS_HAS_COMMON_CRYPTO_GCM )
-OSStatus    AES_GCM_FinalizeMessage( AES_GCM_Context *inContext, uint8_t outAuthTag[ kAES_CGM_Size ] )
+mret_t    AES_GCM_FinalizeMessage( AES_GCM_Context *inContext, uint8_t outAuthTag[ kAES_CGM_Size ] )
 {
-    OSStatus        err;
+    mret_t        err;
     size_t          len;
     
     len = kAES_CGM_Size;
@@ -742,9 +742,9 @@ exit:
     return( err );
 }
 #elif( AES_UTILS_HAS_GLADMAN_GCM )
-OSStatus    AES_GCM_FinalizeMessage( AES_GCM_Context *inContext, uint8_t outAuthTag[ kAES_CGM_Size ] )
+mret_t    AES_GCM_FinalizeMessage( AES_GCM_Context *inContext, uint8_t outAuthTag[ kAES_CGM_Size ] )
 {
-    OSStatus        err;
+    mret_t        err;
     
     err = gcm_compute_tag( outAuthTag, kAES_CGM_Size, &inContext->ctx );
     require_noerr( err, exit );
@@ -759,9 +759,9 @@ exit:
 //===========================================================================================================================
 
 #if( AES_UTILS_HAS_COMMON_CRYPTO_GCM )
-OSStatus    AES_GCM_VerifyMessage( AES_GCM_Context *inContext, const uint8_t inAuthTag[ kAES_CGM_Size ] )
+mret_t    AES_GCM_VerifyMessage( AES_GCM_Context *inContext, const uint8_t inAuthTag[ kAES_CGM_Size ] )
 {
-    OSStatus        err;
+    mret_t        err;
     size_t          len;
     uint8_t         authTag[ kAES_CGM_Size ];
     
@@ -775,9 +775,9 @@ exit:
     return( err );
 }
 #elif( AES_UTILS_HAS_GLADMAN_GCM )
-OSStatus    AES_GCM_VerifyMessage( AES_GCM_Context *inContext, const uint8_t inAuthTag[ kAES_CGM_Size ] )
+mret_t    AES_GCM_VerifyMessage( AES_GCM_Context *inContext, const uint8_t inAuthTag[ kAES_CGM_Size ] )
 {
-    OSStatus        err;
+    mret_t        err;
     uint8_t         authTag[ kAES_CGM_Size ];
     
     err = gcm_compute_tag( authTag, kAES_CGM_Size, &inContext->ctx );
@@ -793,9 +793,9 @@ exit:
 //  AES_GCM_AddAAD
 //===========================================================================================================================
 
-OSStatus    AES_GCM_AddAAD( AES_GCM_Context *inContext, const void *inPtr, size_t inLen )
+mret_t    AES_GCM_AddAAD( AES_GCM_Context *inContext, const void *inPtr, size_t inLen )
 {
-    OSStatus        err;
+    mret_t        err;
     
 #if( AES_UTILS_HAS_COMMON_CRYPTO_GCM )
     err = CCCryptorGCMaddAAD( inContext->cryptor, inPtr, inLen );
@@ -816,9 +816,9 @@ exit:
 //===========================================================================================================================
 
 #if( AES_UTILS_HAS_COMMON_CRYPTO_GCM )
-OSStatus    AES_GCM_Encrypt( AES_GCM_Context *inContext, const void *inSrc, size_t inLen, void *inDst )
+mret_t    AES_GCM_Encrypt( AES_GCM_Context *inContext, const void *inSrc, size_t inLen, void *inDst )
 {
-    OSStatus        err;
+    mret_t        err;
     
     err = CCCryptorGCMEncrypt( inContext->cryptor, inSrc, inLen, inDst );
     require_noerr( err, exit );
@@ -827,9 +827,9 @@ exit:
     return( err );
 }
 #elif( AES_UTILS_HAS_GLADMAN_GCM )
-OSStatus    AES_GCM_Encrypt( AES_GCM_Context *inContext, const void *inSrc, size_t inLen, void *inDst )
+mret_t    AES_GCM_Encrypt( AES_GCM_Context *inContext, const void *inSrc, size_t inLen, void *inDst )
 {
-    OSStatus        err;
+    mret_t        err;
     
     err = gcm_encrypt( inDst, inSrc, inLen, &inContext->ctx );
     require_noerr( err, exit );
@@ -844,9 +844,9 @@ exit:
 //===========================================================================================================================
 
 #if( AES_UTILS_HAS_COMMON_CRYPTO_GCM )
-OSStatus    AES_GCM_Decrypt( AES_GCM_Context *inContext, const void *inSrc, size_t inLen, void *inDst )
+mret_t    AES_GCM_Decrypt( AES_GCM_Context *inContext, const void *inSrc, size_t inLen, void *inDst )
 {
-    OSStatus        err;
+    mret_t        err;
     
     err = CCCryptorGCMDecrypt( inContext->cryptor, inSrc, inLen, inDst );
     require_noerr( err, exit );
@@ -855,9 +855,9 @@ exit:
     return( err );
 }
 #elif( AES_UTILS_HAS_GLADMAN_GCM )
-OSStatus    AES_GCM_Decrypt( AES_GCM_Context *inContext, const void *inSrc, size_t inLen, void *inDst )
+mret_t    AES_GCM_Decrypt( AES_GCM_Context *inContext, const void *inSrc, size_t inLen, void *inDst )
 {
-    OSStatus        err;
+    mret_t        err;
     
     err = gcm_decrypt( inDst, inSrc, inLen, &inContext->ctx );
     require_noerr( err, exit );

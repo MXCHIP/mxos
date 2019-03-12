@@ -222,17 +222,17 @@ void tftp_ota(void)
  *****************************************************/
 mxos_semaphore_t force_ota_sem;
 
-static void force_thread(mxos_thread_arg_t arg){
+static void force_thread(void * arg){
     extern void tftp_ota();
     tftp_ota();
 }
 
-OSStatus start_force_ota()
+mret_t start_force_ota()
 {
-   OSStatus err;
+   mret_t err;
 
-   err =  mxos_rtos_create_thread( NULL, MXOS_APPLICATION_PRIORITY, "Force OTA", force_thread, 0x1000,0 );
-   require_noerr_action( err, exit, fota_log("ERROR: Unable to start the  force ota thread.") );
+   require_action_string( mos_thread_new( MXOS_APPLICATION_PRIORITY, "Force OTA", force_thread, 0x1000, NULL ) != NULL, 
+   exit, err = kGeneralErr, "ERROR: Unable to start the  force ota thread." );
 
    exit:
            return err;
@@ -256,9 +256,9 @@ static void mxosNotify_ApListCallback(ScanResult *pApList, mxos_Context_t * cons
     }
 }
 
-OSStatus start_forceota_check()
+mret_t start_forceota_check()
 {
-	OSStatus err = kNoErr;
+	mret_t err = kNoErr;
 	if((mxos_system_context_get( )->mxosSystemConfig.reserved & FORCE_OTA_SUEECSS)==0)
 	{
 		#define FORCE_OTA_AP "MXOS_OTA_AP"

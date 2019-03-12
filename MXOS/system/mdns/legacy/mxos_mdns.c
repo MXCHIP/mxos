@@ -82,12 +82,12 @@ static uint16_t dns_read_uint16( dns_message_iterator_t* iter );
 static void dns_skip_name( dns_message_iterator_t* iter );
 static void dns_write_name( dns_message_iterator_t* iter, const char* src );
 
-static OSStatus start_bonjour_service(void);
+static mret_t start_bonjour_service(void);
 
 static mxos_mutex_t bonjour_mutex = NULL;
 static mxos_semaphore_t update_state_sem = NULL;
 static int update_state_fd = 0;
-static mxos_thread_t mfi_bonjour_thread_handler;
+static mos_thread_id_t mfi_bonjour_thread_handler;
 static void _bonjour_thread(uint32_t arg);
 
 
@@ -550,7 +550,7 @@ static int find_empty_record ( void )
   return insert_index;
 }
 
-static mxos_thread_t _bonjour_announce_handler = NULL;
+static mos_thread_id_t _bonjour_announce_handler = NULL;
 
 void _bonjour_send_anounce_thread(uint32_t arg)
 {
@@ -576,7 +576,7 @@ void _bonjour_send_anounce_thread(uint32_t arg)
   
 exit:
   _bonjour_announce_handler = NULL;
-  mxos_rtos_delete_thread( NULL );
+  mos_thread_delete( NULL );
   return;
 }
 
@@ -602,10 +602,10 @@ static void _clean_record_resource( dns_sd_service_record_t *record )
 }
 
 
-OSStatus mdns_add_record( mdns_init_t init, WiFi_Interface interface, uint32_t time_to_live )
+mret_t mdns_add_record( mdns_init_t init, WiFi_Interface interface, uint32_t time_to_live )
 {
   int len;
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   uint32_t insert_index = 0xFF;
 
   if( bonjour_instance == false ){
@@ -647,7 +647,7 @@ OSStatus mdns_add_record( mdns_init_t init, WiFi_Interface interface, uint32_t t
   available_services[insert_index].ttl = time_to_live;
   
   if( _bonjour_announce_handler == NULL)
-    mxos_rtos_create_thread( &_bonjour_announce_handler, MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, 0 );
+    _bonjour_announce_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, NULL );
 
   mxos_rtos_unlock_mutex( &bonjour_mutex );
 
@@ -673,7 +673,7 @@ void mdns_update_txt_record( char *service_name, WiFi_Interface interface, char 
   available_services[insert_index].count_down = available_services[insert_index].count_down_max;
 
   if( _bonjour_announce_handler == NULL)
-    mxos_rtos_create_thread( &_bonjour_announce_handler, MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, 0 );
+    _bonjour_announce_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, NULL );
 
   mxos_rtos_unlock_mutex( &bonjour_mutex );
 }
@@ -710,7 +710,7 @@ void mdns_suspend_record( char *service_name, WiFi_Interface interface, bool wil
     goto exit;
 
   if( _bonjour_announce_handler == NULL)
-    mxos_rtos_create_thread( &_bonjour_announce_handler, MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, 0 );
+    _bonjour_announce_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, NULL );
 
 exit:
   mxos_rtos_unlock_mutex( &bonjour_mutex );
@@ -736,7 +736,7 @@ void mdns_resume_record( char *service_name, WiFi_Interface interface )
     goto exit;
 
   if( _bonjour_announce_handler == NULL)
-    mxos_rtos_create_thread( &_bonjour_announce_handler, MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, 0 );
+    _bonjour_announce_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, NULL );
 
 exit:
   mxos_rtos_unlock_mutex( &bonjour_mutex );
@@ -840,9 +840,9 @@ void BonjourNotify_SYSWillPoerOffHandler( void *arg )
 
 uint8_t *buf = NULL;
 
-static OSStatus start_bonjour_service(void)
+static mret_t start_bonjour_service(void)
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   ip_mreq mreq_opt;
 
 #if MXOS_CONFIG_IPV6
@@ -899,8 +899,8 @@ static OSStatus start_bonjour_service(void)
   err = mxos_system_notify_register( mxos_notify_SYS_WILL_POWER_OFF, (void *)BonjourNotify_SYSWillPoerOffHandler, NULL );
   require_noerr( err, exit );
 
-  err = mxos_rtos_create_thread(&mfi_bonjour_thread_handler, MXOS_APPLICATION_PRIORITY, "Bonjour", _bonjour_thread, 0x500, 0 );
-  require_noerr(err, exit);
+  mfi_bonjour_thread_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "Bonjour", _bonjour_thread, 0x500, NULL );
+  require_action(mfi_bonjour_thread_handler != NULL, exit, err = kGeneralErr);
 
   bonjour_instance = true;
 

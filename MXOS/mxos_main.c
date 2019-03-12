@@ -115,8 +115,8 @@ void mxos_main( void )
 #ifndef RTOS_mocOS
     if ( mxos_should_enter_mfg_mode( ) ) {
         mxos_system_qc_test( );
-        mxos_rtos_delete_thread(NULL);
-        mxos_rtos_thread_yield();
+        mos_thread_delete(NULL);
+        mos_thread_yield();
     }
 #endif
 #endif

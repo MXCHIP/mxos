@@ -63,7 +63,7 @@
 
 #ifndef MXOS_DISABLE_MCU_POWERSAVE
 static unsigned long  stop_mode_power_down_hook( unsigned long sleep_ms );
-static OSStatus       select_wut_prescaler_calculate_wakeup_time( unsigned long* wakeup_time, unsigned long sleep_ms, unsigned long* scale_factor );
+static mret_t       select_wut_prescaler_calculate_wakeup_time( unsigned long* wakeup_time, unsigned long sleep_ms, unsigned long* scale_factor );
 #else
 static unsigned long  idle_power_down_hook( unsigned long sleep_ms );
 #endif
@@ -84,7 +84,7 @@ static int32_t       stm32f2_clock_needed_counter = 0;
  *               Function Definitions
  ******************************************************/
 
-OSStatus platform_mcu_powersave_init(void)
+mret_t platform_mcu_powersave_init(void)
 {
 #ifndef MXOS_DISABLE_MCU_POWERSAVE
   EXTI_InitTypeDef EXTI_InitStructure;
@@ -168,7 +168,7 @@ OSStatus platform_mcu_powersave_init(void)
 #endif
 }
 
-OSStatus platform_mcu_powersave_disable( void )
+mret_t platform_mcu_powersave_disable( void )
 {
 #ifndef MXOS_DISABLE_MCU_POWERSAVE
     DISABLE_INTERRUPTS;
@@ -186,7 +186,7 @@ OSStatus platform_mcu_powersave_disable( void )
 #endif
 }
 
-OSStatus platform_mcu_powersave_enable( void )
+mret_t platform_mcu_powersave_enable( void )
 {
 #ifndef MXOS_DISABLE_MCU_POWERSAVE
     DISABLE_INTERRUPTS;
@@ -214,7 +214,7 @@ void platform_mcu_powersave_exit_notify( void )
 
 
 #ifndef MXOS_DISABLE_MCU_POWERSAVE
-static OSStatus select_wut_prescaler_calculate_wakeup_time( unsigned long* wakeup_time, unsigned long sleep_ms, unsigned long* scale_factor )
+static mret_t select_wut_prescaler_calculate_wakeup_time( unsigned long* wakeup_time, unsigned long sleep_ms, unsigned long* scale_factor )
 {
   unsigned long temp;
   bool scale_factor_is_found = false;

@@ -34,7 +34,7 @@ static mxos_mutex_t para_flash_mutex = NULL;
 
 #define para_log(M, ...)
 
-static OSStatus try_old_para(system_context_t *inContext);
+static mret_t try_old_para(system_context_t *inContext);
 
 WEAK void appRestoreDefault_callback(void *user_data, uint32_t size)
 {
@@ -142,9 +142,9 @@ static uint16_t para_crc16(mxos_partition_t part)
     return crc_result;
 }
 
-static OSStatus internal_update_config( system_context_t * const inContext )
+static mret_t internal_update_config( system_context_t * const inContext )
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   uint32_t para_offset;
   uint16_t crc_result;
   uint16_t crc_readback;;
@@ -202,9 +202,9 @@ exit:
   return err;
 }
 
-OSStatus mxos_system_context_restore( mxos_Context_t * const inContext )
+mret_t mxos_system_context_restore( mxos_Context_t * const inContext )
 { 
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   require_action( inContext, exit, err = kNotPreparedErr );
 
   /*wlan configration is not need to change to a default state, use easylink to do that*/
@@ -229,9 +229,9 @@ exit:
 }
 
 #ifdef MFG_MODE_AUTO
-OSStatus MXOSRestoreMFG( void )
+mret_t MXOSRestoreMFG( void )
 { 
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   require_action( sys_context, exit, err = kNotPreparedErr );
 
   /*wlan configration is not need to change to a default state, use easylink to do that*/
@@ -250,7 +250,7 @@ exit:
 }
 #endif
 
-OSStatus MXOSReadConfiguration(system_context_t *inContext)
+mret_t MXOSReadConfiguration(system_context_t *inContext)
 {
   uint32_t para_offset = 0x0;
   //uint32_t config_offset = CONFIG_OFFSET;
@@ -262,7 +262,7 @@ OSStatus MXOSReadConfiguration(system_context_t *inContext)
   uint8_t *user_backup_data = NULL;
   mxos_Context_t *mxos_context = mxos_system_context_get();
   
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
 
   require_action(inContext, exit, err = kNotPreparedErr);
 
@@ -392,9 +392,9 @@ exit:
   return err;
 }
 
-OSStatus mxos_system_context_update( mxos_Context_t *in_context )
+mret_t mxos_system_context_update( mxos_Context_t *in_context )
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   require_action( in_context, exit, err = kNotPreparedErr );
 
   sys_context->flashContentInRam.mxosSystemConfig.seed = ++seedNum;
@@ -433,9 +433,9 @@ exit:
 }
 
 
-OSStatus mxos_system_para_read(void** info_ptr, int section, uint32_t offset, uint32_t size)
+mret_t mxos_system_para_read(void** info_ptr, int section, uint32_t offset, uint32_t size)
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   uint32_t addr_sec = system_context_get_para_data( (para_section_t)section );
   mxos_Context_t *mxos_context = mxos_system_context_get();
 
@@ -448,15 +448,15 @@ exit:
   return err;
 }
 
-OSStatus mxos_system_para_read_release( void* info_ptr )
+mret_t mxos_system_para_read_release( void* info_ptr )
 {
   UNUSED_PARAMETER( info_ptr );
   return true;
 }
 
-OSStatus mxos_system_para_write(const void* info_ptr, int section, uint32_t offset, uint32_t size)
+mret_t mxos_system_para_write(const void* info_ptr, int section, uint32_t offset, uint32_t size)
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   uint32_t addr_sec = system_context_get_para_data( (para_section_t)section );
   mxos_Context_t *mxos_context = mxos_system_context_get();
 
@@ -471,7 +471,7 @@ exit:
 }
 
 
-OSStatus mxos_ota_switch_to_new_fw( int ota_data_len, uint16_t ota_data_crc )
+mret_t mxos_ota_switch_to_new_fw( int ota_data_len, uint16_t ota_data_crc )
 {
     mxos_Context_t *mxos_context = mxos_system_context_get();
 #ifdef MXOS_ENABLE_SECONDARY_APPLICATION
@@ -531,9 +531,9 @@ static int is_old_part_crc_match(system_context_t *inContext, mxos_partition_t p
 }
 
 /* Try to use the OLD mxos para save method */
-static OSStatus try_old_para(system_context_t *inContext)
+static mret_t try_old_para(system_context_t *inContext)
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
     mxos_Context_t *mxos_context = mxos_system_context_get();
     
     /* Load data and crc from main partition */

@@ -402,12 +402,12 @@ typedef event_handler_t mxos_bt_smart_scan_complete_callback_t;
 /**
  * Bluetooth Smart advertising report callback
  */
-typedef OSStatus (*mxos_bt_smart_advertising_report_callback_t)  ( const mxos_bt_smart_advertising_report_t* result );
+typedef mret_t (*mxos_bt_smart_advertising_report_callback_t)  ( const mxos_bt_smart_advertising_report_t* result );
 
 /**
  * Bluetooth Smart Device Bond Callback.
  */
-typedef OSStatus (*mxos_bt_smart_bonding_callback_t)(const mxos_bt_smart_bond_request_t *request);
+typedef mret_t (*mxos_bt_smart_bonding_callback_t)(const mxos_bt_smart_bond_request_t *request);
 
 /**
  * Bluetooth Smart advertising complete callback
@@ -429,9 +429,9 @@ typedef event_handler_t mxos_bt_smart_advertising_complete_callback_t;
  *
  *  @param[in] response     the response to current bonding event.
  *
- *  @return OSStatus
+ *  @return mret_t
  */
-extern OSStatus mxos_bt_smart_bond_reply(const mxos_bt_smart_bond_reply_t *response);
+extern mret_t mxos_bt_smart_bond_reply(const mxos_bt_smart_bond_reply_t *response);
 
 #ifdef __cplusplus
 } /* extern "C" */

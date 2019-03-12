@@ -155,7 +155,7 @@ static void fill_cb_array()
 #endif
 }
 
-OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart_t* peripheral, const platform_uart_config_t* config, ring_buffer_t* optional_ring_buffer )
+mret_t platform_uart_init( platform_uart_driver_t* driver, const platform_uart_t* peripheral, const platform_uart_config_t* config, ring_buffer_t* optional_ring_buffer )
 //int platform_uart_init(int port_id, const platform_uart_config_t* config, ring_buffer_t* optional_ring_buffer)
 {
 	UART_CFG_Type uartcfg;
@@ -294,9 +294,9 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
 //	return os_total_ticks_get();
 //}
 
-OSStatus platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* data_in, uint32_t expected_data_size, uint32_t timeout_ms )
+mret_t platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* data_in, uint32_t expected_data_size, uint32_t timeout_ms )
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
 
    if (( data_in == NULL ) || ( expected_data_size == 0 )) {
    		err = kParamErr;
@@ -356,8 +356,8 @@ exit:
   return err;
 }
 
-OSStatus platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8_t* data_out, uint32_t size )
-//OSStatus platform_uart_transmit_bytes( int port_id, const uint8_t* data_out, uint32_t size )
+mret_t platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8_t* data_out, uint32_t size )
+//mret_t platform_uart_transmit_bytes( int port_id, const uint8_t* data_out, uint32_t size )
 {
   int i;
   
@@ -383,7 +383,7 @@ uint32_t platform_uart_get_length_in_buffer( platform_uart_driver_t* driver )
 }
 
 
-OSStatus platform_uart_deinit( platform_uart_driver_t* driver )
+mret_t platform_uart_deinit( platform_uart_driver_t* driver )
 {
   
   mxos_rtos_deinit_semaphore( &driver->rx_complete );
@@ -672,9 +672,9 @@ uint32_t mxos_get_time_no_os(void)
 	return os_total_ticks_get();
 }
 
-OSStatus platform_uart_receive_bytes( int port_id, uint8_t* data_in, uint32_t expected_data_size, uint32_t timeout_ms )
+mret_t platform_uart_receive_bytes( int port_id, uint8_t* data_in, uint32_t expected_data_size, uint32_t timeout_ms )
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
 	platform_uart_driver_t* driver;
 
 	if (port_id < 0 || port_id >= NUM_UART_PORTS) {
@@ -745,7 +745,7 @@ exit:
 }
 
 
-OSStatus platform_uart_transmit_bytes( int port_id, const uint8_t* data_out, uint32_t size )
+mret_t platform_uart_transmit_bytes( int port_id, const uint8_t* data_out, uint32_t size )
 {
   int i;
   
@@ -767,7 +767,7 @@ OSStatus platform_uart_transmit_bytes( int port_id, const uint8_t* data_out, uin
 
 
 
-OSStatus platform_uart_get_length_in_buffer( int port_id )
+mret_t platform_uart_get_length_in_buffer( int port_id )
 {  
   platform_uart_driver_t* driver;
 
@@ -783,7 +783,7 @@ OSStatus platform_uart_get_length_in_buffer( int port_id )
 }
 
 
-OSStatus platform_uart_deinit( int port_id )
+mret_t platform_uart_deinit( int port_id )
 {
   platform_uart_driver_t* driver;
 

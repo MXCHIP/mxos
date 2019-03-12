@@ -557,7 +557,7 @@ typedef struct
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus hts221_sensor_init(void);
+mret_t hts221_sensor_init(void);
 
 
 /**
@@ -569,7 +569,7 @@ OSStatus hts221_sensor_init(void);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus hts221_Read_Data(float *temperature,float *humidity);
+mret_t hts221_Read_Data(float *temperature,float *humidity);
 
 
 /**
@@ -578,7 +578,7 @@ OSStatus hts221_Read_Data(float *temperature,float *humidity);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus hts221_sensor_deinit(void);
+mret_t hts221_sensor_deinit(void);
 /**
   * @}
   */

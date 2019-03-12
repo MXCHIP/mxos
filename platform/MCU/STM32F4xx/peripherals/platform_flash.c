@@ -68,20 +68,20 @@ DMA_InitTypeDef DMA_InitStructure;
 #endif
 /* Private function prototypes -----------------------------------------------*/
 static uint32_t _GetSector( uint32_t Address );
-static OSStatus _GetAddress(uint32_t sector, uint32_t *startAddress, uint32_t *endAddress);
-static OSStatus internalFlashInitialize( void );
-static OSStatus internalFlashErase(uint32_t StartAddress, uint32_t EndAddress);
-static OSStatus internalFlashWrite(volatile uint32_t* FlashAddress, uint32_t* Data ,uint32_t DataLength);
-static OSStatus internalFlashByteWrite( volatile uint32_t* FlashAddress, uint8_t* Data ,uint32_t DataLength );
+static mret_t _GetAddress(uint32_t sector, uint32_t *startAddress, uint32_t *endAddress);
+static mret_t internalFlashInitialize( void );
+static mret_t internalFlashErase(uint32_t StartAddress, uint32_t EndAddress);
+static mret_t internalFlashWrite(volatile uint32_t* FlashAddress, uint32_t* Data ,uint32_t DataLength);
+static mret_t internalFlashByteWrite( volatile uint32_t* FlashAddress, uint8_t* Data ,uint32_t DataLength );
 #ifdef MCU_EBANLE_FLASH_PROTECT
 static uint32_t _GetWRPSector(uint32_t Address);
-static OSStatus internalFlashProtect(uint32_t StartAddress, uint32_t EndAddress, bool enable);
+static mret_t internalFlashProtect(uint32_t StartAddress, uint32_t EndAddress, bool enable);
 #endif
 #ifdef USE_MXOS_SPI_FLASH
-static OSStatus spiFlashErase(uint32_t StartAddress, uint32_t EndAddress);
+static mret_t spiFlashErase(uint32_t StartAddress, uint32_t EndAddress);
 #endif
 #ifdef USE_QUAD_SPI_FLASH
-static OSStatus qspiFlashErase( uint32_t StartAddress, uint32_t EndAddress );
+static mret_t qspiFlashErase( uint32_t StartAddress, uint32_t EndAddress );
 static void QSPI_AutoPollingMemReady(void);
 static void QSPI_WriteEnable(void);
 static void QSPI_QEEnable(void);
@@ -96,9 +96,9 @@ int get_power(uint32_t number);
 #endif
 
 
-OSStatus platform_flash_init( const platform_flash_t *peripheral )
+mret_t platform_flash_init( const platform_flash_t *peripheral )
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
 
   require_action_quiet( peripheral != NULL, exit, err = kParamErr);
 
@@ -127,9 +127,9 @@ exit:
   return err;
 }
 
-OSStatus platform_flash_erase( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address )
+mret_t platform_flash_erase( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address )
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
 
   require_action_quiet( peripheral != NULL, exit, err = kParamErr);
   require_action( start_address >= peripheral->flash_start_addr 
@@ -161,9 +161,9 @@ exit:
   return err;
 }
 
-OSStatus platform_flash_write( const platform_flash_t *peripheral, volatile uint32_t* start_address, uint8_t* data ,uint32_t length  )
+mret_t platform_flash_write( const platform_flash_t *peripheral, volatile uint32_t* start_address, uint8_t* data ,uint32_t length  )
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
 
   require_action_quiet( peripheral != NULL, exit, err = kParamErr);
   require_action( *start_address >= peripheral->flash_start_addr 
@@ -197,9 +197,9 @@ exit:
   return err;
 }
 
-OSStatus platform_flash_read( const platform_flash_t *peripheral, volatile uint32_t* start_address, uint8_t* data ,uint32_t length  )
+mret_t platform_flash_read( const platform_flash_t *peripheral, volatile uint32_t* start_address, uint8_t* data ,uint32_t length  )
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
 
   require_action_quiet( peripheral != NULL, exit, err = kParamErr);
   require_action( (*start_address >= peripheral->flash_start_addr) 
@@ -233,9 +233,9 @@ exit:
   return err;
 }
 
-OSStatus platform_flash_enable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address )
+mret_t platform_flash_enable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address )
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
 
   require_action_quiet( peripheral != NULL, exit, err = kParamErr);
   require_action( start_address >= peripheral->flash_start_addr 
@@ -269,9 +269,9 @@ exit:
   return err;  
 }
 
-OSStatus platform_flash_disable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address )
+mret_t platform_flash_disable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address )
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
 
   require_action_quiet( peripheral != NULL, exit, err = kParamErr);
   require_action( start_address >= peripheral->flash_start_addr 
@@ -305,7 +305,7 @@ exit:
   return err;  
 }
 
-OSStatus internalFlashInitialize( void )
+mret_t internalFlashInitialize( void )
 { 
   platform_log_trace();
   FLASH_Unlock(); 
@@ -315,10 +315,10 @@ OSStatus internalFlashInitialize( void )
   return kNoErr;
 }
 
-OSStatus internalFlashErase(uint32_t StartAddress, uint32_t EndAddress)
+mret_t internalFlashErase(uint32_t StartAddress, uint32_t EndAddress)
 {
   platform_log_trace();
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   uint32_t StartSector, EndSector, i = 0, j = 0;
   
   /* Get the sector where start the user flash area */
@@ -344,9 +344,9 @@ exit:
 }
 
 #ifdef MCU_EBANLE_FLASH_PROTECT
-OSStatus internalFlashProtect(uint32_t StartAddress, uint32_t EndAddress, bool enable)
+mret_t internalFlashProtect(uint32_t StartAddress, uint32_t EndAddress, bool enable)
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   uint16_t WRP = 0x0;
   uint32_t StartSector, EndSector, i = 0;
   bool needupdate = false;
@@ -383,10 +383,10 @@ OSStatus internalFlashProtect(uint32_t StartAddress, uint32_t EndAddress, bool e
 #endif
 
 #ifdef USE_MXOS_SPI_FLASH
-OSStatus spiFlashErase(uint32_t StartAddress, uint32_t EndAddress)
+mret_t spiFlashErase(uint32_t StartAddress, uint32_t EndAddress)
 {
   platform_log_trace();
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   uint32_t StartSector, EndSector, i = 0;
   
   /* Get the sector where start the user flash area */
@@ -406,10 +406,10 @@ exit:
 #endif
 
 #ifdef USE_QUAD_SPI_FLASH
-static OSStatus qspiFlashErase( uint32_t StartAddress, uint32_t EndAddress )
+static mret_t qspiFlashErase( uint32_t StartAddress, uint32_t EndAddress )
 {
   platform_log_trace();
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   uint32_t StartSector, EndSector, i = 0;
 
   /* Get the sector where start the user flash area */
@@ -427,10 +427,10 @@ exit:
 #endif
 
 
-OSStatus internalFlashWrite(volatile uint32_t* FlashAddress, uint32_t* Data ,uint32_t DataLength)
+mret_t internalFlashWrite(volatile uint32_t* FlashAddress, uint32_t* Data ,uint32_t DataLength)
 {
   platform_log_trace();
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   uint32_t i = 0;
   uint32_t dataInRam;
   uint8_t startNumber;
@@ -465,11 +465,11 @@ exit:
   return err;
 }
 
-OSStatus internalFlashByteWrite(__IO uint32_t* FlashAddress, uint8_t* Data ,uint32_t DataLength)
+mret_t internalFlashByteWrite(__IO uint32_t* FlashAddress, uint8_t* Data ,uint32_t DataLength)
 {
   uint32_t i = 0;
   uint32_t dataInRam;
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   
   for (i = 0; (i < DataLength) && (*FlashAddress <= (FLASH_END_ADDRESS)); i++)
   {
@@ -614,9 +614,9 @@ static uint32_t _GetWRPSector(uint32_t Address)
 * @param  Sector: The sector of a given address
 * @retval Flash address if the sector start
 */
-static OSStatus _GetAddress(uint32_t sector, uint32_t *startAddress, uint32_t *endAddress)
+static mret_t _GetAddress(uint32_t sector, uint32_t *startAddress, uint32_t *endAddress)
 {
-  OSStatus err = kNoErr; 
+  mret_t err = kNoErr; 
   if(sector == FLASH_Sector_0)
   {
     *startAddress = ADDR_FLASH_SECTOR_0;

@@ -58,9 +58,9 @@ typedef struct
 
 void mfi_wac_lib_version( uint8_t *major, uint8_t *minor, uint8_t *revision );
 
-OSStatus mfi_wac_start( mxos_Context_t * const inContext, WACPlatformParameters_t *inWACPara, mxos_i2c_t i2c, int timeOut );
+mret_t mfi_wac_start( mxos_Context_t * const inContext, WACPlatformParameters_t *inWACPara, mxos_i2c_t i2c, int timeOut );
 
-OSStatus mfi_wac_stop( void );
+mret_t mfi_wac_stop( void );
 
 
 #ifdef __cplusplus

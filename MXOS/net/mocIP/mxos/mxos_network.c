@@ -71,13 +71,13 @@ void mxos_network_set_interface_priority( netif_t prioritys[INTERFACE_MAX] )
 }
 
 
-OSStatus mxos_network_switch_interface_auto( void )
+mret_t mxos_network_switch_interface_auto( void )
 {
     return kUnsupportedErr;
 }
 
 
-OSStatus mxos_network_switch_interface_manual( netif_t interface )
+mret_t mxos_network_switch_interface_manual( netif_t interface )
 {
     return kUnsupportedErr;
 }

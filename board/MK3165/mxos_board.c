@@ -63,7 +63,7 @@
 *               Function Declarations
 ******************************************************/
 
-extern OSStatus host_platform_init( void );
+extern mret_t host_platform_init( void );
 
 /******************************************************
 *               Variables Definitions

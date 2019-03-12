@@ -28,7 +28,7 @@
 
 extern system_context_t* sys_context;
 #ifndef  EasyLink_Needs_Reboot
-static mxos_worker_thread_t wlan_autoconf_worker_thread;
+static mos_worker_thread_id_t wlan_autoconf_worker_thread;
 #endif
 
 
@@ -36,9 +36,9 @@ static mxos_worker_thread_t wlan_autoconf_worker_thread;
  *               Variables Definitions
  ******************************************************/
 
-static OSStatus system_config_mode_worker( void *arg )
+static mret_t system_config_mode_worker( void *arg )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
     mxos_Context_t* in_context = mxos_system_context_get();
     require( in_context, exit );
 
@@ -68,7 +68,7 @@ exit:
     return err;
 }
 
-OSStatus mxos_system_wlan_start_autoconf( void )
+mret_t mxos_system_wlan_start_autoconf( void )
 {
   /* Enter auto-conf mode only once in reboot mode, use MXOS_NETWORKING_WORKER_THREAD to save ram */
 #ifdef  EasyLink_Needs_Reboot
@@ -79,9 +79,9 @@ OSStatus mxos_system_wlan_start_autoconf( void )
 }
 
 
-OSStatus mxos_system_init( mxos_Context_t* in_context )
+mret_t mxos_system_init( mxos_Context_t* in_context )
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
 
   require_action( in_context, exit, err = kNotPreparedErr );
 
@@ -119,7 +119,7 @@ OSStatus mxos_system_init( mxos_Context_t* in_context )
 #ifndef  EasyLink_Needs_Reboot
   /* Create a worker thread for user handling wlan auto-conf event, this worker thread only has
      one event on queue, avoid some unwanted operation */
-  err = mxos_rtos_create_worker_thread( &wlan_autoconf_worker_thread, MXOS_APPLICATION_PRIORITY, 0x500, 1 );
+  err = mos_worker_thread_new( &wlan_autoconf_worker_thread, MXOS_APPLICATION_PRIORITY, 0x500, 1 );
   require_noerr_string( err, exit, "ERROR: Unable to start the autoconf worker thread." );
 #endif
 

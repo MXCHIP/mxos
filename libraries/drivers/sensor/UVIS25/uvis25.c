@@ -21,15 +21,15 @@
 #define uvis25_log(M, ...) custom_log("UVIS25", M, ##__VA_ARGS__)
 #define uvis25_log_trace() custom_log_trace("UVIS25")
 
-static OSStatus UVIS25_Init(void);
-static OSStatus UVIS25_GetUXindex(float *pfData);
+static mret_t UVIS25_Init(void);
+static mret_t UVIS25_GetUXindex(float *pfData);
 
 /* I2C device */
 mxos_i2c_device_t uvis25_i2c_device = {
   UVIS25_I2C_PORT, 0x47, I2C_ADDRESS_WIDTH_7BIT, I2C_STANDARD_SPEED_MODE
 };
 
-OSStatus UVIS25_IO_Init(void)
+mret_t UVIS25_IO_Init(void)
 {
   // I2C init
   mxos_i2c_deinit(&uvis25_i2c_device);   // in case error
@@ -51,10 +51,10 @@ OSStatus UVIS25_IO_Init(void)
 *		will be used for write the value into the register
 *	\param cnt : The no of byte of data to be write
 */
-OSStatus UVIS25_IO_Write(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByteToWrite)
+mret_t UVIS25_IO_Write(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByteToWrite)
 {
   mxos_i2c_message_t uvis25_i2c_msg = {NULL, NULL, 0, 0, 0, false};
-  OSStatus iError = kNoErr;
+  mret_t iError = kNoErr;
   uint8_t array[8];
   uint8_t stringpos;
   array[0] = RegisterAddr;
@@ -78,10 +78,10 @@ OSStatus UVIS25_IO_Write(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByt
 *	\param reg_data : This data read from the sensor, which is hold in an array
 *	\param cnt : The no of byte of data to be read
 */
-OSStatus UVIS25_IO_Read(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByteToRead)
+mret_t UVIS25_IO_Read(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByteToRead)
 {
   mxos_i2c_message_t uvis25_i2c_msg = {NULL, NULL, 0, 0, 0, false};
-  OSStatus iError = kNoErr;
+  mret_t iError = kNoErr;
   uint8_t array[8] = {0};
   array[0] = RegisterAddr;
   
@@ -97,9 +97,9 @@ OSStatus UVIS25_IO_Read(uint8_t* pBuffer, uint8_t RegisterAddr, uint16_t NumByte
 }
 
 
-static OSStatus UVIS25_Init(void)
+static mret_t UVIS25_Init(void)
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   uint8_t temp = 0x03;
   
   if((err = UVIS25_IO_Init()) != kNoErr){
@@ -114,9 +114,9 @@ static OSStatus UVIS25_Init(void)
 }
 
 
-static OSStatus UVIS25_GetUXindex(float *pfData) 
+static mret_t UVIS25_GetUXindex(float *pfData) 
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   uint8_t temp = 0x00;
   uint8_t data = 0;
   
@@ -133,17 +133,17 @@ static OSStatus UVIS25_GetUXindex(float *pfData)
   return err;
 }
 
-OSStatus uvis25_sensor_init(void)
+mret_t uvis25_sensor_init(void)
 { 
   return UVIS25_Init();
 }
 
-OSStatus uvis25_Read_Data(float *uv_index)
+mret_t uvis25_Read_Data(float *uv_index)
 {
   return UVIS25_GetUXindex(uv_index);
 }
 
-OSStatus uvis25_sensor_deinit(void)
+mret_t uvis25_sensor_deinit(void)
 {
   return mxos_i2c_deinit(&uvis25_i2c_device);
 }

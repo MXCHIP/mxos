@@ -482,7 +482,7 @@ static void LPS25HB_SlaveAddrRemap(uint8_t SA0_Bit_Status)
 
 
 
-OSStatus lps25hb_sensor_init(void)
+mret_t lps25hb_sensor_init(void)
 {
   PRESSURE_InitTypeDef lps25hb;
   lps25hb.OutputDataRate = LPS25HB_ODR_ONE_SHOT;
@@ -498,7 +498,7 @@ OSStatus lps25hb_sensor_init(void)
   return 0;
 }
 
-OSStatus lps25hb_Read_Data(float *temperature,float *pressure)
+mret_t lps25hb_Read_Data(float *temperature,float *pressure)
 {
   if(LPS25HB_GetTemperature(temperature) != PRESSURE_OK){
     return -1;
@@ -509,7 +509,7 @@ OSStatus lps25hb_Read_Data(float *temperature,float *pressure)
   return 0;
 }
 
-OSStatus lps25hb_sensor_deinit(void)
+mret_t lps25hb_sensor_deinit(void)
 {
   if(LPS25HB_PowerOff() != PRESSURE_OK){
     return -1;

@@ -72,7 +72,7 @@
  ******************************************************************************/
 mdns_responder_stats mr_stats;
 
-static mxos_thread_t mdns_querier_thread, mdns_responder_thread;
+static mos_thread_id_t mdns_querier_thread, mdns_responder_thread;
 static bool is_responder_started, is_querier_started;
 
 struct sockaddr_in mdns_mquery_v4group = {sizeof(struct sockaddr_in), AF_INET, htons(5353), INADDR_MULTICAST_MDNS};
@@ -130,20 +130,20 @@ void *mdns_thread_create(mdns_thread_entry entry, int id)
     void *ret = NULL;
     if (id == MDNS_THREAD_RESPONDER)
     {
-        if (mxos_rtos_create_thread(&mdns_responder_thread, MXOS_APPLICATION_PRIORITY,
-                                    "mdns_resp_thread", (mxos_thread_function_t)entry,
-                                    MDNS_RESPONDER_THREAD_STACK, 0) == kNoErr)
+        if ((mdns_responder_thread = mos_thread_new(MXOS_APPLICATION_PRIORITY,
+                                    "mdns_resp_thread", (mos_thread_func_t)entry,
+                                    MDNS_RESPONDER_THREAD_STACK, 0)) != NULL)
         {
-            ret = &mdns_responder_thread;
+            ret = mdns_responder_thread;
         }
     }
     else if (id == MDNS_THREAD_QUERIER)
     {
-        if (mxos_rtos_create_thread(&mdns_querier_thread, MXOS_APPLICATION_PRIORITY,
-                                    "mdns_querier_thread", (mxos_thread_function_t)entry,
-                                    MDNS_QUERIER_THREAD_STACK, 0) == kNoErr)
+        if ((mdns_querier_thread = mos_thread_new(MXOS_APPLICATION_PRIORITY,
+                                    "mdns_querier_thread", (mos_thread_func_t)entry,
+                                    MDNS_QUERIER_THREAD_STACK, 0)) != NULL)
         {
-            ret = &mdns_querier_thread;
+            ret = mdns_querier_thread;
         }
     }
     return ret;
@@ -151,12 +151,12 @@ void *mdns_thread_create(mdns_thread_entry entry, int id)
 
 void mdns_thread_delete(void *t)
 {
-    mxos_rtos_delete_thread((mxos_thread_t *)t);
+    mos_thread_delete((mos_thread_id_t)t);
 }
 
 void mdns_thread_yield(void *t)
 {
-    mxos_rtos_thread_yield();
+    mos_thread_yield();
 }
 
 uint32_t mdns_time_ms(void)
@@ -177,7 +177,7 @@ int mdns_rand_range(int n)
 /****************************Mdns Main Entry Functions***************************/
 int mdns_start(const char *domain, char *hostname)
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     err = mxos_system_notify_register(mxos_notify_WIFI_STATUS_CHANGED,
                                       (void *)net_status_changed_delegate, NULL);

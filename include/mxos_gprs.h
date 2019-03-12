@@ -47,8 +47,8 @@ typedef struct
 
 void mxos_gprs_status_handler(notify_netif_status_t status, const mxos_gprs_net_addr_t *net_addr);
 
-OSStatus mxos_gprs_open(void);
-OSStatus mxos_gprs_close(void);
+mret_t mxos_gprs_open(void);
+mret_t mxos_gprs_close(void);
 
 #ifdef __cplusplus
     }

@@ -42,7 +42,7 @@
 //  URLParseComponents
 //===========================================================================================================================
 
-OSStatus    URLParseComponents( const char *inSrc, const char *inEnd, URLComponents *outComponents, const char **outSrc )
+mret_t    URLParseComponents( const char *inSrc, const char *inEnd, URLComponents *outComponents, const char **outSrc )
 {
     const char *        ptr;
     const char *        schemePtr;

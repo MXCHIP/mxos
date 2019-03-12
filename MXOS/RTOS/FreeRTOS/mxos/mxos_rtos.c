@@ -196,57 +196,58 @@ void pre_main( void )
     vTaskDelete( NULL );
 }
 
-OSStatus mxos_rtos_create_thread( mxos_thread_t* thread, uint8_t priority, const char* name, mxos_thread_function_t function, uint32_t stack_size, uint32_t arg )
+mos_thread_id_t mos_thread_new( uint8_t priority, const char* name, mos_thread_func_t function, uint32_t stack_size, void *arg )
 {
+    mos_thread_id_t id;
     /* Limit priority to default lib priority */
     if ( priority > RTOS_HIGHEST_PRIORITY )
     {
         priority = RTOS_HIGHEST_PRIORITY;
     }
 
-    if( pdPASS == _xTaskCreate( (native_thread_t)function, name, (unsigned short) (stack_size/sizeof( portSTACK_TYPE )), (void *)arg, MXOS_PRIORITY_TO_NATIVE_PRIORITY(priority), thread ) )
+    if( pdPASS == _xTaskCreate( (native_thread_t)function, name, (unsigned short) (stack_size/sizeof( portSTACK_TYPE )), (void *)arg, MXOS_PRIORITY_TO_NATIVE_PRIORITY(priority), &id ) )
     {
-        return kNoErr;
+        return id;
     }
     else
     {
-        return kGeneralErr;
+        return NULL;
     }
 }
 
-OSStatus mxos_rtos_delete_thread( mxos_thread_t* thread )
+mret_t mos_thread_delete( mos_thread_id_t thread )
 {
     if ( thread == NULL )
     {
         vTaskDelete( NULL );
     }
-    else if ( xTaskIsTaskFinished( *thread ) != pdTRUE )
+    else if ( xTaskIsTaskFinished( thread ) != pdTRUE )
     {
-        vTaskDelete( *thread );
+        vTaskDelete( thread );
     }
     return kNoErr;
 }
 
-void mxos_rtos_thread_yield( void )
+void mos_thread_yield( void )
 {
     vTaskDelay( (portTickType) 0 );
 }
 
-OSStatus mxos_rtos_thread_join( mxos_thread_t* thread )
+mret_t mos_thread_join( mos_thread_id_t id )
 {
-    mxos_thread_t tmp = *thread;
+    mos_thread_id_t tmp = id;
 
-    if ( (thread == NULL) || (tmp == NULL) )
+    if ( (id == NULL) || (tmp == NULL) )
         return kNoErr;
 
     while ( xTaskIsTaskFinished( tmp ) != pdTRUE )
     {
-        mxos_rtos_delay_milliseconds( 10 );
+        mos_thread_delay( 10 );
     }
     return kNoErr;
 }
 
-bool mxos_rtos_is_current_thread( mxos_thread_t* thread )
+bool mxos_rtos_is_current_thread( mos_thread_id_t* thread )
 {
     if ( xTaskGetCurrentTaskHandle( ) == *thread )
     {
@@ -258,14 +259,14 @@ bool mxos_rtos_is_current_thread( mxos_thread_t* thread )
     }
 }
 
-mxos_thread_t* mxos_rtos_get_current_thread( void )
+mos_thread_id_t mos_thread_get_id( void )
 {
-    return (mxos_thread_t *)xTaskGetCurrentTaskHandle();
+    return (mos_thread_id_t)xTaskGetCurrentTaskHandle();
 }
 
 #if FreeRTOS_VERSION_MAJOR == 7
 /* Old deployment, may has some problem */
-OSStatus mxos_rtos_print_thread_status( char* pcWriteBuffer, int xWriteBufferLen )
+mret_t mxos_rtos_print_thread_status( char* pcWriteBuffer, int xWriteBufferLen )
 {
     cmd_printf("%-30s Status  Prio    Stack   TCB\r\n", "Name");
     cmd_printf("------------------------------------------------------------");
@@ -303,7 +304,7 @@ static char *prvWriteNameToBuffer( char *pcBuffer, const char *pcTaskName )
 }
 
 /* Re-write vTaskList to add a buffer size parameter */
-OSStatus mxos_rtos_print_thread_status( char* pcWriteBuffer, int xWriteBufferLen )
+mret_t mxos_rtos_print_thread_status( char* pcWriteBuffer, int xWriteBufferLen )
 {
     TaskStatus_t *pxTaskStatusArray;
     unsigned portBASE_TYPE uxCurrentNumberOfTasks = uxTaskGetNumberOfTasks();
@@ -402,14 +403,14 @@ OSStatus mxos_rtos_print_thread_status( char* pcWriteBuffer, int xWriteBufferLen
 }
 #endif
 
-OSStatus mxos_rtos_check_stack( void )
+mret_t mxos_rtos_check_stack( void )
 {
     // TODO: Add stack checking here.
 
     return kNoErr;
 }
 
-OSStatus mxos_rtos_thread_force_awake( mxos_thread_t* thread )
+mret_t mxos_rtos_thread_force_awake( mos_thread_id_t* thread )
 {
 #if FreeRTOS_VERSION_MAJOR < 9
     vTaskForceAwake(*thread);
@@ -419,26 +420,26 @@ OSStatus mxos_rtos_thread_force_awake( mxos_thread_t* thread )
     return kNoErr;
 }
 
-OSStatus mxos_time_get_time(mxos_time_t* time_ptr)
+mret_t mxos_time_get_time(mxos_time_t* time_ptr)
 {
     *time_ptr = (mxos_time_t) ( xTaskGetTickCount( ) * ms_to_tick_ratio ) + mxos_time_offset;
     return kNoErr;
 }
 
-OSStatus mxos_time_set_time(mxos_time_t* time_ptr)
+mret_t mxos_time_set_time(mxos_time_t* time_ptr)
 {
     mxos_time_offset = *time_ptr - (mxos_time_t) ( xTaskGetTickCount( ) * ms_to_tick_ratio );
     return kNoErr;
 }
 
-OSStatus mxos_rtos_init_semaphore( mxos_semaphore_t* semaphore, int count )
+mret_t mxos_rtos_init_semaphore( mxos_semaphore_t* semaphore, int count )
 {
     *semaphore = xSemaphoreCreateCounting( (unsigned portBASE_TYPE) count, (unsigned portBASE_TYPE) 0 );
 
     return ( *semaphore != NULL ) ? kNoErr : kGeneralErr;
 }
 
-OSStatus mxos_rtos_get_semaphore( mxos_semaphore_t* semaphore, uint32_t timeout_ms )
+mret_t mxos_rtos_get_semaphore( mxos_semaphore_t* semaphore, uint32_t timeout_ms )
 {
     if ( pdTRUE == xSemaphoreTake( *semaphore, (portTickType) ( timeout_ms / ms_to_tick_ratio ) ) )
     {
@@ -477,7 +478,7 @@ int mxos_rtos_set_semaphore( mxos_semaphore_t* semaphore )
     return ( result == pdPASS )? kNoErr : kGeneralErr;
 }
 
-OSStatus mxos_rtos_deinit_semaphore( mxos_semaphore_t* semaphore )
+mret_t mxos_rtos_deinit_semaphore( mxos_semaphore_t* semaphore )
 {
     if (semaphore != NULL)
     {
@@ -498,7 +499,7 @@ void mxos_rtos_exit_critical( void )
 }
 
 
-OSStatus mxos_rtos_init_mutex( mxos_mutex_t* mutex )
+mret_t mxos_rtos_init_mutex( mxos_mutex_t* mutex )
 {
     check_string(mutex != NULL, "Bad args");
 
@@ -512,7 +513,7 @@ OSStatus mxos_rtos_init_mutex( mxos_mutex_t* mutex )
     return kNoErr;
 }
 
-OSStatus mxos_rtos_lock_mutex( mxos_mutex_t* mutex )
+mret_t mxos_rtos_lock_mutex( mxos_mutex_t* mutex )
 {
     check_string(mutex != NULL, "Bad args");
 
@@ -525,7 +526,7 @@ OSStatus mxos_rtos_lock_mutex( mxos_mutex_t* mutex )
 }
 
 
-OSStatus mxos_rtos_unlock_mutex( mxos_mutex_t* mutex )
+mret_t mxos_rtos_unlock_mutex( mxos_mutex_t* mutex )
 {
     check_string(mutex != NULL, "Bad args");
 
@@ -537,7 +538,7 @@ OSStatus mxos_rtos_unlock_mutex( mxos_mutex_t* mutex )
     return kNoErr;
 }
 
-OSStatus mxos_rtos_deinit_mutex( mxos_mutex_t* mutex )
+mret_t mxos_rtos_deinit_mutex( mxos_mutex_t* mutex )
 {
     check_string(mutex != NULL, "Bad args");
 
@@ -546,7 +547,7 @@ OSStatus mxos_rtos_deinit_mutex( mxos_mutex_t* mutex )
     return kNoErr;
 }
 
-OSStatus mxos_rtos_init_queue( mxos_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages )
+mret_t mxos_rtos_init_queue( mxos_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages )
 {
     UNUSED_PARAMETER(name);
 
@@ -558,7 +559,7 @@ OSStatus mxos_rtos_init_queue( mxos_queue_t* queue, const char* name, uint32_t m
     return kNoErr;
 }
 
-OSStatus mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
+mret_t mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
 {
     signed portBASE_TYPE result;
 
@@ -583,7 +584,7 @@ OSStatus mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t t
 }
 
 
-OSStatus mxos_rtos_push_to_queue_front( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
+mret_t mxos_rtos_push_to_queue_front( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
 {
     signed portBASE_TYPE result;
 
@@ -608,7 +609,7 @@ OSStatus mxos_rtos_push_to_queue_front( mxos_queue_t* queue, void* message, uint
 }
 
 
-OSStatus mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
+mret_t mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
 {
     if ( xQueueReceive( *queue, message, ( timeout_ms / ms_to_tick_ratio ) ) != pdPASS )
     {
@@ -619,7 +620,7 @@ OSStatus mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t 
 }
 
 
-OSStatus mxos_rtos_deinit_queue( mxos_queue_t* queue )
+mret_t mxos_rtos_deinit_queue( mxos_queue_t* queue )
 {
     vQueueDelete( *queue );
     *queue = NULL;
@@ -658,7 +659,7 @@ static void timer_callback( xTimerHandle handle )
     }
 }
 
-OSStatus mxos_rtos_init_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
+mret_t mxos_rtos_init_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
 {
     check_string(timer != NULL, "Bad args");
 
@@ -675,7 +676,7 @@ OSStatus mxos_rtos_init_timer( mxos_timer_t* timer, uint32_t time_ms, timer_hand
 }
 
 
-OSStatus mxos_rtos_start_timer( mxos_timer_t* timer )
+mret_t mxos_rtos_start_timer( mxos_timer_t* timer )
 {
     signed portBASE_TYPE result;
 
@@ -694,7 +695,7 @@ OSStatus mxos_rtos_start_timer( mxos_timer_t* timer )
     return kNoErr;
 }
 
-OSStatus mxos_rtos_stop_timer( mxos_timer_t* timer )
+mret_t mxos_rtos_stop_timer( mxos_timer_t* timer )
 {
     signed portBASE_TYPE result;
 
@@ -713,7 +714,7 @@ OSStatus mxos_rtos_stop_timer( mxos_timer_t* timer )
     return kNoErr;
 }
 
-OSStatus mxos_rtos_reload_timer( mxos_timer_t* timer )
+mret_t mxos_rtos_reload_timer( mxos_timer_t* timer )
 {
     signed portBASE_TYPE result;
 
@@ -732,7 +733,7 @@ OSStatus mxos_rtos_reload_timer( mxos_timer_t* timer )
     return kNoErr;
 }
 
-OSStatus mxos_rtos_deinit_timer( mxos_timer_t* timer )
+mret_t mxos_rtos_deinit_timer( mxos_timer_t* timer )
 {
     if ( xTimerDelete( timer->handle, MXOS_WAIT_FOREVER ) != pdPASS )
     {
@@ -748,14 +749,14 @@ bool mxos_rtos_is_timer_running( mxos_timer_t* timer )
     return ( xTimerIsTimerActive( timer->handle ) != 0 ) ? true : false;
 }
 
-OSStatus mxos_rtos_init_event_flags( mxos_event_flags_t* event_flags )
+mret_t mxos_rtos_init_event_flags( mxos_event_flags_t* event_flags )
 {
     UNUSED_PARAMETER( event_flags );
     check_string( 0!=0, "Unsupported\r\n" );
     return kUnsupportedErr;
 }
 
-OSStatus mxos_rtos_wait_for_event_flags( mxos_event_flags_t* event_flags, uint32_t flags_to_wait_for, uint32_t* flags_set, mxos_bool_t clear_set_flags, mxos_event_flags_wait_option_t wait_option, uint32_t timeout_ms )
+mret_t mxos_rtos_wait_for_event_flags( mxos_event_flags_t* event_flags, uint32_t flags_to_wait_for, uint32_t* flags_set, mxos_bool_t clear_set_flags, mxos_event_flags_wait_option_t wait_option, uint32_t timeout_ms )
 {
     UNUSED_PARAMETER( event_flags );
     UNUSED_PARAMETER( flags_to_wait_for );
@@ -767,7 +768,7 @@ OSStatus mxos_rtos_wait_for_event_flags( mxos_event_flags_t* event_flags, uint32
     return kUnsupportedErr;
 }
 
-OSStatus mxos_rtos_set_event_flags( mxos_event_flags_t* event_flags, uint32_t flags_to_set )
+mret_t mxos_rtos_set_event_flags( mxos_event_flags_t* event_flags, uint32_t flags_to_set )
 {
     UNUSED_PARAMETER( event_flags );
     UNUSED_PARAMETER( flags_to_set );
@@ -775,7 +776,7 @@ OSStatus mxos_rtos_set_event_flags( mxos_event_flags_t* event_flags, uint32_t fl
     return kUnsupportedErr;
 }
 
-OSStatus mxos_rtos_deinit_event_flags( mxos_event_flags_t* event_flags )
+mret_t mxos_rtos_deinit_event_flags( mxos_event_flags_t* event_flags )
 {
     UNUSED_PARAMETER( event_flags );
     check_string( 0!=0, "Unsupported\r\n" );
@@ -800,20 +801,20 @@ void __rtos_malloc_unlock(struct _reent *ptr)
 #endif /* __GNUC__ */
 
 
-void mxos_rtos_suspend_thread(mxos_thread_t* thread)
+void mos_thread_suspend(mos_thread_id_t thread)
 {
     if (thread == NULL)
         vTaskSuspend(NULL);
     else
-        vTaskSuspend(*thread);
+        vTaskSuspend(thread);
 }
 
-void mxos_rtos_resume_thread(mxos_thread_t* thread)
+void mos_thread_resume(mos_thread_id_t id)
 {
-    if (thread == NULL)
+    if (id == NULL)
         vTaskResume(NULL);
     else
-        vTaskResume(*thread);
+        vTaskResume(id);
 }
 
 /**
@@ -837,10 +838,10 @@ mxos_time_t mxos_rtos_get_time( void )
  * is less than the delay required, then makes up the difference
  * with a tight loop
  *
- * @return OSStatus : kNoErr if delay was successful
+ * @return mret_t : kNoErr if delay was successful
  *
  */
-OSStatus mxos_rtos_delay_milliseconds( uint32_t num_ms )
+mret_t mos_thread_delay( uint32_t num_ms )
 {
     uint32_t ticks;
 

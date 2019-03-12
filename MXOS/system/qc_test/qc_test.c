@@ -55,7 +55,7 @@
 extern int mfg_scan(void); //TODO: Get it from MXOS core libraries
 
 static uint8_t* _qc_test_uart_init( void );
-static void _qc_test_thread( mxos_thread_arg_t arg );
+static void _qc_test_thread( void * arg );
 
 /******************************************************
 *               Variables Definitions
@@ -118,12 +118,12 @@ static void _qc_test_calculate_app_crc( char *str, int len )
 
 void mxos_system_qc_test( void )
 {
-    mxos_rtos_create_thread( NULL, MXOS_APPLICATION_PRIORITY, "QC Test", _qc_test_thread, (2048 * 4), 0 );
+    mos_thread_new( MXOS_APPLICATION_PRIORITY, "QC Test", _qc_test_thread, (2048 * 4), NULL );
 }
 
 
 /* MXCHIP standard QC test function main entrance, available for all modules */
-static void _qc_test_thread( mxos_thread_arg_t arg )
+static void _qc_test_thread( void * arg )
 {
     char str[128];
     uint8_t mac[6];
@@ -168,11 +168,11 @@ static void _qc_test_thread( mxos_thread_arg_t arg )
 exit:
     free( rx_data );
     mxos_thread_sleep( MXOS_NEVER_TIMEOUT );
-    mxos_rtos_delete_thread( NULL );
+    mos_thread_delete( NULL );
 }
 
 #ifdef MFG_MODE_AUTO
-static void uartRecvMfg_thread( mxos_thread_arg_t arg );
+static void uartRecvMfg_thread( void * arg );
 static size_t _uart_get_one_packet(uint8_t* inBuf, int inBufLen);
 
 void mxos_mfg_test(mxos_Context_t *inContext)
@@ -188,7 +188,7 @@ void mxos_mfg_test(mxos_Context_t *inContext)
   mxos_uart_config_t uart_config;
   volatile ring_buffer_t  rx_buffer;
   volatile uint8_t *       rx_data;
-  OSStatus err;
+  mret_t err;
   mxos_system_status_wlan_t* wlan_status;
   
   mxos_system_get_status_wlan( &wlan_status );
@@ -220,7 +220,7 @@ void mxos_mfg_test(mxos_Context_t *inContext)
   
   ring_buffer_init  ( (ring_buffer_t *)&rx_buffer, (uint8_t *)rx_data, 2048 );
   mxos_uart_init( UART_FOR_APP, &uart_config, (ring_buffer_t *)&rx_buffer );
-  err = mxos_rtos_create_thread(NULL, MXOS_APPLICATION_PRIORITY, "MFG UART Recv", uartRecvMfg_thread, 0x300, 0 );
+  mos_thread_new( MXOS_APPLICATION_PRIORITY, "MFG UART Recv", uartRecvMfg_thread, 0x300, NULL );
   
   /* Initialize UDP interface */
   t.tv_sec = 5;
@@ -266,7 +266,7 @@ exit:
   if(buf) free(buf);  
 }
 
-void uartRecvMfg_thread( mxos_thread_arg_t arg)
+void uartRecvMfg_thread( void * arg)
 {
   mxos_Context_t *Context = mxos_system_context_get();
   int recvlen;

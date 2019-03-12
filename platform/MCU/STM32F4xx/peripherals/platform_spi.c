@@ -46,9 +46,9 @@ typedef struct
 *               Static Function Declarations
 ******************************************************/
 
-static OSStatus calculate_prescaler( uint32_t speed, uint16_t* prescaler );
+static mret_t calculate_prescaler( uint32_t speed, uint16_t* prescaler );
 static uint16_t spi_transfer       ( const platform_spi_t* spi, uint16_t data );
-static OSStatus spi_dma_transfer   ( const platform_spi_t* spi, const platform_spi_config_t* config );
+static mret_t spi_dma_transfer   ( const platform_spi_t* spi, const platform_spi_config_t* config );
 static void     spi_dma_config     ( const platform_spi_t* spi, const platform_spi_message_segment_t* message );
 
 /******************************************************
@@ -109,10 +109,10 @@ static uint32_t get_dma_irq_status( DMA_Stream_TypeDef* stream )
     }
 }
 
-OSStatus platform_spi_init( platform_spi_driver_t* driver, const platform_spi_t* peripheral, const platform_spi_config_t* config )
+mret_t platform_spi_init( platform_spi_driver_t* driver, const platform_spi_t* peripheral, const platform_spi_config_t* config )
 {
   SPI_InitTypeDef   spi_init;
-  OSStatus          err;
+  mret_t          err;
   
   platform_mcu_powersave_disable();
   
@@ -231,7 +231,7 @@ exit:
 
 
 
-OSStatus platform_spi_deinit( platform_spi_driver_t* driver )
+mret_t platform_spi_deinit( platform_spi_driver_t* driver )
 {
   UNUSED_PARAMETER( driver );
   /* TODO: unimplemented */
@@ -239,9 +239,9 @@ OSStatus platform_spi_deinit( platform_spi_driver_t* driver )
 }
 
 
-OSStatus platform_spi_transfer( platform_spi_driver_t* driver, const platform_spi_config_t* config, const platform_spi_message_segment_t* segments, uint16_t number_of_segments )
+mret_t platform_spi_transfer( platform_spi_driver_t* driver, const platform_spi_config_t* config, const platform_spi_message_segment_t* segments, uint16_t number_of_segments )
 {
-  OSStatus err    = kNoErr;
+  mret_t err    = kNoErr;
   uint32_t count  = 0;
   uint16_t i;
   
@@ -354,10 +354,10 @@ static uint16_t spi_transfer( const platform_spi_t* spi, uint16_t data )
 }
 
 
-static OSStatus calculate_prescaler( uint32_t speed, uint16_t* prescaler )
+static mret_t calculate_prescaler( uint32_t speed, uint16_t* prescaler )
 {
   uint8_t  i;
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   
   require_action_quiet( prescaler != NULL, exit, err = kParamErr);
   
@@ -374,7 +374,7 @@ exit:
   return err;
 }
 
-static OSStatus spi_dma_transfer( const platform_spi_t* spi, const platform_spi_config_t* config )
+static mret_t spi_dma_transfer( const platform_spi_t* spi, const platform_spi_config_t* config )
 {  
   /* Enable dma channels that have just been configured */
   DMA_Cmd( spi->rx_dma.stream, ENABLE );

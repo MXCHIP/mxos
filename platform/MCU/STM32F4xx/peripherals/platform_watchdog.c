@@ -56,11 +56,11 @@ static uint32_t GetLSIFrequency(void);
  *               Function Definitions
  ******************************************************/
 
-OSStatus platform_watchdog_init( uint32_t timeout_ms )
+mret_t platform_watchdog_init( uint32_t timeout_ms )
 {
 // PLATFORM_TO_DO
 #ifndef MXOS_DISABLE_WATCHDOG
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   uint32_t reloadTick;
   timeout_ms += 1000;
   /* Get the LSI frequency:  TIM5 is used to measure the LSI frequency */
@@ -94,13 +94,13 @@ exit:
 #endif
 }
 
-OSStatus platform_watchdog_deinit( void )
+mret_t platform_watchdog_deinit( void )
 {
     // PLATFORM_TO_DO
     return kNoErr;
 }
 
-OSStatus platform_watchdog_kick( void )
+mret_t platform_watchdog_kick( void )
 {
 #ifndef MXOS_DISABLE_WATCHDOG
   IWDG_ReloadCounter();

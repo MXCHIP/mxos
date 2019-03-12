@@ -411,9 +411,9 @@ void BMM050_delay_msek(u32 msek)
 #endif
 
 
-OSStatus bmm050_sensor_init(void)
+mret_t bmm050_sensor_init(void)
 {
-  OSStatus err = kUnknownErr;
+  mret_t err = kUnknownErr;
   /* Variable used to get the data rate*/
   u8 v_data_rate_u8 = BMM050_INIT_VALUE;
   /* Variable used to set the data rate*/
@@ -468,9 +468,9 @@ exit:
 }
 
 
-OSStatus bmm050_data_readout(s16 *v_mag_datax_s16, s16 *v_mag_datay_s16, s16 *v_mag_dataz_s16)
+mret_t bmm050_data_readout(s16 *v_mag_datax_s16, s16 *v_mag_datay_s16, s16 *v_mag_dataz_s16)
 {
-  OSStatus err = kUnknownErr;
+  mret_t err = kUnknownErr;
   struct bmm050_mag_data_s16_t data;
   
   /* result of communication results*/
@@ -497,9 +497,9 @@ OSStatus bmm050_data_readout(s16 *v_mag_datax_s16, s16 *v_mag_datay_s16, s16 *v_
   return err;
 }
 
-OSStatus bmm050_sensor_deinit(void)
+mret_t bmm050_sensor_deinit(void)
 {
-  OSStatus err = kUnknownErr;
+  mret_t err = kUnknownErr;
   s32 com_rslt = BMM050_ERROR;
   
   err = mxos_i2c_deinit(&bmm050_i2c_device);

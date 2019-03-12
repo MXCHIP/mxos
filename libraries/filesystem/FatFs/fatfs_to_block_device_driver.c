@@ -77,7 +77,7 @@ DSTATUS disk_status(
                      void* user_data /* Physical drive nmuber to identify the drive */
                      )
 {
-    OSStatus result;
+    mret_t result;
     mxos_block_device_status_t status;
     mxos_block_device_t* device = (mxos_block_device_t*) user_data;
 

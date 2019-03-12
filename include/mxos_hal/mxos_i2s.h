@@ -94,7 +94,7 @@ typedef struct
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if the iis device could not be initialised
  */
-OSStatus mxos_i2s_init( const mxos_iis_device_t* iis );
+mret_t mxos_i2s_init( const mxos_iis_device_t* iis );
 
 
 /**@brief Transmits and/or receives data from a IIS device
@@ -106,7 +106,7 @@ OSStatus mxos_i2s_init( const mxos_iis_device_t* iis );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-OSStatus mxos_i2s_transfer( const mxos_iis_device_t* iis, const mxos_iis_message_segment_t* segments, uint16_t number_of_segments );
+mret_t mxos_i2s_transfer( const mxos_iis_device_t* iis, const mxos_iis_message_segment_t* segments, uint16_t number_of_segments );
 
 
 /**@brief De-initialises a IIS interface
@@ -118,7 +118,7 @@ OSStatus mxos_i2s_transfer( const mxos_iis_device_t* iis, const mxos_iis_message
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-OSStatus mxos_i2s_deinit( const mxos_iis_device_t* iis );
+mret_t mxos_i2s_deinit( const mxos_iis_device_t* iis );
 
 /**@brief Write through IIS interface
  *
@@ -131,7 +131,7 @@ OSStatus mxos_i2s_deinit( const mxos_iis_device_t* iis );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-OSStatus mxos_i2s_write( const mxos_iis_device_t* iis, uint8_t *p_buf, uint32_t size );
+mret_t mxos_i2s_write( const mxos_iis_device_t* iis, uint8_t *p_buf, uint32_t size );
 
 /**@brief Read through IIS interface
  *
@@ -144,7 +144,7 @@ OSStatus mxos_i2s_write( const mxos_iis_device_t* iis, uint8_t *p_buf, uint32_t 
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-OSStatus mxos_i2s_read( const mxos_iis_device_t* iis, uint8_t *p_buf, uint32_t size );
+mret_t mxos_i2s_read( const mxos_iis_device_t* iis, uint8_t *p_buf, uint32_t size );
 
 /** @} */
 /** @} */

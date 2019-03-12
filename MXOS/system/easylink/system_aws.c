@@ -36,7 +36,7 @@ static void aws_wifi_status_cb( WiFiEvent event, system_context_t * const inCont
 static void aws_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t * const inContext );
 
 /* Thread perform easylink and connect to wlan */
-static void aws_thread( uint32_t inContext ); /* Perform easylink and connect to wlan */
+static void aws_thread( void *inContext ); /* Perform easylink and connect to wlan */
 char* aws_notify_msg_create(system_context_t *context);
 
 /******************************************************
@@ -45,7 +45,7 @@ char* aws_notify_msg_create(system_context_t *context);
 static mxos_semaphore_t aws_sem;         /**< Used to suspend thread while easylink. */
 static mxos_semaphore_t aws_connect_sem; /**< Used to suspend thread while connection. */
 static bool aws_success = false;         /**< true: connect to wlan, false: start soft ap mode or roll back to previous settings */
-static mxos_thread_t aws_thread_handler = NULL;
+static mos_thread_id_t aws_thread_handler = NULL;
 static bool aws_thread_force_exit = false;
 
 
@@ -72,7 +72,7 @@ static void aws_wifi_status_cb( WiFiEvent event, system_context_t * const inCont
 /* MXOS callback when EasyLink is finished step 1, return SSID and KEY */
 static void aws_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t * const inContext )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action_string( nwkpara, exit, err = kTimeoutErr, "AWS Timeout or terminated" );
 
@@ -183,9 +183,9 @@ static int aws_broadcast_notification(char *msg, int msg_num)
     return result;
 }
 
-static void aws_thread( uint32_t arg )
+static void aws_thread( void *arg )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
     system_context_t *context = (system_context_t *) arg;
     char *aws_msg = aws_notify_msg_create(context);
 
@@ -268,12 +268,12 @@ exit:
     mxos_rtos_deinit_semaphore( &aws_sem );
     mxos_rtos_deinit_semaphore( &aws_connect_sem );
     aws_thread_handler = NULL;
-    mxos_rtos_delete_thread( NULL );
+    mos_thread_delete( NULL );
 }
 
-OSStatus mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enable )
+mret_t mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enable )
 {
-    OSStatus err = kUnknownErr;
+    mret_t err = kUnknownErr;
 
     require_action( in_context, exit, err = kNotPreparedErr );
 
@@ -282,16 +282,18 @@ OSStatus mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enabl
         system_log("EasyLink processing, force stop..");
         aws_thread_force_exit = true;
         mxos_rtos_thread_force_awake( &aws_thread_handler );
-        mxos_rtos_thread_join( &aws_thread_handler );
+        mos_thread_join( aws_thread_handler );
     }
 
     if ( enable == MXOS_TRUE ) {
-        err = mxos_rtos_create_thread( &aws_thread_handler, MXOS_APPLICATION_PRIORITY, "aws", aws_thread,
-                                       0x1000, (mxos_thread_arg_t) in_context );
-        require_noerr_string( err, exit, "ERROR: Unable to start the EasyLink thread." );
+        aws_thread_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "aws", aws_thread,
+                                       0x1000, (void *) in_context );
+        require_action_string( aws_thread_handler != NULL, exit, err = kGeneralErr, "ERROR: Unable to start the EasyLink thread." );
+
+        err = kNoErr;
 
         /* Make sure easylink is already running, and waiting for sem trigger */
-        mxos_rtos_delay_milliseconds( 1000 );
+        mos_thread_delay( 1000 );
     }
 
     exit:

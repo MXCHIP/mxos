@@ -145,7 +145,7 @@ struct _hapProduct_t {
 
 typedef struct _hapProduct_t hapProduct_t;
 
-typedef OSStatus (*hk_key_storage_cb)(unsigned char *pk, unsigned char *sk, bool write);
+typedef mret_t (*hk_key_storage_cb)(unsigned char *pk, unsigned char *sk, bool write);
 
 /*Running status*/
 typedef struct _hk_init_t {
@@ -165,11 +165,11 @@ typedef struct _hk_init_t {
 
 void hk_server_lib_version( uint8_t *major, uint8_t *minor, uint8_t *revision );
 
-OSStatus hk_server_start( hk_init_t init );
+mret_t hk_server_start( hk_init_t init );
 
-OSStatus hk_server_update_attri_db( hapProduct_t *hap_product, int config_number );
+mret_t hk_server_update_attri_db( hapProduct_t *hap_product, int config_number );
 
-OSStatus hk_server_notify_by_bonjour( void );
+mret_t hk_server_notify_by_bonjour( void );
 
 /* HomeKit callback functions */
 HkStatus HKReadCharacteristicValue(int accessoryID, int serviceID, int characteristicID, value_union *value );

@@ -44,7 +44,7 @@
 /******************************************************
  *               Function Declarations
  ******************************************************/
-OSStatus host_platform_deinit_wlan_powersave_clock( void );
+mret_t host_platform_deinit_wlan_powersave_clock( void );
 
 /******************************************************
  *               Variables Definitions
@@ -74,7 +74,7 @@ void host_platform_power_wifi( bool power_enabled )
 #endif
 }
 
-OSStatus host_platform_init( void )
+mret_t host_platform_init( void )
 {
     host_platform_deinit_wlan_powersave_clock( );
 
@@ -92,7 +92,7 @@ OSStatus host_platform_init( void )
 }
 
 /* Used to give a 32k clock to EMW1062 wifi rf module */
-MXOS_WEAK OSStatus host_platform_init_wlan_powersave_clock( void )
+MXOS_WEAK mret_t host_platform_init_wlan_powersave_clock( void )
 {
 #ifndef MXOS_USE_WIFI_32K_PIN
     return kNoErr;
@@ -101,7 +101,7 @@ MXOS_WEAK OSStatus host_platform_init_wlan_powersave_clock( void )
 #endif
 }
 
-OSStatus host_platform_deinit( void )
+mret_t host_platform_deinit( void )
 {
 #if defined ( MXOS_USE_WIFI_RESET_PIN )
     platform_gpio_init( &wifi_control_pins[WIFI_PIN_RESET], OUTPUT_PUSH_PULL );
@@ -134,7 +134,7 @@ bool host_platform_is_in_interrupt_context( void )
     }
 }
 
-OSStatus host_platform_deinit_wlan_powersave_clock( void )
+mret_t host_platform_deinit_wlan_powersave_clock( void )
 {
 #ifndef MXOS_USE_WIFI_32K_PIN
     return kNoErr;

@@ -54,29 +54,29 @@ extern "C" {
  *               Function Declarations
  ******************************************************/
 
-OSStatus peripheral_bt_interface_initialize( void );
+mret_t peripheral_bt_interface_initialize( void );
 
-OSStatus peripheral_bt_interface_deinitialize( void );
+mret_t peripheral_bt_interface_deinitialize( void );
 
-OSStatus peripheral_bt_interface_cancel_last_connect( mxos_bt_device_address_t address );
+mret_t peripheral_bt_interface_cancel_last_connect( mxos_bt_device_address_t address );
 
-OSStatus peripheral_bt_interface_disconnect( uint16_t connection_handle );
+mret_t peripheral_bt_interface_disconnect( uint16_t connection_handle );
 
-OSStatus peripheral_bt_interface_set_security_settings( const mxos_bt_smart_security_settings_t* settings );
+mret_t peripheral_bt_interface_set_security_settings( const mxos_bt_smart_security_settings_t* settings );
 
-OSStatus peripheral_bt_interface_start_advertisements( mxos_bt_smart_advertising_settings_t* settings, mxos_bt_smart_advertising_complete_callback_t complete_callback );
+mret_t peripheral_bt_interface_start_advertisements( mxos_bt_smart_advertising_settings_t* settings, mxos_bt_smart_advertising_complete_callback_t complete_callback );
 
-OSStatus peripheral_bt_interface_stop_advertisements( void );
+mret_t peripheral_bt_interface_stop_advertisements( void );
 
-OSStatus peripheral_bt_interface_indicate_attribute_value ( uint16_t connection_handle, const mxos_bt_ext_attribute_value_t* attribute );
+mret_t peripheral_bt_interface_indicate_attribute_value ( uint16_t connection_handle, const mxos_bt_ext_attribute_value_t* attribute );
 
-OSStatus peripheral_bt_interface_notify_attribute_value( uint16_t connection_handle, const mxos_bt_ext_attribute_value_t* attribute );
+mret_t peripheral_bt_interface_notify_attribute_value( uint16_t connection_handle, const mxos_bt_ext_attribute_value_t* attribute );
 
-OSStatus peripheral_bt_interface_update_advertisements_white_list( mxos_bool_t add, mxos_bt_device_address_t device_address );
+mret_t peripheral_bt_interface_update_advertisements_white_list( mxos_bool_t add, mxos_bt_device_address_t device_address );
 
-OSStatus peripheral_bt_interface_get_advertisements_white_list_size( uint8_t *size );
+mret_t peripheral_bt_interface_get_advertisements_white_list_size( uint8_t *size );
 
-OSStatus peripheral_bt_interface_set_advertisements_filter_policy(mxos_bt_peripheral_adv_filter_policy_t type);
+mret_t peripheral_bt_interface_set_advertisements_filter_policy(mxos_bt_peripheral_adv_filter_policy_t type);
 
 #ifdef __cplusplus
 } /* extern "C" */

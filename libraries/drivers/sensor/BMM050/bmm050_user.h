@@ -50,7 +50,7 @@
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus bmm050_sensor_init(void);
+mret_t bmm050_sensor_init(void);
 
 
 /**
@@ -63,7 +63,7 @@ OSStatus bmm050_sensor_init(void);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus bmm050_data_readout(s16 *v_mag_datax_s16, s16 *v_mag_datay_s16, s16 *v_mag_dataz_s16);
+mret_t bmm050_data_readout(s16 *v_mag_datax_s16, s16 *v_mag_datay_s16, s16 *v_mag_dataz_s16);
 
 
 /**
@@ -72,7 +72,7 @@ OSStatus bmm050_data_readout(s16 *v_mag_datax_s16, s16 *v_mag_datay_s16, s16 *v_
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus bmm050_sensor_deinit(void);
+mret_t bmm050_sensor_deinit(void);
 /**
   * @}
   */

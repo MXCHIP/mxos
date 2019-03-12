@@ -46,21 +46,21 @@ extern "C" {
  *               Function Declarations
  ******************************************************/
 
-OSStatus bt_smartbridge_socket_manager_init( void );
+mret_t bt_smartbridge_socket_manager_init( void );
 
-OSStatus bt_smartbridge_socket_manager_deinit( void );
+mret_t bt_smartbridge_socket_manager_deinit( void );
 
-OSStatus bt_smartbridge_socket_manager_set_max_concurrent_connections( uint8_t count );
+mret_t bt_smartbridge_socket_manager_set_max_concurrent_connections( uint8_t count );
 
 mxos_bool_t   bt_smartbridge_socket_manager_is_full( void );
 
-OSStatus bt_smartbridge_socket_manager_insert_socket( mxos_bt_smartbridge_socket_t* socket );
+mret_t bt_smartbridge_socket_manager_insert_socket( mxos_bt_smartbridge_socket_t* socket );
 
-OSStatus bt_smartbridge_socket_manager_remove_socket( uint16_t connection_handle, mxos_bt_smartbridge_socket_t** socket );
+mret_t bt_smartbridge_socket_manager_remove_socket( uint16_t connection_handle, mxos_bt_smartbridge_socket_t** socket );
 
-OSStatus bt_smartbridge_socket_manager_find_socket_by_handle( uint16_t connection_handle, mxos_bt_smartbridge_socket_t** socket );
+mret_t bt_smartbridge_socket_manager_find_socket_by_handle( uint16_t connection_handle, mxos_bt_smartbridge_socket_t** socket );
 
-OSStatus bt_smartbridge_socket_manager_find_socket_by_address( const mxos_bt_device_address_t* address, mxos_bt_smartbridge_socket_t** socket );
+mret_t bt_smartbridge_socket_manager_find_socket_by_address( const mxos_bt_device_address_t* address, mxos_bt_smartbridge_socket_t** socket );
 
 #ifdef __cplusplus
 } /* extern "C" */

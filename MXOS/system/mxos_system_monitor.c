@@ -35,21 +35,20 @@
 #endif
 
 static mxos_system_monitor_t* system_monitors[MAXIMUM_NUMBER_OF_SYSTEM_MONITORS];
-void mxos_system_monitor_thread_main( uint32_t arg );
+void mxos_system_monitor_thread_main( void *arg );
 
-OSStatus MXOSStartSystemMonitor ( void )
+mret_t MXOSStartSystemMonitor ( void )
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   require_noerr(mxos_wdg_init( DEFAULT_SYSTEM_MONITOR_PERIOD + 1000 ), exit);
   memset(system_monitors, 0, sizeof(system_monitors));
 
-  err = mxos_rtos_create_thread(NULL, 0, "SYS MONITOR", mxos_system_monitor_thread_main, STACK_SIZE_mxos_system_MONITOR_THREAD, 0 );
-  require_noerr(err, exit);
+  require_action(mos_thread_new( 0, "SYS MONITOR", mxos_system_monitor_thread_main, STACK_SIZE_mxos_system_MONITOR_THREAD, NULL ) != NULL, exit, err = kGeneralErr);
 exit:
   return err;
 }
 
-void mxos_system_monitor_thread_main( uint32_t arg )
+void mxos_system_monitor_thread_main( void *arg )
 {
   (void)arg;
   
@@ -76,7 +75,7 @@ void mxos_system_monitor_thread_main( uint32_t arg )
   }
 }
 
-OSStatus mxos_system_monitor_register(mxos_system_monitor_t* system_monitor, uint32_t initial_permitted_delay)
+mret_t mxos_system_monitor_register(mxos_system_monitor_t* system_monitor, uint32_t initial_permitted_delay)
 {
   int a;
   
@@ -95,7 +94,7 @@ OSStatus mxos_system_monitor_register(mxos_system_monitor_t* system_monitor, uin
   return kUnknownErr;
 }
 
-OSStatus mxos_system_monitor_update(mxos_system_monitor_t* system_monitor, uint32_t permitted_delay)
+mret_t mxos_system_monitor_update(mxos_system_monitor_t* system_monitor, uint32_t permitted_delay)
 {
   uint32_t current_time = mxos_rtos_get_time();
   /* Update the system monitor if it hasn't already passed it's permitted delay */
@@ -119,9 +118,9 @@ static void _watchdog_reload_timer_handler( void* arg )
 }
 
 
-OSStatus mxos_system_monitor_daemen_start( void )
+mret_t mxos_system_monitor_daemen_start( void )
 {
-  OSStatus err = kNoErr;
+  mret_t err = kNoErr;
   /*Start system monotor thread*/
   err = MXOSStartSystemMonitor( );
   require_noerr_string( err, exit, "ERROR: Unable to start the system monitor." );

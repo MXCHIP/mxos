@@ -55,7 +55,7 @@
  * @return   kGeneralErr   : if an error occurred
  */
 
-OSStatus SocketSend( int fd, const uint8_t *inBuf, size_t inBufLen );
+mret_t SocketSend( int fd, const uint8_t *inBuf, size_t inBufLen );
 
 
 /**

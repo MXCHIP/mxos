@@ -363,9 +363,9 @@ void platform_mcu_reset( void );
  * @param[in] gpio   : gpio pin
  * @param[in] config : pin configuration
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_gpio_init( const platform_gpio_t* gpio, platform_pin_config_t config );
+mret_t platform_gpio_init( const platform_gpio_t* gpio, platform_pin_config_t config );
 
 
 /**
@@ -373,9 +373,9 @@ OSStatus platform_gpio_init( const platform_gpio_t* gpio, platform_pin_config_t 
  *
  * @param[in] gpio : gpio pin
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_gpio_deinit( const platform_gpio_t* gpio );
+mret_t platform_gpio_deinit( const platform_gpio_t* gpio );
 
 
 /**
@@ -383,9 +383,9 @@ OSStatus platform_gpio_deinit( const platform_gpio_t* gpio );
  *
  * @param[in] gpio : gpio pin
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_gpio_output_high( const platform_gpio_t* gpio );
+mret_t platform_gpio_output_high( const platform_gpio_t* gpio );
 
 
 /**
@@ -393,9 +393,9 @@ OSStatus platform_gpio_output_high( const platform_gpio_t* gpio );
  *
  * @param[in] gpio : gpio pin
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_gpio_output_low( const platform_gpio_t* gpio );
+mret_t platform_gpio_output_low( const platform_gpio_t* gpio );
 
 
 /**
@@ -403,9 +403,9 @@ OSStatus platform_gpio_output_low( const platform_gpio_t* gpio );
  *
  * @param[in] gpio : gpio pin
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_gpio_output_trigger( const platform_gpio_t* gpio );
+mret_t platform_gpio_output_trigger( const platform_gpio_t* gpio );
 
 
 /**
@@ -413,7 +413,7 @@ OSStatus platform_gpio_output_trigger( const platform_gpio_t* gpio );
  *
  * @param[in] gpio : gpio pin
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
 bool platform_gpio_input_get( const platform_gpio_t* gpio );
 
@@ -426,9 +426,9 @@ bool platform_gpio_input_get( const platform_gpio_t* gpio );
  * @param[in] handler : callback function that will be called when an interrupt occurs
  * @param[in] arg     : argument that will be passed into the callback function
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_gpio_irq_enable( const platform_gpio_t* gpio, platform_gpio_irq_trigger_t trigger, platform_gpio_irq_callback_t handler, void* arg );
+mret_t platform_gpio_irq_enable( const platform_gpio_t* gpio, platform_gpio_irq_trigger_t trigger, platform_gpio_irq_callback_t handler, void* arg );
 
 
 /**
@@ -436,25 +436,25 @@ OSStatus platform_gpio_irq_enable( const platform_gpio_t* gpio, platform_gpio_ir
  *
  * @param[in] gpio : gpio pin
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_gpio_irq_disable( const platform_gpio_t* gpio );
+mret_t platform_gpio_irq_disable( const platform_gpio_t* gpio );
 
 
 /**
  * Enable MCU powersave
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_mcu_powersave_enable( void );
+mret_t platform_mcu_powersave_enable( void );
 
 
 /**
  * Disable MCU powersave
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_mcu_powersave_disable( void );
+mret_t platform_mcu_powersave_disable( void );
 
 /**
  * Enter standby mode, and wait a period to wakup
@@ -467,25 +467,25 @@ void platform_mcu_enter_standby( uint32_t secondsToWakeup );
 /**
  * Notify the software stack that MCU has exited powersave mode due to interrupt
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
 void platform_mcu_powersave_exit_notify( void );
 
 
-OSStatus platform_watchdog_init( uint32_t timeout_ms );
+mret_t platform_watchdog_init( uint32_t timeout_ms );
 
 /**
  * Refresh the watchdog
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_watchdog_kick( void );
+mret_t platform_watchdog_kick( void );
 
 
 /**
  * Check if last reset occurred due to watchdog reset
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
 bool platform_watchdog_check_last_reset( void );
 
@@ -493,34 +493,34 @@ bool platform_watchdog_check_last_reset( void );
 /**
  * Initialise the specified UART port
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
 
-OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart_t* peripheral, const platform_uart_config_t* config, ring_buffer_t* optional_ring_buffer );
+mret_t platform_uart_init( platform_uart_driver_t* driver, const platform_uart_t* peripheral, const platform_uart_config_t* config, ring_buffer_t* optional_ring_buffer );
 
 
 /**
  * Deinitialise the specified UART port
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_uart_deinit( platform_uart_driver_t* driver );
+mret_t platform_uart_deinit( platform_uart_driver_t* driver );
 
 
 /**
  * Transmit data over the specified UART port
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8_t* data_out, uint32_t size );
+mret_t platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8_t* data_out, uint32_t size );
 
 
 /**
  * Receive data over the specified UART port
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* data_in, uint32_t expected_data_size, uint32_t timeout_ms );
+mret_t platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* data_in, uint32_t expected_data_size, uint32_t timeout_ms );
 
 
 /**
@@ -536,28 +536,28 @@ uint32_t platform_uart_get_length_in_buffer( platform_uart_driver_t* driver );
  * @param[in] spi_interface : SPI interface
  * @param[in] config        : SPI configuratin
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_spi_init( platform_spi_driver_t* driver, const platform_spi_t* peripheral, const platform_spi_config_t* config );
-OSStatus platform_wlan_spi_init( const platform_gpio_t* chip_select );
+mret_t platform_spi_init( platform_spi_driver_t* driver, const platform_spi_t* peripheral, const platform_spi_config_t* config );
+mret_t platform_wlan_spi_init( const platform_gpio_t* chip_select );
 
 
 /**
  * Deinitialise the specified SPI interface
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_spi_deinit( platform_spi_driver_t* driver );
-OSStatus platform_wlan_spi_deinit( const platform_gpio_t* chip_select );
+mret_t platform_spi_deinit( platform_spi_driver_t* driver );
+mret_t platform_wlan_spi_deinit( const platform_gpio_t* chip_select );
 
 
 /**
  * Transfer data over the specified SPI interface
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_spi_transfer( platform_spi_driver_t* driver, const platform_spi_config_t* config, const platform_spi_message_segment_t* segments, uint16_t number_of_segments );
-OSStatus platform_wlan_spi_transfer( const platform_gpio_t* chip_select, const platform_spi_message_segment_t* segments, uint16_t number_of_segments );
+mret_t platform_spi_transfer( platform_spi_driver_t* driver, const platform_spi_config_t* config, const platform_spi_message_segment_t* segments, uint16_t number_of_segments );
+mret_t platform_wlan_spi_transfer( const platform_gpio_t* chip_select, const platform_spi_message_segment_t* segments, uint16_t number_of_segments );
 
 
 /** Initialises a SPI slave interface
@@ -566,19 +566,19 @@ OSStatus platform_wlan_spi_transfer( const platform_gpio_t* chip_select, const p
  * @param[in]  peripheral : the SPI peripheral interface to be initialised
  * @param[in]  config     : SPI slave configuration
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-WEAK OSStatus platform_spi_slave_init( platform_spi_slave_driver_t* driver, const platform_spi_t* peripheral, const platform_spi_slave_config_t* config );
+WEAK mret_t platform_spi_slave_init( platform_spi_slave_driver_t* driver, const platform_spi_t* peripheral, const platform_spi_slave_config_t* config );
 
 
 /** De-initialises a SPI slave interface
  *
  * @param[in]  driver : the SPI slave driver to be de-initialised
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
 
-WEAK OSStatus platform_spi_slave_deinit( platform_spi_slave_driver_t* driver );
+WEAK mret_t platform_spi_slave_deinit( platform_spi_slave_driver_t* driver );
 
 
 /** Receive command from the remote SPI master
@@ -587,9 +587,9 @@ WEAK OSStatus platform_spi_slave_deinit( platform_spi_slave_driver_t* driver );
  * @param[out]  command     : pointer to the variable which will contained the received command
  * @param[in]   timeout_ms  : timeout in milliseconds
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-WEAK OSStatus platform_spi_slave_receive_command( platform_spi_slave_driver_t* driver, platform_spi_slave_command_t* command, uint32_t timeout_ms );
+WEAK mret_t platform_spi_slave_receive_command( platform_spi_slave_driver_t* driver, platform_spi_slave_command_t* command, uint32_t timeout_ms );
 
 
 /** Transfer data to/from the remote SPI master
@@ -599,9 +599,9 @@ WEAK OSStatus platform_spi_slave_receive_command( platform_spi_slave_driver_t* d
  * @param[in]  buffer      : the buffer which contain the data to transfer
  * @param[in]  timeout_ms  : timeout in milliseconds
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-WEAK OSStatus platform_spi_slave_transfer_data( platform_spi_slave_driver_t* driver, platform_spi_slave_transfer_direction_t direction, platform_spi_slave_data_buffer_t* buffer, uint32_t timeout_ms );
+WEAK mret_t platform_spi_slave_transfer_data( platform_spi_slave_driver_t* driver, platform_spi_slave_transfer_direction_t direction, platform_spi_slave_data_buffer_t* buffer, uint32_t timeout_ms );
 
 
 /** Send an error status over the SPI slave interface
@@ -609,9 +609,9 @@ WEAK OSStatus platform_spi_slave_transfer_data( platform_spi_slave_driver_t* dri
  * @param[in]  driver       : the SPI slave driver
  * @param[in]  error_status : SPI slave error status
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-WEAK OSStatus platform_spi_slave_send_error_status( platform_spi_slave_driver_t* driver, platform_spi_slave_transfer_status_t error_status );
+WEAK mret_t platform_spi_slave_send_error_status( platform_spi_slave_driver_t* driver, platform_spi_slave_transfer_status_t error_status );
 
 
 /** Generate an interrupt on the SPI slave interface
@@ -619,9 +619,9 @@ WEAK OSStatus platform_spi_slave_send_error_status( platform_spi_slave_driver_t*
  * @param[in]  driver            : the SPI slave driver
  * @param[in]  pulse_duration_ms : interrupt pulse duration in milliseconds
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-WEAK OSStatus platform_spi_slave_generate_interrupt( platform_spi_slave_driver_t* driver, uint32_t pulse_duration_ms );
+WEAK mret_t platform_spi_slave_generate_interrupt( platform_spi_slave_driver_t* driver, uint32_t pulse_duration_ms );
 
 
 /**
@@ -630,9 +630,9 @@ WEAK OSStatus platform_spi_slave_generate_interrupt( platform_spi_slave_driver_t
  * @param[in] adc_interface : adc_interface
  * @param[in] sample_cycle  : sample cycle
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_adc_init( const platform_adc_t* adc, uint32_t sample_cycle );
+mret_t platform_adc_init( const platform_adc_t* adc, uint32_t sample_cycle );
 
 
 /**
@@ -640,9 +640,9 @@ OSStatus platform_adc_init( const platform_adc_t* adc, uint32_t sample_cycle );
  *
  * @param[in] adc_interface : adc_interface
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_adc_deinit( const platform_adc_t* adc );
+mret_t platform_adc_deinit( const platform_adc_t* adc );
 
 /**
  * Read ADC sample resolution
@@ -659,9 +659,9 @@ uint16_t platform_adc_get_bit_range( const platform_adc_t* adc );
  * @param[in]  adc_interface : adc_interface
  * @param[out] output        : variable that will contain the sample output
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_adc_take_sample( const platform_adc_t* adc, uint16_t* output );
+mret_t platform_adc_take_sample( const platform_adc_t* adc, uint16_t* output );
 
 
 /**
@@ -671,9 +671,9 @@ OSStatus platform_adc_take_sample( const platform_adc_t* adc, uint16_t* output )
  * @param[out] buffer        : buffer that will contain the sample stream output
  * @param[in]  buffer_length : buffer length
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_adc_take_sample_stream( const platform_adc_t* adc, void* buffer, uint16_t buffer_length );
+mret_t platform_adc_take_sample_stream( const platform_adc_t* adc, void* buffer, uint16_t buffer_length );
 
 
 /**
@@ -682,9 +682,9 @@ OSStatus platform_adc_take_sample_stream( const platform_adc_t* adc, void* buffe
  * @param[in] i2c_interface : I2C interface
  * @param[in] config        : I2C configuration
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_i2c_init( const platform_i2c_t* i2c, const platform_i2c_config_t* config );
+mret_t platform_i2c_init( const platform_i2c_t* i2c, const platform_i2c_config_t* config );
 
 
 /**
@@ -692,9 +692,9 @@ OSStatus platform_i2c_init( const platform_i2c_t* i2c, const platform_i2c_config
  *
  * @param[in] i2c_interface : I2C interface
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_i2c_deinit( const platform_i2c_t* i2c, const platform_i2c_config_t* config );
+mret_t platform_i2c_deinit( const platform_i2c_t* i2c, const platform_i2c_config_t* config );
 
 
 /**
@@ -703,7 +703,7 @@ OSStatus platform_i2c_deinit( const platform_i2c_t* i2c, const platform_i2c_conf
  * @param[in] i2c_interface : I2C interface
  * @param[in] retries       : number of retries
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
 bool platform_i2c_probe_device( const platform_i2c_t* i2c, const platform_i2c_config_t* config, int retries );
 
@@ -716,9 +716,9 @@ bool platform_i2c_probe_device( const platform_i2c_t* i2c, const platform_i2c_co
  * @param[in]     tx_buffer_length : transmit buffer length is bytes
  * @param[in]     retries          : number of transmission retries
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_i2c_init_tx_message( platform_i2c_message_t* message, const void* tx_buffer, uint16_t tx_buffer_length, uint16_t retries );
+mret_t platform_i2c_init_tx_message( platform_i2c_message_t* message, const void* tx_buffer, uint16_t tx_buffer_length, uint16_t retries );
 
 
 /**
@@ -729,9 +729,9 @@ OSStatus platform_i2c_init_tx_message( platform_i2c_message_t* message, const vo
  * @param[in]     rx_buffer_length : receive buffer length is bytes
  * @param[in]     retries          : number of transmission retries
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_i2c_init_rx_message( platform_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length, uint16_t retries );
+mret_t platform_i2c_init_rx_message( platform_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length, uint16_t retries );
 
 
 /**
@@ -744,9 +744,9 @@ OSStatus platform_i2c_init_rx_message( platform_i2c_message_t* message, void* rx
  * @param[in]     rx_buffer_length : receive buffer length is bytes
  * @param[in]     retries          : number of transmission retries
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_i2c_init_combined_message( platform_i2c_message_t* message, const void* tx_buffer, void* rx_buffer, uint16_t tx_buffer_length, uint16_t rx_buffer_length, uint16_t retries );
+mret_t platform_i2c_init_combined_message( platform_i2c_message_t* message, const void* tx_buffer, void* rx_buffer, uint16_t tx_buffer_length, uint16_t rx_buffer_length, uint16_t retries );
 
 
 /**
@@ -756,9 +756,9 @@ OSStatus platform_i2c_init_combined_message( platform_i2c_message_t* message, co
  * @param[in] messages           : pointer to an array of messages to transceive
  * @param[in] number_of_messages : number of messages in the array
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_i2c_transfer( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* messages, uint16_t number_of_messages );
+mret_t platform_i2c_transfer( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* messages, uint16_t number_of_messages );
 
 
 /**
@@ -768,9 +768,9 @@ OSStatus platform_i2c_transfer( const platform_i2c_t* i2c, const platform_i2c_co
  * @param[in] frequency     : PWM signal frequency in Hz
  * @param[in] duty_cycle    : PWM signal duty cycle in percentage point
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_pwm_init( const platform_pwm_t* pwm, uint32_t frequency, float duty_cycle );
+mret_t platform_pwm_init( const platform_pwm_t* pwm, uint32_t frequency, float duty_cycle );
 
 
 /**
@@ -778,9 +778,9 @@ OSStatus platform_pwm_init( const platform_pwm_t* pwm, uint32_t frequency, float
  *
  * @param[in] pwm_interface : PWM interface
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_pwm_start( const platform_pwm_t* pwm );
+mret_t platform_pwm_start( const platform_pwm_t* pwm );
 
 
 /**
@@ -788,30 +788,30 @@ OSStatus platform_pwm_start( const platform_pwm_t* pwm );
  *
  * @param[in] pwm_interface : PWM interface
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_pwm_stop( const platform_pwm_t* pwm );
+mret_t platform_pwm_stop( const platform_pwm_t* pwm );
 
 
-OSStatus platform_rtc_init( void );
+mret_t platform_rtc_init( void );
 
 /**
  * Get current real-time clock
  *
  * @param[in] time : variable that will contain the current real-time clock
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_rtc_get_time( time_t *t );
+mret_t platform_rtc_get_time( time_t *t );
 
 /**
  * Set real-time clock
  *
  * @param[in] time : real-time clock
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_rtc_set_time( time_t t );
+mret_t platform_rtc_set_time( time_t t );
 
 
 /**
@@ -821,9 +821,9 @@ OSStatus platform_rtc_set_time( time_t t );
  * @param[in]     interface : UART STDIO interface
  * @param[in]     config    : UART STDIO configuration
  *
- * @return @ref OSStatus
+ * @return @ref mret_t
  */
-OSStatus platform_stdio_init ( platform_uart_driver_t* driver, const platform_uart_t* interface, const platform_uart_config_t* config );
+mret_t platform_stdio_init ( platform_uart_driver_t* driver, const platform_uart_t* interface, const platform_uart_config_t* config );
 
 
 /**
@@ -863,38 +863,38 @@ void platform_nanosecond_delay( uint64_t delayns );
  * Read random numbers
  *
  */
-OSStatus platform_random_number_read( void *inBuffer, int inByteCount );
+mret_t platform_random_number_read( void *inBuffer, int inByteCount );
 
 /**
  * Init flash driver and hardware interface
  *
  */
-OSStatus platform_flash_init( const platform_flash_t *peripheral );
+mret_t platform_flash_init( const platform_flash_t *peripheral );
 
 /**
  * Erase flash 
  *
  */
-OSStatus platform_flash_erase( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address  );
+mret_t platform_flash_erase( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address  );
 
 /**
  * Write flash 
  *
  */
-OSStatus platform_flash_write( const platform_flash_t *peripheral, volatile uint32_t* start_address, uint8_t* data ,uint32_t length  );
+mret_t platform_flash_write( const platform_flash_t *peripheral, volatile uint32_t* start_address, uint8_t* data ,uint32_t length  );
 
 /**
  * Read flash 
  *
  */
-OSStatus platform_flash_read( const platform_flash_t *peripheral, volatile uint32_t* start_address, uint8_t* data ,uint32_t length  );
+mret_t platform_flash_read( const platform_flash_t *peripheral, volatile uint32_t* start_address, uint8_t* data ,uint32_t length  );
 
 /**
  * Flash protect operation
  *
  */
-OSStatus platform_flash_enable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address );
-OSStatus platform_flash_disable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address );
+mret_t platform_flash_enable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address );
+mret_t platform_flash_disable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address );
 
 
 

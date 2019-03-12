@@ -79,7 +79,7 @@ static void                USBH_HandleSof     (USBH_HandleTypeDef *phost);
 static USBH_StatusTypeDef  DeInitStateMachine(USBH_HandleTypeDef *phost);
 
 #if (USBH_USE_OS == 1)  
-mxos_thread_t osThreadId1;
+mos_thread_id_t osThreadId1;
 uint16_t USBH_PORT = USBH_PORT_EVENT;
 uint16_t USBH_STATE_CHANGED = USBH_STATE_CHANGED_EVENT;
 uint16_t USBH_URB = USBH_URB_EVENT;
@@ -124,7 +124,7 @@ USBH_StatusTypeDef  USBH_Init(USBH_HandleTypeDef *phost, void (*pUsrFunc)(USBH_H
   mxos_rtos_init_queue( (mxos_queue_t *) &(phost->os_event), NULL, sizeof(uint16_t), 10 );
   
   /*Create USB Host Task */
-  mxos_rtos_create_thread(NULL, MXOS_APPLICATION_PRIORITY, "USBH", USBH_Process_OS, 0x4C0, (void*)phost );
+  mos_thread_new(MXOS_APPLICATION_PRIORITY, "USBH", USBH_Process_OS, 0x4C0, phost );
   phost->thread = osThreadId1;
 #endif  
   

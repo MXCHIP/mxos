@@ -87,8 +87,8 @@ static uint32_t attributes_deleted = 0;
  *               Static Function Declarations
  ******************************************************/
 
-static OSStatus print_uuid( const mxos_bt_uuid_t* uuid );
-static OSStatus print_type( const mxos_bt_uuid_t* uuid );
+static mret_t print_uuid( const mxos_bt_uuid_t* uuid );
+static mret_t print_type( const mxos_bt_uuid_t* uuid );
 
 /******************************************************
  *               Variable Definitions
@@ -98,7 +98,7 @@ static OSStatus print_type( const mxos_bt_uuid_t* uuid );
  *               Function Definitions
  ******************************************************/
 
-OSStatus mxos_bt_smart_attribute_create( mxos_bt_smart_attribute_t** attribute, mxos_bt_smart_attribute_type_t type, uint16_t variable_length )
+mret_t mxos_bt_smart_attribute_create( mxos_bt_smart_attribute_t** attribute, mxos_bt_smart_attribute_type_t type, uint16_t variable_length )
 {
     uint16_t size;
 
@@ -145,7 +145,7 @@ OSStatus mxos_bt_smart_attribute_create( mxos_bt_smart_attribute_t** attribute, 
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smart_attribute_delete( mxos_bt_smart_attribute_t* attribute )
+mret_t mxos_bt_smart_attribute_delete( mxos_bt_smart_attribute_t* attribute )
 {
     if ( attribute == NULL )
     {
@@ -164,7 +164,7 @@ OSStatus mxos_bt_smart_attribute_delete( mxos_bt_smart_attribute_t* attribute )
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smart_attribute_create_list( mxos_bt_smart_attribute_list_t* list )
+mret_t mxos_bt_smart_attribute_create_list( mxos_bt_smart_attribute_list_t* list )
 {
     if ( list == NULL )
     {
@@ -175,7 +175,7 @@ OSStatus mxos_bt_smart_attribute_create_list( mxos_bt_smart_attribute_list_t* li
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smart_attribute_add_to_list( mxos_bt_smart_attribute_list_t* list, mxos_bt_smart_attribute_t* attribute )
+mret_t mxos_bt_smart_attribute_add_to_list( mxos_bt_smart_attribute_list_t* list, mxos_bt_smart_attribute_t* attribute )
 {
     if ( list == NULL || attribute == NULL )
     {
@@ -232,7 +232,7 @@ OSStatus mxos_bt_smart_attribute_add_to_list( mxos_bt_smart_attribute_list_t* li
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smart_attribute_remove_from_list( mxos_bt_smart_attribute_list_t* list, uint16_t handle )
+mret_t mxos_bt_smart_attribute_remove_from_list( mxos_bt_smart_attribute_list_t* list, uint16_t handle )
 {
     if ( list == NULL )
     {
@@ -280,7 +280,7 @@ OSStatus mxos_bt_smart_attribute_remove_from_list( mxos_bt_smart_attribute_list_
     return MXOS_BT_ITEM_NOT_IN_LIST;
 }
 
-OSStatus mxos_bt_smart_attribute_delete_list( mxos_bt_smart_attribute_list_t* list )
+mret_t mxos_bt_smart_attribute_delete_list( mxos_bt_smart_attribute_list_t* list )
 {
     mxos_bt_smart_attribute_t* curr;
 
@@ -307,7 +307,7 @@ OSStatus mxos_bt_smart_attribute_delete_list( mxos_bt_smart_attribute_list_t* li
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smart_attribute_search_list_by_handle( const mxos_bt_smart_attribute_list_t* list, uint16_t handle, mxos_bt_smart_attribute_t** attribute )
+mret_t mxos_bt_smart_attribute_search_list_by_handle( const mxos_bt_smart_attribute_list_t* list, uint16_t handle, mxos_bt_smart_attribute_t** attribute )
 {
     if ( list == NULL || attribute == NULL )
     {
@@ -339,7 +339,7 @@ OSStatus mxos_bt_smart_attribute_search_list_by_handle( const mxos_bt_smart_attr
     return MXOS_BT_ITEM_NOT_IN_LIST;
 }
 
-OSStatus mxos_bt_smart_attribute_search_list_by_uuid( const mxos_bt_smart_attribute_list_t* list, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t** attribute )
+mret_t mxos_bt_smart_attribute_search_list_by_uuid( const mxos_bt_smart_attribute_list_t* list, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t** attribute )
 {
     if ( list == NULL || uuid == NULL || attribute == NULL )
     {
@@ -389,7 +389,7 @@ OSStatus mxos_bt_smart_attribute_search_list_by_uuid( const mxos_bt_smart_attrib
     return MXOS_BT_ITEM_NOT_IN_LIST;
 }
 
-OSStatus mxos_bt_smart_attribute_merge_lists( mxos_bt_smart_attribute_list_t* trunk_list, mxos_bt_smart_attribute_list_t* branch_list )
+mret_t mxos_bt_smart_attribute_merge_lists( mxos_bt_smart_attribute_list_t* trunk_list, mxos_bt_smart_attribute_list_t* branch_list )
 {
     mxos_bt_smart_attribute_t* curr;
 
@@ -418,7 +418,7 @@ OSStatus mxos_bt_smart_attribute_merge_lists( mxos_bt_smart_attribute_list_t* tr
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smart_attribute_print( const mxos_bt_smart_attribute_t* attribute )
+mret_t mxos_bt_smart_attribute_print( const mxos_bt_smart_attribute_t* attribute )
 {
     mxos_bt_smart_attribute_t* curr_attr = (mxos_bt_smart_attribute_t*)attribute;
 
@@ -558,7 +558,7 @@ OSStatus mxos_bt_smart_attribute_print( const mxos_bt_smart_attribute_t* attribu
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smart_attribute_print_list( const mxos_bt_smart_attribute_list_t* list )
+mret_t mxos_bt_smart_attribute_print_list( const mxos_bt_smart_attribute_list_t* list )
 {
     mxos_bt_smart_attribute_t* curr_attr = (mxos_bt_smart_attribute_t*)list->list;
 
@@ -571,7 +571,7 @@ OSStatus mxos_bt_smart_attribute_print_list( const mxos_bt_smart_attribute_list_
     return MXOS_BT_SUCCESS;
 }
 
-static OSStatus print_uuid( const mxos_bt_uuid_t* uuid )
+static mret_t print_uuid( const mxos_bt_uuid_t* uuid )
 {
     if ( uuid->len == UUID_16BIT )
     {
@@ -593,7 +593,7 @@ static OSStatus print_uuid( const mxos_bt_uuid_t* uuid )
     return MXOS_BT_SUCCESS;
 }
 
-static OSStatus print_type( const mxos_bt_uuid_t* uuid  )
+static mret_t print_type( const mxos_bt_uuid_t* uuid  )
 {
     if ( uuid->len != UUID_16BIT )
     {
@@ -693,7 +693,7 @@ static OSStatus print_type( const mxos_bt_uuid_t* uuid  )
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smart_attribute_get_list_head( const mxos_bt_smart_attribute_list_t* list, mxos_bt_smart_attribute_t** head )
+mret_t mxos_bt_smart_attribute_get_list_head( const mxos_bt_smart_attribute_list_t* list, mxos_bt_smart_attribute_t** head )
 {
     if ( list == NULL )
     {
@@ -704,7 +704,7 @@ OSStatus mxos_bt_smart_attribute_get_list_head( const mxos_bt_smart_attribute_li
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smart_attribute_get_list_count( const mxos_bt_smart_attribute_list_t* list, uint32_t* count )
+mret_t mxos_bt_smart_attribute_get_list_count( const mxos_bt_smart_attribute_list_t* list, uint32_t* count )
 {
     if ( list == NULL )
     {

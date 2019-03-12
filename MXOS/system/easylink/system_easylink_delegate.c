@@ -119,7 +119,7 @@ WEAK void mxos_system_delegate_easylink_timeout( system_context_t *context )
 }
 
 
-WEAK OSStatus mxos_system_delegate_config_recv_auth_data(char * anthData  )
+WEAK mret_t mxos_system_delegate_config_recv_auth_data(char * anthData  )
 {
   (void)(anthData);
   return kNoErr;

@@ -37,12 +37,12 @@
  ******************************************************/
 
 void mxos_flash_eraseWrite( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* data_addr, uint32_t size );
-OSStatus tester_block_device_init( mxos_block_device_t* device, mxos_block_device_write_mode_t write_mode );
-OSStatus tester_block_flush( mxos_block_device_t * device );
-OSStatus tester_block_status( mxos_block_device_t* device, mxos_block_device_status_t* status );
-OSStatus tester_block_status( mxos_block_device_t* device, mxos_block_device_status_t* status );
-OSStatus tester_block_read( mxos_block_device_t* device, uint64_t start_address, uint8_t* buff, uint64_t count );
-OSStatus tester_block_write( mxos_block_device_t* device, uint64_t start_address, const uint8_t* data, uint64_t size );
+mret_t tester_block_device_init( mxos_block_device_t* device, mxos_block_device_write_mode_t write_mode );
+mret_t tester_block_flush( mxos_block_device_t * device );
+mret_t tester_block_status( mxos_block_device_t* device, mxos_block_device_status_t* status );
+mret_t tester_block_status( mxos_block_device_t* device, mxos_block_device_status_t* status );
+mret_t tester_block_read( mxos_block_device_t* device, uint64_t start_address, uint8_t* buff, uint64_t count );
+mret_t tester_block_write( mxos_block_device_t* device, uint64_t start_address, const uint8_t* data, uint64_t size );
 
 
 /******************************************************
@@ -85,12 +85,12 @@ const mxos_block_device_driver_t tester_block_device_driver =
  * @param  None
  * @retval DSTATUS: Operation status
  */
-OSStatus tester_block_device_init( mxos_block_device_t* device, mxos_block_device_write_mode_t write_mode )
+mret_t tester_block_device_init( mxos_block_device_t* device, mxos_block_device_write_mode_t write_mode )
 {
     return kNoErr;
 }
 
-OSStatus tester_block_flush( mxos_block_device_t * device )
+mret_t tester_block_flush( mxos_block_device_t * device )
 {
     UNUSED_PARAMETER( device );
     return kNoErr;
@@ -101,7 +101,7 @@ OSStatus tester_block_flush( mxos_block_device_t * device )
  * @param  None
  * @retval DSTATUS: Operation status
  */
-OSStatus tester_block_status( mxos_block_device_t* device, mxos_block_device_status_t* status )
+mret_t tester_block_status( mxos_block_device_t* device, mxos_block_device_status_t* status )
 {
     UNUSED_PARAMETER( device );
     *status = BLOCK_DEVICE_UP_READ_WRITE;
@@ -115,9 +115,9 @@ OSStatus tester_block_status( mxos_block_device_t* device, mxos_block_device_sta
  * @param  count: Number of sectors to read (1..128)
  * @retval DRESULT: Operation result
  */
-OSStatus tester_block_read( mxos_block_device_t* device, uint64_t start_address, uint8_t* buff, uint64_t count )
+mret_t tester_block_read( mxos_block_device_t* device, uint64_t start_address, uint8_t* buff, uint64_t count )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
     uint64_t offset;
 
     for ( ; count > 0; count-- )
@@ -141,9 +141,9 @@ OSStatus tester_block_read( mxos_block_device_t* device, uint64_t start_address,
  * @param  count: Number of sectors to write (1..128)
  * @retval DRESULT: Operation result
  */
-OSStatus tester_block_write( mxos_block_device_t* device, uint64_t start_address, const uint8_t* data, uint64_t size )
+mret_t tester_block_write( mxos_block_device_t* device, uint64_t start_address, const uint8_t* data, uint64_t size )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
     uint64_t offset;
 
     for ( ; size > 0; size-- )

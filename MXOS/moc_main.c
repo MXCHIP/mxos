@@ -64,7 +64,7 @@ extern void RptConfigmodeRslt( network_InitTypeDef_st *nwkpara );
 extern void easylink_user_data_result( int datalen, char*data );
 extern void socket_connected( int fd );
 extern void dns_ip_set( uint8_t *hostname, uint32_t ip );
-extern void join_fail( OSStatus err );
+extern void join_fail( mret_t err );
 extern void wifi_reboot_event( void );
 extern void mxos_rtos_stack_overflow( char *taskname );
 
@@ -144,7 +144,7 @@ extern void _memory_init( void );
 static void pre_main( void )
 {
     main( );
-    mxos_rtos_delete_thread( NULL );
+    mos_thread_delete( NULL );
 }
 
 #ifdef CONFIG_CPU_MX1290
@@ -183,8 +183,7 @@ void moc_app_main( const mxos_api_t *moc_kernel_apis )
     /* Init nano second clock counter */
     platform_init_nanosecond_clock();
 
-    mxos_rtos_create_thread( NULL, MXOS_APPLICATION_PRIORITY, "app_thread", (mxos_thread_function_t)pre_main,
-                             app_stack_size, 0 );
+    mos_thread_new( MXOS_APPLICATION_PRIORITY, "app_thread", (mos_thread_func_t)pre_main, app_stack_size, NULL );
    
     return;
 

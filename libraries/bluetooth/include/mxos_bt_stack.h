@@ -75,7 +75,7 @@ mxos_bt_result_t mxos_bt_stack_init(mxos_bt_management_cback_t *p_bt_management_
  * @return    MXOS_BT_SUCCESS : on success;
  *            MXOS_BT_ERROR   : if an error occurred
  */
-OSStatus mxos_bt_stack_deinit(void);
+mret_t mxos_bt_stack_deinit(void);
 
 
 /**@} mxosbt_Framework */

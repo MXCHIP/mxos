@@ -109,7 +109,7 @@ typedef struct _ota_server_context_t{
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-OSStatus ota_server_start( char *url, char *md5, ota_server_cb_fn call_back );
+mret_t ota_server_start( char *url, char *md5, ota_server_cb_fn call_back );
 
 
 /** @brief    Get OTA server state

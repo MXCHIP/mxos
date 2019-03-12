@@ -353,7 +353,7 @@ static void print_bad_command(char *cmd_string)
 * Input collectors handle their own lexical analysis and must pass complete
 * command lines to CLI.
 */
-static void cli_main( uint32_t data )
+static void cli_main( void *data )
 {
   while (1) {
     int ret;
@@ -383,7 +383,7 @@ static void cli_main( uint32_t data )
   cli_printf("CLI exited\r\n");
   free(pCli);
   pCli = NULL;
-  mxos_rtos_delete_thread(NULL);
+  mos_thread_delete(NULL);
 }
 
 #ifndef MOC
@@ -467,15 +467,15 @@ static void uptime_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, ch
 }
 
 extern void tftp_ota( void );
-void tftp_ota_thread( mxos_thread_arg_t arg )
+void tftp_ota_thread( void * arg )
 {
     tftp_ota( );
-    mxos_rtos_delete_thread( NULL );
+    mos_thread_delete( NULL );
 }
     
 static void ota_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv )
 {
-    mxos_rtos_create_thread( NULL, MXOS_APPLICATION_PRIORITY, "LOCAL OTA", tftp_ota_thread, 0x4096, 0 );
+    mos_thread_new( MXOS_APPLICATION_PRIORITY, "LOCAL OTA", tftp_ota_thread, 0x4096, NULL );
 }
 
 static void help_command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv);
@@ -767,8 +767,8 @@ int cli_init(void)
 
   cli_register_commands(rtl8195_clis, sizeof(rtl8195_clis)/sizeof(struct cli_command));
 
-  ret = mxos_rtos_create_thread(NULL, MXOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 4096, 0);
-  if (ret != kNoErr) {
+  if (mos_thread_new( MXOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 4096, NULL) == NULL)
+  {
     printf("Error: Failed to create cli thread: %d\r\n",
                ret);
     free(pCli);
@@ -815,10 +815,9 @@ int cli_init(void)
   cli_register_commands(user_clis, 1);
 #endif
   
-  ret = mxos_rtos_create_thread(NULL, MXOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 4096, 0);
-  if (ret != kNoErr) {
-    cli_printf("Error: Failed to create cli thread: %d\r\n",
-               ret);
+  if (mos_thread_new( MXOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 4096, NULL) == NULL)
+  {
+    cli_printf("Error: Failed to create cli thread\r\n");
     free(pCli);
     pCli = NULL;
     return kGeneralErr;

@@ -22,18 +22,18 @@
 #include "LinkListUtils.h"
 #include "mxos_debug.h"
 
-OSStatus linked_list_init( linked_list_t* list )
+mret_t linked_list_init( linked_list_t* list )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
     require_action( list, exit, err = kParamErr);
     memset( list, 0, sizeof( *list ) );
 exit:
     return err;
 }
 
-OSStatus linked_list_deinit( linked_list_t* list )
+mret_t linked_list_deinit( linked_list_t* list )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
     linked_list_node_t* current;
 
     require_action( list, exit, err = kParamErr);
@@ -59,9 +59,9 @@ exit:
     return err;
 }
 
-OSStatus linked_list_get_count( linked_list_t* list, uint32_t* count )
+mret_t linked_list_get_count( linked_list_t* list, uint32_t* count )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action( list, exit, err = kParamErr);
 
@@ -71,9 +71,9 @@ exit:
     return err;
 }
 
-OSStatus linked_list_set_node_data( linked_list_node_t* node, const void* data )
+mret_t linked_list_set_node_data( linked_list_node_t* node, const void* data )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action( node, exit, err = kParamErr);
 
@@ -83,9 +83,9 @@ exit:
     return err;
 }
 
-OSStatus linked_list_get_front_node( linked_list_t* list, linked_list_node_t** front_node )
+mret_t linked_list_get_front_node( linked_list_t* list, linked_list_node_t** front_node )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action( list, exit, err = kParamErr);
 
@@ -98,9 +98,9 @@ exit:
     return err;
 }
 
-OSStatus linked_list_get_rear_node( linked_list_t* list, linked_list_node_t** rear_node )
+mret_t linked_list_get_rear_node( linked_list_t* list, linked_list_node_t** rear_node )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action( list, exit, err = kParamErr);
 
@@ -113,9 +113,9 @@ exit:
     return err;
 }
 
-OSStatus linked_list_find_node( linked_list_t* list, linked_list_compare_callback_t callback, void* user_data, linked_list_node_t** node_found )
+mret_t linked_list_find_node( linked_list_t* list, linked_list_compare_callback_t callback, void* user_data, linked_list_node_t** node_found )
 {
-    OSStatus err = kNotFoundErr;
+    mret_t err = kNotFoundErr;
     linked_list_node_t* current;
 
     require_action( list && callback && node_found, exit, err = kParamErr);
@@ -140,9 +140,9 @@ exit:
     return err;
 }
 
-OSStatus linked_list_insert_node_at_front( linked_list_t* list, linked_list_node_t* node )
+mret_t linked_list_insert_node_at_front( linked_list_t* list, linked_list_node_t* node )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action( list && node, exit, err = kParamErr);
 
@@ -167,9 +167,9 @@ exit:
     return err;
 }
 
-OSStatus linked_list_insert_node_at_rear( linked_list_t* list, linked_list_node_t* node )
+mret_t linked_list_insert_node_at_rear( linked_list_t* list, linked_list_node_t* node )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action( list && node, exit, err = kParamErr);
 
@@ -194,10 +194,10 @@ exit:
     return err;
 }
 
-OSStatus linked_list_insert_node_before( linked_list_t* list, linked_list_node_t* reference_node, linked_list_node_t* node_to_insert )
+mret_t linked_list_insert_node_before( linked_list_t* list, linked_list_node_t* reference_node, linked_list_node_t* node_to_insert )
 {
     /* WARNING: User must make sure that reference_node is in the list */
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action( list && reference_node && node_to_insert, exit, err = kParamErr);
     require_action_quiet( list->count, exit, err = kNotFoundErr);
@@ -220,10 +220,10 @@ exit:
     return err;
 }
 
-OSStatus linked_list_insert_node_after( linked_list_t* list, linked_list_node_t* reference_node, linked_list_node_t* node_to_insert )
+mret_t linked_list_insert_node_after( linked_list_t* list, linked_list_node_t* reference_node, linked_list_node_t* node_to_insert )
 {
     /* WARNING: User must make sure that reference_node is in the list */
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action( list && reference_node && node_to_insert, exit, err = kParamErr);
     require_action_quiet( list->count, exit, err = kNotFoundErr);
@@ -245,10 +245,10 @@ exit:
     return err;
 }
 
-OSStatus linked_list_remove_node( linked_list_t* list, linked_list_node_t* node )
+mret_t linked_list_remove_node( linked_list_t* list, linked_list_node_t* node )
 {
     /* WARNING: User must make sure that node to remove is in the list */
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action( list && node, exit, err = kParamErr);
     require_action_quiet( list->count, exit, err = kNotFoundErr);
@@ -286,9 +286,9 @@ exit:
     return err;
 }
 
-OSStatus linked_list_remove_node_from_front( linked_list_t* list, linked_list_node_t** removed_node )
+mret_t linked_list_remove_node_from_front( linked_list_t* list, linked_list_node_t** removed_node )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action( list && removed_node, exit, err = kParamErr);
     require_action_quiet( list->count, exit, err = kNotFoundErr);
@@ -316,9 +316,9 @@ exit:
     return err;
 }
 
-OSStatus linked_list_remove_node_from_rear( linked_list_t* list, linked_list_node_t** removed_node )
+mret_t linked_list_remove_node_from_rear( linked_list_t* list, linked_list_node_t** removed_node )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action( list && removed_node, exit, err = kParamErr);
     require_action_quiet( list->count, exit, err = kNotFoundErr);

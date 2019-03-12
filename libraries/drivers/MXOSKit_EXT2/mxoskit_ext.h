@@ -66,7 +66,7 @@
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxoskit_ext_init(void);    
+mret_t mxoskit_ext_init(void);    
 
 
 /**
@@ -75,7 +75,7 @@ OSStatus mxoskit_ext_init(void);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus user_modules_init(void);   
+mret_t user_modules_init(void);   
 /**
   * @}
   */

@@ -64,7 +64,7 @@ extern "C" {
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */ 
-OSStatus uvis25_sensor_init(void);
+mret_t uvis25_sensor_init(void);
 
 
 /**
@@ -74,7 +74,7 @@ OSStatus uvis25_sensor_init(void);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */ 
-OSStatus uvis25_Read_Data(float *uv_index);
+mret_t uvis25_Read_Data(float *uv_index);
 
 
 /**
@@ -83,7 +83,7 @@ OSStatus uvis25_Read_Data(float *uv_index);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */ 
-OSStatus uvis25_sensor_deinit(void);
+mret_t uvis25_sensor_deinit(void);
 
 /**
   * @}

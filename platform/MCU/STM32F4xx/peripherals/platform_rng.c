@@ -44,7 +44,7 @@
  *               Function Declarations
  ******************************************************/
 
-OSStatus platform_random_number_read( void *inBuffer, int inByteCount )
+mret_t platform_random_number_read( void *inBuffer, int inByteCount )
 {
     // PLATFORM_TO_DO
      // PLATFORM_TO_DO

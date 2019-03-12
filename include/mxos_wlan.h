@@ -77,7 +77,7 @@ extern "C" {
   * @{
   */
 
-// ==== OSStatus extension for MXOS wlan ====
+// ==== mret_t extension for MXOS wlan ====
 #define kWlanNoErr                            0     /**< No error occurred in wlan operation. */
 #define kWlanPendingErr                       1     /**< Pending. */
 #define kWlanTimeoutErr                       2     /**< Timeout occurred in wlan operation. */
@@ -435,7 +435,7 @@ void mxos_wlan_set_default_interface(netif_t interface);
  *  @return In station mode, allways retrurn kWlanNoErr.
  *          In soft ap mode, return kWlanXXXErr
  */
-OSStatus mxosWlanStart(network_InitTypeDef_st* inNetworkInitPara);
+mret_t mxosWlanStart(network_InitTypeDef_st* inNetworkInitPara);
 
 /** @brief  Connect to a Wi-Fi network with advantage settings (station mode only)
  * 
@@ -455,7 +455,7 @@ OSStatus mxosWlanStart(network_InitTypeDef_st* inNetworkInitPara);
  *  @retrun Allways return kWlanNoErr although error occurs in first fast try 
  *          kWlanTimeoutErr: DHCP client timeout
  */
-OSStatus mxosWlanStartAdv(network_InitTypeDef_adv_st* inNetworkInitParaAdv);
+mret_t mxosWlanStartAdv(network_InitTypeDef_adv_st* inNetworkInitParaAdv);
 
 /** @brief  Read current IP status on a network interface.
  * 
@@ -467,7 +467,7 @@ OSStatus mxosWlanStartAdv(network_InitTypeDef_adv_st* inNetworkInitParaAdv);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanGetIPStatus(IPStatusTypedef *outNetpara, netif_t netif);
+mret_t mxosWlanGetIPStatus(IPStatusTypedef *outNetpara, netif_t netif);
 
 /** @brief  Read current IPv6 status on a network interface.
  *
@@ -479,7 +479,7 @@ OSStatus mxosWlanGetIPStatus(IPStatusTypedef *outNetpara, netif_t netif);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanGetIP6Status(ipv6_addr_t ipv6_addr[], uint8_t ipv6_addr_num, netif_t netif);
+mret_t mxosWlanGetIP6Status(ipv6_addr_t ipv6_addr[], uint8_t ipv6_addr_num, netif_t netif);
 
 /** @brief  Read current wireless link status on station interface.
  * 
@@ -488,7 +488,7 @@ OSStatus mxosWlanGetIP6Status(ipv6_addr_t ipv6_addr[], uint8_t ipv6_addr_num, ne
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanGetLinkStatus(LinkStatusTypeDef *outStatus);
+mret_t mxosWlanGetLinkStatus(LinkStatusTypeDef *outStatus);
 
 /** @brief  Start a wlan scanning in 2.4GHz asynchronous.
  *  
@@ -523,7 +523,7 @@ int mxchip_active_scan(char*ssid, int is_adv);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanPowerOff(void);
+mret_t mxosWlanPowerOff(void);
 
 /** @brief  Open the RF's power supply and do some necessary initialization.
  *
@@ -533,7 +533,7 @@ OSStatus mxosWlanPowerOff(void);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanPowerOn(void);
+mret_t mxosWlanPowerOn(void);
 
 /**@brief  Close all the Wi-Fi connections, station mode and soft ap mode
  * 
@@ -543,7 +543,7 @@ OSStatus mxosWlanPowerOn(void);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanSuspend(void);
+mret_t mxosWlanSuspend(void);
 
 /** @brief  Close the connection in station mode
  * 
@@ -553,14 +553,14 @@ OSStatus mxosWlanSuspend(void);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanSuspendStation(void);
+mret_t mxosWlanSuspendStation(void);
 
 /** @brief  Stop soft ap and close all stations' connections
  * 
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanSuspendSoftAP(void);
+mret_t mxosWlanSuspendSoftAP(void);
 /**
   * @}
   */
@@ -590,7 +590,7 @@ OSStatus mxosWlanSuspendSoftAP(void);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanStartEasyLink(int inTimeout);
+mret_t mxosWlanStartEasyLink(int inTimeout);
 
 /** @brief  Start EasyLink plus configuration with user extra data
  *
@@ -609,8 +609,8 @@ OSStatus mxosWlanStartEasyLink(int inTimeout);
  *  @return   kGeneralErr   : if an error occurred
  */
 
-OSStatus mxosWlanStartEasyLinkPlus(int inTimeout);
-OSStatus mxosWlanStartAws(int inTimeout);
+mret_t mxosWlanStartEasyLinkPlus(int inTimeout);
+mret_t mxosWlanStartAws(int inTimeout);
 
 
 /** @brief  Start EasyLink plus configuration with UAP coexistence
@@ -624,7 +624,7 @@ OSStatus mxosWlanStartAws(int inTimeout);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxos_wlan_easylink_uap_start(int timeout, char *ssid, char*key, int channel);
+mret_t mxos_wlan_easylink_uap_start(int timeout, char *ssid, char*key, int channel);
 
 
 /** @brief  Stop EasyLink configuration procedure
@@ -632,9 +632,9 @@ OSStatus mxos_wlan_easylink_uap_start(int timeout, char *ssid, char*key, int cha
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanStopEasyLink(void);
-OSStatus mxosWlanStopEasyLinkPlus(void);
-OSStatus mxosWlanStopAws(void);
+mret_t mxosWlanStopEasyLink(void);
+mret_t mxosWlanStopEasyLinkPlus(void);
+mret_t mxosWlanStopAws(void);
 
 /**
   * @}
@@ -654,14 +654,14 @@ OSStatus mxosWlanStopAws(void);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxos_wlan_start_wps(mxos_wps_device_detail_t* wps_config, int inTimeout);
+mret_t mxos_wlan_start_wps(mxos_wps_device_detail_t* wps_config, int inTimeout);
 
 /** @brief  Stop WPS configuration procedure
  *  
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxos_wlan_stop_wps(void);
+mret_t mxos_wlan_stop_wps(void);
 
 
 /**
@@ -688,13 +688,13 @@ OSStatus mxos_wlan_stop_wps(void);
  *
  *  @retval kNoErr.
  */
-OSStatus mxosWlanStartAirkiss(int inTimeout);
+mret_t mxosWlanStartAirkiss(int inTimeout);
 
 /** @brief  Stop wechat airkiss configuration procedure
  *  
  *  @retval kNoErr.
  */
-OSStatus mxosWlanStopAirkiss(void);
+mret_t mxosWlanStopAirkiss(void);
 /**
   * @}
   */
@@ -781,14 +781,14 @@ int mxos_wlan_stop_monitor(void);
  *  @detail This function change the monitor channel (from 1~13).
  *       it can change the channel dynamically, don't need restart monitor mode.
  */
-OSStatus mxos_wlan_monitor_set_channel( uint8_t channel );
+mret_t mxos_wlan_monitor_set_channel( uint8_t channel );
 
 /** @brief  Get the monitor channel
  * 
  *  @detail This function get the monitor channel (from 1~13).
  *       it can change the channel dynamically, don't need restart monitor mode.
  */
-OSStatus mxos_wlan_monitor_get_channel( uint8_t *channel );
+mret_t mxos_wlan_monitor_get_channel( uint8_t *channel );
 
 /** @brief  Register the monitor callback function
  *        Once received a 802.11 packet call the registered function to return the packet.
@@ -797,7 +797,7 @@ void mxos_wlan_register_monitor_cb(monitor_cb_t fn);
 
 /** @brief  Send management frame
  */
-OSStatus mxos_wlan_send_mgnt(uint8_t *buffer, uint32_t length);
+mret_t mxos_wlan_send_mgnt(uint8_t *buffer, uint32_t length);
 
 /**@brief Add a custom IE to a WLAN interface
  *
@@ -808,7 +808,7 @@ OSStatus mxos_wlan_send_mgnt(uint8_t *buffer, uint32_t length);
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus mxos_wlan_custom_ie_add(wlan_if_t wlan_if, uint8_t *custom_ie, uint32_t len);
+mret_t mxos_wlan_custom_ie_add(wlan_if_t wlan_if, uint8_t *custom_ie, uint32_t len);
 
 enum custom_ie_delete_op_e
 {
@@ -827,7 +827,7 @@ typedef uint8_t custom_ie_delete_op_t;
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus mxos_wlan_custom_ie_delete(wlan_if_t wlan_if, custom_ie_delete_op_t op, uint8_t *option_data, uint32_t len);
+mret_t mxos_wlan_custom_ie_delete(wlan_if_t wlan_if, custom_ie_delete_op_t op, uint8_t *option_data, uint32_t len);
 
 /**@brief Get the MAC address of an WLAN interface
  *

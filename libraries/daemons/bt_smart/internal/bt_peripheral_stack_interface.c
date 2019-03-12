@@ -68,9 +68,9 @@ mxos_bt_smart_advertising_complete_callback_t      app_advertising_complete_call
  *               Function Definitions
  ******************************************************/
 
-OSStatus peripheral_bt_interface_initialize( void )
+mret_t peripheral_bt_interface_initialize( void )
 {
-    OSStatus result;
+    mret_t result;
 
     bt_peripheral_log( "Initializing Bluetooth Interface..." );
 
@@ -94,7 +94,7 @@ OSStatus peripheral_bt_interface_initialize( void )
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus peripheral_bt_interface_deinitialize( void )
+mret_t peripheral_bt_interface_deinitialize( void )
 {
     bt_peripheral_log( "Deinitializing Bluetooth Interface..." );
 
@@ -105,17 +105,17 @@ OSStatus peripheral_bt_interface_deinitialize( void )
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus peripheral_bt_interface_cancel_last_connect( mxos_bt_device_address_t address )
+mret_t peripheral_bt_interface_cancel_last_connect( mxos_bt_device_address_t address )
 {
     return mxos_bt_gatt_cancel_connect( address, MXOS_TRUE );
 }
 
-OSStatus peripheral_bt_interface_disconnect( uint16_t connection_handle )
+mret_t peripheral_bt_interface_disconnect( uint16_t connection_handle )
 {
     return mxos_bt_gatt_disconnect( connection_handle );
 }
 
-OSStatus peripheral_bt_interface_set_security_settings( const mxos_bt_smart_security_settings_t* settings )
+mret_t peripheral_bt_interface_set_security_settings( const mxos_bt_smart_security_settings_t* settings )
 {
     /* update the security settings as per passed by the application */
     default_io_caps_ble.local_io_cap      = settings->io_capabilities;
@@ -128,7 +128,7 @@ OSStatus peripheral_bt_interface_set_security_settings( const mxos_bt_smart_secu
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus peripheral_bt_interface_start_advertisements( mxos_bt_smart_advertising_settings_t* settings, mxos_bt_smart_advertising_complete_callback_t complete_callback )
+mret_t peripheral_bt_interface_start_advertisements( mxos_bt_smart_advertising_settings_t* settings, mxos_bt_smart_advertising_complete_callback_t complete_callback )
 {
     mxos_bt_smart_advertising_type_t advertising_type = settings->type;
     mxos_bool_t high_duty = settings->use_high_duty;
@@ -196,7 +196,7 @@ OSStatus peripheral_bt_interface_start_advertisements( mxos_bt_smart_advertising
     }
 }
 
-OSStatus peripheral_bt_interface_stop_advertisements( void )
+mret_t peripheral_bt_interface_stop_advertisements( void )
 {
     app_advertising_complete_callback = NULL;
     return mxos_bt_start_advertisements( BTM_BLE_ADVERT_OFF, 0, NULL );
@@ -210,7 +210,7 @@ void peripheral_bt_interface_advertisements_state_change_callback( mxos_bt_ble_a
     }
 }
 
-OSStatus peripheral_bt_interface_indicate_attribute_value ( uint16_t connection_handle, const mxos_bt_ext_attribute_value_t* attribute )
+mret_t peripheral_bt_interface_indicate_attribute_value ( uint16_t connection_handle, const mxos_bt_ext_attribute_value_t* attribute )
 {
     uint16_t val_len = 0;
     uint16_t offset = 0;
@@ -240,7 +240,7 @@ OSStatus peripheral_bt_interface_indicate_attribute_value ( uint16_t connection_
     return peripheral_subprocedure.result;
 }
 
-OSStatus peripheral_bt_interface_notify_attribute_value( uint16_t connection_handle, const mxos_bt_ext_attribute_value_t* attribute )
+mret_t peripheral_bt_interface_notify_attribute_value( uint16_t connection_handle, const mxos_bt_ext_attribute_value_t* attribute )
 {
     uint16_t val_len = 0;
     uint16_t offset = 0;
@@ -266,7 +266,7 @@ OSStatus peripheral_bt_interface_notify_attribute_value( uint16_t connection_han
 }
 
 #if 0
-OSStatus smartbridge_bt_interface_start_advertise( const mxos_bt_smart_advertise_settings_t* settings, mxos_bt_smart_advertise_mode_changed_callback_t advertise_mode_changed_callback )
+mret_t smartbridge_bt_interface_start_advertise( const mxos_bt_smart_advertise_settings_t* settings, mxos_bt_smart_advertise_mode_changed_callback_t advertise_mode_changed_callback )
 {
     mxos_bool_t duplicate_filter_enabled = MXOS_FALSE;
 
@@ -289,7 +289,7 @@ OSStatus smartbridge_bt_interface_start_advertise( const mxos_bt_smart_advertise
 }
 
 
-OSStatus smartbridge_bt_interface_stop_scan( )
+mret_t smartbridge_bt_interface_stop_scan( )
 {
     app_scan_complete_callback = NULL;
     app_scan_report_callback   = NULL;
@@ -297,7 +297,7 @@ OSStatus smartbridge_bt_interface_stop_scan( )
     return mxos_bt_ble_scan( BTM_BLE_SCAN_TYPE_NONE, MXOS_TRUE, smartbridge_scan_result_callback );
 }
 
-OSStatus smartbridge_bt_interface_start_scan( const mxos_bt_smart_scan_settings_t* settings, mxos_bt_smart_scan_complete_callback_t complete_callback, mxos_bt_smart_advertising_report_callback_t advertising_report_callback )
+mret_t smartbridge_bt_interface_start_scan( const mxos_bt_smart_scan_settings_t* settings, mxos_bt_smart_scan_complete_callback_t complete_callback, mxos_bt_smart_advertising_report_callback_t advertising_report_callback )
 {
     mxos_bool_t duplicate_filter_enabled = MXOS_FALSE;
 
@@ -318,7 +318,7 @@ OSStatus smartbridge_bt_interface_start_scan( const mxos_bt_smart_scan_settings_
 }
 #endif
 
-OSStatus peripheral_bt_interface_update_advertisements_white_list( mxos_bool_t add, mxos_bt_device_address_t device_address ) 
+mret_t peripheral_bt_interface_update_advertisements_white_list( mxos_bool_t add, mxos_bt_device_address_t device_address ) 
 {
     if ( device_address == 0 ) 
     {
@@ -337,16 +337,16 @@ OSStatus peripheral_bt_interface_update_advertisements_white_list( mxos_bool_t a
     return kNoErr;
 }
 
-OSStatus peripheral_bt_interface_get_advertisements_white_list_size( uint8_t *size )
+mret_t peripheral_bt_interface_get_advertisements_white_list_size( uint8_t *size )
 {
     if ( TRUE != mxos_bt_ble_get_advertisement_white_list_size(size) )
         return kGeneralErr;
     return kNoErr;
 }
 
-OSStatus peripheral_bt_interface_set_advertisements_filter_policy(mxos_bt_peripheral_adv_filter_policy_t type)
+mret_t peripheral_bt_interface_set_advertisements_filter_policy(mxos_bt_peripheral_adv_filter_policy_t type)
 {
-    OSStatus status = kNoErr;
+    mret_t status = kNoErr;
     mxos_bt_ble_advert_filter_policy_t policy;
 
     switch (type)

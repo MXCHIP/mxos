@@ -32,9 +32,9 @@ WEAK void mxoskit_STmems_key2_clicked_callback(void)
 }
 
 //------------------------------------- API ------------------------------------
-OSStatus mxoskit_STmems_init(void)
+mret_t mxoskit_STmems_init(void)
 {
-  OSStatus err = kUnknownErr;
+  mret_t err = kUnknownErr;
 #if defined(MXOSKIT_STMEMS_KEY1)||defined(MXOSKIT_STMEMS_KEY2)
   button_init_t init;
 #endif

@@ -35,7 +35,7 @@ static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_contex
 static void easylink_extra_data_cb( int datalen, char* data, system_context_t * const inContext );
 
 /* Thread perform easylink and connect to wlan */
-static void easylink_monitor_thread( uint32_t inContext ); /* Perform easylink and connect to wlan */
+static void easylink_monitor_thread( void *inContext ); /* Perform easylink and connect to wlan */
 
 extern void mxos_wlan_monitor_no_easylink(void);
 
@@ -51,8 +51,8 @@ static mxos_semaphore_t easylink_sem;         /**< Used to suspend thread while 
 static mxos_semaphore_t easylink_connect_sem; /**< Used to suspend thread while connection. */
 static bool easylink_success = false;         /**< true: connect to wlan, false: start soft ap mode or roll back to previous settings */
 static uint32_t easylink_id = 0;      /**< Unique for an easylink instance. */
-static mxos_thread_t easylink_monitor_thread_handler = NULL;
-static mxos_thread_t switch_channel_thread_handler = NULL;
+static mos_thread_id_t easylink_monitor_thread_handler = NULL;
+static mos_thread_id_t switch_channel_thread_handler = NULL;
 static bool easylink_thread_force_exit = false;
 static bool switch_channel_flag = true;
 
@@ -82,7 +82,7 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
 /* MXOS callback when EasyLink is finished step 1, return SSID and KEY */
 static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t * const inContext )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action_string( nwkpara, exit, err = kTimeoutErr, "EasyLink Timeout or terminated" );
 
@@ -117,7 +117,7 @@ static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_contex
  */
 static void easylink_extra_data_cb( int datalen, char* data, system_context_t * const inContext )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
     int index;
     uint32_t *identifier, ipInfoCount;
     char *debugString;
@@ -186,7 +186,7 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
     return;
 }
 
-static void switch_channel_thread(mxos_thread_arg_t arg)
+static void switch_channel_thread(void * arg)
 {
     mxos_time_t current;
 
@@ -204,12 +204,12 @@ static void switch_channel_thread(mxos_thread_arg_t arg)
             mxos_easylink_monitor_delegate_channel_changed( wlan_channel );
             wlan_channel++;
             if ( wlan_channel >= 14 ) wlan_channel = 1;
-            mxos_rtos_delay_milliseconds(wlan_channel_walker_interval);
+            mos_thread_delay(wlan_channel_walker_interval);
         }
     }
 
     switch_channel_thread_handler = NULL;
-    mxos_rtos_delete_thread(NULL);
+    mos_thread_delete(NULL);
 }
 
 static void monitor_cb( uint8_t * frame, int len )
@@ -222,9 +222,9 @@ static void easylink_remove_bonjour_from_sta(void)
     easylink_remove_bonjour(INTERFACE_STA);
 }
 
-static void easylink_monitor_thread( uint32_t arg )
+static void easylink_monitor_thread( void *arg )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
     system_context_t *context = (system_context_t *) arg;
 
     mxos_time_t current;
@@ -252,8 +252,8 @@ restart:
     wlan_channel_walker = MXOS_TRUE;
     mxos_time_get_time( &current );
     switch_channel_flag = true;
-    mxos_rtos_create_thread(&switch_channel_thread_handler, MXOS_DEFAULT_WORKER_PRIORITY, "sw_channel",
-                            switch_channel_thread, 0x1000, (mxos_thread_arg_t)(current + EasyLink_TimeOut));
+    switch_channel_thread_handler = mos_thread_new( MXOS_DEFAULT_WORKER_PRIORITY, "sw_channel",
+                            switch_channel_thread, 0x1000, (void *)(current + EasyLink_TimeOut));
 
     while( mxos_rtos_get_semaphore( &easylink_sem, 0 ) == kNoErr );
     err = mxos_rtos_get_semaphore( &easylink_sem, MXOS_WAIT_FOREVER );
@@ -331,10 +331,10 @@ exit:
     mxos_rtos_deinit_semaphore( &easylink_sem );
     mxos_rtos_deinit_semaphore( &easylink_connect_sem );
     easylink_monitor_thread_handler = NULL;
-    mxos_rtos_delete_thread( NULL );
+    mos_thread_delete( NULL );
 }
 
-OSStatus mxos_easylink_monitor_channel_walker( mxos_bool_t enable, uint32_t interval )
+mret_t mxos_easylink_monitor_channel_walker( mxos_bool_t enable, uint32_t interval )
 {
     wlan_channel_walker = enable;
 
@@ -343,7 +343,7 @@ OSStatus mxos_easylink_monitor_channel_walker( mxos_bool_t enable, uint32_t inte
     return kNoErr;
 }
 
-OSStatus mxos_easylink_monitor_save_result( network_InitTypeDef_st *nwkpara )
+mret_t mxos_easylink_monitor_save_result( network_InitTypeDef_st *nwkpara )
 {
     system_context_t * context = system_context( );
 
@@ -362,9 +362,9 @@ OSStatus mxos_easylink_monitor_save_result( network_InitTypeDef_st *nwkpara )
     return kNoErr;
 }
 
-OSStatus mxos_easylink_monitor_with_easylink( mxos_Context_t * const in_context, mxos_bool_t enable )
+mret_t mxos_easylink_monitor_with_easylink( mxos_Context_t * const in_context, mxos_bool_t enable )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action( in_context, exit, err = kNotPreparedErr );
 
@@ -375,16 +375,16 @@ OSStatus mxos_easylink_monitor_with_easylink( mxos_Context_t * const in_context,
         system_log("EasyLink monitor processing, force stop..");
         easylink_thread_force_exit = true;
         mxos_rtos_thread_force_awake( &easylink_monitor_thread_handler );
-        mxos_rtos_thread_join( &easylink_monitor_thread_handler );
+        mos_thread_join( easylink_monitor_thread_handler );
     }
 
     if ( enable == MXOS_TRUE ) {
-        err = mxos_rtos_create_thread(&easylink_monitor_thread_handler, MXOS_DEFAULT_LIBRARY_PRIORITY, "EASYLINK",
-                                      easylink_monitor_thread, 0x1000, (mxos_thread_arg_t)in_context);
-        require_noerr_string( err, exit, "ERROR: Unable to start the EasyLink monitor thread." );
+        easylink_monitor_thread_handler = mos_thread_new( MXOS_DEFAULT_LIBRARY_PRIORITY, "EASYLINK",
+                                      easylink_monitor_thread, 0x1000, (void *)in_context);
+        require_action_string( easylink_monitor_thread_handler != NULL, exit, err = kGeneralErr, "ERROR: Unable to start the EasyLink monitor thread." );
 
         /* Make sure easylink is already running, and waiting for sem trigger */
-        mxos_rtos_delay_milliseconds( 1000 );
+        mos_thread_delay( 1000 );
     }
 
     exit:
@@ -392,7 +392,7 @@ OSStatus mxos_easylink_monitor_with_easylink( mxos_Context_t * const in_context,
 }
 
 
-OSStatus mxos_easylink_monitor( mxos_Context_t * const in_context, mxos_bool_t enable )
+mret_t mxos_easylink_monitor( mxos_Context_t * const in_context, mxos_bool_t enable )
 {
     mxos_wlan_monitor_no_easylink();
     return mxos_easylink_monitor_with_easylink( in_context, enable );

@@ -50,9 +50,9 @@ void init_debug_uart(void)
 }
 #endif
 
-static void _mxos_rtos_thread_yield(void)
+static void _mos_thread_yield(void)
 {
-   mxos_rtos_delay_milliseconds( 0 );
+   mos_thread_delay( 0 );
 }
 
 
@@ -68,14 +68,14 @@ mxos_api_t *moc_adapter(new_mxos_api_t *new_mxos_api)
   mxos_api.system_config_set = _system_config_set;
   mxos_api.mxos_network_init = (void(*)())_kernel_api.os_apis->mxos_network_init;
 
-  mxos_api.mxos_rtos_create_thread = (int (*)(void **, uint8_t, char const *, void (*)(uint32_t), uint32_t, void *))_kernel_api.os_apis->mxos_rtos_create_thread;
-  mxos_api.mxos_rtos_delete_thread = _kernel_api.os_apis->mxos_rtos_delete_thread;
-  mxos_api.mxos_rtos_delete_thread = _kernel_api.os_apis->mxos_rtos_delete_thread;
-  mxos_api.mxos_rtos_thread_yield = _mxos_rtos_thread_yield;
-  mxos_api.mxos_rtos_suspend_thread = _kernel_api.os_apis->mxos_rtos_suspend_thread;
+  mxos_api.mos_thread_new = (int (*)(void **, uint8_t, char const *, void (*)(void *), uint32_t, void *))_kernel_api.os_apis->mos_thread_new;
+  mxos_api.mos_thread_delete = _kernel_api.os_apis->mos_thread_delete;
+  mxos_api.mos_thread_delete = _kernel_api.os_apis->mos_thread_delete;
+  mxos_api.mos_thread_yield = _mos_thread_yield;
+  mxos_api.mos_thread_suspend = _kernel_api.os_apis->mos_thread_suspend;
   mxos_api.mxos_rtos_suspend_all_thread = _kernel_api.os_apis->mxos_rtos_suspend_all_thread;
   mxos_api.mxos_rtos_resume_all_thread = (long(*)(void))_kernel_api.os_apis->mxos_rtos_resume_all_thread;
-  mxos_api.mxos_rtos_thread_join = _kernel_api.os_apis->mxos_rtos_thread_join;
+  mxos_api.mos_thread_join = _kernel_api.os_apis->mos_thread_join;
   mxos_api.mxos_rtos_thread_force_awake = _kernel_api.os_apis->mxos_rtos_thread_force_awake;
   mxos_api.mxos_rtos_is_current_thread = _kernel_api.os_apis->mxos_rtos_is_current_thread;
   mxos_api.mxos_thread_sleep = _kernel_api.os_apis->mxos_thread_sleep;
@@ -334,9 +334,9 @@ int disable_log_uart(void)
     return _kernel_api.uart_apis->disable_log_uart();
 }
 
-void mxos_rtos_resume_thread(mxos_thread_t* thread)
+void mos_thread_resume(mos_thread_id_t thread)
 {
-    _kernel_api.os_apis->mxos_rtos_resume_thread(thread);
+    _kernel_api.os_apis->mos_thread_resume(&thread);
 }
 
 #define extra_apis _kernel_api.ssl_crypto_apis->extra_crypto_apis
@@ -487,7 +487,7 @@ int mxos_init_once_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t
     return _kernel_api.os_apis->mxos_init_once_timer( timer, time_ms, function, arg );
 }
 
-OSStatus MxosRtcSetalarm(time_t *time, rtc_irq_handler handler)
+mret_t MxosRtcSetalarm(time_t *time, rtc_irq_handler handler)
 {
     return _kernel_api.rtc_apis->MxosRtcSetalarm( time, handler );
 }

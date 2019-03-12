@@ -1739,7 +1739,7 @@ static void do_querier(void)
 	if (!query_enabled) {
 		MDNS_LOG("Signalled to stop mdns_querier\r\n");
 		query_enabled = 1;
-		mxos_rtos_delete_thread(NULL);
+		mos_thread_delete(NULL);
 	}
 
 }
@@ -1826,7 +1826,7 @@ static int signal_and_wait_for_query_halt()
 	}
 
 	while (query_enabled && num_iterations--)
-	    mxos_rtos_delay_milliseconds(check_interval);
+	    mos_thread_delay(check_interval);
 
 	if (!num_iterations)
 		MDNS_LOG("Error: timed out waiting for mdns querier to stop\r\n");
@@ -1856,7 +1856,7 @@ int query_halt(void)
 		query_enabled = 0;
 	}
 
-	ret = mxos_rtos_delete_thread(query_thread);
+	ret = mos_thread_delete(query_thread);
 	if (ret != kNoErr)
 		MDNS_LOG("Warning: failed to delete thread.\r\n");
 

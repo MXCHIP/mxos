@@ -132,7 +132,7 @@ srp_server_t* srp_server_setup( SRP_HashAlgorithm alg,
                                 const unsigned char * salt, int len_salt, 
                                 const char * n_hex, const char * g_hex );
 
-OSStatus srp_server_generate_session_key( srp_server_t* server, const unsigned char * bytes_A, int len_A );
+mret_t srp_server_generate_session_key( srp_server_t* server, const unsigned char * bytes_A, int len_A );
 
 void srp_server_verify_session( srp_server_t* server, const unsigned char * user_M, const unsigned char ** bytes_HAMK );
 

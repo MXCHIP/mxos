@@ -79,5 +79,5 @@
  *               Function Declarations
  ******************************************************/
 
-OSStatus init_timer_thread(void);
+mret_t init_timer_thread(void);
 

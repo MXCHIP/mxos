@@ -38,7 +38,7 @@
 #include "bootloader.h"
 
 extern void Main_Menu(void);
-extern OSStatus update(void);
+extern mret_t update(void);
 
 #ifdef SIZE_OPTIMIZE
 char menu[] =

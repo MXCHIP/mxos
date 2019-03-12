@@ -76,7 +76,7 @@ MXOS_WEAK void mxos_wlan_set_default_interface(uint8_t interface)
 
 }
 
-static OSStatus set_default_interface( void* arg)
+static mret_t set_default_interface( void* arg)
 {
     if ( default_if == INTERFACE_ETH ) {
         net_log(" INTERFACE_ETH SET DEFAULT.........");
@@ -98,9 +98,9 @@ void mxos_network_set_interface_priority( netif_t prioritys[INTERFACE_MAX] )
 }
 
 
-OSStatus mxos_network_switch_interface_auto( void )
+mret_t mxos_network_switch_interface_auto( void )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     require_action_quiet( auto_switch == MXOS_TRUE, exit, err = kUnsupportedErr );
 
@@ -119,9 +119,9 @@ exit:
 }
 
 
-OSStatus mxos_network_switch_interface_manual( netif_t interface )
+mret_t mxos_network_switch_interface_manual( netif_t interface )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
 
     auto_switch = MXOS_FALSE;
 

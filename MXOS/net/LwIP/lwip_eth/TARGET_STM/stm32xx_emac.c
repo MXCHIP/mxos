@@ -50,8 +50,8 @@
  ******************************************************/
 
 /* function */
-static void _eth_arch_rx_task(mxos_thread_arg_t arg);
-static void _eth_arch_phy_task(mxos_thread_arg_t arg);
+static void _eth_arch_rx_task(void * arg);
+static void _eth_arch_phy_task(void * arg);
 
 #if LWIP_IPV4
 static err_t _eth_arch_netif_output_ipv4(struct netif *netif, struct pbuf *q, ip_addr_t *ipaddr);
@@ -66,7 +66,7 @@ static err_t _eth_arch_low_level_igmp_mac_filter(struct netif *netif, ip_addr_t 
 static void _eth_arch_default_mac_address(char *mac);
 
 static void ETH_AddMacFilter(ETH_HandleTypeDef *heth, uint8_t *Addr, uint8_t enable);
-static OSStatus ETH_INIT( void );
+static mret_t ETH_INIT( void );
 
 MXOS_WEAK uint8_t mbed_otp_mac_address(char *mac);
 
@@ -177,9 +177,9 @@ static void ETH_AddMacFilter(ETH_HandleTypeDef *heth, uint8_t *Addr, uint8_t ena
  * @param  None
  * @retval None
  */
-static OSStatus ETH_INIT( void )
+static mret_t ETH_INIT( void )
 {
-    OSStatus err = kNoErr;
+    mret_t err = kNoErr;
     uint8_t MACAddr[6];
     HAL_StatusTypeDef hal_eth_init_status;
 
@@ -439,7 +439,7 @@ static struct pbuf * _eth_arch_low_level_input(struct netif *netif)
  *
  * \param[in] netif the lwip network interface structure
  */
-static void _eth_arch_rx_task(mxos_thread_arg_t arg)
+static void _eth_arch_rx_task(void * arg)
 {
     struct netif   *netif = (struct netif*)arg;
     struct pbuf    *p;
@@ -462,7 +462,7 @@ static void _eth_arch_rx_task(mxos_thread_arg_t arg)
  *
  * \param[in] netif the lwip network interface structure
  */
-static void _eth_arch_phy_task(mxos_thread_arg_t arg)
+static void _eth_arch_phy_task(void * arg)
 {
     struct netif   *netif = (struct netif*)arg;
     uint32_t phy_status = 0;
@@ -481,7 +481,7 @@ static void _eth_arch_phy_task(mxos_thread_arg_t arg)
             }
             phy_status = status;
         }
-        mxos_rtos_delay_milliseconds(PHY_TASK_WAIT);
+        mos_thread_delay(PHY_TASK_WAIT);
     }
 }
 
@@ -587,12 +587,12 @@ err_t eth_arch_enetif_init(struct netif *netif)
     _eth_arch_low_level_init(netif);
 
     /* Check link status */
-    mxos_rtos_create_thread(NULL, MXOS_APPLICATION_PRIORITY, "_eth_arch_phy_task", _eth_arch_phy_task, 0x500, (mxos_thread_arg_t)netif);
+    mos_thread_new( MXOS_APPLICATION_PRIORITY, "_eth_arch_phy_task", _eth_arch_phy_task, 0x500, netif);
 
     eth_log( "eth_arch_enetif_init done");
     
     /* Ethernet rx task */
-    mxos_rtos_create_thread(NULL, MXOS_RTOS_HIGEST_PRIORITY, "_eth_arch_rx_task", _eth_arch_rx_task, 0x1000, (mxos_thread_arg_t)netif);
+    mos_thread_new( MXOS_RTOS_HIGEST_PRIORITY, "_eth_arch_rx_task", _eth_arch_rx_task, 0x1000, netif);
     return ERR_OK;
 }
 

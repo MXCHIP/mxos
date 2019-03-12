@@ -47,7 +47,7 @@ void qc_scan( void )
 
     mxosWlanStartScan();
 
-    mxos_rtos_delay_milliseconds(2000);
+    mos_thread_delay(2000);
 }
 
 

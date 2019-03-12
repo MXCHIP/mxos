@@ -535,7 +535,7 @@ static HUM_TEMP_StatusTypeDef HTS221_Power_OFF(void)
 
 
 
-OSStatus hts221_sensor_init(void)
+mret_t hts221_sensor_init(void)
 {
   HUM_TEMP_InitTypeDef hts221;
   hts221.Data_Update_Mode = HTS221_BDU_CONTINUOUS;
@@ -551,7 +551,7 @@ OSStatus hts221_sensor_init(void)
   return 0;
 }
 
-OSStatus hts221_Read_Data(float *temperature,float *humidity)
+mret_t hts221_Read_Data(float *temperature,float *humidity)
 {
   if(HTS221_GetTemperature(temperature) != HUM_TEMP_OK){
     return -1;
@@ -562,7 +562,7 @@ OSStatus hts221_Read_Data(float *temperature,float *humidity)
   return 0;
 }
 
-OSStatus hts221_sensor_deinit(void)
+mret_t hts221_sensor_deinit(void)
 {
   if(HTS221_Power_OFF() != HUM_TEMP_OK){
     return -1;
