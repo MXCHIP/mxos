@@ -141,7 +141,7 @@ static void worker_thread_main( void *arg )
     {
         mxos_event_message_t message;
 
-        if ( mxos_rtos_pop_from_queue( &worker_thread->event_queue, &message, MXOS_WAIT_FOREVER ) == kNoErr )
+        if ( mos_queue_pop(worker_thread->event_queue, &message, MXOS_WAIT_FOREVER ) == kNoErr )
         {
             message.function( message.arg );
         }
@@ -153,14 +153,14 @@ merr_t mos_worker_thread_new( mos_worker_thread_id_t* worker_thread, uint8_t pri
 {
     memset( worker_thread, 0, sizeof( *worker_thread ) );
 
-    if ( mxos_rtos_init_queue( &worker_thread->event_queue, "worker queue", sizeof(mxos_event_message_t), event_queue_size ) != kNoErr )
+    if ((worker_thread->event_queue = mos_queue_new( sizeof(mxos_event_message_t), event_queue_size )) == NULL )
     {
         return kGeneralErr;
     }
 
     if ((worker_thread->thread = mos_thread_new( priority , "worker thread", worker_thread_main, stack_size, worker_thread )) == NULL )
     {
-        mxos_rtos_deinit_queue( &worker_thread->event_queue );
+        mos_queue_delete(worker_thread->event_queue );
         return kGeneralErr;
     }
 
@@ -174,7 +174,7 @@ merr_t mos_worker_thread_delete( mos_worker_thread_id_t* worker_thread )
         return kGeneralErr;
     }
 
-    if ( mxos_rtos_deinit_queue( &worker_thread->event_queue ) != kNoErr )
+    if ( mos_queue_delete(worker_thread->event_queue ) != kNoErr )
     {
         return kGeneralErr;
     }
@@ -226,7 +226,7 @@ merr_t mxos_rtos_send_asynchronous_event( mos_worker_thread_id_t* worker_thread,
     message.function = function;
     message.arg = arg;
 
-    return mxos_rtos_push_to_queue( &worker_thread->event_queue, &message, MXOS_NO_WAIT );
+    return mos_queue_push(worker_thread->event_queue, &message, MXOS_NO_WAIT );
 }
 
 static void timed_event_handler( void* arg )
@@ -237,7 +237,7 @@ static void timed_event_handler( void* arg )
     message.function = event_object->function;
     message.arg = event_object->arg;
 
-    mxos_rtos_push_to_queue( &event_object->thread->event_queue, &message, MXOS_NO_WAIT );
+    mos_queue_push(event_object->thread->event_queue, &message, MXOS_NO_WAIT );
 }
 
 void mxos_rtos_thread_sleep(uint32_t seconds)

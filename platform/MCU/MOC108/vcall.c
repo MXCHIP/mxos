@@ -53,9 +53,9 @@ merr_t mico_rtos_lock_mutex(mos_mutex_id_t *mutex)
     return mos_mutex_lock(*mutex);
 }
 
-merr_t mico_rtos_push_to_queue(mxos_queue_t *queue, void *message, uint32_t timeout)
+merr_t mico_rtos_push_to_queue(mos_queue_id_t *id, void *message, uint32_t timeout)
 {
-    return mxos_rtos_push_to_queue(queue, message, timeout);
+    return mos_queue_push(*id, message, timeout);
 }
 
 merr_t mico_rtos_set_semaphore(mos_semphr_id_t *id)

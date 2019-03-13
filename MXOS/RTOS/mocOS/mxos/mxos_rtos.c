@@ -145,27 +145,29 @@ merr_t mos_mutex_delete( mos_mutex_id_t id )
 {
     return lib_api_p->mos_mutex_delete( &id );
 }
-merr_t mxos_rtos_init_queue( mxos_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages )
+mos_queue_id_t mos_queue_new( uint32_t message_size, uint32_t number_of_messages )
 {
-    return lib_api_p->mxos_rtos_init_queue( queue, name, message_size, number_of_messages );
+    mos_queue_id_t id = NULL;
+    lib_api_p->mos_queue_new( &id, name, message_size, number_of_messages );
+    return id;
 }
-merr_t mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t timeout )
+merr_t mos_queue_push( mos_queue_id_t id, void* message, uint32_t timeout )
 {
-    return lib_api_p->mxos_rtos_push_to_queue( queue, message, timeout );
+    return lib_api_p->mos_queue_push( &id, message, timeout );
 }
-merr_t mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t timeout )
+merr_t mos_queue_pop( mos_queue_id_t id, void* message, uint32_t timeout )
 {
-    return lib_api_p->mxos_rtos_pop_from_queue( queue, message, timeout );
+    return lib_api_p->mos_queue_pop( &id, message, timeout );
 }
-merr_t mxos_rtos_deinit_queue( mxos_queue_t* queue )
+merr_t mos_queue_delete( mos_queue_id_t id )
 {
-    return lib_api_p->mxos_rtos_deinit_queue( queue );
+    return lib_api_p->mos_queue_delete( &id );
 }
-bool mxos_rtos_is_queue_empty( mxos_queue_t* queue )
+bool mxos_rtos_is_queue_empty( mos_queue_id_t* queue )
 {
     return lib_api_p->mxos_rtos_is_queue_empty( queue );
 }
-bool mxos_rtos_is_queue_full( mxos_queue_t* queue )
+bool mxos_rtos_is_queue_full( mos_queue_id_t* queue )
 {
     return lib_api_p->mxos_rtos_is_queue_full( queue );
 }

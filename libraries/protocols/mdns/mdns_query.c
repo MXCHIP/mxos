@@ -1572,7 +1572,7 @@ static void do_querier(void)
 	uint32_t start_wait, stop_wait, sleep_time, next_event;
 	int status, len = 0;
 	query_enabled = 1;
-	mxos_queue_t *ctrl_query_queue;
+	mos_queue_id_t *ctrl_query_queue;
 	query_ctrl_msg ctrl_msg;
 
 	MDNS_LOG("do_querier() launched\r\n");
@@ -1614,7 +1614,7 @@ static void do_querier(void)
                 continue;
             }
 
-            ret = mxos_rtos_pop_from_queue(ctrl_query_queue, &ctrl_msg, 0);
+            ret = mos_queue_pop(ctrl_query_queue, &ctrl_msg, 0);
 			/* we at least need a command and length */
 			if (ret == -1) {
 				MDNS_LOG("Warning: querier failed to get control message\r\n");

@@ -76,8 +76,8 @@ typedef uint32_t  mxos_event_flags_t;
 typedef void * mos_semphr_id_t;
 typedef void * mos_mutex_id_t;
 typedef void * mos_thread_id_t;
-typedef void * mxos_queue_t;
-typedef void * mxos_event_t;// MXOS OS event: mos_semphr_id_t, mos_mutex_id_t or mxos_queue_t
+typedef void * mos_queue_id_t;
+typedef void * mxos_event_t;// MXOS OS event: mos_semphr_id_t, mos_mutex_id_t or mos_queue_id_t
 typedef void (*timer_handler_t)( void* arg );
 typedef merr_t (*event_handler_t)( void* arg );
 
@@ -91,7 +91,7 @@ typedef struct
 typedef struct
 {
     mos_thread_id_t thread;
-    mxos_queue_t  event_queue;
+    mos_queue_id_t  event_queue;
 } mos_worker_thread_id_t;
 
 typedef struct
@@ -469,20 +469,20 @@ merr_t mos_mutex_delete( mos_mutex_id_t id );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-merr_t mxos_rtos_init_queue( mxos_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages );
+mos_queue_id_t mos_queue_new( uint32_t message_size, uint32_t number_of_messages );
 
 
 /** @brief    Pushes an object onto a queue
   *
   * @param    queue : a pointer to the queue handle
   * @param    message : the object to be added to the queue. Size is assumed to be
-  *                  the size specified in @ref mxos_rtos_init_queue
+  *                  the size specified in @ref mos_queue_new
   * @param    timeout_ms: the number of milliseconds to wait before returning
   *
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error or timeout occurred
   */
-merr_t mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms );
+merr_t mos_queue_push( mos_queue_id_t id, void* message, uint32_t timeout_ms );
 
 
 /** @brief    Pops an object off a queue
@@ -490,7 +490,7 @@ merr_t mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t tim
   * @param    queue : a pointer to the queue handle
   * @param    message : pointer to a buffer that will receive the object being
   *                     popped off the queue. Size is assumed to be
-  *                     the size specified in @ref mxos_rtos_init_queue , hence
+  *                     the size specified in @ref mos_queue_new , hence
   *                     you must ensure the buffer is long enough or memory
   *                     corruption will result
   * @param    timeout_ms: the number of milliseconds to wait before returning
@@ -498,17 +498,17 @@ merr_t mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t tim
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error or timeout occurred
   */
-merr_t mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms );
+merr_t mos_queue_pop( mos_queue_id_t id, void* message, uint32_t timeout_ms );
 
 
-/** @brief    De-initialise a queue created with @ref mxos_rtos_init_queue
+/** @brief    De-initialise a queue created with @ref mos_queue_new
   *
   * @param    queue : a pointer to the queue handle
   *
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-merr_t mxos_rtos_deinit_queue( mxos_queue_t* queue );
+merr_t mos_queue_delete( mos_queue_id_t id );
 
 
 /** @brief    Check if a queue is empty
@@ -518,7 +518,7 @@ merr_t mxos_rtos_deinit_queue( mxos_queue_t* queue );
   * @return   true  : queue is empty.
   * @return   false : queue is not empty.
   */
-bool mxos_rtos_is_queue_empty( mxos_queue_t* queue );
+bool mxos_rtos_is_queue_empty( mos_queue_id_t* queue );
 
 
 /** @brief    Check if a queue is full
@@ -528,7 +528,7 @@ bool mxos_rtos_is_queue_empty( mxos_queue_t* queue );
   * @return   true  : queue is empty.
   * @return   false : queue is not empty.
   */
-bool mxos_rtos_is_queue_full( mxos_queue_t* queue );
+bool mxos_rtos_is_queue_full( mos_queue_id_t* queue );
 
 /**
   * @}
@@ -685,7 +685,7 @@ int UnSetTimer(void (*psysTimerHandler)(void));
 /** @brief    Initialize an endpoint for a RTOS event, a file descriptor
   *           will be created, can be used for select
   *
-  * @param    event_handle : mos_semphr_id_t, mos_mutex_id_t or mxos_queue_t
+  * @param    event_handle : mos_semphr_id_t, mos_mutex_id_t or mos_queue_id_t
   *
   * @retval   On success, a file descriptor for RTOS event is returned.
   *           On error, -1 is returned.

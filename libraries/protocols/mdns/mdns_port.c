@@ -464,18 +464,16 @@ int mdns_send_msg(struct mdns_message *m, int sock, unsigned short port, netif_t
     return MXOS_SUCCESS;
 }
 
-mxos_queue_t mdns_ctrl_queue[2] = {NULL, NULL};
+mos_queue_id_t mdns_ctrl_queue[2] = {NULL, NULL};
 int mdns_ctrl_socks[2] = {-1, -1};
 
-int mdns_socket_queue(uint8_t id, mxos_queue_t **queue, int msg_size)
+int mdns_socket_queue(uint8_t id, mos_queue_id_t **queue, int msg_size)
 {
     int ret = 0;
 
     if (mdns_ctrl_socks[id] < 0 && msg_size > 0)
     {
-        ret = mxos_rtos_init_queue(&mdns_ctrl_queue[id], "CTRL_RESPONDER",
-                                   msg_size, 8);
-        if (ret != 0)
+        if ((mdns_ctrl_queue[id] = mos_queue_new(msg_size, 8)) == NULL)
             return -1;
         mdns_ctrl_socks[id] = mxos_rtos_init_event_fd(mdns_ctrl_queue[id]);
     }
@@ -491,10 +489,10 @@ int mdns_socket_queue(uint8_t id, mxos_queue_t **queue, int msg_size)
 int mdns_socket_close(int *s)
 {
     if (*s == mdns_ctrl_socks[MDNS_CTRL_RESPONDER])
-        mxos_rtos_deinit_queue(&mdns_ctrl_queue[MDNS_CTRL_RESPONDER]);
+        mos_queue_delete(mdns_ctrl_queue[MDNS_CTRL_RESPONDER]);
 
     if (*s == mdns_ctrl_socks[MDNS_CTRL_QUERIER])
-        mxos_rtos_deinit_queue(&mdns_ctrl_queue[MDNS_CTRL_QUERIER]);
+        mos_queue_delete(mdns_ctrl_queue[MDNS_CTRL_QUERIER]);
 
     close(*s);
     *s = -1;

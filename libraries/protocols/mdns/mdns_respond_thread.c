@@ -2478,7 +2478,7 @@ static void do_responder(void)
 	int event[MDNS_MAX_SERVICE_CONFIG];
 	uint32_t start_wait, stop_wait;
 	responder_enabled = 1;
-	mxos_queue_t *ctrl_responder_queue;
+	mos_queue_id_t *ctrl_responder_queue;
 
 	if ((mdns_mutex = mos_mutex_new()) == NULL)
 		return;
@@ -2514,7 +2514,7 @@ static void do_responder(void)
 		        continue;
 		    }
 
-		    ret = mxos_rtos_pop_from_queue(ctrl_responder_queue, &msg, 0);
+		    ret = mos_queue_pop(ctrl_responder_queue, &msg, 0);
 			if (ret == -1) {
 				MDNS_LOG("Warning: responder failed to get control message");
 			} else {

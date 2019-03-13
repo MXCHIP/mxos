@@ -43,11 +43,11 @@
 
 #include "mxos_rtos.h"
 
-#define SYS_MBOX_NULL ((mxos_queue_t)0)
+#define SYS_MBOX_NULL ((mos_queue_id_t)0)
 #define SYS_SEM_NULL  ((mos_semphr_id_t)0)
 
 typedef mos_semphr_id_t  sys_sem_t;
-typedef mxos_queue_t      sys_mbox_t;
+typedef mos_queue_id_t      sys_mbox_t;
 typedef mos_thread_id_t     sys_thread_t;
 
 #endif /* __SYS_RTXC_H__ */

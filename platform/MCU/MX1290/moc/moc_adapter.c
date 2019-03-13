@@ -88,10 +88,10 @@ mxos_api_t *moc_adapter(new_mxos_api_t *new_mxos_api)
   mxos_api.mos_mutex_lock = _kernel_api.os_apis->mos_mutex_lock;
   mxos_api.mos_mutex_unlock = _kernel_api.os_apis->mos_mutex_unlock;
   mxos_api.mos_mutex_delete = _kernel_api.os_apis->mos_mutex_delete;
-  mxos_api.mxos_rtos_init_queue = _kernel_api.os_apis->mxos_rtos_init_queue;
-  mxos_api.mxos_rtos_push_to_queue = _kernel_api.os_apis->mxos_rtos_push_to_queue;
-  mxos_api.mxos_rtos_pop_from_queue = _kernel_api.os_apis->mxos_rtos_pop_from_queue;
-  mxos_api.mxos_rtos_deinit_queue = _kernel_api.os_apis->mxos_rtos_deinit_queue;
+  mxos_api.mos_queue_new = _kernel_api.os_apis->mos_queue_new;
+  mxos_api.mos_queue_push = _kernel_api.os_apis->mos_queue_push;
+  mxos_api.mos_queue_pop = _kernel_api.os_apis->mos_queue_pop;
+  mxos_api.mos_queue_delete = _kernel_api.os_apis->mos_queue_delete;
   mxos_api.mxos_rtos_is_queue_empty = _kernel_api.os_apis->mxos_rtos_is_queue_empty;
   mxos_api.mxos_rtos_is_queue_full = (int (*)(void * *))_kernel_api.os_apis->mxos_rtos_is_queue_full;
   mxos_api.mxos_get_time = _kernel_api.os_apis->mxos_get_time;

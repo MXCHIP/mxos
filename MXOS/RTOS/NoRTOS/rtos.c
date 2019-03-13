@@ -311,40 +311,40 @@ void mxos_rtos_exit_critical( void )
 {
 }
 
-merr_t mxos_rtos_init_queue( mxos_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages )
+mos_queue_id_t mos_queue_new( uint32_t message_size, uint32_t number_of_messages )
 {
-    return kNoErr;
+    return NULL;
 }
 
-merr_t mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
-{
-    return kUnsupportedErr;
-}
-
-
-merr_t mxos_rtos_push_to_queue_front( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
+merr_t mos_queue_push( mos_queue_id_t id, void* message, uint32_t timeout_ms )
 {
     return kUnsupportedErr;
 }
 
 
-merr_t mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
+merr_t mos_queue_push_front( mos_queue_id_t* queue, void* message, uint32_t timeout_ms )
 {
     return kUnsupportedErr;
 }
 
 
-merr_t mxos_rtos_deinit_queue( mxos_queue_t* queue )
+merr_t mos_queue_pop( mos_queue_id_t id, void* message, uint32_t timeout_ms )
 {
     return kUnsupportedErr;
 }
 
-bool mxos_rtos_is_queue_empty( mxos_queue_t* queue )
+
+merr_t mos_queue_delete( mos_queue_id_t id )
 {
     return kUnsupportedErr;
 }
 
-bool mxos_rtos_is_queue_full( mxos_queue_t* queue )
+bool mxos_rtos_is_queue_empty( mos_queue_id_t* queue )
+{
+    return kUnsupportedErr;
+}
+
+bool mxos_rtos_is_queue_full( mos_queue_id_t* queue )
 {
     return kUnsupportedErr;
 }

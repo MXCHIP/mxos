@@ -64,9 +64,9 @@ merr_t mico_rtos_lock_mutex(mos_mutex_id_t *mutex)
 	return mos_mutex_lock(*mutex);
 }
 
-merr_t mico_rtos_push_to_queue(mxos_queue_t *queue, void *message, uint32_t timeout_ms)
+merr_t mico_rtos_push_to_queue(mos_queue_id_t *id, void *message, uint32_t timeout)
 {
-	return mxos_rtos_push_to_queue(queue, message, timeout_ms);
+    return mos_queue_push(*id, message, timeout);
 }
 
 merr_t mico_rtos_set_semaphore(mos_semphr_id_t *id)
@@ -101,9 +101,9 @@ merr_t mico_platform_init(void)
 	return mxos_platform_init();
 }
 
-merr_t mico_rtos_deinit_queue(mxos_queue_t *queue)
+merr_t mico_rtos_deinit_queue(mos_queue_id_t *id)
 {
-	return mxos_rtos_deinit_queue(queue);
+	return mos_queue_delete(*id);
 }
 
 void mico_rtos_enter_critical(void)
@@ -116,19 +116,20 @@ void mico_rtos_exit_critical(void)
 	mxos_rtos_exit_critical();
 }
 
-merr_t mico_rtos_init_queue(mxos_queue_t *queue, const char *name, uint32_t message_size, uint32_t number_of_messages)
+merr_t mico_rtos_init_queue(mos_queue_id_t *id, const char *name, uint32_t message_size, uint32_t number_of_messages)
 {
-	return mxos_rtos_init_queue(queue, name, message_size, number_of_messages);
+	*id = mos_queue_new(message_size, number_of_messages);
+	return *id == NULL ? kGeneralErr : kNoErr;
 }
 
-bool mico_rtos_is_queue_empty(mxos_queue_t *queue)
+bool mico_rtos_is_queue_empty(mos_queue_id_t *queue)
 {
 	return mxos_rtos_is_queue_empty(queue);
 }
 
-merr_t mico_rtos_pop_from_queue(mxos_queue_t *queue, void *message, uint32_t timeout_ms)
+merr_t mico_rtos_pop_from_queue(mos_queue_id_t *id, void *message, uint32_t timeout_ms)
 {
-	return mxos_rtos_pop_from_queue(queue, message, timeout_ms);
+	return mos_queue_pop(*id, message, timeout_ms);
 }
 
 merr_t mico_rtos_thread_force_awake(mos_thread_id_t *thread)

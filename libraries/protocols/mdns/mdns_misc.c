@@ -574,26 +574,26 @@ int dns_send_msg(struct mdns_message *m, int sock, unsigned short port,
 int mdns_send_ctrl_msg_uint32(uint16_t port, int msg)
 {
     int ret;
-    mxos_queue_t *ctrl_queue;
+    mos_queue_id_t *ctrl_queue;
 
     ret = mdns_socket_queue(port, &ctrl_queue, 0);
     if (ret == -1) {
         return ret;
     }
-    ret = mxos_rtos_push_to_queue(ctrl_queue, &msg, 0);
+    ret = mos_queue_push(ctrl_queue, &msg, 0);
     return ret;
 }
 
 int mdns_send_ctrl_msg(uint16_t port, void *msg)
 {
     int ret;
-    mxos_queue_t *ctrl_queue;
+    mos_queue_id_t *ctrl_queue;
 
     ret = mdns_socket_queue(port, &ctrl_queue, 0);
     if (ret == -1) {
         return ret;
     }
-    ret = mxos_rtos_push_to_queue(ctrl_queue, msg, 0);
+    ret = mos_queue_push(ctrl_queue, msg, 0);
     return ret;
 }
 

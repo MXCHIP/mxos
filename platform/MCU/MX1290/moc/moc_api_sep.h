@@ -63,12 +63,12 @@ typedef struct {
 	merr_t (*mos_mutex_lock)( mos_mutex_id_t* mutex );
 	merr_t (*mos_mutex_unlock)( mos_mutex_id_t* mutex );
 	merr_t (*mos_mutex_delete)( mos_mutex_id_t* mutex );
-	merr_t (*mxos_rtos_init_queue)( mxos_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages );
-	merr_t (*mxos_rtos_push_to_queue)( mxos_queue_t* queue, void* message, uint32_t timeout_ms );
-	merr_t (*mxos_rtos_pop_from_queue)( mxos_queue_t* queue, void* message, uint32_t timeout_ms );
-	merr_t (*mxos_rtos_deinit_queue)( mxos_queue_t* queue );
-	bool (*mxos_rtos_is_queue_empty)( mxos_queue_t* queue );
-	bool (*mxos_rtos_is_queue_full)( mxos_queue_t* queue );
+	merr_t (*mos_queue_new)( mos_queue_id_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages );
+	merr_t (*mos_queue_push)( mos_queue_id_t* queue, void* message, uint32_t timeout_ms );
+	merr_t (*mos_queue_pop)( mos_queue_id_t* queue, void* message, uint32_t timeout_ms );
+	merr_t (*mos_queue_delete)( mos_queue_id_t* queue );
+	bool (*mxos_rtos_is_queue_empty)( mos_queue_id_t* queue );
+	bool (*mxos_rtos_is_queue_full)( mos_queue_id_t* queue );
 	uint32_t (*mxos_get_time)(void);
 	merr_t (*mxos_init_timer)( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg );
 	merr_t (*mxos_start_timer)( mxos_timer_t* timer );

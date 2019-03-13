@@ -121,7 +121,7 @@ USBH_StatusTypeDef  USBH_Init(USBH_HandleTypeDef *phost, void (*pUsrFunc)(USBH_H
 #if (USBH_USE_OS == 1) 
   
   /* Create USB Host Queue */
-  mxos_rtos_init_queue( (mxos_queue_t *) &(phost->os_event), NULL, sizeof(uint16_t), 10 );
+  phost->os_event = mos_queue_new( sizeof(uint16_t), 10 );
   
   /*Create USB Host Task */
   mos_thread_new(MXOS_APPLICATION_PRIORITY, "USBH", USBH_Process_OS, 0x4C0, phost );
@@ -388,7 +388,7 @@ USBH_StatusTypeDef  USBH_ReEnumerate   (USBH_HandleTypeDef *phost)
   USBH_Start(phost);
       
 #if (USBH_USE_OS == 1)
-  mxos_rtos_push_to_queue((mxos_queue_t *) &(phost->os_event), &USBH_PORT, 0 );
+  mos_queue_push((mos_queue_id_t)(phost->os_event), &USBH_PORT, 0 );
 #endif  
   return USBH_OK;  
 }
@@ -415,7 +415,7 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
       USBH_Delay(200); 
       USBH_LL_ResetPort(phost);
 #if (USBH_USE_OS == 1)
-      mxos_rtos_push_to_queue((mxos_queue_t *) &(phost->os_event), &USBH_PORT, 0 );
+      mos_queue_push((mos_queue_id_t)(phost->os_event), &USBH_PORT, 0 );
 #endif
     }
     break;
@@ -457,7 +457,7 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
                    phost->Control.pipe_size);
     
 #if (USBH_USE_OS == 1)
-    mxos_rtos_push_to_queue((mxos_queue_t *) &(phost->os_event), &USBH_PORT, 0 );
+    mos_queue_push((mos_queue_id_t)(phost->os_event), &USBH_PORT, 0 );
 #endif    
     
     break;
@@ -492,7 +492,7 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
         phost->gState = HOST_SET_CONFIGURATION;
         
 #if (USBH_USE_OS == 1)
-        mxos_rtos_push_to_queue((mxos_queue_t *) &(phost->os_event), &USBH_STATE_CHANGED, 0 );
+        mos_queue_push((mos_queue_id_t)(phost->os_event), &USBH_STATE_CHANGED, 0 );
 #endif         
       }
     }
@@ -551,7 +551,7 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
     }
     
 #if (USBH_USE_OS == 1)
-    mxos_rtos_push_to_queue((mxos_queue_t *) &(phost->os_event), &USBH_STATE_CHANGED, 0 );
+    mos_queue_push((mos_queue_id_t)(phost->os_event), &USBH_STATE_CHANGED, 0 );
 #endif 
     break;    
     
@@ -573,7 +573,7 @@ USBH_StatusTypeDef  USBH_Process(USBH_HandleTypeDef *phost)
       USBH_ErrLog ("Invalid Class Driver.");
     
 #if (USBH_USE_OS == 1)
-      mxos_rtos_push_to_queue((mxos_queue_t *) &(phost->os_event), &USBH_STATE_CHANGED, 0 );
+      mos_queue_push((mos_queue_id_t)(phost->os_event), &USBH_STATE_CHANGED, 0 );
 #endif       
     }
     
@@ -722,7 +722,7 @@ static USBH_StatusTypeDef USBH_HandleEnum (USBH_HandleTypeDef *phost)
         phost->EnumState = ENUM_GET_PRODUCT_STRING_DESC;
         
 #if (USBH_USE_OS == 1)
-        mxos_rtos_push_to_queue((mxos_queue_t *) &(phost->os_event), &USBH_STATE_CHANGED, 0 );
+        mos_queue_push((mos_queue_id_t)(phost->os_event), &USBH_STATE_CHANGED, 0 );
 #endif          
       }
     }
@@ -731,7 +731,7 @@ static USBH_StatusTypeDef USBH_HandleEnum (USBH_HandleTypeDef *phost)
      USBH_UsrLog("Manufacturer : N/A");      
      phost->EnumState = ENUM_GET_PRODUCT_STRING_DESC; 
 #if (USBH_USE_OS == 1)
-     mxos_rtos_push_to_queue((mxos_queue_t *) &(phost->os_event), &USBH_STATE_CHANGED, 0 );
+     mos_queue_push((mos_queue_id_t)(phost->os_event), &USBH_STATE_CHANGED, 0 );
 #endif       
     }
     break;
@@ -754,7 +754,7 @@ static USBH_StatusTypeDef USBH_HandleEnum (USBH_HandleTypeDef *phost)
       USBH_UsrLog("Product : N/A");
       phost->EnumState = ENUM_GET_SERIALNUM_STRING_DESC; 
 #if (USBH_USE_OS == 1)
-      mxos_rtos_push_to_queue((mxos_queue_t *) &(phost->os_event), &USBH_STATE_CHANGED, 0 );
+      mos_queue_push((mos_queue_id_t)(phost->os_event), &USBH_STATE_CHANGED, 0 );
 #endif        
     } 
     break;
@@ -777,7 +777,7 @@ static USBH_StatusTypeDef USBH_HandleEnum (USBH_HandleTypeDef *phost)
       USBH_UsrLog("Serial Number : N/A"); 
       Status = USBH_OK;
 #if (USBH_USE_OS == 1)
-      mxos_rtos_push_to_queue((mxos_queue_t *) &(phost->os_event), &USBH_STATE_CHANGED, 0 );
+      mos_queue_push((mos_queue_id_t)(phost->os_event), &USBH_STATE_CHANGED, 0 );
 #endif        
     }  
     break;
@@ -846,7 +846,7 @@ USBH_StatusTypeDef  USBH_LL_Connect  (USBH_HandleTypeDef *phost)
     phost->gState = HOST_DEV_ATTACHED ;
   }
 #if (USBH_USE_OS == 1)
-  mxos_rtos_push_to_queue((mxos_queue_t *) &(phost->os_event), &USBH_PORT, 0 );
+  mos_queue_push((mos_queue_id_t)(phost->os_event), &USBH_PORT, 0 );
 #endif 
   
   return USBH_OK;
@@ -881,7 +881,7 @@ USBH_StatusTypeDef  USBH_LL_Disconnect  (USBH_HandleTypeDef *phost)
   phost->gState = HOST_DEV_DISCONNECTED;
   
 #if (USBH_USE_OS == 1)
-  mxos_rtos_push_to_queue((mxos_queue_t *) &(phost->os_event), &USBH_PORT, 0 );
+  mos_queue_push((mos_queue_id_t)(phost->os_event), &USBH_PORT, 0 );
 #endif 
   
   return USBH_OK;
@@ -900,9 +900,9 @@ static void USBH_Process_OS(void * argument)
   
   for(;;)
   {
-    mxos_rtos_pop_from_queue( (mxos_queue_t *)&(((USBH_HandleTypeDef *)argument)->os_event), &Receive, 0xFFFFFFFF );
+    mos_queue_pop( (mos_queue_id_t)(((USBH_HandleTypeDef *)argument)->os_event), &Receive, 0xFFFFFFFF );
       
-      if(mxos_rtos_is_queue_empty((mxos_queue_t *)&(((USBH_HandleTypeDef *)argument)->os_event)))
+      if(mxos_rtos_is_queue_empty((mos_queue_id_t *)&(((USBH_HandleTypeDef *)argument)->os_event)))
       {
         USBH_Process((USBH_HandleTypeDef *)argument);
       }
@@ -917,7 +917,7 @@ static void USBH_Process_OS(void * argument)
 */
 USBH_StatusTypeDef  USBH_LL_NotifyURBChange (USBH_HandleTypeDef *phost)
 {
-  mxos_rtos_push_to_queue((mxos_queue_t *) &(phost->os_event), &USBH_URB, 0 );
+  mos_queue_push((mos_queue_id_t)(phost->os_event), &USBH_URB, 0 );
   return USBH_OK;
 }
 #endif  

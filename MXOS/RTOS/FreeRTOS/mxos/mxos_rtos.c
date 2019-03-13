@@ -535,26 +535,19 @@ merr_t mos_mutex_delete( mos_mutex_id_t id )
     return kNoErr;
 }
 
-merr_t mxos_rtos_init_queue( mxos_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages )
+mos_queue_id_t mos_queue_new( uint32_t message_size, uint32_t number_of_messages )
 {
-    UNUSED_PARAMETER(name);
-
-    if ( ( *queue = xQueueCreate( number_of_messages, message_size ) ) == NULL )
-    {
-        return kGeneralErr;
-    }
-
-    return kNoErr;
+    return xQueueCreate( number_of_messages, message_size );
 }
 
-merr_t mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
+merr_t mos_queue_push( mos_queue_id_t id, void* message, uint32_t timeout_ms )
 {
     signed portBASE_TYPE result;
 
     if ( platform_is_in_interrupt_context( ) == MXOS_TRUE )
     {
         signed portBASE_TYPE xHigherPriorityTaskWoken;
-        result = xQueueSendToBackFromISR( *queue, message, &xHigherPriorityTaskWoken );
+        result = xQueueSendToBackFromISR( id, message, &xHigherPriorityTaskWoken );
 
         /* If xQueueSendToBackFromISR() unblocked a task, and the unblocked task has
          * a higher priority than the currently executing task, then
@@ -565,14 +558,14 @@ merr_t mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t tim
     }
     else
     {
-        result = xQueueSendToBack( *queue, message, (portTickType) ( timeout_ms / ms_to_tick_ratio ) );
+        result = xQueueSendToBack( id, message, (portTickType) ( timeout_ms / ms_to_tick_ratio ) );
     }
 
     return ( result == pdPASS )? kNoErr : kGeneralErr;
 }
 
 
-merr_t mxos_rtos_push_to_queue_front( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
+merr_t mos_queue_push_front( mos_queue_id_t* queue, void* message, uint32_t timeout_ms )
 {
     signed portBASE_TYPE result;
 
@@ -597,9 +590,9 @@ merr_t mxos_rtos_push_to_queue_front( mxos_queue_t* queue, void* message, uint32
 }
 
 
-merr_t mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
+merr_t mos_queue_pop( mos_queue_id_t id, void* message, uint32_t timeout_ms )
 {
-    if ( xQueueReceive( *queue, message, ( timeout_ms / ms_to_tick_ratio ) ) != pdPASS )
+    if ( xQueueReceive( id, message, ( timeout_ms / ms_to_tick_ratio ) ) != pdPASS )
     {
         return kGeneralErr;
     }
@@ -608,14 +601,13 @@ merr_t mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t ti
 }
 
 
-merr_t mxos_rtos_deinit_queue( mxos_queue_t* queue )
+merr_t mos_queue_delete( mos_queue_id_t id )
 {
-    vQueueDelete( *queue );
-    *queue = NULL;
+    vQueueDelete( id );
     return kNoErr;
 }
 
-bool mxos_rtos_is_queue_empty( mxos_queue_t* queue )
+bool mxos_rtos_is_queue_empty( mos_queue_id_t* queue )
 {
     signed portBASE_TYPE result;
 
@@ -626,7 +618,7 @@ bool mxos_rtos_is_queue_empty( mxos_queue_t* queue )
     return ( result != 0 ) ? true : false;
 }
 
-bool mxos_rtos_is_queue_full( mxos_queue_t* queue )
+bool mxos_rtos_is_queue_full( mos_queue_id_t* queue )
 {
     signed portBASE_TYPE result;
 
