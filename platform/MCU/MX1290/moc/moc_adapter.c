@@ -80,10 +80,10 @@ mxos_api_t *moc_adapter(new_mxos_api_t *new_mxos_api)
   mxos_api.mxos_rtos_is_current_thread = _kernel_api.os_apis->mxos_rtos_is_current_thread;
   mxos_api.mxos_thread_sleep = _kernel_api.os_apis->mxos_thread_sleep;
   mxos_api.mxos_thread_msleep = _kernel_api.os_apis->mxos_thread_msleep;
-  mxos_api.mxos_rtos_init_semaphore = _kernel_api.os_apis->mxos_rtos_init_semaphore;
-  mxos_api.mxos_rtos_set_semaphore = _kernel_api.os_apis->mxos_rtos_set_semaphore;
-  mxos_api.mxos_rtos_get_semaphore = _kernel_api.os_apis->mxos_rtos_get_semaphore;
-  mxos_api.mxos_rtos_deinit_semaphore = _kernel_api.os_apis->mxos_rtos_deinit_semaphore;
+  mxos_api.mos_semphr_new = _kernel_api.os_apis->mos_semphr_new;
+  mxos_api.mos_semphr_release = _kernel_api.os_apis->mos_semphr_release;
+  mxos_api.mos_semphr_acquire = _kernel_api.os_apis->mos_semphr_acquire;
+  mxos_api.mos_semphr_delete = _kernel_api.os_apis->mos_semphr_delete;
   mxos_api.mxos_rtos_init_mutex = _kernel_api.os_apis->mxos_rtos_init_mutex;
   mxos_api.mxos_rtos_lock_mutex = _kernel_api.os_apis->mxos_rtos_lock_mutex;
   mxos_api.mxos_rtos_unlock_mutex = _kernel_api.os_apis->mxos_rtos_unlock_mutex;

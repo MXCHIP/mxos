@@ -109,21 +109,23 @@ bool mxos_rtos_is_current_thread( mos_thread_id_t* thread )
     return lib_api_p->mxos_rtos_is_current_thread(thread);
 }
 
-merr_t mxos_rtos_init_semaphore( mxos_semaphore_t* semaphore, int count )
+mos_semphr_id_t mos_semphr_new( uint32_t count )
 {
-    return lib_api_p->mxos_rtos_init_semaphore(semaphore, count);
+    mos_semphr_id_t id = NULL;
+    lib_api_p->mos_semphr_new(&id, count);
+    return id;
 }
-merr_t mxos_rtos_set_semaphore( mxos_semaphore_t* semaphore )
+merr_t mos_semphr_release( mos_semphr_id_t id )
 {
-    return lib_api_p->mxos_rtos_set_semaphore(semaphore);
+    return lib_api_p->mos_semphr_release(&id);
 }
-merr_t mxos_rtos_get_semaphore( mxos_semaphore_t* semaphore, uint32_t timeout_ms )
+merr_t mos_semphr_acquire( mos_semphr_id_t id, uint32_t timeout )
 {
-    return lib_api_p->mxos_rtos_get_semaphore(semaphore, timeout_ms);
+    return lib_api_p->mos_semphr_acquire(&id, timeout);
 }
-merr_t mxos_rtos_deinit_semaphore( mxos_semaphore_t* semaphore )
+merr_t mos_semphr_delete( mos_semphr_id_t id )
 {
-    return lib_api_p->mxos_rtos_deinit_semaphore(semaphore);
+    return lib_api_p->mos_semphr_delete(&id);
 }
 merr_t mxos_rtos_init_mutex( mxos_mutex_t* mutex )
 {
@@ -145,13 +147,13 @@ merr_t mxos_rtos_init_queue( mxos_queue_t* queue, const char* name, uint32_t mes
 {
     return lib_api_p->mxos_rtos_init_queue( queue, name, message_size, number_of_messages );
 }
-merr_t mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
+merr_t mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t timeout )
 {
-    return lib_api_p->mxos_rtos_push_to_queue( queue, message, timeout_ms );
+    return lib_api_p->mxos_rtos_push_to_queue( queue, message, timeout );
 }
-merr_t mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
+merr_t mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t timeout )
 {
-    return lib_api_p->mxos_rtos_pop_from_queue( queue, message, timeout_ms );
+    return lib_api_p->mxos_rtos_pop_from_queue( queue, message, timeout );
 }
 merr_t mxos_rtos_deinit_queue( mxos_queue_t* queue )
 {

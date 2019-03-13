@@ -102,7 +102,7 @@ struct mxos_bt_smartbridge_socket
     mxos_bt_smart_bond_info_t                      bond_info;                      /**< Bond Info                                                     */
     mxos_bt_smart_bond_request_t                   bond_req;                       /**< Bond Request Structure                                        */
     void*                                          att_cache;                      /**< Pointer to Attribute Cache                                    */
-    mxos_semaphore_t                               semaphore;                      /**< Semaphore                                                     */
+    mos_semphr_id_t                               semaphore;                      /**< Semaphore                                                     */
 };
 
 struct mxos_bt_smartbridge_auto_conn_cback_parm

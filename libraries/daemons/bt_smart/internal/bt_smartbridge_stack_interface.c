@@ -90,8 +90,7 @@ merr_t smartbridge_bt_interface_initialize( void )
         return result;
     }
 
-    result = mxos_rtos_init_semaphore( &smartbridge_subprocedure.done_semaphore, 1 );
-    if ( result != MXOS_BT_SUCCESS )
+    if ((smartbridge_subprocedure.done_semaphore = mos_semphr_new( 1 )) == NULL)
     {
         bt_smartbridge_log( "Error creating semaphore" );
         return result;
@@ -108,7 +107,7 @@ merr_t smartbridge_bt_interface_deinitialize( void )
 
     subprocedure_reset( &smartbridge_subprocedure );
     mxos_rtos_deinit_mutex( &smartbridge_subprocedure.mutex );
-    mxos_rtos_deinit_semaphore( &smartbridge_subprocedure.done_semaphore );
+    mos_semphr_delete(smartbridge_subprocedure.done_semaphore );
 
     return MXOS_BT_SUCCESS;
 }

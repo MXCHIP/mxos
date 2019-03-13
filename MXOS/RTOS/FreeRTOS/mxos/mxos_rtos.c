@@ -432,16 +432,14 @@ merr_t mxos_time_set_time(mxos_time_t* time_ptr)
     return kNoErr;
 }
 
-merr_t mxos_rtos_init_semaphore( mxos_semaphore_t* semaphore, int count )
+mos_semphr_id_t mos_semphr_new( uint32_t count )
 {
-    *semaphore = xSemaphoreCreateCounting( (unsigned portBASE_TYPE) count, (unsigned portBASE_TYPE) 0 );
-
-    return ( *semaphore != NULL ) ? kNoErr : kGeneralErr;
+    return xSemaphoreCreateCounting( (unsigned portBASE_TYPE) count, (unsigned portBASE_TYPE) 0 );
 }
 
-merr_t mxos_rtos_get_semaphore( mxos_semaphore_t* semaphore, uint32_t timeout_ms )
+merr_t mos_semphr_acquire( mos_semphr_id_t id, uint32_t timeout )
 {
-    if ( pdTRUE == xSemaphoreTake( *semaphore, (portTickType) ( timeout_ms / ms_to_tick_ratio ) ) )
+    if ( pdTRUE == xSemaphoreTake( id, (portTickType) ( timeout / ms_to_tick_ratio ) ) )
     {
         return kNoErr;
     }
@@ -451,14 +449,14 @@ merr_t mxos_rtos_get_semaphore( mxos_semaphore_t* semaphore, uint32_t timeout_ms
     }
 }
 
-int mxos_rtos_set_semaphore( mxos_semaphore_t* semaphore )
+merr_t mos_semphr_release( mos_semphr_id_t id )
 {
     signed portBASE_TYPE result;
 
     if ( platform_is_in_interrupt_context( ) == MXOS_TRUE )
     {
         signed portBASE_TYPE xHigherPriorityTaskWoken;
-        result = xSemaphoreGiveFromISR( *semaphore, &xHigherPriorityTaskWoken );
+        result = xSemaphoreGiveFromISR( id, &xHigherPriorityTaskWoken );
 
         //check_string( result == pdTRUE, "Unable to set semaphore" );
 
@@ -471,19 +469,18 @@ int mxos_rtos_set_semaphore( mxos_semaphore_t* semaphore )
     }
     else
     {
-        result = xSemaphoreGive( *semaphore );
+        result = xSemaphoreGive( id );
         //check_string( result == pdTRUE, "Unable to set semaphore" );
     }
 
     return ( result == pdPASS )? kNoErr : kGeneralErr;
 }
 
-merr_t mxos_rtos_deinit_semaphore( mxos_semaphore_t* semaphore )
+merr_t mos_semphr_delete( mos_semphr_id_t id )
 {
-    if (semaphore != NULL)
+    if (id != NULL)
     {
-        vQueueDelete( *semaphore );
-        *semaphore = NULL;
+        vQueueDelete( id );
     }
     return kNoErr;
 }

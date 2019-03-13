@@ -58,7 +58,7 @@ struct cli_st {
   char outbuf[OUTBUF_SIZE];
 } ;
 static struct cli_st *pCli = NULL;
-mxos_semaphore_t log_rx_interrupt_sema;
+mos_semphr_id_t log_rx_interrupt_sema;
 
 #else
 
@@ -364,7 +364,7 @@ static void cli_main( void *data )
       continue;
     msg = pCli->inbuf;
 #else
-	while(mxos_rtos_get_semaphore(&log_rx_interrupt_sema, MXOS_NEVER_TIMEOUT) != kNoErr);
+	while(mos_semphr_acquire(log_rx_interrupt_sema, MXOS_NEVER_TIMEOUT) != kNoErr);
 	msg = log_buf;
 #endif
     
@@ -750,7 +750,7 @@ int cli_init(void)
     return kNoMemoryErr;
   
   memset((void *)pCli, 0, sizeof(struct cli_st));
-  mxos_rtos_init_semaphore(&log_rx_interrupt_sema, 1);
+  log_rx_interrupt_sema = mos_semphr_new(1);
   
   /* add our built-in commands */
   if (cli_register_commands(&built_ins[0],

@@ -41,7 +41,7 @@
 #ifndef MXOS_DISABLE_WATCHDOG
 static __IO uint32_t LsiFreq = 0;
 static __IO uint32_t CaptureNumber = 0, PeriodValue = 0;
-static mxos_semaphore_t  _measureLSIComplete_SEM = NULL;
+static mos_semphr_id_t  _measureLSIComplete_SEM = NULL;
 uint16_t tmpCC4[2] = {0, 0};
 #endif
 
@@ -123,7 +123,7 @@ uint32_t GetLSIFrequency(void)
   TIM_ICInitTypeDef  TIM_ICInitStructure;
   RCC_ClocksTypeDef  RCC_ClockFreq;
 
-  mxos_rtos_init_semaphore(&_measureLSIComplete_SEM, 1);
+  _measureLSIComplete_SEM = mos_semphr_new(1);
 
   /* Enable the LSI oscillator ************************************************/
   RCC_LSICmd(ENABLE);
@@ -170,8 +170,8 @@ uint32_t GetLSIFrequency(void)
   TIM_ITConfig(TIM5, TIM_IT_CC4, ENABLE);
 
   /* Wait until the TIM5 get 2 LSI edges (refer to TIM5_IRQHandler()) *********/
-  mxos_rtos_get_semaphore(&_measureLSIComplete_SEM, MXOS_WAIT_FOREVER);
-  mxos_rtos_deinit_semaphore( &_measureLSIComplete_SEM );
+  mos_semphr_acquire(_measureLSIComplete_SEM, MXOS_WAIT_FOREVER);
+  mos_semphr_delete(_measureLSIComplete_SEM );
   _measureLSIComplete_SEM = NULL;
 
   /* Deinitialize the TIM5 peripheral registers to their default reset values */
@@ -221,7 +221,7 @@ void TIM5_IRQHandler(void)
       /* Compute the period length */
       PeriodValue = (uint16_t)(0xFFFF - tmpCC4[0] + tmpCC4[1] + 1);
       if(_measureLSIComplete_SEM != NULL){
-        mxos_rtos_set_semaphore(&_measureLSIComplete_SEM);
+        mos_semphr_release(_measureLSIComplete_SEM);
       }
     }
   }

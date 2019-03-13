@@ -55,10 +55,10 @@ typedef struct {
 	bool (*mxos_rtos_is_current_thread)( mos_thread_id_t* thread );
 	void (*mxos_thread_sleep)(uint32_t seconds);
 	void (*mxos_thread_msleep)(uint32_t milliseconds);
-	merr_t (*mxos_rtos_init_semaphore)( mxos_semaphore_t* semaphore, int count );
-	merr_t (*mxos_rtos_set_semaphore)( mxos_semaphore_t* semaphore );
-	merr_t (*mxos_rtos_get_semaphore)( mxos_semaphore_t* semaphore, uint32_t timeout_ms );
-	merr_t (*mxos_rtos_deinit_semaphore)( mxos_semaphore_t* semaphore );
+	merr_t (*mos_semphr_new)( mos_semphr_id_t* semaphore, int count );
+	merr_t (*mos_semphr_release)( mos_semphr_id_t* semaphore );
+	merr_t (*mos_semphr_acquire)( mos_semphr_id_t* semaphore, uint32_t timeout_ms );
+	merr_t (*mos_semphr_delete)( mos_semphr_id_t* semaphore );
 	merr_t (*mxos_rtos_init_mutex)( mxos_mutex_t* mutex );
 	merr_t (*mxos_rtos_lock_mutex)( mxos_mutex_t* mutex );
 	merr_t (*mxos_rtos_unlock_mutex)( mxos_mutex_t* mutex );

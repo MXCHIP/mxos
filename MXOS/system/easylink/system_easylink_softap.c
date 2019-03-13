@@ -27,8 +27,8 @@
 #include "easylink_internal.h"
 
 /* Internal vars and functions */
-static mxos_semaphore_t easylink_sem;         /**< Used to suspend thread while easylink. */
-static mxos_semaphore_t easylink_connect_sem; /**< Used to suspend thread while connection. */
+static mos_semphr_id_t easylink_sem;         /**< Used to suspend thread while easylink. */
+static mos_semphr_id_t easylink_connect_sem; /**< Used to suspend thread while connection. */
 static bool easylink_success = false;         /**< true: connect to wlan, false: start soft ap mode or roll back to previous settings */
 static uint32_t easylinkIndentifier = 0;      /**< Unique for an easylink instance. */
 static mos_thread_id_t easylink_softap_thread_handler = NULL;
@@ -48,7 +48,7 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
             easylink_bonjour_update( Station, easylinkIndentifier, inContext );
             inContext->flashContentInRam.mxosSystemConfig.configured = allConfigured;
             mxos_system_context_update( &inContext->flashContentInRam ); //Update Flash content
-            mxos_rtos_set_semaphore( &easylink_connect_sem ); //Notify Easylink thread
+            mos_semphr_release(easylink_connect_sem ); //Notify Easylink thread
             break;
         case NOTIFY_AP_DOWN:
             /* Remove bonjour service under soft ap interface */
@@ -64,7 +64,7 @@ void easylink_uap_configured_cd(uint32_t id)
     easylinkIndentifier = id;
     easylink_success = true;
     mxosWlanSuspendSoftAP();
-    mxos_rtos_set_semaphore( &easylink_sem );
+    mos_semphr_release(easylink_sem );
 }
 
 static void easylink_remove_bonjour_from_uap(void)
@@ -85,8 +85,8 @@ void easylink_softap_thread( void *inContext )
 
     mxos_system_notify_register( mxos_notify_WIFI_STATUS_CHANGED, (void *) easylink_wifi_status_cb, (void *) inContext );
 
-    mxos_rtos_init_semaphore( &easylink_sem, 1 );
-    mxos_rtos_init_semaphore( &easylink_connect_sem, 1 );
+    easylink_sem = mos_semphr_new( 1 );
+    easylink_connect_sem = mos_semphr_new( 1 );
 
 restart:
     mxosWlanSuspend( );
@@ -111,8 +111,8 @@ restart:
     err = easylink_bonjour_start( Soft_AP, 0, context );
     require_noerr( err, exit );
 
-    while( mxos_rtos_get_semaphore( &easylink_sem, 0 ) == kNoErr );
-    err = mxos_rtos_get_semaphore( &easylink_sem, MXOS_WAIT_FOREVER );
+    while( mos_semphr_acquire(easylink_sem, 0 ) == kNoErr );
+    err = mos_semphr_acquire(easylink_sem, MXOS_WAIT_FOREVER );
 
     mxosWlanSuspendSoftAP();
 
@@ -132,8 +132,8 @@ restart:
         system_connect_wifi_normal( context );
 
         /* Wait for station connection */
-        while ( mxos_rtos_get_semaphore( &easylink_connect_sem, 0 ) == kNoErr );
-        err = mxos_rtos_get_semaphore( &easylink_connect_sem, EasyLink_ConnectWlan_Timeout );
+        while ( mos_semphr_acquire(easylink_connect_sem, 0 ) == kNoErr );
+        err = mos_semphr_acquire(easylink_connect_sem, EasyLink_ConnectWlan_Timeout );
         /* Easylink force exit by user, clean and exit */
         if ( err != kNoErr && easylink_thread_force_exit )
         {
@@ -185,8 +185,8 @@ exit:
     config_server_stop( );
 #endif 
 
-    mxos_rtos_deinit_semaphore( &easylink_sem );
-    mxos_rtos_deinit_semaphore( &easylink_connect_sem );
+    mos_semphr_delete(easylink_sem );
+    mos_semphr_delete(easylink_connect_sem );
     easylink_softap_thread_handler = NULL;
     mos_thread_delete( NULL );
 }

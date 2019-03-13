@@ -193,19 +193,18 @@ merr_t mutex_pool_free( noos_mutex_t **mutex )
 	return kGeneralErr;
 }
 
-merr_t mxos_rtos_init_semaphore( mxos_semaphore_t* semaphore, int count )
+mos_semphr_id_t mos_semphr_new( uint32_t count )
 {
     noos_semaphore_t *noos_semaphore;
     UNUSED_PARAMETER( count );
     semaphore_pool_alloc(&noos_semaphore);
     noos_semaphore->count = 0;
-    *semaphore = (void *)noos_semaphore;
-    return kNoErr;
+    return noos_semaphore;
 }
 
-merr_t mxos_rtos_get_semaphore( mxos_semaphore_t* semaphore, uint32_t timeout_ms )
+merr_t mos_semphr_acquire( mos_semphr_id_t id, uint32_t timeout )
 {
-    noos_semaphore_t *noos_semaphore = (noos_semaphore_t *)*semaphore;
+    noos_semaphore_t *noos_semaphore = (noos_semaphore_t *)id;
     int delay_start;
 
     if( noos_semaphore == NULL)
@@ -225,9 +224,9 @@ merr_t mxos_rtos_get_semaphore( mxos_semaphore_t* semaphore, uint32_t timeout_ms
     return kNoErr;
 }
 
-merr_t mxos_rtos_set_semaphore( mxos_semaphore_t* semaphore )
+merr_t mos_semphr_release( mos_semphr_id_t id )
 {
-    noos_semaphore_t *noos_semaphore = (noos_semaphore_t *)*semaphore;
+    noos_semaphore_t *noos_semaphore = (noos_semaphore_t *)id;
 
     if( noos_semaphore == NULL)
         return kNotInitializedErr;
@@ -239,15 +238,14 @@ merr_t mxos_rtos_set_semaphore( mxos_semaphore_t* semaphore )
     return kNoErr;
 }
 
-merr_t mxos_rtos_deinit_semaphore( mxos_semaphore_t* semaphore )
+merr_t mos_semphr_delete( mos_semphr_id_t id )
 {
-    noos_semaphore_t *noos_semaphore = (noos_semaphore_t *)*semaphore;
+    noos_semaphore_t *noos_semaphore = (noos_semaphore_t *)id;
 
     if( noos_semaphore == NULL)
         return kNotInitializedErr;
 
     semaphore_pool_free(&noos_semaphore);
-    *semaphore = NULL;
 
     return kNoErr;
 }

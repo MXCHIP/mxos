@@ -220,7 +220,7 @@ void tftp_ota(void)
 /******************************************************
  *              MXOS_FORCE_OTA
  *****************************************************/
-mxos_semaphore_t force_ota_sem;
+mos_semphr_id_t force_ota_sem;
 
 static void force_thread(void * arg){
     extern void tftp_ota();
@@ -247,7 +247,7 @@ static void mxosNotify_ApListCallback(ScanResult *pApList, mxos_Context_t * cons
         if(NULL != force_ota_sem)
         {
         	fota_log("set force_ota_sem");
-            mxos_rtos_set_semaphore(&force_ota_sem);
+            mos_semphr_release(force_ota_sem);
         }
     }else{
     	fota_log("num = %d,ssid = %s",pApList->ApNum,pApList->ApList->ssid);
@@ -267,11 +267,11 @@ merr_t start_forceota_check()
 		err =  mxos_system_notify_register( mxos_notify_WIFI_SCAN_COMPLETED, (void *)mxosNotify_ApListCallback, NULL );
 		require_noerr( err, exit );
 		fota_log("Start scan");
-		mxos_rtos_init_semaphore(&force_ota_sem,1);
+		force_ota_sem = mos_semphr_new(1);
 		mxchip_active_scan(FORCE_OTA_AP,0);
-		err = mxos_rtos_get_semaphore(&force_ota_sem,MXOS_WAIT_FOREVER);
+		err = mos_semphr_acquire(force_ota_sem,MXOS_WAIT_FOREVER);
 		if(NULL != force_ota_sem)
-		mxos_rtos_deinit_semaphore(&force_ota_sem);
+		mos_semphr_delete(force_ota_sem);
 		err = mxos_system_notify_remove( mxos_notify_WIFI_SCAN_COMPLETED, (void *)mxosNotify_ApListCallback);
 		require_noerr( err, exit );
 	}

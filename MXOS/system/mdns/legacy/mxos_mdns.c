@@ -85,7 +85,7 @@ static void dns_write_name( dns_message_iterator_t* iter, const char* src );
 static merr_t start_bonjour_service(void);
 
 static mxos_mutex_t bonjour_mutex = NULL;
-static mxos_semaphore_t update_state_sem = NULL;
+static mos_semphr_id_t update_state_sem = NULL;
 static int update_state_fd = 0;
 static mos_thread_id_t mfi_bonjour_thread_handler;
 static void _bonjour_thread(uint32_t arg);
@@ -570,7 +570,7 @@ void _bonjour_send_anounce_thread(uint32_t arg)
       goto exit;
     
     mdns_utils_log( "sem trigger" );
-    mxos_rtos_set_semaphore( &update_state_sem );
+    mos_semphr_release(update_state_sem );
     mxos_thread_msleep(200);
   }
   
@@ -856,7 +856,7 @@ static merr_t start_bonjour_service(void)
     mxos_rtos_init_mutex( &bonjour_mutex );
 
   if(update_state_sem == NULL)
-    mxos_rtos_init_semaphore( &update_state_sem, 1 );
+    update_state_sem = mos_semphr_new( 1 );
 
   update_state_fd = mxos_create_event_fd( update_state_sem );
 
@@ -929,7 +929,7 @@ void _bonjour_thread(uint32_t arg)
 
     if ( FD_ISSET( update_state_fd, &readfds ) ){ 
       mdns_utils_log( "sem recved" );
-      mxos_rtos_get_semaphore( &update_state_sem, 0 );
+      mos_semphr_acquire(update_state_sem, 0 );
       mxos_rtos_lock_mutex( &bonjour_mutex );
       for ( i = 0; i < MAX_RECORD_COUNT; i++ ){
         switch ( available_services[i].state ){

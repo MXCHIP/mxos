@@ -118,7 +118,7 @@ struct mxos_bt_peripheral_socket
     mxos_bt_smart_bonding_callback_t                bonding_callback;               /**< Callback for handling bonding evnet by remote device          */
     mxos_bt_smart_security_settings_t               security_settings;              /**< Security settings                                             */
     mxos_bt_smart_bond_request_t                    bond_req;                       /**< Bond Request Structure                                        */
-    mxos_semaphore_t                                semaphore;                      /**< Semaphore                                                     */
+    mos_semphr_id_t                                semaphore;                      /**< Semaphore                                                     */
     linked_list_t                                   attribute_database;             /**< Attribute database                                            */
     uint16_t                                        mtu;
 };

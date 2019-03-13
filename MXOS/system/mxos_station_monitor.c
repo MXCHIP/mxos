@@ -24,7 +24,7 @@
 
 #include "mxos.h"
 
-static mxos_semaphore_t sem;
+static mos_semphr_id_t sem;
 static int station_up = 0, softap_up = 0;
 static char softap_ssid[33], softap_key[64];
 static uint32_t softap_wait_seconds;
@@ -37,11 +37,11 @@ static void mxosNotify_WifiStatusHandler(WiFiEvent event,  void* inContext)
   {
   case NOTIFY_STATION_UP:
     station_up = 1;
-    mxos_rtos_set_semaphore(&sem);
+    mos_semphr_release(sem);
     break;
   case NOTIFY_STATION_DOWN:
     station_up = 0;
-    mxos_rtos_set_semaphore(&sem);
+    mos_semphr_release(sem);
     break;
   default:
     break;
@@ -51,7 +51,7 @@ static void mxosNotify_WifiStatusHandler(WiFiEvent event,  void* inContext)
 static void station_monitro_func( void * arg )
 {
     while(1) {
-        mxos_rtos_get_semaphore(&sem, MXOS_WAIT_FOREVER);
+        mos_semphr_acquire(sem, MXOS_WAIT_FOREVER);
         if (station_up == 1) {
             if (softap_up) {
                 station_m_log("Stop softap");
@@ -61,7 +61,7 @@ static void station_monitro_func( void * arg )
         } else if (softap_up == 0) {
             network_InitTypeDef_st wNetConfig;
 
-            mxos_rtos_get_semaphore(&sem, softap_wait_seconds*1000);
+            mos_semphr_acquire(sem, softap_wait_seconds*1000);
             if (station_up == 1)
                 continue;
             
@@ -93,8 +93,8 @@ int mxos_station_status_monitor(char *ssid, char*key, int trigger_seconds)
 {
     int err = kNoErr;
     
-    mxos_rtos_init_semaphore(&sem, 1);
-    mxos_rtos_set_semaphore(&sem);
+    sem = mos_semphr_new(1);
+    mos_semphr_release(sem);
     /* Register user function when wlan connection status is changed */
     err = mxos_system_notify_register( mxos_notify_WIFI_STATUS_CHANGED, (void *)mxosNotify_WifiStatusHandler, NULL );
     require_noerr( err, exit );

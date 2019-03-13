@@ -224,7 +224,7 @@ merr_t subprocedure_reset( gatt_subprocedure_t* subprocedure )
 
 merr_t subprocedure_wait_for_completion( gatt_subprocedure_t* subprocedure )
 {
-    if( kNoErr != mxos_rtos_get_semaphore( &subprocedure->done_semaphore, GATT_MAX_PROCEDURE_TIMEOUT ) )
+    if( kNoErr != mos_semphr_acquire(subprocedure->done_semaphore, GATT_MAX_PROCEDURE_TIMEOUT ) )
     {
         subprocedure->result = MXOS_BT_TIMEOUT;
     }
@@ -233,7 +233,7 @@ merr_t subprocedure_wait_for_completion( gatt_subprocedure_t* subprocedure )
 
 merr_t subprocedure_wait_clear_semaphore( gatt_subprocedure_t* subprocedure )
 {
-    while ( mxos_rtos_get_semaphore( &subprocedure->done_semaphore, MXOS_NO_WAIT ) == kNoErr )
+    while ( mos_semphr_acquire(subprocedure->done_semaphore, MXOS_NO_WAIT ) == kNoErr )
     {
     }
     return MXOS_BT_SUCCESS;
@@ -241,7 +241,7 @@ merr_t subprocedure_wait_clear_semaphore( gatt_subprocedure_t* subprocedure )
 
 merr_t subprocedure_notify_complete( gatt_subprocedure_t* subprocedure )
 {
-    return mxos_rtos_set_semaphore( &subprocedure->done_semaphore );
+    return mos_semphr_release(subprocedure->done_semaphore );
 }
 
 /******************************************************

@@ -97,7 +97,7 @@ static void peripheral_gatt_disconnection_handler( uint16_t connection_handle )
         if ( peripheral_helper_socket_check_actions_enabled( peripheral_socket, SOCKET_ACTION_HOST_DISCONNECT ) == MXOS_TRUE )
         {
             /* Disconnection is originated from the host. Notify app thread that disconnection is complete */
-            mxos_rtos_set_semaphore( &peripheral_socket->semaphore );
+            mos_semphr_release(peripheral_socket->semaphore );
         }
         else
         {
@@ -110,7 +110,7 @@ static void peripheral_gatt_disconnection_handler( uint16_t connection_handle )
             /* If disconnection happens when connection is still being established. Notify app */
             if ( connecting_peripheral_socket == peripheral_socket )
             {
-                mxos_rtos_set_semaphore( &connecting_peripheral_socket->semaphore );
+                mos_semphr_release(connecting_peripheral_socket->semaphore );
             }
         }
     }
@@ -119,7 +119,7 @@ static void peripheral_gatt_disconnection_handler( uint16_t connection_handle )
         /* If disconnection happens when connection is still being established. Notify app */
         if ( connecting_peripheral_socket != NULL )
         {
-            mxos_rtos_set_semaphore( &connecting_peripheral_socket->semaphore );
+            mos_semphr_release(connecting_peripheral_socket->semaphore );
         }
     }
 }
@@ -265,8 +265,8 @@ merr_t mxos_bt_peripheral_init(   mxos_bt_peripheral_socket_t*                  
     socket->connection_handle = SOCKET_INVALID_CONNECTION_HANDLE;
 
     /* Initialise socket semaphore */
-    result = mxos_rtos_init_semaphore( &socket->semaphore, 1 );
-    require_noerr(result, exit);
+    socket->semaphore = mos_semphr_new( 1 );
+    require_action(socket->semaphore != NULL, exit, err = kGeneralErr);
 
     /* Initialise callbacks */
     socket->connection_callback = connection_callback;
@@ -335,7 +335,7 @@ merr_t mxos_bt_peripheral_delete_socket( mxos_bt_peripheral_socket_t* socket )
         return MXOS_BT_SMART_APPL_UNINITIALISED;
     }
 
-    result = mxos_rtos_deinit_semaphore( &socket->semaphore );
+    result = mos_semphr_delete(socket->semaphore );
     if ( result != MXOS_BT_SUCCESS )
     {
         return result;
@@ -357,7 +357,7 @@ merr_t mxos_bt_peripheral_disconnect( void )
     peripheral_helper_socket_set_actions( peripheral_socket, SOCKET_ACTION_HOST_DISCONNECT );
 
     /* Clean-up accidentally set semaphores */
-    while( mxos_rtos_get_semaphore( &peripheral_socket->semaphore, MXOS_NO_WAIT ) == MXOS_BT_SUCCESS )
+    while( mos_semphr_acquire(peripheral_socket->semaphore, MXOS_NO_WAIT ) == MXOS_BT_SUCCESS )
     {
     }
 
@@ -366,7 +366,7 @@ merr_t mxos_bt_peripheral_disconnect( void )
     {
         peripheral_bt_interface_disconnect( peripheral_socket->connection_handle );
         /* Wait for disconnection */
-        mxos_rtos_get_semaphore( &peripheral_socket->semaphore, 5 * 1000 );
+        mos_semphr_acquire(peripheral_socket->semaphore, 5 * 1000 );
     }
     else
     {
@@ -693,11 +693,11 @@ static merr_t peripheral_app_connection_handler( void* arg )
         else 
         {
             mxos_bt_start_pairing(socket->remote_device.address, socket->remote_device.address_type, &socket->security_settings);
-            mxos_rtos_get_semaphore(&socket->semaphore, MXOS_NEVER_TIMEOUT);
+            mos_semphr_acquire(socket->semaphore, MXOS_NEVER_TIMEOUT);
             mxos_bt_start_encryption(&socket->remote_device.address);
         }
 
-        mxos_rtos_get_semaphore(&socket->semaphore, MXOS_NEVER_TIMEOUT);
+        mos_semphr_acquire(socket->semaphore, MXOS_NEVER_TIMEOUT);
     }
 
     /* Finished */

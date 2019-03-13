@@ -73,11 +73,11 @@ typedef enum
 } mxos_event_flags_wait_option_t;
 
 typedef uint32_t  mxos_event_flags_t;
-typedef void * mxos_semaphore_t;
+typedef void * mos_semphr_id_t;
 typedef void * mxos_mutex_t;
 typedef void * mos_thread_id_t;
 typedef void * mxos_queue_t;
-typedef void * mxos_event_t;// MXOS OS event: mxos_semaphore_t, mxos_mutex_t or mxos_queue_t
+typedef void * mxos_event_t;// MXOS OS event: mos_semphr_id_t, mxos_mutex_t or mxos_queue_t
 typedef void (*timer_handler_t)( void* arg );
 typedef merr_t (*event_handler_t)( void* arg );
 
@@ -352,7 +352,7 @@ merr_t mxos_rtos_print_thread_status( char* buffer, int length );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-merr_t mxos_rtos_init_semaphore( mxos_semaphore_t* semaphore, int count );
+mos_semphr_id_t mos_semphr_new( uint32_t count );
 
 
 /** @brief    Set (post/put/increment) a semaphore
@@ -362,14 +362,14 @@ merr_t mxos_rtos_init_semaphore( mxos_semaphore_t* semaphore, int count );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-merr_t mxos_rtos_set_semaphore( mxos_semaphore_t* semaphore );
+merr_t mos_semphr_release( mos_semphr_id_t id );
 
 
 /** @brief    Get (wait/decrement) a semaphore
   *
   * @Details  Attempts to get (wait/decrement) a semaphore. If semaphore is at zero already,
   *           then the calling thread will be suspended until another thread sets the
-  *           semaphore with @ref mxos_rtos_set_semaphore
+  *           semaphore with @ref mos_semphr_release
   *
   * @param    semaphore : a pointer to the semaphore handle
   * @param    timeout_ms: the number of milliseconds to wait before returning
@@ -377,19 +377,19 @@ merr_t mxos_rtos_set_semaphore( mxos_semaphore_t* semaphore );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-merr_t mxos_rtos_get_semaphore( mxos_semaphore_t* semaphore, uint32_t timeout_ms );
+merr_t mos_semphr_acquire( mos_semphr_id_t id, uint32_t timeout );
 
 
 /** @brief    De-initialise a semaphore
   *
-  * @Details  Deletes a semaphore created with @ref mxos_rtos_init_semaphore
+  * @Details  Deletes a semaphore created with @ref mos_semphr_new
   *
   * @param    semaphore : a pointer to the semaphore handle
   *
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-merr_t mxos_rtos_deinit_semaphore( mxos_semaphore_t* semaphore );
+merr_t mos_semphr_delete( mos_semphr_id_t id );
 /**
   * @}
   */
@@ -685,7 +685,7 @@ int UnSetTimer(void (*psysTimerHandler)(void));
 /** @brief    Initialize an endpoint for a RTOS event, a file descriptor
   *           will be created, can be used for select
   *
-  * @param    event_handle : mxos_semaphore_t, mxos_mutex_t or mxos_queue_t
+  * @param    event_handle : mos_semphr_id_t, mxos_mutex_t or mxos_queue_t
   *
   * @retval   On success, a file descriptor for RTOS event is returned.
   *           On error, -1 is returned.

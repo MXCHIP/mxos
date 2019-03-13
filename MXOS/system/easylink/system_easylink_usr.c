@@ -35,7 +35,7 @@ static void easylink_usr_thread( void *inContext );
 /******************************************************
  *               Variables Definitions
  ******************************************************/
-static mxos_semaphore_t easylink_connect_sem; /**< Used to suspend thread while connection. */
+static mos_semphr_id_t easylink_connect_sem; /**< Used to suspend thread while connection. */
 static mos_thread_id_t easylink_usr_thread_handler = NULL;
 static bool easylink_thread_force_exit = false;
 
@@ -52,7 +52,7 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
             /* Connected to AP, means that the wlan configuration is right, update configuration in flash */
             inContext->flashContentInRam.mxosSystemConfig.configured = allConfigured;
             mxos_system_context_update( &inContext->flashContentInRam ); //Update Flash content
-            mxos_rtos_set_semaphore( &easylink_connect_sem ); //Notify Easylink thread
+            mos_semphr_release(easylink_connect_sem ); //Notify Easylink thread
             break;
         default:
             break;
@@ -69,15 +69,15 @@ static void easylink_usr_thread( void *inContext )
     easylink_thread_force_exit = false;
 
     mxos_system_notify_register( mxos_notify_WIFI_STATUS_CHANGED, (void *)easylink_wifi_status_cb, (void *) Context );
-    mxos_rtos_init_semaphore( &easylink_connect_sem, 1 );
+    easylink_connect_sem = mos_semphr_new( 1 );
 
     system_log("Start easylink user mode");
     mxos_system_delegate_config_will_start( );
 
     /* Developer should save the ssid/key to system_context_t and connect to AP.
      * NOTIFY_STATION_UP event will save the new ssid, key to flash and wake up the easylink routine */
-    while ( mxos_rtos_get_semaphore( &easylink_connect_sem, 0 ) == kNoErr );
-    err = mxos_rtos_get_semaphore( &easylink_connect_sem, MXOS_WAIT_FOREVER );
+    while ( mos_semphr_acquire(easylink_connect_sem, 0 ) == kNoErr );
+    err = mos_semphr_acquire(easylink_connect_sem, MXOS_WAIT_FOREVER );
 
     /* Easylink force exit by user, clean and exit */
     if ( err != kNoErr && easylink_thread_force_exit ){
@@ -93,7 +93,7 @@ exit:
     mxos_system_delegate_config_will_stop( );
     mxos_system_notify_remove( mxos_notify_WIFI_STATUS_CHANGED, (void *) easylink_wifi_status_cb );
 
-    mxos_rtos_deinit_semaphore( &easylink_connect_sem );
+    mos_semphr_delete(easylink_connect_sem );
     easylink_usr_thread_handler = NULL;
     mos_thread_delete( NULL );
 }

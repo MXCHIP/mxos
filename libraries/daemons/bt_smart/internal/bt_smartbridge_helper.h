@@ -95,7 +95,7 @@ typedef struct
 {
     bt_smart_gatt_subprocedure_t subprocedure;
     mxos_mutex_t                 mutex;
-    mxos_semaphore_t             done_semaphore;
+    mos_semphr_id_t             done_semaphore;
     merr_t                     result;
     mxos_bt_uuid_t               uuid;
     mxos_bt_smart_attribute_t*  attr_head;

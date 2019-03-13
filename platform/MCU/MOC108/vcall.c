@@ -16,14 +16,14 @@ merr_t mico_rtos_delete_thread(mos_thread_id_t *thread)
     return mos_thread_delete(*thread);
 }
 
-merr_t mico_rtos_get_semaphore(mxos_semaphore_t *semaphore, uint32_t timeout_ms)
+merr_t mico_rtos_get_semaphore(mos_semphr_id_t *id, uint32_t timeout)
 {
-    return mxos_rtos_get_semaphore(semaphore, timeout_ms);
+    return mos_semphr_acquire(*id, timeout);
 }
 
-merr_t mico_rtos_deinit_semaphore(mxos_semaphore_t *semaphore)
+merr_t mico_rtos_deinit_semaphore(mos_semphr_id_t *id)
 {
-    return mxos_rtos_deinit_semaphore(semaphore);
+    return mos_semphr_delete(*id);
 }
 
 uint32_t mico_rtos_get_time(void)
@@ -36,9 +36,10 @@ merr_t mico_rtos_init_mutex(mxos_mutex_t *mutex)
     return mxos_rtos_init_mutex(mutex);
 }
 
-merr_t mico_rtos_init_semaphore(mxos_semaphore_t *semaphore, int count)
+merr_t mico_rtos_init_semaphore(mos_semphr_id_t *id, int count)
 {
-    return mxos_rtos_init_semaphore(semaphore, count);
+    *id = mos_semphr_new(count);
+    return *id == NULL ? kGeneralErr : kNoErr;
 }
 
 bool mico_rtos_is_current_thread(mos_thread_id_t *thread)
@@ -51,14 +52,14 @@ merr_t mico_rtos_lock_mutex(mxos_mutex_t *mutex)
     return mxos_rtos_lock_mutex(mutex);
 }
 
-merr_t mico_rtos_push_to_queue(mxos_queue_t *queue, void *message, uint32_t timeout_ms)
+merr_t mico_rtos_push_to_queue(mxos_queue_t *queue, void *message, uint32_t timeout)
 {
-    return mxos_rtos_push_to_queue(queue, message, timeout_ms);
+    return mxos_rtos_push_to_queue(queue, message, timeout);
 }
 
-merr_t mico_rtos_set_semaphore(mxos_semaphore_t *semaphore)
+merr_t mico_rtos_set_semaphore(mos_semphr_id_t *id)
 {
-    return mxos_rtos_set_semaphore(semaphore);
+    return mos_semphr_release(*id);
 }
 
 merr_t mico_rtos_thread_join(mos_thread_id_t *id)

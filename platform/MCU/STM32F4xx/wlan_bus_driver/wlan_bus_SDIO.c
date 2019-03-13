@@ -126,7 +126,7 @@ static uint8_t*                     user_data;
 static uint32_t                     user_data_size;
 static uint8_t*                     dma_data_source;
 static uint32_t                     dma_transfer_size;
-static mxos_semaphore_t             sdio_transfer_finished_semaphore;
+static mos_semphr_id_t             sdio_transfer_finished_semaphore;
 static bool                         sdio_transfer_failed;
 static bus_transfer_direction_t     current_transfer_direction;
 static uint32_t                     current_command;
@@ -219,7 +219,7 @@ void sdio_irq( void )
     {
         sdio_transfer_failed = true;
         SDIO->ICR = (uint32_t) 0xffffffff;
-        mxos_rtos_set_semaphore( &sdio_transfer_finished_semaphore );
+        mos_semphr_release(sdio_transfer_finished_semaphore );
     }
     else
     {
@@ -228,7 +228,7 @@ void sdio_irq( void )
             if ( ( SDIO->RESP1 & 0x800 ) != 0 )
             {
                 sdio_transfer_failed = true;
-                mxos_rtos_set_semaphore( &sdio_transfer_finished_semaphore );
+                mos_semphr_release(sdio_transfer_finished_semaphore );
             }
             else if (current_command == SDIO_CMD_53)
             {
@@ -277,7 +277,7 @@ void dma_irq( void )
     /* Clear interrupt */
     DMA2->LIFCR = (uint32_t) (0x3F << 22);
 
-    result = mxos_rtos_set_semaphore( &sdio_transfer_finished_semaphore );
+    result = mos_semphr_release(sdio_transfer_finished_semaphore );
 
     /* check result if in debug mode */
     check_string(result == kNoErr, "failed to set dma semaphore" );
@@ -293,10 +293,9 @@ merr_t host_platform_bus_init( void )
 
     platform_mcu_powersave_disable();
 
-    result = mxos_rtos_init_semaphore( &sdio_transfer_finished_semaphore, 1 );
-    if ( result != kNoErr )
+    if ((sdio_transfer_finished_semaphore = mos_semphr_new( 1 )) == NULL)
     {
-        return result;
+        return kGeneralErr;
     }
 
     /* Turn on SDIO IRQ */
@@ -392,7 +391,7 @@ merr_t host_platform_bus_deinit( void )
     merr_t result;
     uint32_t     a;
 
-    result = mxos_rtos_deinit_semaphore( &sdio_transfer_finished_semaphore );
+    result = mos_semphr_delete(sdio_transfer_finished_semaphore );
 
     platform_mcu_powersave_disable();
 
@@ -488,7 +487,7 @@ restart:
         SDIO->CMD = (uint32_t) ( command | SDIO_Response_Short | SDIO_Wait_No | SDIO_CPSM_Enable );
 
         /* Wait for the whole transfer to complete */
-        result = mxos_rtos_get_semaphore( &sdio_transfer_finished_semaphore, (uint32_t) 50 );
+        result = mos_semphr_acquire(sdio_transfer_finished_semaphore, (uint32_t) 50 );
         if ( result != kNoErr )
         {
             goto exit;

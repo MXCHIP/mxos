@@ -26,7 +26,7 @@
 #include "sensor/BME280/bme280_user.h"
 #include "sensor/DHT11/DHT11.h"
 
-extern mxos_semaphore_t mfg_test_state_change_sem;
+extern mos_semphr_id_t mfg_test_state_change_sem;
 extern volatile int16_t mfg_test_module_number;
 
 //---------------------------- user modules functions --------------------------
@@ -44,7 +44,7 @@ WEAK void user_key1_clicked_callback( void )
         {
             mfg_test_module_number = MFG_TEST_MAX_MODULE_NUM;
         }
-        mxos_rtos_set_semaphore( &mfg_test_state_change_sem );  // go back to previous module
+        mos_semphr_release(mfg_test_state_change_sem );  // go back to previous module
     }
     return;
 }
@@ -55,7 +55,7 @@ WEAK void user_key2_clicked_callback( void )
     if ( NULL != mfg_test_state_change_sem )
     {
         mfg_test_module_number = (mfg_test_module_number + 1) % (MFG_TEST_MAX_MODULE_NUM + 1);
-        mxos_rtos_set_semaphore( &mfg_test_state_change_sem );  // start next module
+        mos_semphr_release(mfg_test_state_change_sem );  // start next module
     }
     return;
 }
@@ -64,7 +64,7 @@ WEAK void user_key2_clicked_callback( void )
 #define mfg_test_oled_test_string    "abcdefghijklmnop123456789012345612345678901234561234567890123456"
 #define OLED_MFG_TEST_PREFIX         "TEST:"
 
-mxos_semaphore_t mfg_test_state_change_sem = NULL;
+mos_semphr_id_t mfg_test_state_change_sem = NULL;
 volatile int16_t mfg_test_module_number = 0;
 volatile bool scanap_done = false;
 extern void mxos_wlan_get_mac_address( uint8_t *mac );
@@ -123,7 +123,7 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
     UNUSED_PARAMETER( light_ret );
     UNUSED_PARAMETER( infrared_ret );
 
-    mxos_rtos_init_semaphore( &mfg_test_state_change_sem, 1 );
+    mfg_test_state_change_sem = mos_semphr_new( 1 );
     err = mxos_system_notify_register( mxos_notify_WIFI_SCAN_COMPLETED, (void *) mxos_notify_WifiScanCompleteHandler, inContext );
     require_noerr( err, exit );
 
@@ -135,13 +135,13 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
             {
                 sprintf( str, "%s\r\nStart:\r\n%s\r\n%s", "TEST MODE", "  Next: KEY2", "  Prev: KEY1" );
                 mf_printf( str );
-                while ( kNoErr != mxos_rtos_get_semaphore( &mfg_test_state_change_sem, MXOS_WAIT_FOREVER ) )
+                while ( kNoErr != mos_semphr_acquire(mfg_test_state_change_sem, MXOS_WAIT_FOREVER ) )
                     ;
                 break;
             }
             case 1:  // OUTPUT: OLED & RGB & DC_MOTOR
             {
-                while ( kNoErr != mxos_rtos_get_semaphore( &mfg_test_state_change_sem, 0 ) )
+                while ( kNoErr != mos_semphr_acquire(mfg_test_state_change_sem, 0 ) )
                 {
                     // OLED display test info
                     sprintf( str, "%s OUTPUT\r\nOLED\r\nRGB_LED\r\nDC_MOTOR", OLED_MFG_TEST_PREFIX );
@@ -175,7 +175,7 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
             {
                 dht11_test_cnt = 0;
                 bme280_on = false;
-                while ( kNoErr != mxos_rtos_get_semaphore( &mfg_test_state_change_sem, 0 ) )
+                while ( kNoErr != mos_semphr_acquire(mfg_test_state_change_sem, 0 ) )
                 {
                     // infrared
                     infrared_ret = infrared_reflective_read( &infrared_reflective_data );
@@ -247,7 +247,7 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
 
                 scanap_done = false;
                 mxosWlanStartScan( );
-                while ( (!scanap_done) || (kNoErr != mxos_rtos_get_semaphore( &mfg_test_state_change_sem, MXOS_WAIT_FOREVER )) )
+                while ( (!scanap_done) || (kNoErr != mos_semphr_acquire(mfg_test_state_change_sem, MXOS_WAIT_FOREVER )) )
                     ;
                 break;
             }

@@ -96,7 +96,7 @@ __ALIGN_BEGIN uint8_t Rx_Buff[ETH_RXBUFNB][ETH_RX_BUF_SIZE] __ALIGN_END; /* Ethe
 #endif
 __ALIGN_BEGIN uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __ALIGN_END; /* Ethernet Transmit Buffer */
 
-static mxos_semaphore_t rx_ready_sem;    /* receive ready semaphore */
+static mos_semphr_id_t rx_ready_sem;    /* receive ready semaphore */
 static sys_mutex_t tx_lock_mutex;
 
 /******************************************************
@@ -111,7 +111,7 @@ static sys_mutex_t tx_lock_mutex;
  */
 void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *heth)
 {
-    mxos_rtos_set_semaphore(&rx_ready_sem);
+    mos_semphr_release(rx_ready_sem);
 }
 
 
@@ -445,7 +445,7 @@ static void _eth_arch_rx_task(void * arg)
     struct pbuf    *p;
 
     while (1) {
-        mxos_rtos_get_semaphore(&rx_ready_sem, 100);
+        mos_semphr_acquire(rx_ready_sem, 100);
         do {
             p = _eth_arch_low_level_input(netif);
             if (p != NULL) {
@@ -579,7 +579,7 @@ err_t eth_arch_enetif_init(struct netif *netif)
     netif->linkoutput = _eth_arch_low_level_output;
 
     /* semaphore */
-    mxos_rtos_init_semaphore(&rx_ready_sem, 16);
+    rx_ready_sem = mos_semphr_new(16);
 
     sys_mutex_new(&tx_lock_mutex);
 

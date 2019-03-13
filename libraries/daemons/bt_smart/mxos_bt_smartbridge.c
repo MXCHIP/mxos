@@ -141,7 +141,7 @@ extern gatt_subprocedure_t              smartbridge_subprocedure;
 mxos_bt_gatt_char_declaration_t         current_characteristic;
 
 /** Auto Connection Establishment Procedure */
-static mxos_semaphore_t                                       g_auto_conn_sem = NULL;
+static mos_semphr_id_t                                       g_auto_conn_sem = NULL;
 static smartbridge_auto_conn_entity_t                         g_auto_conn_dev_table[BTM_BLE_MAX_BG_CONN_DEV_NUM];
 static mxos_bt_smartbridge_auto_connection_parms_cback_t      g_auto_conn_cback = NULL;
 static mxos_bt_smart_scan_settings_t                          g_auto_conn_scan_cfg;
@@ -164,7 +164,7 @@ static void smartbridge_gatt_connection_handler( uint16_t connection_handle )
     bt_smartbridge_socket_manager_insert_socket( connecting_socket );
 
     /* Notify app thread that link is connected */
-    mxos_rtos_set_semaphore( &connecting_socket->semaphore );
+    mos_semphr_release(connecting_socket->semaphore );
 }
 
 static void smartbridge_gatt_auto_conn_handler( mxos_bt_device_address_t bdaddr, uint16_t connection_handle )
@@ -201,7 +201,7 @@ static void smartbridge_gatt_auto_conn_handler( mxos_bt_device_address_t bdaddr,
     bt_smartbridge_socket_manager_insert_socket(p_socket);
 
     /* Tell smartbridge_gap_auto_conn_asyn_event_handler a connection is ready. */
-    mxos_rtos_set_semaphore(&g_auto_conn_sem);
+    mos_semphr_release(g_auto_conn_sem);
 }
 
 static void smartbridge_gatt_disconnection_handler( uint16_t connection_handle )
@@ -227,7 +227,7 @@ static void smartbridge_gatt_disconnection_handler( uint16_t connection_handle )
         if ( smartbridge_helper_socket_check_actions_enabled( removed_socket, SOCKET_ACTION_HOST_DISCONNECT ) == MXOS_TRUE )
         {
             /* Disconnection is originated from the host. Notify app thread that disconnection is complete */
-            mxos_rtos_set_semaphore( &removed_socket->semaphore );
+            mos_semphr_release(removed_socket->semaphore );
         }
         else
         {
@@ -240,7 +240,7 @@ static void smartbridge_gatt_disconnection_handler( uint16_t connection_handle )
             /* If disconnection happens when connection is still being established. Notify app */
             if ( connecting_socket == removed_socket )
             {
-                mxos_rtos_set_semaphore( &connecting_socket->semaphore );
+                mos_semphr_release(connecting_socket->semaphore );
             }
         }
     }
@@ -249,7 +249,7 @@ static void smartbridge_gatt_disconnection_handler( uint16_t connection_handle )
         /* If disconnection happens when connection is still being established. Notify app */
         if ( connecting_socket != NULL )
         {
-            mxos_rtos_set_semaphore( &connecting_socket->semaphore );
+            mos_semphr_release(connecting_socket->semaphore );
         }
     }
 }
@@ -733,11 +733,10 @@ merr_t mxos_bt_smartbridge_init( uint8_t count )
     memset((void *)g_auto_conn_dev_table, 0, sizeof(g_auto_conn_dev_table));
     smartbridge_auto_conn_list_init();
 
-    result = mxos_rtos_init_semaphore(&g_auto_conn_sem, 1);
-    if (result != kNoErr)
+    if ((g_auto_conn_sem = mos_semphr_new(1)) == NULL)
     {
         bt_smartbridge_log( "Error initialising a semaphore used to Auto connection" );
-        return result;
+        return kGeneralErr;
     }
 
     /* Initialise SmartBridge Socket Manager */
@@ -774,7 +773,7 @@ merr_t mxos_bt_smartbridge_deinit( void )
     smartbridge_bt_interface_deinitialize();
 
     /* Delete semaphore */
-    mxos_rtos_deinit_semaphore(&g_auto_conn_sem);
+    mos_semphr_delete(g_auto_conn_sem);
     g_auto_conn_sem = NULL;
 
     /* Delete Auto-connection list. */
@@ -913,7 +912,8 @@ merr_t mxos_bt_smartbridge_create_socket( mxos_bt_smartbridge_socket_t* socket )
     socket->node.data = (void*)socket;
 
     /* Initialise socket semaphore */
-    return mxos_rtos_init_semaphore( &socket->semaphore, 1 );
+    socket->semaphore = mos_semphr_new( 1 );
+    return socket->semaphore == NULL ? kGeneralErr : kNoErr;
 }
 
 merr_t mxos_bt_smartbridge_delete_socket( mxos_bt_smartbridge_socket_t* socket )
@@ -924,7 +924,7 @@ merr_t mxos_bt_smartbridge_delete_socket( mxos_bt_smartbridge_socket_t* socket )
         return MXOS_BT_SMART_APPL_UNINITIALISED;
     }
 
-    result = mxos_rtos_deinit_semaphore( &socket->semaphore );
+    result = mos_semphr_delete(socket->semaphore );
     if ( result != MXOS_BT_SUCCESS )
     {
         return result;
@@ -1000,7 +1000,7 @@ merr_t mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, const 
     bt_smartbridge_log( "connect()...socket things are okay" );
 
     /* Clean-up accidentally set semaphores */
-    while( mxos_rtos_get_semaphore( &socket->semaphore, MXOS_NO_WAIT ) == MXOS_BT_SUCCESS )
+    while( mos_semphr_acquire(socket->semaphore, MXOS_NO_WAIT ) == MXOS_BT_SUCCESS )
     {
     }
 
@@ -1045,7 +1045,7 @@ merr_t mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, const 
     smartbridge_bt_interface_connect( remote_device, settings, disconnection_callback, notification_callback );
 
     /* Wait for connection */
-    mxos_rtos_get_semaphore( &socket->semaphore, socket->connection_settings.timeout_second * 1000 );
+    mos_semphr_acquire(socket->semaphore, socket->connection_settings.timeout_second * 1000 );
 
     /* Check if link is connected. Otherwise, return error */
     if ( socket->state == SOCKET_STATE_LINK_CONNECTED )
@@ -1054,7 +1054,7 @@ merr_t mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, const 
         if ( smartbridge_helper_socket_check_actions_enabled( socket, SOCKET_ACTION_INITIATE_PAIRING ) == MXOS_TRUE )
         {
             /* Wait until pairing is complete */
-            mxos_rtos_get_semaphore( &socket->semaphore, MXOS_NEVER_TIMEOUT );
+            mos_semphr_acquire(socket->semaphore, MXOS_NEVER_TIMEOUT );
         }
 
         /* Check if encryption is required */
@@ -1064,7 +1064,7 @@ merr_t mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, const 
             mxos_bt_start_encryption( &socket->remote_device.address );
 
             /* Wait until link is encrypted */
-            mxos_rtos_get_semaphore( &socket->semaphore, MXOS_NEVER_TIMEOUT );
+            mos_semphr_acquire(socket->semaphore, MXOS_NEVER_TIMEOUT );
 
             if ( socket->state != SOCKET_STATE_LINK_ENCRYPTED )
             {
@@ -1163,7 +1163,7 @@ merr_t mxos_bt_smartbridge_disconnect( mxos_bt_smartbridge_socket_t* socket, mxo
     smartbridge_helper_socket_set_actions( socket, SOCKET_ACTION_HOST_DISCONNECT );
 
     /* Clean-up accidentally set semaphores */
-    while( mxos_rtos_get_semaphore( &socket->semaphore, MXOS_NO_WAIT ) == MXOS_BT_SUCCESS )
+    while( mos_semphr_acquire(socket->semaphore, MXOS_NO_WAIT ) == MXOS_BT_SUCCESS )
     {
     }
 
@@ -1172,7 +1172,7 @@ merr_t mxos_bt_smartbridge_disconnect( mxos_bt_smartbridge_socket_t* socket, mxo
     {
         smartbridge_bt_interface_disconnect( socket->connection_handle );
         /* Wait for disconnection */
-        mxos_rtos_get_semaphore( &socket->semaphore, socket->connection_settings.timeout_second * 1000 );
+        mos_semphr_acquire(socket->semaphore, socket->connection_settings.timeout_second * 1000 );
     }
     else
     {
@@ -1945,7 +1945,7 @@ static merr_t smartbridge_gap_auto_conn_asyn_event_handler(void *arg)
             mxos_bt_smartbridge_socket_t *p_socket = g_auto_conn_dev_table[idx].socket;
             
             /* Clear semaphore */
-            while (mxos_rtos_get_semaphore(&g_auto_conn_sem, MXOS_NO_WAIT) == kNoErr);
+            while (mos_semphr_acquire(g_auto_conn_sem, MXOS_NO_WAIT) == kNoErr);
 
             /* Update current state */
             smartbridge_auto_conn_list_set_state(report->remote_device.address, 
@@ -1969,7 +1969,7 @@ static merr_t smartbridge_gap_auto_conn_asyn_event_handler(void *arg)
             }
             
             /* Wait for completion */
-            err = mxos_rtos_get_semaphore(&g_auto_conn_sem, 5000);
+            err = mos_semphr_acquire(g_auto_conn_sem, 5000);
             if (err != kNoErr) 
             {
                 bt_smartbridge_log("%s: Create LE Connection failed: %s", 
@@ -2104,7 +2104,7 @@ static merr_t smartbridge_gap_auto_conn_cryption( void *arg )
             /* Encryption */
             bt_smartbridge_log("Encryption started.");
             mxos_bt_start_encryption( &socket->remote_device.address );
-            mxos_rtos_get_semaphore(&g_auto_conn_sem, MXOS_NEVER_TIMEOUT);
+            mos_semphr_acquire(g_auto_conn_sem, MXOS_NEVER_TIMEOUT);
             socket->state = SOCKET_STATE_LINK_ENCRYPTED;
             bt_smartbridge_log("Encryption completed.");
         }
@@ -2285,7 +2285,7 @@ void smartbridge_auto_connection_encryption_check(const mxos_bt_dev_pairing_cplt
     if (idx >= 0) {
         if (g_auto_conn_dev_table[idx].socket->security_settings.authentication_requirements 
                 != BT_SMART_AUTH_REQ_NONE)
-        mxos_rtos_set_semaphore(&g_auto_conn_sem);
+        mos_semphr_release(g_auto_conn_sem);
     }
 }
 

@@ -49,7 +49,7 @@ typedef enum
 static mxos_mutex_t Spi_mutex = NULL;
 static bool spi_initialized = false;
 
-static mxos_semaphore_t spi_transfer_finished_semaphore = NULL;
+static mos_semphr_id_t spi_transfer_finished_semaphore = NULL;
 
 /******************************************************
  *             Function declarations
@@ -98,7 +98,7 @@ void platform_wifi_spi_rx_dma_irq( void )
     /* Clear interrupt */
     clear_dma_interrupts( wifi_spi.rx_dma.stream, wifi_spi.rx_dma.complete_flags );
 
-    mxos_rtos_set_semaphore( &spi_transfer_finished_semaphore );
+    mos_semphr_release(spi_transfer_finished_semaphore );
 }
 
 /* This function is called by wlan driver */
@@ -142,7 +142,7 @@ merr_t wlan_spi_init()
 
     if( spi_transfer_finished_semaphore == NULL )
     {
-      mxos_rtos_init_semaphore( &spi_transfer_finished_semaphore, 1 );
+      spi_transfer_finished_semaphore = mos_semphr_new( 1 );
     }
 
     /* Enable SPI_SLAVE DMA clock */
@@ -329,7 +329,7 @@ merr_t wlan_spi_transfer( const mxos_spi_message_segment_t segment )
     DMA_Cmd( wifi_spi.tx_dma.stream, ENABLE );
     
     /* Wait for DMA to complete */
-    result = mxos_rtos_get_semaphore( &spi_transfer_finished_semaphore, 100 );
+    result = mos_semphr_acquire(spi_transfer_finished_semaphore, 100 );
 
     DMA_Cmd( wifi_spi.rx_dma.stream, DISABLE );
     DMA_Cmd( wifi_spi.tx_dma.stream, DISABLE );

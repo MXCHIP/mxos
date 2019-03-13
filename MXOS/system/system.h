@@ -171,7 +171,7 @@ typedef struct {
 typedef struct
 {
   system_state_t        current_sys_state;
-  mxos_semaphore_t      sys_state_change_sem;
+  mos_semphr_id_t      sys_state_change_sem;
   /*MXOS system Running status*/
   char                  localIp[maxIpLen];
   char                  netMask[maxIpLen];

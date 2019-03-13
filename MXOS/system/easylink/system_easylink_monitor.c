@@ -47,8 +47,8 @@ static uint8_t wlan_channel = 1;
 static mxos_bool_t wlan_channel_walker = MXOS_TRUE;
 static uint32_t wlan_channel_walker_interval = 100;
 
-static mxos_semaphore_t easylink_sem;         /**< Used to suspend thread while easylink. */
-static mxos_semaphore_t easylink_connect_sem; /**< Used to suspend thread while connection. */
+static mos_semphr_id_t easylink_sem;         /**< Used to suspend thread while easylink. */
+static mos_semphr_id_t easylink_connect_sem; /**< Used to suspend thread while connection. */
 static bool easylink_success = false;         /**< true: connect to wlan, false: start soft ap mode or roll back to previous settings */
 static uint32_t easylink_id = 0;      /**< Unique for an easylink instance. */
 static mos_thread_id_t easylink_monitor_thread_handler = NULL;
@@ -71,7 +71,7 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
         case NOTIFY_STATION_UP:
             inContext->flashContentInRam.mxosSystemConfig.configured = allConfigured;
             mxos_system_context_update( &inContext->flashContentInRam ); //Update Flash content
-            mxos_rtos_set_semaphore( &easylink_connect_sem ); //Notify Easylink thread
+            mos_semphr_release(easylink_connect_sem ); //Notify Easylink thread
             break;
         default:
             break;
@@ -104,7 +104,7 @@ static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_contex
     {
         /*EasyLink timeout or error*/
         easylink_success = false;
-        mxos_rtos_set_semaphore( &easylink_sem );
+        mos_semphr_release(easylink_sem );
     }
     return;
 }
@@ -182,7 +182,7 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
         /* Easylink success after step 1 and step 2 */
         easylink_success = true;
 
-    mxos_rtos_set_semaphore( &easylink_sem );
+    mos_semphr_release(easylink_sem );
     return;
 }
 
@@ -195,7 +195,7 @@ static void switch_channel_thread(void * arg)
         mxos_time_get_time( &current );
         if ( current > (mxos_time_t) arg ) {
             easylink_success = false;
-            mxos_rtos_set_semaphore( &easylink_sem );
+            mos_semphr_release(easylink_sem );
             break;
         }
 
@@ -237,8 +237,8 @@ static void easylink_monitor_thread( void *arg )
     mxos_system_notify_register( mxos_notify_EASYLINK_GET_EXTRA_DATA,   (void *) easylink_extra_data_cb,    context );
     mxos_system_notify_register( mxos_notify_WIFI_STATUS_CHANGED,       (void *) easylink_wifi_status_cb,   context );
 
-    mxos_rtos_init_semaphore( &easylink_sem,            1 );
-    mxos_rtos_init_semaphore( &easylink_connect_sem,    1 );
+    easylink_sem = mos_semphr_new( 1 );
+    easylink_connect_sem = mos_semphr_new( 1 );
 
     mxos_wlan_register_monitor_cb( monitor_cb );
 
@@ -255,8 +255,8 @@ restart:
     switch_channel_thread_handler = mos_thread_new( MXOS_DEFAULT_WORKER_PRIORITY, "sw_channel",
                             switch_channel_thread, 0x1000, (void *)(current + EasyLink_TimeOut));
 
-    while( mxos_rtos_get_semaphore( &easylink_sem, 0 ) == kNoErr );
-    err = mxos_rtos_get_semaphore( &easylink_sem, MXOS_WAIT_FOREVER );
+    while( mos_semphr_acquire(easylink_sem, 0 ) == kNoErr );
+    err = mos_semphr_acquire(easylink_sem, MXOS_WAIT_FOREVER );
 
     switch_channel_flag = false;
     mxos_wlan_stop_monitor();
@@ -277,8 +277,8 @@ restart:
         system_connect_wifi_normal( context );
 
         /* Wait for station connection */
-        while( mxos_rtos_get_semaphore( &easylink_connect_sem, 0 ) == kNoErr );
-        err = mxos_rtos_get_semaphore( &easylink_connect_sem, EasyLink_ConnectWlan_Timeout );
+        while( mos_semphr_acquire(easylink_connect_sem, 0 ) == kNoErr );
+        err = mos_semphr_acquire(easylink_connect_sem, EasyLink_ConnectWlan_Timeout );
         /* Easylink force exit by user, clean and exit */
         if( err != kNoErr && easylink_thread_force_exit )
         {
@@ -328,8 +328,8 @@ exit:
     mxos_system_notify_remove( mxos_notify_EASYLINK_WPS_COMPLETED, (void *)easylink_complete_cb );
     mxos_system_notify_remove( mxos_notify_EASYLINK_GET_EXTRA_DATA, (void *)easylink_extra_data_cb );
 
-    mxos_rtos_deinit_semaphore( &easylink_sem );
-    mxos_rtos_deinit_semaphore( &easylink_connect_sem );
+    mos_semphr_delete(easylink_sem );
+    mos_semphr_delete(easylink_connect_sem );
     easylink_monitor_thread_handler = NULL;
     mos_thread_delete( NULL );
 }
@@ -358,7 +358,7 @@ merr_t mxos_easylink_monitor_save_result( network_InitTypeDef_st *nwkpara )
     system_log("Get SSID: %s, Key: %s", context->flashContentInRam.mxosSystemConfig.ssid, context->flashContentInRam.mxosSystemConfig.user_key);
 
     easylink_success = true;
-    mxos_rtos_set_semaphore( &easylink_sem );
+    mos_semphr_release(easylink_sem );
     return kNoErr;
 }
 

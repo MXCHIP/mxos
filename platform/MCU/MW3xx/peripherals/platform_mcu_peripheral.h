@@ -115,10 +115,10 @@ typedef struct
 {
     UART_ID_Type               id;
     ring_buffer_t*             rx_ring_buffer;
-    mxos_semaphore_t           rx_complete;
-    mxos_semaphore_t           tx_complete;
+    mos_semphr_id_t           rx_complete;
+    mos_semphr_id_t           tx_complete;
     mxos_mutex_t               tx_mutex;
-    mxos_semaphore_t           sem_wakeup;
+    mos_semphr_id_t           sem_wakeup;
     volatile uint32_t          tx_size;
     volatile uint32_t          rx_size;
     volatile merr_t          last_receive_result;

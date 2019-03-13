@@ -272,7 +272,7 @@ struct mxchip_timer {
     int valid;
 };
 struct mxchip_timer *timer_head = NULL;
-static mxos_semaphore_t timer_sem;
+static mos_semphr_id_t timer_sem;
 static int mxchip_timer_inited = 0;
 static uint32_t timer_thread_wait = MXOS_NEVER_TIMEOUT;
 
@@ -284,8 +284,7 @@ int mxchip_timer_init(void)
 
     if (mxchip_timer_inited)
         return 0;
-    ret = mxos_rtos_init_semaphore(&timer_sem, 1);
-    if (ret != 0)
+    if ((timer_sem = mos_semphr_new(1)) == NULL)
         return -1;
 
     if (mos_thread_new(MXOS_DEFAULT_WORKER_PRIORITY, "mxchipTimer", (mos_thread_func_t)timer_thread_func, 2048, NULL) == NULL)
@@ -319,7 +318,7 @@ int SetTimer(unsigned long ms, void (*psysTimerHandler)(void))
             p = p->next;
         p->next = timer;
     }
-    mxos_rtos_set_semaphore(&timer_sem);
+    mos_semphr_release(timer_sem);
     return 0;
 }
 
@@ -399,7 +398,7 @@ static void mxchip_timer_tick(void)
 static void timer_thread_func(void* arg)
 {
     while(1) {
-        mxos_rtos_get_semaphore(&timer_sem, timer_thread_wait);
+        mos_semphr_acquire(timer_sem, timer_thread_wait);
         mxchip_timer_tick();
     }
 }

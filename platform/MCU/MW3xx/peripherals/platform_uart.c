@@ -71,7 +71,7 @@ static void uart_8bit_cb(int port_num)
     		ring_buffer_write( driver->rx_ring_buffer, &recv_byte,1 );
 			if ( ( driver->rx_size > 0 ) &&
 					( ring_buffer_used_space( driver->rx_ring_buffer) >= driver->rx_size ) ) {
-				mxos_rtos_set_semaphore( &driver->rx_complete );
+				mos_semphr_release(driver->rx_complete );
 
 				driver->rx_size = 0;
 
@@ -107,7 +107,7 @@ static void uart_9bit_cb(int port_num)
 			
 			if ( ( driver->rx_size > 0 ) &&
 					( ring_buffer_used_space( driver->rx_ring_buffer ) >= driver->rx_size ) ) {
-				mxos_rtos_set_semaphore( &driver->rx_complete );
+				mos_semphr_release(driver->rx_complete );
 				driver->rx_size = 0;
 			}
 		} else {
@@ -282,9 +282,9 @@ merr_t platform_uart_init( platform_uart_driver_t* driver, const platform_uart_t
 	/* Configure the pinmux for uart pins */
 	board_uart_pin_config(driver->id);
 
-	mxos_rtos_init_semaphore( &driver->tx_complete, 1 );
-    mxos_rtos_init_semaphore( &driver->rx_complete, 1 );
-    mxos_rtos_init_semaphore( &driver->sem_wakeup,  1 );
+    driver->tx_complete = mos_semphr_new( 1 );
+    driver->rx_complete = mos_semphr_new( 1 );
+		driver->sem_wakeup = mos_semphr_new( 1 );
     mxos_rtos_init_mutex    ( &driver->tx_mutex );
 	return WM_SUCCESS;
 }
@@ -314,7 +314,7 @@ merr_t platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* dat
         /* Set rx_size and wait in rx_complete semaphore until data reaches rx_size or timeout occurs */
         driver->rx_size = transfer_size;
         
-        if ( mxos_rtos_get_semaphore( &driver->rx_complete, timeout_ms) != kNoErr )
+        if ( mos_semphr_acquire(driver->rx_complete, timeout_ms) != kNoErr )
         {
           driver->rx_size = 0;
           return kTimeoutErr;
@@ -386,9 +386,9 @@ uint32_t platform_uart_get_length_in_buffer( platform_uart_driver_t* driver )
 merr_t platform_uart_deinit( platform_uart_driver_t* driver )
 {
   
-  mxos_rtos_deinit_semaphore( &driver->rx_complete );
-  mxos_rtos_deinit_semaphore( &driver->tx_complete );
-  mxos_rtos_deinit_semaphore( &driver->sem_wakeup );
+  mos_semphr_delete(driver->rx_complete );
+  mos_semphr_delete(driver->tx_complete );
+  mos_semphr_delete(driver->sem_wakeup );
   mxos_rtos_deinit_mutex( &driver->tx_mutex );
   driver->rx_size              = 0;
   driver->tx_size              = 0;
@@ -444,7 +444,7 @@ static void uart_8bit_cb(int port_num)
     		ring_buffer_write( driver->rx_ring_buffer, &recv_byte,1 );
 			if ( ( driver->rx_size > 0 ) &&
 					( ring_buffer_used_space( driver->rx_ring_buffer) >= driver->rx_size ) ) {
-				mxos_rtos_set_semaphore( &driver->rx_complete );
+				mos_semphr_release(driver->rx_complete );
 				driver->rx_size = 0;
 
 			}
@@ -479,7 +479,7 @@ static void uart_9bit_cb(int port_num)
 			
 			if ( ( driver->rx_size > 0 ) &&
 					( ring_buffer_used_space( driver->rx_ring_buffer ) >= driver->rx_size ) ) {
-				mxos_rtos_set_semaphore( &driver->rx_complete );
+				mos_semphr_release(driver->rx_complete );
 				driver->rx_size = 0;
 			}
 		} else {
@@ -702,7 +702,7 @@ merr_t platform_uart_receive_bytes( int port_id, uint8_t* data_in, uint32_t expe
         /* Set rx_size and wait in rx_complete semaphore until data reaches rx_size or timeout occurs */
         driver->rx_size = transfer_size;
         
-        if ( mxos_rtos_get_semaphore( &driver->rx_complete, timeout_ms) != kNoErr )
+        if ( mos_semphr_acquire(driver->rx_complete, timeout_ms) != kNoErr )
         {
           driver->rx_size = 0;
           return kTimeoutErr;
@@ -795,9 +795,9 @@ merr_t platform_uart_deinit( int port_id )
 	
 	driver = &uart_drivers[port_id];
   
-  mxos_rtos_deinit_semaphore( &driver->rx_complete );
-  mxos_rtos_deinit_semaphore( &driver->tx_complete );
-  mxos_rtos_deinit_semaphore( &driver->sem_wakeup );
+  mos_semphr_delete(driver->rx_complete );
+  mos_semphr_delete(driver->tx_complete );
+  mos_semphr_delete(driver->sem_wakeup );
   mxos_rtos_deinit_mutex( &driver->tx_mutex );
   driver->rx_size              = 0;
   driver->tx_size              = 0;

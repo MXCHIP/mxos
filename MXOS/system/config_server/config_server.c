@@ -56,7 +56,7 @@ bool is_config_server_established = false;
 extern merr_t ConfigIncommingJsonMessageUAP( int fd, const uint8_t *input, size_t size, system_context_t * const inContext );
 extern system_context_t* sys_context;
 
-static mxos_semaphore_t close_listener_sem = NULL, close_client_sem[ MAX_TCP_CLIENT_PER_SERVER ] = { NULL };
+static mos_semphr_id_t close_listener_sem = NULL, close_client_sem[ MAX_TCP_CLIENT_PER_SERVER ] = { NULL };
 
 WEAK void config_server_delegate_report( json_object *app_menu, mxos_Context_t *in_context )
 {
@@ -113,12 +113,12 @@ merr_t config_server_stop( void )
 
   for (; i < MAX_TCP_CLIENT_PER_SERVER; i++){
     if( close_client_sem[ i ] != NULL )
-      mxos_rtos_set_semaphore( &close_client_sem[ i ] );
+      mos_semphr_release(close_client_sem[ i ] );
   }
   mxos_thread_msleep(50);
 
   if( close_listener_sem != NULL )
-    mxos_rtos_set_semaphore( &close_listener_sem );
+    mos_semphr_release(close_listener_sem );
 
   mxos_thread_msleep(500);
   is_config_server_established = false;
@@ -138,7 +138,7 @@ void localConfiglistener_thread( void * arg)
   int localConfiglistener_fd = -1;
   int close_listener_fd = -1;
 
-  mxos_rtos_init_semaphore( &close_listener_sem, 1);
+  close_listener_sem = mos_semphr_new(1);
   close_listener_fd = mxos_create_event_fd( close_listener_sem );
 
   /*Establish a TCP server fd that accept the tcp clients connections*/ 
@@ -163,7 +163,7 @@ void localConfiglistener_thread( void * arg)
 
     /* Check close requests */
     if(FD_ISSET(close_listener_fd, &readfds)){
-      mxos_rtos_get_semaphore( &close_listener_sem, 0 );
+      mos_semphr_acquire(close_listener_sem, 0 );
       goto exit;
     }
 
@@ -183,7 +183,7 @@ void localConfiglistener_thread( void * arg)
 exit:
     if( close_listener_sem != NULL ){
       mxos_delete_event_fd( close_listener_fd );
-      mxos_rtos_deinit_semaphore( &close_listener_sem );
+      mos_semphr_delete(close_listener_sem );
       close_listener_sem = NULL;
     };
     system_log("Exit: Config listener exit with err = %d", err);
@@ -215,7 +215,7 @@ void localConfig_thread(uint32_t inFd)
     return;
   }
 
-  mxos_rtos_init_semaphore( &close_client_sem[close_sem_index], 1);
+  close_client_sem[close_sem_index] = mos_semphr_new(1);
   close_client_fd = mxos_create_event_fd( close_client_sem[close_sem_index] );
 
   httpHeader = HTTPHeaderCreateWithCallback( 512, onReceivedData, onClearHTTPHeader, &httpContext );
@@ -239,7 +239,7 @@ void localConfig_thread(uint32_t inFd)
 
     /* Check close requests */
     if(FD_ISSET(close_client_fd, &readfds)){
-      mxos_rtos_get_semaphore( &close_client_sem[close_sem_index], 0 );
+      mos_semphr_acquire(close_client_sem[close_sem_index], 0 );
       err = kConnectionErr;
       goto exit;
     }    
@@ -295,7 +295,7 @@ exit:
   if( close_client_sem[close_sem_index] != NULL )
   {
     mxos_delete_event_fd( close_client_fd );
-    mxos_rtos_deinit_semaphore( &close_client_sem[close_sem_index] );
+    mos_semphr_delete(close_client_sem[close_sem_index] );
     close_client_sem[close_sem_index] = NULL;
   };
 
