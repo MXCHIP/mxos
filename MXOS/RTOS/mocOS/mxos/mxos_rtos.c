@@ -148,7 +148,7 @@ merr_t mos_mutex_delete( mos_mutex_id_t id )
 mos_queue_id_t mos_queue_new( uint32_t message_size, uint32_t number_of_messages )
 {
     mos_queue_id_t id = NULL;
-    lib_api_p->mos_queue_new( &id, name, message_size, number_of_messages );
+    lib_api_p->mos_queue_new( &id, NULL, message_size, number_of_messages );
     return id;
 }
 merr_t mos_queue_push( mos_queue_id_t id, void* message, uint32_t timeout )
