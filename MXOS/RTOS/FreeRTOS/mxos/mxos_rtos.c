@@ -496,13 +496,17 @@ void mxos_rtos_exit_critical( void )
 }
 
 
-merr_t mxos_rtos_init_mutex( mxos_mutex_t* mutex )
+mos_mutex_id_t mos_mutex_new( void )
 {
-    check_string(mutex != NULL, "Bad args");
-
     /* Mutex uses priority inheritance */
-    *mutex = xSemaphoreCreateMutex( );
-    if ( *mutex == NULL )
+    return xSemaphoreCreateMutex( );
+}
+
+merr_t mos_mutex_lock( mos_mutex_id_t id )
+{
+    check_string(id != NULL, "Bad args");
+
+    if ( xSemaphoreTake( id, MXOS_WAIT_FOREVER ) != pdPASS )
     {
         return kGeneralErr;
     }
@@ -510,11 +514,12 @@ merr_t mxos_rtos_init_mutex( mxos_mutex_t* mutex )
     return kNoErr;
 }
 
-merr_t mxos_rtos_lock_mutex( mxos_mutex_t* mutex )
-{
-    check_string(mutex != NULL, "Bad args");
 
-    if ( xSemaphoreTake( *mutex, MXOS_WAIT_FOREVER ) != pdPASS )
+merr_t mos_mutex_unlock( mos_mutex_id_t id )
+{
+    check_string(id != NULL, "Bad args");
+
+    if ( xSemaphoreGive( id ) != pdPASS )
     {
         return kGeneralErr;
     }
@@ -522,25 +527,11 @@ merr_t mxos_rtos_lock_mutex( mxos_mutex_t* mutex )
     return kNoErr;
 }
 
-
-merr_t mxos_rtos_unlock_mutex( mxos_mutex_t* mutex )
+merr_t mos_mutex_delete( mos_mutex_id_t id )
 {
-    check_string(mutex != NULL, "Bad args");
+    check_string(id != NULL, "Bad args");
 
-    if ( xSemaphoreGive( *mutex ) != pdPASS )
-    {
-        return kGeneralErr;
-    }
-
-    return kNoErr;
-}
-
-merr_t mxos_rtos_deinit_mutex( mxos_mutex_t* mutex )
-{
-    check_string(mutex != NULL, "Bad args");
-
-    vSemaphoreDelete( *mutex );
-    *mutex = NULL;
+    vSemaphoreDelete( id );
     return kNoErr;
 }
 

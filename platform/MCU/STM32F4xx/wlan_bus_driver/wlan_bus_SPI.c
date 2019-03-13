@@ -46,7 +46,7 @@ typedef enum
 /******************************************************
  *             Variables
  ******************************************************/
-static mxos_mutex_t Spi_mutex = NULL;
+static mos_mutex_id_t Spi_mutex = NULL;
 static bool spi_initialized = false;
 
 static mos_semphr_id_t spi_transfer_finished_semaphore = NULL;
@@ -351,21 +351,21 @@ merr_t platform_wlan_spi_init( const platform_gpio_t* chip_select )
 
     if( Spi_mutex == NULL)
     {
-        mxos_rtos_init_mutex( &Spi_mutex );
+        Spi_mutex = mos_mutex_new( );
     }
-    require( Spi_mutex, exit );
+    require_action( Spi_mutex != NULL, exit, err = kGeneralErr);
 
-    mxos_rtos_lock_mutex( &Spi_mutex );
+    mos_mutex_lock(Spi_mutex );
     platform_gpio_init( chip_select, OUTPUT_PUSH_PULL );
     platform_gpio_output_high( chip_select );
     err = wlan_spi_init();
-    mxos_rtos_unlock_mutex( &Spi_mutex ); 
+    mos_mutex_unlock(Spi_mutex ); 
 exit:
     if( err != kNoErr )
     {
         if( Spi_mutex )
         {
-            mxos_rtos_deinit_mutex( &Spi_mutex );
+            mos_mutex_delete( Spi_mutex );
             Spi_mutex = NULL;
         }
     }
@@ -379,12 +379,12 @@ merr_t platform_wlan_spi_deinit( const platform_gpio_t* chip_select )
 
     require_quiet( Spi_mutex, exit );
 
-    mxos_rtos_lock_mutex( &Spi_mutex );
+    mos_mutex_lock(Spi_mutex );
     platform_gpio_init( chip_select, INPUT_HIGH_IMPEDANCE );
     err = wlan_spi_deinit();
-    mxos_rtos_unlock_mutex( &Spi_mutex );
+    mos_mutex_unlock(Spi_mutex );
 
-    mxos_rtos_deinit_mutex( &Spi_mutex );
+    mos_mutex_delete( Spi_mutex );
     Spi_mutex = NULL;
 exit:
     return err;
@@ -402,7 +402,7 @@ merr_t platform_wlan_spi_transfer( const platform_gpio_t* chip_select, const pla
         require_noerr(err, exit);
     }
 
-    mxos_rtos_lock_mutex( &Spi_mutex );
+    mos_mutex_lock(Spi_mutex );
 
     platform_gpio_output_low( chip_select );
 
@@ -416,7 +416,7 @@ merr_t platform_wlan_spi_transfer( const platform_gpio_t* chip_select, const pla
 
     platform_gpio_output_high( chip_select );
 
-    mxos_rtos_unlock_mutex( &Spi_mutex );
+    mos_mutex_unlock(Spi_mutex );
 exit:
     return err;
 }

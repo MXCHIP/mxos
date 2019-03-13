@@ -390,7 +390,7 @@ static int max_response_growth(int num_services)
 	return 2 * 3 + 4 * 2 * num_services;
 }
 
-static mxos_mutex_t mdns_mutex;
+static mos_mutex_id_t mdns_mutex;
 
 enum mdns_iface_state {
 	STOPPED = 0,
@@ -2163,7 +2163,7 @@ static int send_init_probes(int idx, int *state, int *event,
 	fd_set fds;
 	struct sockaddr_storage from;
 
-	mxos_rtos_lock_mutex(&mdns_mutex);
+	mos_mutex_lock(mdns_mutex);
 	/* Per RFC 6762 Section 8.1, wait for random ammount of time
 	 * between 0 and 250 ms before the first probe.
 	 */
@@ -2225,7 +2225,7 @@ static int send_init_probes(int idx, int *state, int *event,
 		}
 
 	}
-	mxos_rtos_unlock_mutex(&mdns_mutex);
+	mos_mutex_unlock(mdns_mutex);
 	interface_state[idx] = RUNNING;
 	return event[idx];
 }
@@ -2480,8 +2480,7 @@ static void do_responder(void)
 	responder_enabled = 1;
 	mxos_queue_t *ctrl_responder_queue;
 
-	ret = mxos_rtos_init_mutex(&mdns_mutex);
-	if (ret != MXOS_SUCCESS)
+	if ((mdns_mutex = mos_mutex_new()) == NULL)
 		return;
 	for (i = 0; i < MDNS_MAX_SERVICE_CONFIG; i++) {
 		SET_TIMEOUT(&probe_wait_time[i], 0);
@@ -2621,7 +2620,7 @@ static void do_responder(void)
 	}
 	if (!responder_enabled) {
 		MDNS_LOG("Signalled to stop mdns_responder");
-		mxos_rtos_deinit_mutex(&mdns_mutex);
+		mos_mutex_delete(mdns_mutex);
 		mos_thread_delete(NULL);
 	}
 }

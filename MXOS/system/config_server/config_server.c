@@ -326,7 +326,7 @@ static merr_t onReceivedData(struct _HTTPHeader_t * inHeader, uint32_t inPos, ui
      if(inPos == 0){
        context->offset = 0x0;
        CRC16_Init( &context->crc16_contex );
-       mxos_rtos_lock_mutex(&sys_context->flashContentInRam_mutex); //We are write the Flash content, no other write is possible
+       mos_mutex_lock(sys_context->flashContentInRam_mutex); //We are write the Flash content, no other write is possible
        context->isFlashLocked = true;
        err = mxos_flash_erase( MXOS_PARTITION_OTA_TEMP, 0x0, ota_partition->partition_length);
        require_noerr(err, flashErrExit);
@@ -347,7 +347,7 @@ static merr_t onReceivedData(struct _HTTPHeader_t * inHeader, uint32_t inPos, ui
   return err;
 
 flashErrExit:
-  mxos_rtos_unlock_mutex(&sys_context->flashContentInRam_mutex);
+  mos_mutex_unlock(sys_context->flashContentInRam_mutex);
   return err;
 }
 
@@ -357,7 +357,7 @@ static void onClearHTTPHeader(struct _HTTPHeader_t * inHeader, void * inUserCont
   configContext_t *context = (configContext_t *)inUserContext;
 
   if(context->isFlashLocked == true){
-    mxos_rtos_unlock_mutex(&sys_context->flashContentInRam_mutex);
+    mos_mutex_unlock(sys_context->flashContentInRam_mutex);
     context->isFlashLocked = false;
   }
  }
@@ -382,7 +382,7 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
   if(HTTPHeaderMatchURL( inHeader, kCONFIGURLRead ) == kNoErr){    
     //report = ConfigCreateReportJsonMessage( inContext );
 
-    mxos_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+    mos_mutex_lock(inContext->flashContentInRam_mutex);
     snprintf(name, 50, "%s(%c%c%c%c%c%c)",MODEL, 
                                           inContext->mxosStatus.mac[9],  inContext->mxosStatus.mac[10], 
                                           inContext->mxosStatus.mac[12], inContext->mxosStatus.mac[13],
@@ -452,7 +452,7 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
 
     config_server_delegate_report( sector, &inContext->flashContentInRam );
 
-    mxos_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+    mos_mutex_unlock(inContext->flashContentInRam_mutex);
 
     json_str = json_object_to_json_string(report);
     require_action( json_str, exit, err = kNoMemoryErr );
@@ -480,7 +480,7 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
       config = json_tokener_parse(inHeader->extraDataPtr);
       require_action(config, exit, err = kUnknownErr);
       system_log("Recv config object=%s", json_object_to_json_string(config));
-      mxos_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+      mos_mutex_lock(inContext->flashContentInRam_mutex);
       json_object_object_foreach(config, key, val) {
         if(!strcmp(key, "Device Name")){
           strncpy(inContext->flashContentInRam.mxosSystemConfig.name, json_object_get_string(val), maxNameLen);
@@ -525,7 +525,7 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
           config_server_delegate_recv( key, val, &need_reboot, &inContext->flashContentInRam );
         }
       }
-      mxos_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+      mos_mutex_unlock(inContext->flashContentInRam_mutex);
 
       json_object_put(config);
 
@@ -550,7 +550,7 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
       config = json_tokener_parse(inHeader->extraDataPtr);
       require_action(config, exit, err = kUnknownErr);
       system_log("Recv config object from uap =%s", json_object_to_json_string(config));
-      mxos_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+      mos_mutex_lock(inContext->flashContentInRam_mutex);
 
       json_object_object_foreach( config, key, val ) {
           if ( !strcmp( key, "SSID" ) ) {
@@ -591,7 +591,7 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
               strncpy( inContext->flashContentInRam.mxosSystemConfig.dnsServer, json_object_get_string( val ), maxIpLen );
           }
       }
-      mxos_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+      mos_mutex_unlock(inContext->flashContentInRam_mutex);
       json_object_put( config );
 
       err = CreateSimpleHTTPOKMessage( &httpResponse, &httpResponseLen );

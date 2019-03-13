@@ -81,7 +81,7 @@ typedef struct
 typedef struct
 {
     platform_spi_t*     peripheral;
-    mxos_mutex_t        spi_mutex;
+    mos_mutex_id_t        spi_mutex;
     mxos_bool_t         initialized;
 } platform_spi_driver_t;
 
@@ -97,7 +97,7 @@ typedef struct
 
 typedef struct
 {
-    mxos_mutex_t              i2c_mutex;
+    mos_mutex_id_t              i2c_mutex;
 } platform_i2c_driver_t;
 
 typedef void (* wakeup_irq_handler_t)(void *arg);
@@ -113,7 +113,7 @@ typedef struct
     ring_buffer_t*             rx_ring_buffer;
     mos_semphr_id_t           rx_complete;
     mos_semphr_id_t           tx_complete;
-    mxos_mutex_t               tx_mutex;
+    mos_mutex_id_t               tx_mutex;
     mos_semphr_id_t           sem_wakeup;
     volatile uint32_t          tx_size;
     volatile uint32_t          rx_size;
@@ -133,7 +133,7 @@ typedef struct
 typedef struct
 {
     const platform_flash_t*    peripheral;
-    mxos_mutex_t               flash_mutex;
+    mos_mutex_id_t               flash_mutex;
     volatile bool              initialized;
 } platform_flash_driver_t;
 

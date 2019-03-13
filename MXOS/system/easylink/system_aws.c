@@ -77,7 +77,7 @@ static void aws_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t *
     require_action_string( nwkpara, exit, err = kTimeoutErr, "AWS Timeout or terminated" );
 
     /* Store SSID and KEY*/
-    mxos_rtos_lock_mutex( &inContext->flashContentInRam_mutex );
+    mos_mutex_lock(inContext->flashContentInRam_mutex );
     memcpy( inContext->flashContentInRam.mxosSystemConfig.ssid, nwkpara->wifi_ssid, maxSsidLen );
     memset( inContext->flashContentInRam.mxosSystemConfig.bssid, 0x0, 6 );
     memcpy( inContext->flashContentInRam.mxosSystemConfig.user_key, nwkpara->wifi_key, maxKeyLen );
@@ -85,7 +85,7 @@ static void aws_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t *
     memcpy( inContext->flashContentInRam.mxosSystemConfig.key, nwkpara->wifi_key, maxKeyLen );
     inContext->flashContentInRam.mxosSystemConfig.keyLength = strlen( nwkpara->wifi_key );
     inContext->flashContentInRam.mxosSystemConfig.dhcpEnable = true;
-    mxos_rtos_unlock_mutex( &inContext->flashContentInRam_mutex );
+    mos_mutex_unlock(inContext->flashContentInRam_mutex );
     system_log("Get SSID: %s, Key: %s", inContext->flashContentInRam.mxosSystemConfig.ssid, inContext->flashContentInRam.mxosSystemConfig.user_key);
     aws_success = true;
     exit:

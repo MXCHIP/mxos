@@ -94,7 +94,7 @@ typedef enum
 typedef struct
 {
     bt_smart_gatt_subprocedure_t subprocedure;
-    mxos_mutex_t                 mutex;
+    mos_mutex_id_t                 mutex;
     mos_semphr_id_t             done_semaphore;
     merr_t                     result;
     mxos_bt_uuid_t               uuid;

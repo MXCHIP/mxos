@@ -74,7 +74,7 @@ merr_t peripheral_bt_interface_initialize( void )
 
     bt_peripheral_log( "Initializing Bluetooth Interface..." );
 
-    result = mxos_rtos_init_mutex( &peripheral_subprocedure.mutex );
+    peripheral_subprocedure.mutex = mos_mutex_new( );
     if ( result  != MXOS_BT_SUCCESS )
     {
         bt_peripheral_log( "Error creating mutex" );
@@ -98,7 +98,7 @@ merr_t peripheral_bt_interface_deinitialize( void )
     bt_peripheral_log( "Deinitializing Bluetooth Interface..." );
 
     subprocedure_reset( &peripheral_subprocedure );
-    mxos_rtos_deinit_mutex( &peripheral_subprocedure.mutex );
+    mos_mutex_delete( peripheral_subprocedure.mutex );
     mos_semphr_delete(peripheral_subprocedure.done_semaphore );
 
     return MXOS_BT_SUCCESS;

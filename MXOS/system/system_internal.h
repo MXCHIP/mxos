@@ -47,7 +47,7 @@ typedef struct _mxos_Context_t
 {
   /*Flash content*/
   system_config_t           flashContentInRam;
-  mxos_mutex_t              flashContentInRam_mutex;
+  mos_mutex_id_t              flashContentInRam_mutex;
 
   void *                    user_config_data;
   uint32_t                  user_config_data_size;

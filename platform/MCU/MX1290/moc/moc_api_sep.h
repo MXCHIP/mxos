@@ -59,10 +59,10 @@ typedef struct {
 	merr_t (*mos_semphr_release)( mos_semphr_id_t* semaphore );
 	merr_t (*mos_semphr_acquire)( mos_semphr_id_t* semaphore, uint32_t timeout_ms );
 	merr_t (*mos_semphr_delete)( mos_semphr_id_t* semaphore );
-	merr_t (*mxos_rtos_init_mutex)( mxos_mutex_t* mutex );
-	merr_t (*mxos_rtos_lock_mutex)( mxos_mutex_t* mutex );
-	merr_t (*mxos_rtos_unlock_mutex)( mxos_mutex_t* mutex );
-	merr_t (*mxos_rtos_deinit_mutex)( mxos_mutex_t* mutex );
+	merr_t (*mos_mutex_new)( mos_mutex_id_t* mutex );
+	merr_t (*mos_mutex_lock)( mos_mutex_id_t* mutex );
+	merr_t (*mos_mutex_unlock)( mos_mutex_id_t* mutex );
+	merr_t (*mos_mutex_delete)( mos_mutex_id_t* mutex );
 	merr_t (*mxos_rtos_init_queue)( mxos_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages );
 	merr_t (*mxos_rtos_push_to_queue)( mxos_queue_t* queue, void* message, uint32_t timeout_ms );
 	merr_t (*mxos_rtos_pop_from_queue)( mxos_queue_t* queue, void* message, uint32_t timeout_ms );

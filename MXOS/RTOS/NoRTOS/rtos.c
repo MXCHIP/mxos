@@ -251,37 +251,35 @@ merr_t mos_semphr_delete( mos_semphr_id_t id )
 }
 
 
-merr_t mxos_rtos_init_mutex( mxos_mutex_t* mutex )
+mos_mutex_id_t mos_mutex_new( void )
 {
     noos_mutex_t *noos_mutex;
     mutex_pool_alloc(&noos_mutex);
     noos_mutex->reversed = 0;
-    *mutex = (void *)noos_mutex;
-    return kNoErr;
+    return noos_mutex;
 }
 
 
-merr_t mxos_rtos_lock_mutex( mxos_mutex_t* mutex )
+merr_t mos_mutex_lock( mos_mutex_id_t id )
 {
-    UNUSED_PARAMETER(mutex);
+    UNUSED_PARAMETER(id);
     return kNoErr;
 }
 
-merr_t mxos_rtos_unlock_mutex( mxos_mutex_t* mutex )
+merr_t mos_mutex_unlock( mos_mutex_id_t id )
 {
-    UNUSED_PARAMETER(mutex);
+    UNUSED_PARAMETER(id);
     return kNoErr;
 }
 
-merr_t mxos_rtos_deinit_mutex( mxos_mutex_t* mutex )
+merr_t mos_mutex_delete( mos_mutex_id_t id )
 {
-    noos_mutex_t *noos_mutex = (noos_mutex_t *)*mutex;
+    noos_mutex_t *noos_mutex = (noos_mutex_t *)id;
 
     if( noos_mutex == NULL)
         return kNotInitializedErr;
 
     mutex_pool_free(&noos_mutex);
-    *mutex = NULL;
     return kNoErr;
 }
 

@@ -609,18 +609,18 @@ merr_t mxos_i2c_init( mxos_i2c_device_t* device )
     merr_t result;
 
     if( platform_i2c_drivers[device->port].i2c_mutex == NULL)
-      mxos_rtos_init_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
+      platform_i2c_drivers[device->port].i2c_mutex = mos_mutex_new( );
 
-    mxos_rtos_lock_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
+    mos_mutex_lock(platform_i2c_drivers[device->port].i2c_mutex );
     result = lib_api_p->i2c_apis->i2c_init(device);
-    mxos_rtos_unlock_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
+    mos_mutex_unlock(platform_i2c_drivers[device->port].i2c_mutex );
     return result;
 }
 
 merr_t mxos_i2c_deinit( mxos_i2c_device_t* device )
 {
     if( platform_i2c_drivers[device->port].i2c_mutex != NULL){
-      mxos_rtos_deinit_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
+      mos_mutex_delete( platform_i2c_drivers[device->port].i2c_mutex );
       platform_i2c_drivers[device->port].i2c_mutex = NULL;
     }
 
@@ -631,9 +631,9 @@ bool mxos_i2c_probe_dev( mxos_i2c_device_t* device, int retries )
 {
     bool ret;
 
-    mxos_rtos_lock_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
+    mos_mutex_lock(platform_i2c_drivers[device->port].i2c_mutex );
     ret = lib_api_p->i2c_apis->i2c_probe_device(device, retries);
-    mxos_rtos_unlock_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
+    mos_mutex_unlock(platform_i2c_drivers[device->port].i2c_mutex );
     return ret;
 }
 
@@ -657,9 +657,9 @@ merr_t mxos_i2c_transfer( mxos_i2c_device_t* device, mxos_i2c_message_t* message
 {
     merr_t err = kNoErr;
 
-    mxos_rtos_lock_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
+    mos_mutex_lock(platform_i2c_drivers[device->port].i2c_mutex );
     err = lib_api_p->i2c_apis->i2c_transfer(device, messages, number_of_messages);
-    mxos_rtos_unlock_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
+    mos_mutex_unlock(platform_i2c_drivers[device->port].i2c_mutex );
 
     return err;
 }

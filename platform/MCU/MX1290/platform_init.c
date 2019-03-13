@@ -89,8 +89,8 @@ static const platform_uart_config_t stdio_uart_config =
 
 static volatile ring_buffer_t stdio_rx_buffer;
 static volatile uint8_t stdio_rx_data[STDIO_BUFFER_SIZE];
-mxos_mutex_t stdio_rx_mutex;
-mxos_mutex_t stdio_tx_mutex;
+mos_mutex_id_t stdio_rx_mutex;
+mos_mutex_id_t stdio_tx_mutex;
 
 /******************************************************
 *               Function Definitions
@@ -375,10 +375,10 @@ void init_architecture( void )
 
 #ifndef MXOS_DISABLE_STDIO
 #ifndef NO_MXOS_RTOS
-    mxos_rtos_init_mutex( &stdio_tx_mutex );
-    mxos_rtos_unlock_mutex( &stdio_tx_mutex );
-    mxos_rtos_init_mutex( &stdio_rx_mutex );
-    mxos_rtos_unlock_mutex( &stdio_rx_mutex );
+    stdio_tx_mutex = mos_mutex_new( );
+    mos_mutex_unlock(stdio_tx_mutex );
+    stdio_rx_mutex = mos_mutex_new( );
+    mos_mutex_unlock(stdio_rx_mutex );
 #endif
 
     ring_buffer_init( (ring_buffer_t*) &stdio_rx_buffer, (uint8_t*) stdio_rx_data, STDIO_BUFFER_SIZE );

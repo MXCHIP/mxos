@@ -95,7 +95,7 @@ typedef struct
 typedef struct 
 {
     linked_list_t   list;
-    mxos_mutex_t    mutex;
+    mos_mutex_id_t    mutex;
 } smartbridge_auto_conn_list_t;
 
 /******************************************************
@@ -2292,12 +2292,13 @@ void smartbridge_auto_connection_encryption_check(const mxos_bt_dev_pairing_cplt
 static merr_t smartbridge_auto_conn_list_init(void)
 {
     linked_list_init(&g_auto_conn_list.list);
-    return mxos_rtos_init_mutex(&g_auto_conn_list.mutex); 
+    g_auto_conn_list.mutex = mos_mutex_new(); 
+    return g_auto_conn_list.mutex == NULL ? kGeneralErr : kNoErr;
 }
 
 static merr_t smartbridge_auto_conn_list_deinit(void)
 {
-    return mxos_rtos_deinit_mutex(&g_auto_conn_list.mutex);
+    return mos_mutex_delete(g_auto_conn_list.mutex);
 }
 
 static mxos_bool_t smartbridge_auto_conn_compare_bdaddr(linked_list_node_t* node_to_compare, void* user_data)
@@ -2335,7 +2336,7 @@ static merr_t smartbridge_auto_conn_list_add(const mxos_bt_smart_advertising_rep
     require_action(report != NULL, exit, err = kParamErr);
 
     /* Check if this report is existed. */
-    mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_lock(g_auto_conn_list.mutex);
     err = linked_list_find_node(&g_auto_conn_list.list,
                                  (linked_list_compare_callback_t)smartbridge_auto_conn_compare_bdaddr,
                                  (void *)report->remote_device.address,
@@ -2370,7 +2371,7 @@ static merr_t smartbridge_auto_conn_list_add(const mxos_bt_smart_advertising_rep
              */
             err = kAlreadyInUseErr;
         }
-        mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+        mos_mutex_unlock(g_auto_conn_list.mutex);
         return err;  
     }
     else 
@@ -2393,7 +2394,7 @@ static merr_t smartbridge_auto_conn_list_add(const mxos_bt_smart_advertising_rep
             }
         }
     }
-    mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_unlock(g_auto_conn_list.mutex);
 
     /* Not existed. */
     if (new_report == NULL) 
@@ -2411,9 +2412,9 @@ static merr_t smartbridge_auto_conn_list_add(const mxos_bt_smart_advertising_rep
     new_report->this_node.data = new_report;
     memcpy(&new_report->report, report, sizeof(mxos_bt_smart_advertising_report_t));
 
-    mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_lock(g_auto_conn_list.mutex);
     err = linked_list_insert_node_at_rear(&g_auto_conn_list.list, &new_report->this_node);
-    mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_unlock(g_auto_conn_list.mutex);
 
  exit:
     return err;
@@ -2426,14 +2427,14 @@ static merr_t smartbridge_auto_conn_list_get_by_state(mxos_bt_smart_advertising_
 
     require_action(report != NULL, exit, err = kParamErr);
 
-    mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_lock(g_auto_conn_list.mutex);
     err = linked_list_find_node(&g_auto_conn_list.list,
                                 (linked_list_compare_callback_t)smartbridge_auto_conn_compare_state,
                                 (void *)&state,
                                 (linked_list_node_t**)&current_report);
     
     *report = &current_report->report;
-    mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_unlock(g_auto_conn_list.mutex);
     
 exit:
     return err;
@@ -2446,7 +2447,7 @@ static merr_t smartbridge_auto_conn_list_set_state(const mxos_bt_device_address_
 
     require_action(bdaddr != NULL, exit, err = kParamErr);
 
-    mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_lock(g_auto_conn_list.mutex);
     err = linked_list_find_node(&g_auto_conn_list.list,
                                 (linked_list_compare_callback_t)smartbridge_auto_conn_compare_bdaddr,
                                 (void *)bdaddr,
@@ -2454,7 +2455,7 @@ static merr_t smartbridge_auto_conn_list_set_state(const mxos_bt_device_address_
     if (err == kNoErr) {
         report_found->state = state;
     }
-    mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_unlock(g_auto_conn_list.mutex);
 
 exit:
     return err;
@@ -2465,7 +2466,7 @@ static merr_t smartbridge_auto_conn_list_remove(mxos_bt_device_address_t bdaddr)
     merr_t err = kNoErr;
     smartbridge_auto_conn_report_t* current_report;
 
-    mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_lock(g_auto_conn_list.mutex);
     err = linked_list_find_node(&g_auto_conn_list.list,
                                  (linked_list_compare_callback_t)smartbridge_auto_conn_compare_bdaddr,
                                  bdaddr,
@@ -2473,7 +2474,7 @@ static merr_t smartbridge_auto_conn_list_remove(mxos_bt_device_address_t bdaddr)
     if (err != kNoErr) goto exit;
     current_report->state = SMARTBRIDGE_AUTO_CONN_STATE_FREE;
 exit:
-    mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_unlock(g_auto_conn_list.mutex);
     return err;
 }
 
@@ -2482,7 +2483,7 @@ static merr_t smartbridge_auto_conn_list_remove_by_state(smartbridge_auto_conn_s
     merr_t err = kNoErr;
     smartbridge_auto_conn_report_t* current_report;
 
-    mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_lock(g_auto_conn_list.mutex);
     do {
         err = linked_list_find_node(&g_auto_conn_list.list,
                                      (linked_list_compare_callback_t)smartbridge_auto_conn_compare_state,
@@ -2491,7 +2492,7 @@ static merr_t smartbridge_auto_conn_list_remove_by_state(smartbridge_auto_conn_s
         if (err != kNoErr) break;
         current_report->state = SMARTBRIDGE_AUTO_CONN_STATE_FREE;
     } while (1);
-    mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_unlock(g_auto_conn_list.mutex);
     
     return kNoErr;
 }
@@ -2501,7 +2502,7 @@ static merr_t smartbridge_auto_conn_list_clear(void)
     merr_t err = kNoErr;
     smartbridge_auto_conn_report_t* current_report = NULL;
 
-    mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_lock(g_auto_conn_list.mutex);
     do {
         err = linked_list_get_front_node(&g_auto_conn_list.list, (linked_list_node_t **)&current_report);
         if (err != kNoErr) break;
@@ -2509,7 +2510,7 @@ static merr_t smartbridge_auto_conn_list_clear(void)
 
         free(current_report);
     } while (1);
-    mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_unlock(g_auto_conn_list.mutex);
 
     return kNoErr;
 }

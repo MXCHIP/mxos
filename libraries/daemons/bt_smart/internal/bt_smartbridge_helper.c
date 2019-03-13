@@ -196,12 +196,12 @@ void peripheral_helper_socket_clear_actions( mxos_bt_peripheral_socket_t* socket
 
 merr_t subprocedure_lock( gatt_subprocedure_t* subprocedure )
 {
-    return mxos_rtos_lock_mutex( &subprocedure->mutex );
+    return mos_mutex_lock(subprocedure->mutex );
 }
 
 merr_t subprocedure_unlock( gatt_subprocedure_t* subprocedure )
 {
-    return mxos_rtos_unlock_mutex( &subprocedure->mutex );
+    return mos_mutex_unlock(subprocedure->mutex );
 }
 
 merr_t subprocedure_reset( gatt_subprocedure_t* subprocedure )

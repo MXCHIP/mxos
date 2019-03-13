@@ -76,7 +76,7 @@ void moc_app_main( const mxos_api_t *lib_api_t );
 ******************************************************/
 
 extern uint32_t app_stack_size;
-extern mxos_mutex_t stdio_tx_mutex;
+extern mos_mutex_id_t stdio_tx_mutex;
 const mxos_api_t *lib_api_p = NULL;
 extern uint32_t _ram_end_;
 #ifdef CONFIG_CPU_MX1290
@@ -172,7 +172,7 @@ void moc_app_main( const mxos_api_t *moc_kernel_apis )
 	lib_api_p = moc_kernel_apis;
 #endif
  
-    mxos_rtos_init_mutex( &stdio_tx_mutex );
+    stdio_tx_mutex = mos_mutex_new( );
 #ifdef CONFIG_CPU_MX1290
  	init_debug_uart();
 #endif

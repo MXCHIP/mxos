@@ -285,7 +285,7 @@ merr_t platform_uart_init( platform_uart_driver_t* driver, const platform_uart_t
     driver->tx_complete = mos_semphr_new( 1 );
     driver->rx_complete = mos_semphr_new( 1 );
 		driver->sem_wakeup = mos_semphr_new( 1 );
-    mxos_rtos_init_mutex    ( &driver->tx_mutex );
+    driver->tx_mutex = mos_mutex_new( );
 	return WM_SUCCESS;
 }
 
@@ -362,7 +362,7 @@ merr_t platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8
   int i;
   
   if (driver->tx_mutex)
-  	mxos_rtos_lock_mutex( &driver->tx_mutex );
+  	mos_mutex_lock(driver->tx_mutex );
   for(i=0; i<size; i++) {
 		while (UART_GetLineStatus(driver->id,
 					  UART_LINESTATUS_TDRQ) != SET) {
@@ -372,7 +372,7 @@ merr_t platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8
 		UART_SendData(driver->id, data_out[i]);
 	}
   if (driver->tx_mutex)
-  	mxos_rtos_unlock_mutex( &driver->tx_mutex );
+  	mos_mutex_unlock(driver->tx_mutex );
   return kNoErr;
 }
 
@@ -389,7 +389,7 @@ merr_t platform_uart_deinit( platform_uart_driver_t* driver )
   mos_semphr_delete(driver->rx_complete );
   mos_semphr_delete(driver->tx_complete );
   mos_semphr_delete(driver->sem_wakeup );
-  mxos_rtos_deinit_mutex( &driver->tx_mutex );
+  mos_mutex_delete( driver->tx_mutex );
   driver->rx_size              = 0;
   driver->tx_size              = 0;
   driver->last_transmit_result = kNoErr;
@@ -798,7 +798,7 @@ merr_t platform_uart_deinit( int port_id )
   mos_semphr_delete(driver->rx_complete );
   mos_semphr_delete(driver->tx_complete );
   mos_semphr_delete(driver->sem_wakeup );
-  mxos_rtos_deinit_mutex( &driver->tx_mutex );
+  mos_mutex_delete( driver->tx_mutex );
   driver->rx_size              = 0;
   driver->tx_size              = 0;
   driver->last_transmit_result = kNoErr;

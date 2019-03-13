@@ -42,9 +42,10 @@ uint32_t mico_rtos_get_time(void)
 	return mxos_rtos_get_time();
 }
 
-merr_t mico_rtos_init_mutex(mxos_mutex_t *mutex)
+merr_t mico_rtos_init_mutex(mos_mutex_id_t *mutex)
 {
-	return mxos_rtos_init_mutex(mutex);
+    *mutex = mos_mutex_new();
+    return *mutex == NULL ? kGeneralErr : kNoErr;
 }
 
 merr_t mico_rtos_init_semaphore(mos_semphr_id_t *semaphore, int count)
@@ -58,9 +59,9 @@ bool mico_rtos_is_current_thread(mos_thread_id_t *thread)
 	return mxos_rtos_is_current_thread(thread);
 }
 
-merr_t mico_rtos_lock_mutex(mxos_mutex_t *mutex)
+merr_t mico_rtos_lock_mutex(mos_mutex_id_t *mutex)
 {
-	return mxos_rtos_lock_mutex(mutex);
+	return mos_mutex_lock(*mutex);
 }
 
 merr_t mico_rtos_push_to_queue(mxos_queue_t *queue, void *message, uint32_t timeout_ms)
@@ -83,9 +84,9 @@ void mico_rtos_thread_msleep(uint32_t milliseconds)
 	mxos_rtos_thread_msleep(milliseconds);
 }
 
-merr_t mico_rtos_unlock_mutex(mxos_mutex_t *mutex)
+merr_t mico_rtos_unlock_mutex(mos_mutex_id_t *id)
 {
-	return mxos_rtos_unlock_mutex(mutex);
+    return mos_mutex_unlock(*id);
 }
 
 mxosMemInfo_t *mico_memory_info(void)

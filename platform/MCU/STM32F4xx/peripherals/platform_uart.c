@@ -141,7 +141,7 @@ merr_t platform_uart_init( platform_uart_driver_t* driver, const platform_uart_t
   {
     driver->tx_complete = mos_semphr_new( 1 );
     driver->rx_complete = mos_semphr_new( 1 );
-    mxos_rtos_init_mutex    ( &driver->tx_mutex );
+    driver->tx_mutex = mos_mutex_new( );
 
     /* Configure TX and RX pin_mapping */
     platform_gpio_set_alternate_function( peripheral->pin_tx->port, peripheral->pin_tx->pin_number, GPIO_OType_PP, GPIO_PuPd_UP, uart_alternate_functions[ uart_number ] );
@@ -365,7 +365,7 @@ merr_t platform_uart_deinit( platform_uart_driver_t* driver )
 
   mos_semphr_delete(driver->rx_complete );
   mos_semphr_delete(driver->tx_complete );
-  mxos_rtos_deinit_mutex( &driver->tx_mutex );
+  mos_mutex_delete( driver->tx_mutex );
   driver->rx_size              = 0;
   driver->tx_size              = 0;
   driver->last_transmit_result = kNoErr;
@@ -383,7 +383,7 @@ merr_t platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8
 
   platform_mcu_powersave_disable();
   
-  mxos_rtos_lock_mutex( &driver->tx_mutex );
+  mos_mutex_lock(driver->tx_mutex );
 
   require_action_quiet( ( driver != NULL ) && ( data_out != NULL ) && ( size != 0 ), exit, err = kParamErr);
 
@@ -414,7 +414,7 @@ merr_t platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8
   err = driver->last_transmit_result;
 
 exit:  
-  mxos_rtos_unlock_mutex( &driver->tx_mutex );
+  mos_mutex_unlock(driver->tx_mutex );
   platform_mcu_powersave_enable();
   return err;
 }

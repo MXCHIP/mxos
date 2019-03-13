@@ -706,12 +706,12 @@ typedef uint8_t mxos_bt_dev_power_mgmt_status_t;   /**< Power management status 
 
 /* Bluetooth application tracing macro */
 #ifndef WPRINT_BT_APP_INFO
-//extern mxos_mutex_t global_trace_mutex;
+//extern mos_mutex_id_t global_trace_mutex;
 /*
 #define WPRINT_BT_APP_INFO(info)    { \
-                                        mxos_rtos_lock_mutex(&global_trace_mutex);     \
+                                        mos_mutex_lock(global_trace_mutex);     \
                                         WPRINT_APP_INFO(info);                          \
-                                        mxos_rtos_unlock_mutex(&global_trace_mutex);   \
+                                        mos_mutex_unlock(global_trace_mutex);   \
                                     }
 */
 #endif

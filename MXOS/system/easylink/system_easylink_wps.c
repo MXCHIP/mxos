@@ -87,7 +87,7 @@ static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_contex
     require_action_string( nwkpara, exit, err = kTimeoutErr, "EasyLink Timeout or terminated" );
 
     /* Store SSID and KEY*/
-    mxos_rtos_lock_mutex( &inContext->flashContentInRam_mutex );
+    mos_mutex_lock(inContext->flashContentInRam_mutex );
     memset( inContext->flashContentInRam.mxosSystemConfig.bssid, 0x0, 6 );
     memset( inContext->flashContentInRam.mxosSystemConfig.ssid, 0x0, maxSsidLen );
     memset( inContext->flashContentInRam.mxosSystemConfig.user_key, 0x0, maxKeyLen );
@@ -96,7 +96,7 @@ static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_contex
     memcpy( inContext->flashContentInRam.mxosSystemConfig.user_key, nwkpara->wifi_key, nwkpara->local_ip_addr[1] );
     inContext->flashContentInRam.mxosSystemConfig.user_keyLength = nwkpara->local_ip_addr[1];
     inContext->flashContentInRam.mxosSystemConfig.dhcpEnable = true;
-    mxos_rtos_unlock_mutex( &inContext->flashContentInRam_mutex );
+    mos_mutex_unlock(inContext->flashContentInRam_mutex );
     system_log("Get SSID: %s, Key: %s", inContext->flashContentInRam.mxosSystemConfig.ssid,
                                                     inContext->flashContentInRam.mxosSystemConfig.user_key);
 

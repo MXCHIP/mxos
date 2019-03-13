@@ -58,32 +58,32 @@ extern "C" {
 #ifndef MXOS_DISABLE_STDIO
 #ifndef NO_MXOS_RTOS
    extern int mxos_debug_enabled;
-   extern mxos_mutex_t stdio_tx_mutex;
+   extern mos_mutex_id_t stdio_tx_mutex;
 
     #define custom_log(N, M, ...) do {if (mxos_debug_enabled==0)break;\
-                                      mxos_rtos_lock_mutex( &stdio_tx_mutex );\
+                                      mos_mutex_lock(stdio_tx_mutex );\
                                       printf("[%ld][%s: %s:%4d] " M "\r\n", mxos_rtos_get_time(), N, SHORT_FILE, __LINE__, ##__VA_ARGS__);\
-                                      mxos_rtos_unlock_mutex( &stdio_tx_mutex );}while(0==1)
+                                      mos_mutex_unlock(stdio_tx_mutex );}while(0==1)
 
     #define custom_print(M, ...) do {if (mxos_debug_enabled==0)break;\
-                                  mxos_rtos_lock_mutex( &stdio_tx_mutex );\
+                                  mos_mutex_lock(stdio_tx_mutex );\
                                   printf( M, ##__VA_ARGS__);\
-                                  mxos_rtos_unlock_mutex( &stdio_tx_mutex );}while(0==1)
+                                  mos_mutex_unlock(stdio_tx_mutex );}while(0==1)
                     
     #ifndef MXOS_ASSERT_INFO_DISABLE
         #define debug_print_assert(A,B,C,D,E,F) do {if (mxos_debug_enabled==0)break;\
-                                                     mxos_rtos_lock_mutex( &stdio_tx_mutex );\
+                                                     mos_mutex_lock(stdio_tx_mutex );\
                                                      printf("[%ld][MXOS:%s:%s:%4d] **ASSERT** %s""\r\n", mxos_rtos_get_time(), D, F, E, (C!=NULL) ? C : "" );\
-                                                     mxos_rtos_unlock_mutex( &stdio_tx_mutex );}while(0==1)
+                                                     mos_mutex_unlock(stdio_tx_mutex );}while(0==1)
     #else  // !MXOS_ASSERT_INFO_ENABLE
         #define debug_print_assert(A,B,C,D,E,F)
     #endif  // MXOS_ASSERT_INFO_ENABLE
 
     #ifdef TRACE
         #define custom_log_trace(N) do {if (mxos_debug_enabled==0)break;\
-                                        mxos_rtos_lock_mutex( &stdio_tx_mutex );\
+                                        mos_mutex_lock(stdio_tx_mutex );\
                                         printf("[%s: [TRACE] %s] %s()\r\n", N, SHORT_FILE, __PRETTY_FUNCTION__);\
-                                        mxos_rtos_unlock_mutex( &stdio_tx_mutex );}while(0==1)
+                                        mos_mutex_unlock(stdio_tx_mutex );}while(0==1)
     #else  // !TRACE
         #define custom_log_trace(N)
     #endif // TRACE  

@@ -29,7 +29,7 @@ static int32_t seedNum = 0;
 #define CRC_SIZE      ( 2 )
 
 system_context_t* sys_context = NULL;
-static mxos_mutex_t para_flash_mutex = NULL;
+static mos_mutex_id_t para_flash_mutex = NULL;
 //#define para_log(M, ...) custom_log("MXOS Settting", M, ##__VA_ARGS__)
 
 #define para_log(M, ...)
@@ -80,8 +80,8 @@ mxos_Context_t* mxos_system_context_init( uint32_t user_config_data_size )
 
   para_log( "Init context: len=%d", sizeof(system_context_t));
 
-  mxos_rtos_init_mutex( &sys_context->flashContentInRam_mutex );
-  mxos_rtos_init_mutex( &para_flash_mutex);
+  sys_context->flashContentInRam_mutex = mos_mutex_new( );
+  para_flash_mutex = mos_mutex_new( );
   MXOSReadConfiguration( sys_context );
 
 exit:
@@ -153,7 +153,7 @@ static merr_t internal_update_config( system_context_t * const inContext )
   require_action(inContext, exit, err = kNotPreparedErr);
 
   para_log("Flash write!");
-  mxos_rtos_lock_mutex( &para_flash_mutex);
+  mos_mutex_lock(para_flash_mutex);
   partition = mxos_flash_get_info( MXOS_PARTITION_PARAMETER_1 );
   err = mxos_flash_erase( MXOS_PARTITION_PARAMETER_1, 0x0, partition->partition_length);
   require_noerr(err, exit);
@@ -175,7 +175,7 @@ static merr_t internal_update_config( system_context_t * const inContext )
   para_offset = partition->partition_length - CRC_SIZE;
   err = mxos_flash_read( MXOS_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)&crc_readback, CRC_SIZE );
   if( crc_readback != crc_result) {
-    mxos_rtos_unlock_mutex( &para_flash_mutex);
+    mos_mutex_unlock(para_flash_mutex);
     para_log( "crc_readback = %d, crc_result %d", crc_readback, crc_result);
     return kWriteErr;
   }
@@ -198,7 +198,7 @@ static merr_t internal_update_config( system_context_t * const inContext )
   require_noerr(err, exit);
 
 exit:
-  mxos_rtos_unlock_mutex( &para_flash_mutex);
+  mos_mutex_unlock(para_flash_mutex);
   return err;
 }
 

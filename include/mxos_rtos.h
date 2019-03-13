@@ -74,10 +74,10 @@ typedef enum
 
 typedef uint32_t  mxos_event_flags_t;
 typedef void * mos_semphr_id_t;
-typedef void * mxos_mutex_t;
+typedef void * mos_mutex_id_t;
 typedef void * mos_thread_id_t;
 typedef void * mxos_queue_t;
-typedef void * mxos_event_t;// MXOS OS event: mos_semphr_id_t, mxos_mutex_t or mxos_queue_t
+typedef void * mxos_event_t;// MXOS OS event: mos_semphr_id_t, mos_mutex_id_t or mxos_queue_t
 typedef void (*timer_handler_t)( void* arg );
 typedef merr_t (*event_handler_t)( void* arg );
 
@@ -410,7 +410,7 @@ merr_t mos_semphr_delete( mos_semphr_id_t id );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-merr_t mxos_rtos_init_mutex( mxos_mutex_t* mutex );
+mos_mutex_id_t mos_mutex_new( void );
 
 
 /** @brief    Obtains the lock on a mutex
@@ -424,7 +424,7 @@ merr_t mxos_rtos_init_mutex( mxos_mutex_t* mutex );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-merr_t mxos_rtos_lock_mutex( mxos_mutex_t* mutex );
+merr_t mos_mutex_lock( mos_mutex_id_t id );
 
 
 /** @brief    Releases the lock on a mutex
@@ -437,19 +437,19 @@ merr_t mxos_rtos_lock_mutex( mxos_mutex_t* mutex );
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-merr_t mxos_rtos_unlock_mutex( mxos_mutex_t* mutex );
+merr_t mos_mutex_unlock( mos_mutex_id_t id );
 
 
 /** @brief    De-initialise a mutex
   *
-  * @Details  Deletes a mutex created with @ref mxos_rtos_init_mutex
+  * @Details  Deletes a mutex created with @ref mos_mutex_new
   *
   * @param    mutex : a pointer to the mutex handle
   *
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-merr_t mxos_rtos_deinit_mutex( mxos_mutex_t* mutex );
+merr_t mos_mutex_delete( mos_mutex_id_t id );
 /**
   * @}
   */
@@ -685,7 +685,7 @@ int UnSetTimer(void (*psysTimerHandler)(void));
 /** @brief    Initialize an endpoint for a RTOS event, a file descriptor
   *           will be created, can be used for select
   *
-  * @param    event_handle : mos_semphr_id_t, mxos_mutex_t or mxos_queue_t
+  * @param    event_handle : mos_semphr_id_t, mos_mutex_id_t or mxos_queue_t
   *
   * @retval   On success, a file descriptor for RTOS event is returned.
   *           On error, -1 is returned.

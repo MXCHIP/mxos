@@ -32,12 +32,12 @@ system_context_t *system_context( void )
 static void mxosNotify_DHCPCompleteHandler(IPStatusTypedef *pnet, system_context_t * const inContext)
 {
   require(inContext, exit);
-  mxos_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+  mos_mutex_lock(inContext->flashContentInRam_mutex);
   strcpy((char *)inContext->mxosStatus.localIp, pnet->ip);
   strcpy((char *)inContext->mxosStatus.netMask, pnet->mask);
   strcpy((char *)inContext->mxosStatus.gateWay, pnet->gate);
   strcpy((char *)inContext->mxosStatus.dnsServer, pnet->dns);
-  mxos_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+  mos_mutex_unlock(inContext->flashContentInRam_mutex);
 exit:
   return;
 }
@@ -98,7 +98,7 @@ static void mxosNotify_WiFIParaChangedHandler(apinfo_adv_t *ap_info, char *key, 
 {
   bool _needsUpdate = false;
   require(inContext, exit);
-  mxos_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+  mos_mutex_lock(inContext->flashContentInRam_mutex);
   if(strncmp(inContext->flashContentInRam.mxosSystemConfig.ssid, ap_info->ssid, maxSsidLen)!=0){
     strncpy(inContext->flashContentInRam.mxosSystemConfig.ssid, ap_info->ssid, maxSsidLen);
     _needsUpdate = true;
@@ -133,7 +133,7 @@ static void mxosNotify_WiFIParaChangedHandler(apinfo_adv_t *ap_info, char *key, 
   
   if(_needsUpdate== true)  
     mxos_system_context_update( &inContext->flashContentInRam );
-  mxos_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+  mos_mutex_unlock(inContext->flashContentInRam_mutex);
   
 exit:
   return;
@@ -170,7 +170,7 @@ void system_connect_wifi_normal( system_context_t * const inContext)
   network_InitTypeDef_adv_st wNetConfig;
   memset(&wNetConfig, 0x0, sizeof(network_InitTypeDef_adv_st));
   
-  mxos_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+  mos_mutex_lock(inContext->flashContentInRam_mutex);
   strncpy((char*)wNetConfig.ap_info.ssid, inContext->flashContentInRam.mxosSystemConfig.ssid, maxSsidLen);
   wNetConfig.ap_info.security = SECURITY_TYPE_AUTO;
   memcpy(wNetConfig.key, inContext->flashContentInRam.mxosSystemConfig.user_key, maxKeyLen);
@@ -181,7 +181,7 @@ void system_connect_wifi_normal( system_context_t * const inContext)
   strncpy((char*)wNetConfig.gateway_ip_addr, inContext->flashContentInRam.mxosSystemConfig.gateWay, maxIpLen);
   strncpy((char*)wNetConfig.dnsServer_ip_addr, inContext->flashContentInRam.mxosSystemConfig.dnsServer, maxIpLen);
   wNetConfig.wifi_retry_interval = 100;
-  mxos_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+  mos_mutex_unlock(inContext->flashContentInRam_mutex);
 
   system_log("connect to %s.....", wNetConfig.ap_info.ssid);
   mxosWlanStartAdv(&wNetConfig);
@@ -192,7 +192,7 @@ void system_connect_wifi_fast( system_context_t * const inContext)
   network_InitTypeDef_adv_st wNetConfig;
   memset(&wNetConfig, 0x0, sizeof(network_InitTypeDef_adv_st));
   
-  mxos_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+  mos_mutex_lock(inContext->flashContentInRam_mutex);
   strncpy((char*)wNetConfig.ap_info.ssid, inContext->flashContentInRam.mxosSystemConfig.ssid, maxSsidLen);
   memcpy(wNetConfig.ap_info.bssid, inContext->flashContentInRam.mxosSystemConfig.bssid, 6);
   wNetConfig.ap_info.channel = inContext->flashContentInRam.mxosSystemConfig.channel;
@@ -207,7 +207,7 @@ void system_connect_wifi_fast( system_context_t * const inContext)
   strncpy((char*)wNetConfig.net_mask, inContext->flashContentInRam.mxosSystemConfig.netMask, maxIpLen);
   strncpy((char*)wNetConfig.gateway_ip_addr, inContext->flashContentInRam.mxosSystemConfig.gateWay, maxIpLen);
   strncpy((char*)wNetConfig.dnsServer_ip_addr, inContext->flashContentInRam.mxosSystemConfig.dnsServer, maxIpLen);
-  mxos_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+  mos_mutex_unlock(inContext->flashContentInRam_mutex);
 
   wNetConfig.wifi_retry_interval = 100;
   system_log("Connect to %s.....", wNetConfig.ap_info.ssid);

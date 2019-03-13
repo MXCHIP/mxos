@@ -87,7 +87,7 @@ static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_contex
     require_action_string( nwkpara, exit, err = kTimeoutErr, "EasyLink Timeout or terminated" );
 
     /* Store SSID and KEY*/
-    mxos_rtos_lock_mutex( &inContext->flashContentInRam_mutex );
+    mos_mutex_lock(inContext->flashContentInRam_mutex );
     memcpy( inContext->flashContentInRam.mxosSystemConfig.ssid, nwkpara->wifi_ssid, maxSsidLen );
     memset( inContext->flashContentInRam.mxosSystemConfig.bssid, 0x0, 6 );
     memcpy( inContext->flashContentInRam.mxosSystemConfig.user_key, nwkpara->wifi_key, maxKeyLen );
@@ -95,7 +95,7 @@ static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_contex
     memcpy( inContext->flashContentInRam.mxosSystemConfig.key, nwkpara->wifi_key, maxKeyLen );
     inContext->flashContentInRam.mxosSystemConfig.keyLength = strlen( nwkpara->wifi_key );
     inContext->flashContentInRam.mxosSystemConfig.dhcpEnable = true;
-    mxos_rtos_unlock_mutex( &inContext->flashContentInRam_mutex );
+    mos_mutex_unlock(inContext->flashContentInRam_mutex );
     system_log("Get SSID: %s, Key: %s", inContext->flashContentInRam.mxosSystemConfig.ssid, inContext->flashContentInRam.mxosSystemConfig.user_key);
 
     source = (mxos_config_source_t) nwkpara->wifi_retry_interval;
@@ -148,7 +148,7 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
     ipInfoCount = (datalen - index) / sizeof(uint32_t);
     require_action( ipInfoCount >= 1, exit, err = kParamErr );
 
-    mxos_rtos_lock_mutex( &inContext->flashContentInRam_mutex );
+    mos_mutex_lock(inContext->flashContentInRam_mutex );
 
     if ( ipInfoCount == 1 )
     { //Use DHCP to obtain local ip address
@@ -169,7 +169,7 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
         system_log("Get auth info: %s, EasyLink identifier: %lx, local IP info:%s %s %s %s ", data, easylink_id, inContext->flashContentInRam.mxosSystemConfig.localIp,
             inContext->flashContentInRam.mxosSystemConfig.netMask, inContext->flashContentInRam.mxosSystemConfig.gateWay,inContext->flashContentInRam.mxosSystemConfig.dnsServer);
     }
-    mxos_rtos_unlock_mutex( &inContext->flashContentInRam_mutex );
+    mos_mutex_unlock(inContext->flashContentInRam_mutex );
     source = CONFIG_BY_EASYLINK_V2;
 
     exit:

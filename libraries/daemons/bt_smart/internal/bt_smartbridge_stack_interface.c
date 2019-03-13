@@ -83,8 +83,7 @@ merr_t smartbridge_bt_interface_initialize( void )
 
     bt_smartbridge_log( "Initializing Bluetooth Interface..." );
 
-    result = mxos_rtos_init_mutex( &smartbridge_subprocedure.mutex );
-    if ( result  != MXOS_BT_SUCCESS )
+    if ((smartbridge_subprocedure.mutex = mos_mutex_new( )) == NULL)
     {
         bt_smartbridge_log( "Error creating mutex" );
         return result;
@@ -106,7 +105,7 @@ merr_t smartbridge_bt_interface_deinitialize( void )
     bt_smartbridge_log( "Deinitializing Bluetooth Interface..." );
 
     subprocedure_reset( &smartbridge_subprocedure );
-    mxos_rtos_deinit_mutex( &smartbridge_subprocedure.mutex );
+    mos_mutex_delete( smartbridge_subprocedure.mutex );
     mos_semphr_delete(smartbridge_subprocedure.done_semaphore );
 
     return MXOS_BT_SUCCESS;

@@ -77,7 +77,7 @@ static const mxos_uart_config_t stdio_uart_config =
 static volatile ring_buffer_t stdio_rx_buffer;
 static volatile uint8_t       stdio_rx_data[STDIO_BUFFER_SIZE];
 
-mxos_mutex_t MXOS_WEAK stdio_tx_mutex = NULL;
+mos_mutex_id_t MXOS_WEAK stdio_tx_mutex = NULL;
 #endif /* #ifndef MXOS_DISABLE_STDIO */
 
 
@@ -103,7 +103,7 @@ void mxos_main( void )
 
 #ifndef MXOS_DISABLE_STDIO
     if( stdio_tx_mutex == NULL )
-        mxos_rtos_init_mutex( &stdio_tx_mutex );
+        stdio_tx_mutex = mos_mutex_new( );
 
     ring_buffer_init( (ring_buffer_t*) &stdio_rx_buffer, (uint8_t*) stdio_rx_data, STDIO_BUFFER_SIZE );
     mxos_stdio_uart_init( &stdio_uart_config, (ring_buffer_t*) &stdio_rx_buffer );

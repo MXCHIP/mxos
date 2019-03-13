@@ -127,21 +127,23 @@ merr_t mos_semphr_delete( mos_semphr_id_t id )
 {
     return lib_api_p->mos_semphr_delete(&id);
 }
-merr_t mxos_rtos_init_mutex( mxos_mutex_t* mutex )
+mos_mutex_id_t mos_mutex_new( void )
 {
-    return lib_api_p->mxos_rtos_init_mutex( mutex );
+    mos_mutex_id_t id = NULL;
+    lib_api_p->mos_mutex_new( &id );
+    return id;
 }
-merr_t mxos_rtos_lock_mutex( mxos_mutex_t* mutex )
+merr_t mos_mutex_lock( mos_mutex_id_t id )
 {
-    return lib_api_p->mxos_rtos_lock_mutex( mutex );
+    return lib_api_p->mos_mutex_lock( &id );
 }
-merr_t mxos_rtos_unlock_mutex( mxos_mutex_t* mutex )
+merr_t mos_mutex_unlock( mos_mutex_id_t id )
 {
-    return lib_api_p->mxos_rtos_unlock_mutex( mutex );
+    return lib_api_p->mos_mutex_unlock( &id );
 }
-merr_t mxos_rtos_deinit_mutex( mxos_mutex_t* mutex )
+merr_t mos_mutex_delete( mos_mutex_id_t id )
 {
-    return lib_api_p->mxos_rtos_deinit_mutex( mutex );
+    return lib_api_p->mos_mutex_delete( &id );
 }
 merr_t mxos_rtos_init_queue( mxos_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages )
 {

@@ -49,7 +49,7 @@ static bool smartbridge_socket_manager_find_socket_by_address_callback ( linked_
 
 /* Socket Management Globals */
 static linked_list_t connected_socket_list;
-static mxos_mutex_t  connected_socket_list_mutex;
+static mos_mutex_id_t  connected_socket_list_mutex;
 static uint8_t       max_number_of_connections = 0;
 
 /******************************************************
@@ -67,8 +67,7 @@ merr_t bt_smartbridge_socket_manager_init( void )
         return result;
     }
 
-    result = mxos_rtos_init_mutex( &connected_socket_list_mutex );
-    if ( result != kNoErr )
+    if ((connected_socket_list_mutex = mos_mutex_new( )) = NULL)
     {
         WPRINT_LIB_INFO( ( "Error creating mutex\n" ) );
         return result;
@@ -81,7 +80,7 @@ merr_t bt_smartbridge_socket_manager_init( void )
 
 merr_t bt_smartbridge_socket_manager_deinit( void )
 {
-    mxos_rtos_deinit_mutex( &connected_socket_list_mutex );
+    mos_mutex_delete( connected_socket_list_mutex );
     linked_list_deinit( &connected_socket_list );
     max_number_of_connections = 0;
     return MXOS_BT_SUCCESS;
@@ -115,12 +114,12 @@ merr_t bt_smartbridge_socket_manager_insert_socket( mxos_bt_smartbridge_socket_t
     }
 
     /* Lock protection */
-    mxos_rtos_lock_mutex( &connected_socket_list_mutex );
+    mos_mutex_lock(connected_socket_list_mutex );
 
     result = linked_list_insert_node_at_rear( &connected_socket_list, &socket->node );
 
     /* Unlock protection */
-    mxos_rtos_unlock_mutex( &connected_socket_list_mutex );
+    mos_mutex_unlock(connected_socket_list_mutex );
 
     return result;
 }
@@ -140,7 +139,7 @@ merr_t bt_smartbridge_socket_manager_remove_socket( uint16_t connection_handle, 
     }
 
     /* Lock protection */
-    mxos_rtos_lock_mutex( &connected_socket_list_mutex );
+    mos_mutex_lock(connected_socket_list_mutex );
 
     result = linked_list_find_node( &connected_socket_list, smartbridge_socket_manager_find_socket_by_handle_callback, (void*)user_data, &node_found );
     if ( result == MXOS_BT_SUCCESS )
@@ -154,7 +153,7 @@ merr_t bt_smartbridge_socket_manager_remove_socket( uint16_t connection_handle, 
     }
 
     /* Unlock protection */
-    mxos_rtos_unlock_mutex( &connected_socket_list_mutex );
+    mos_mutex_unlock(connected_socket_list_mutex );
 
     return result;
 }
@@ -174,7 +173,7 @@ merr_t bt_smartbridge_socket_manager_find_socket_by_handle( uint16_t connection_
     }
 
     /* Lock protection */
-    mxos_rtos_lock_mutex( &connected_socket_list_mutex );
+    mos_mutex_lock(connected_socket_list_mutex );
 
     result = linked_list_find_node( &connected_socket_list, smartbridge_socket_manager_find_socket_by_handle_callback, (void*)user_data, &node_found );
 
@@ -184,7 +183,7 @@ merr_t bt_smartbridge_socket_manager_find_socket_by_handle( uint16_t connection_
     }
 
     /* Unlock protection */
-    mxos_rtos_unlock_mutex( &connected_socket_list_mutex );
+    mos_mutex_unlock(connected_socket_list_mutex );
 
     return result;
 }
@@ -203,7 +202,7 @@ merr_t bt_smartbridge_socket_manager_find_socket_by_address( const mxos_bt_devic
     }
 
     /* Lock protection */
-    mxos_rtos_lock_mutex( &connected_socket_list_mutex );
+    mos_mutex_lock(connected_socket_list_mutex );
 
     result = linked_list_find_node( &connected_socket_list, smartbridge_socket_manager_find_socket_by_address_callback, (void*)address, &node_found );
 
@@ -213,7 +212,7 @@ merr_t bt_smartbridge_socket_manager_find_socket_by_address( const mxos_bt_devic
     }
 
     /* Unlock protection */
-    mxos_rtos_unlock_mutex( &connected_socket_list_mutex );
+    mos_mutex_unlock(connected_socket_list_mutex );
 
     return result;
 }

@@ -88,10 +88,10 @@
  */
 
 static ble_access_device_t  ble_access_devices[MAX_CONCURRENT_CONNECTIONS];  
-static mxos_mutex_t         ble_access_dev_mutex;
+static mos_mutex_id_t         ble_access_dev_mutex;
 
 static linked_list_t        ble_access_connecting_device_list; 
-static mxos_mutex_t         ble_access_conn_dev_list_mutex;
+static mos_mutex_id_t         ble_access_conn_dev_list_mutex;
 
 static mos_worker_thread_id_t ble_access_worker_thread;
 static event_handler_t      ble_access_timer_evt;
@@ -191,7 +191,7 @@ void ble_access_initialize_devices(void)
         err = mxos_bt_smartbridge_create_socket(&ble_access_devices[idx].socket);
         require_noerr_string(err, exit, "Create Sockets failed");
     }
-    mxos_rtos_init_mutex(&ble_access_dev_mutex);
+    ble_access_dev_mutex = mos_mutex_new();
     
 exit:
     return;
@@ -205,7 +205,7 @@ void ble_access_deinit_devices(void)
     for (idx = 0; idx < ble_access_array_size(ble_access_devices); idx++) {
         mxos_bt_smartbridge_delete_socket(&ble_access_devices[idx].socket);
     }
-    mxos_rtos_deinit_mutex(&ble_access_dev_mutex);
+    mos_mutex_delete(ble_access_dev_mutex);
 }
 
 ble_access_device_t *ble_access_find_device_by_address(const mxos_bt_device_address_t address)
@@ -214,7 +214,7 @@ ble_access_device_t *ble_access_find_device_by_address(const mxos_bt_device_addr
     ble_access_device_t     *dev = NULL;
     uint32_t                 device_id = ble_access_calculate_device_id(address);
 
-    mxos_rtos_lock_mutex(&ble_access_dev_mutex);
+    mos_mutex_lock(ble_access_dev_mutex);
     for (idx = 0; idx < ble_access_array_size(ble_access_devices); idx++) {
         if (ble_access_devices[idx].used && device_id == ble_access_devices[idx].device_id) {
             break;
@@ -223,7 +223,7 @@ ble_access_device_t *ble_access_find_device_by_address(const mxos_bt_device_addr
     if (idx < ble_access_array_size(ble_access_devices)) {
         dev = &ble_access_devices[idx];
     }
-    mxos_rtos_unlock_mutex(&ble_access_dev_mutex);
+    mos_mutex_unlock(ble_access_dev_mutex);
     
     return dev;
 }
@@ -233,15 +233,15 @@ ble_access_device_t *ble_access_get_free_device(void)
 {
     uint8_t idx = 0;
 
-    mxos_rtos_lock_mutex(&ble_access_dev_mutex);
+    mos_mutex_lock(ble_access_dev_mutex);
     for (idx = 0; idx < ble_access_array_size(ble_access_devices); idx++) {
         if (!ble_access_devices[idx].used) {
             ble_access_devices[idx].used = TRUE;
-            mxos_rtos_unlock_mutex(&ble_access_dev_mutex);
+            mos_mutex_unlock(ble_access_dev_mutex);
             return &ble_access_devices[idx];
         }
     }
-    mxos_rtos_unlock_mutex(&ble_access_dev_mutex);
+    mos_mutex_unlock(ble_access_dev_mutex);
 
     return NULL;
 }
@@ -250,7 +250,7 @@ void ble_access_release_device(mxos_bool_t free, const ble_access_device_t *devi
 {
     uint8_t idx = 0;
 
-    mxos_rtos_lock_mutex(&ble_access_dev_mutex);
+    mos_mutex_lock(ble_access_dev_mutex);
     if (device != NULL) {
         for (idx = 0; 
              idx < ble_access_array_size(ble_access_devices) && device != &ble_access_devices[idx]; 
@@ -260,7 +260,7 @@ void ble_access_release_device(mxos_bool_t free, const ble_access_device_t *devi
             ble_access_devices[idx].used = FALSE;
         }
     }
-    mxos_rtos_unlock_mutex(&ble_access_dev_mutex);
+    mos_mutex_unlock(ble_access_dev_mutex);
 }
 
 /*
@@ -459,7 +459,7 @@ mxos_bool_t ble_access_uuid_compare(const ble_access_uuid_t *uuid1, const ble_ac
 
 merr_t ble_access_connect_list_init( void )
 {
-    mxos_rtos_init_mutex(&ble_access_conn_dev_list_mutex);
+    ble_access_conn_dev_list_mutex = mos_mutex_new();
     return linked_list_init(&ble_access_connecting_device_list);
 }
 
@@ -477,7 +477,7 @@ merr_t ble_access_connect_list_deinit(void)
         }
     }
     
-    return mxos_rtos_deinit_mutex(&ble_access_conn_dev_list_mutex);
+    return mos_mutex_delete(ble_access_conn_dev_list_mutex);
 }
 
 mxos_bool_t compare_device_by_address(linked_list_node_t* node_to_compare, void* user_data)
@@ -499,12 +499,12 @@ merr_t ble_access_connect_list_add(const mxos_bt_smart_device_t *remote_device, 
 
     require_action(remote_device != NULL, exit, err = kParamErr);
 
-    mxos_rtos_lock_mutex(&ble_access_conn_dev_list_mutex);
+    mos_mutex_lock(ble_access_conn_dev_list_mutex);
     err = linked_list_find_node(&ble_access_connecting_device_list,
                                  (linked_list_compare_callback_t)compare_device_by_address,
                                  (void *)remote_device->address,
                                  (linked_list_node_t**)&device_found);
-    mxos_rtos_unlock_mutex(&ble_access_conn_dev_list_mutex);
+    mos_mutex_unlock(ble_access_conn_dev_list_mutex);
     
     if (err != kNotFoundErr) {
         err = kAlreadyInUseErr;
@@ -520,9 +520,9 @@ merr_t ble_access_connect_list_add(const mxos_bt_smart_device_t *remote_device, 
     new_device->reported = is_reported;
     memcpy(&new_device->device, remote_device, sizeof(mxos_bt_smart_device_t));
 
-    mxos_rtos_lock_mutex(&ble_access_conn_dev_list_mutex);
+    mos_mutex_lock(ble_access_conn_dev_list_mutex);
     err = linked_list_insert_node_at_rear(&ble_access_connecting_device_list, &new_device->this_node);
-    mxos_rtos_unlock_mutex(&ble_access_conn_dev_list_mutex);
+    mos_mutex_unlock(ble_access_conn_dev_list_mutex);
 
 exit:
     return err;
@@ -535,7 +535,7 @@ merr_t ble_access_connect_list_set_report(const mxos_bt_smart_device_t *device, 
 
     require_action(device != NULL, exit, err = kParamErr);
 
-    mxos_rtos_lock_mutex(&ble_access_conn_dev_list_mutex);
+    mos_mutex_lock(ble_access_conn_dev_list_mutex);
     err = linked_list_find_node(&ble_access_connecting_device_list,
                                 (linked_list_compare_callback_t)compare_device_by_address,
                                 (void *)device->address,
@@ -543,7 +543,7 @@ merr_t ble_access_connect_list_set_report(const mxos_bt_smart_device_t *device, 
     if (err == kNoErr) {
         device_found->reported = is_reported;
     }
-    mxos_rtos_unlock_mutex(&ble_access_conn_dev_list_mutex);
+    mos_mutex_unlock(ble_access_conn_dev_list_mutex);
 
 exit:
     return err;
@@ -556,9 +556,9 @@ merr_t ble_access_connect_list_get(mxos_bt_smart_device_t** device, mxos_bool_t 
 
     require_action(device != NULL, exit, err = kParamErr);
 
-    mxos_rtos_lock_mutex(&ble_access_conn_dev_list_mutex);
+    mos_mutex_lock(ble_access_conn_dev_list_mutex);
     err = linked_list_get_front_node(&ble_access_connecting_device_list, (linked_list_node_t **)&current_device);
-    mxos_rtos_unlock_mutex(&ble_access_conn_dev_list_mutex);
+    mos_mutex_unlock(ble_access_conn_dev_list_mutex);
     
     if (err != kNoErr) goto exit;
 
@@ -576,12 +576,12 @@ merr_t ble_access_connect_list_get_by_address(mxos_bt_smart_device_t **device, m
 
     require_action(device != NULL && address != NULL, exit, err = kParamErr);
 
-    mxos_rtos_lock_mutex(&ble_access_conn_dev_list_mutex);
+    mos_mutex_lock(ble_access_conn_dev_list_mutex);
     err = linked_list_find_node(&ble_access_connecting_device_list,
                                 (linked_list_compare_callback_t)compare_device_by_address,
                                 (void *)address,
                                 (linked_list_node_t **)&current_device);
-    mxos_rtos_unlock_mutex(&ble_access_conn_dev_list_mutex);
+    mos_mutex_unlock(ble_access_conn_dev_list_mutex);
     
     if (err != kNoErr) goto exit;
 
@@ -597,12 +597,12 @@ merr_t ble_access_connect_list_find_by_address(const mxos_bt_device_address_t ad
     merr_t err = kNoErr;
     ble_access_connecting_device_t *current_device;
 
-    mxos_rtos_lock_mutex(&ble_access_conn_dev_list_mutex);
+    mos_mutex_lock(ble_access_conn_dev_list_mutex);
     err = linked_list_find_node(&ble_access_connecting_device_list,
                                 (linked_list_compare_callback_t)compare_device_by_address,
                                 (void *)address,
                                 (linked_list_node_t **)&current_device);
-    mxos_rtos_unlock_mutex(&ble_access_conn_dev_list_mutex);
+    mos_mutex_unlock(ble_access_conn_dev_list_mutex);
     return err;
 }
 
@@ -611,7 +611,7 @@ merr_t ble_access_connect_list_remove(mxos_bt_smart_device_t *device)
     merr_t err = kNoErr;
     ble_access_connecting_device_t* current_device;
 
-    mxos_rtos_lock_mutex(&ble_access_conn_dev_list_mutex);
+    mos_mutex_lock(ble_access_conn_dev_list_mutex);
     err = linked_list_find_node(&ble_access_connecting_device_list,
                                  (linked_list_compare_callback_t)compare_device_by_address,
                                  device->address,
@@ -623,7 +623,7 @@ merr_t ble_access_connect_list_remove(mxos_bt_smart_device_t *device)
 
     free(current_device);
 exit:
-    mxos_rtos_unlock_mutex(&ble_access_conn_dev_list_mutex);
+    mos_mutex_unlock(ble_access_conn_dev_list_mutex);
     return err;
 }
 
