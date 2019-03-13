@@ -172,15 +172,15 @@ bool mxos_rtos_is_queue_full( mos_queue_id_t* queue )
     return lib_api_p->mxos_rtos_is_queue_full( queue );
 }
 
-merr_t mxos_rtos_init_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
+merr_t mos_timer_new( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
 {
     return lib_api_p->mxos_init_timer( timer, time_ms, function, arg );
 }
-merr_t mxos_rtos_start_timer( mxos_timer_t* timer )
+merr_t mos_timer_start( mxos_timer_t* timer )
 {
     return lib_api_p->mxos_start_timer( timer );
 }
-merr_t mxos_rtos_stop_timer( mxos_timer_t* timer )
+merr_t mos_timer_stop( mxos_timer_t* timer )
 {
     return lib_api_p->mxos_stop_timer( timer );
 }
@@ -188,7 +188,7 @@ merr_t mxos_rtos_reload_timer( mxos_timer_t* timer )
 {
     return lib_api_p->mxos_reload_timer( timer );
 }
-merr_t mxos_rtos_deinit_timer( mxos_timer_t* timer )
+merr_t mos_timer_delete( mxos_timer_t* timer )
 {
     return lib_api_p->mxos_deinit_timer( timer );
 }
@@ -212,7 +212,7 @@ int mxos_delete_event_fd(int fd)
  *
  * @returns Time in milliseconds since RTOS started.
  */
-mxos_time_t mxos_rtos_get_time( void )
+mxos_time_t mos_time( void )
 {
     return lib_api_p->mxos_get_time();
 }

@@ -28,7 +28,7 @@ merr_t mico_rtos_deinit_semaphore(mos_semphr_id_t *id)
 
 uint32_t mico_rtos_get_time(void)
 {
-    return mxos_rtos_get_time();
+    return mos_time();
 }
 
 merr_t mico_rtos_init_mutex(mos_mutex_id_t *mutex)

@@ -69,10 +69,10 @@ char expired(Timer* timer)
 
   long left = 0;
   if (timer->over_flow) {
-    left = 0xFFFFFFFF - mxos_rtos_get_time() + timer->end_time;
+    left = 0xFFFFFFFF - mos_time() + timer->end_time;
   }
   else {
-    left = timer->end_time - mxos_rtos_get_time();
+    left = timer->end_time - mos_time();
   }
 
   return (left < 0);
@@ -81,7 +81,7 @@ char expired(Timer* timer)
 
 void countdown_ms(Timer* timer, unsigned int timeout)
 {
-  uint32_t current_time = mxos_rtos_get_time();
+  uint32_t current_time = mos_time();
   timer->end_time = current_time + timeout;
   if(timer->end_time < current_time) {
     timer->over_flow = true;
@@ -91,7 +91,7 @@ void countdown_ms(Timer* timer, unsigned int timeout)
 
 void countdown(Timer* timer, unsigned int timeout)
 {
-  uint32_t current_time = mxos_rtos_get_time();
+  uint32_t current_time = mos_time();
   timer->end_time = current_time + (timeout * 1000);
   if(timer->end_time < current_time) {
     timer->over_flow = true;
@@ -105,10 +105,10 @@ int left_ms(Timer* timer)
 
   long left = 0;
   if (timer->over_flow) {
-    left = 0xFFFFFFFF - mxos_rtos_get_time() + timer->end_time;
+    left = 0xFFFFFFFF - mos_time() + timer->end_time;
   }
   else {
-    left = timer->end_time - mxos_rtos_get_time();
+    left = timer->end_time - mos_time();
   }
 
   return (left < 0) ? 0 : left;

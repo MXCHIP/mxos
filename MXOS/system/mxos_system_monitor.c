@@ -55,7 +55,7 @@ void mxos_system_monitor_thread_main( void *arg )
   while (1)
   {
     int a;
-    uint32_t current_time = mxos_rtos_get_time();
+    uint32_t current_time = mos_time();
     
     for (a = 0; a < MAXIMUM_NUMBER_OF_SYSTEM_MONITORS; ++a)
     {
@@ -84,7 +84,7 @@ merr_t mxos_system_monitor_register(mxos_system_monitor_t* system_monitor, uint3
   {
     if (system_monitors[a] == NULL)
     {
-      system_monitor->last_update = mxos_rtos_get_time();
+      system_monitor->last_update = mos_time();
       system_monitor->longest_permitted_delay = initial_permitted_delay;
       system_monitors[a] = system_monitor;
       return kNoErr;
@@ -96,7 +96,7 @@ merr_t mxos_system_monitor_register(mxos_system_monitor_t* system_monitor, uint3
 
 merr_t mxos_system_monitor_update(mxos_system_monitor_t* system_monitor, uint32_t permitted_delay)
 {
-  uint32_t current_time = mxos_rtos_get_time();
+  uint32_t current_time = mos_time();
   /* Update the system monitor if it hasn't already passed it's permitted delay */
   if ((current_time - system_monitor->last_update) <= system_monitor->longest_permitted_delay)
   {
@@ -128,8 +128,8 @@ merr_t mxos_system_monitor_daemen_start( void )
   /* Register first monitor */
   err = mxos_system_monitor_register(&mxos_monitor, APPLICATION_WATCHDOG_TIMEOUT_SECONDS*1000);
   require_noerr( err, exit );
-  mxos_rtos_init_timer(&_watchdog_reload_timer,APPLICATION_WATCHDOG_TIMEOUT_SECONDS*1000/2, _watchdog_reload_timer_handler, NULL);
-  mxos_rtos_start_timer(&_watchdog_reload_timer);
+  mos_timer_new(&_watchdog_reload_timer,APPLICATION_WATCHDOG_TIMEOUT_SECONDS*1000/2, _watchdog_reload_timer_handler, NULL);
+  mos_timer_start(&_watchdog_reload_timer);
 exit:
   return err;
 }

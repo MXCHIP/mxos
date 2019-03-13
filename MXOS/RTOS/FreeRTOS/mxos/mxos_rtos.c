@@ -639,7 +639,7 @@ static void timer_callback( xTimerHandle handle )
     }
 }
 
-merr_t mxos_rtos_init_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
+merr_t mos_timer_new( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
 {
     check_string(timer != NULL, "Bad args");
 
@@ -656,7 +656,7 @@ merr_t mxos_rtos_init_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handle
 }
 
 
-merr_t mxos_rtos_start_timer( mxos_timer_t* timer )
+merr_t mos_timer_start( mxos_timer_t* timer )
 {
     signed portBASE_TYPE result;
 
@@ -675,7 +675,7 @@ merr_t mxos_rtos_start_timer( mxos_timer_t* timer )
     return kNoErr;
 }
 
-merr_t mxos_rtos_stop_timer( mxos_timer_t* timer )
+merr_t mos_timer_stop( mxos_timer_t* timer )
 {
     signed portBASE_TYPE result;
 
@@ -713,7 +713,7 @@ merr_t mxos_rtos_reload_timer( mxos_timer_t* timer )
     return kNoErr;
 }
 
-merr_t mxos_rtos_deinit_timer( mxos_timer_t* timer )
+merr_t mos_timer_delete( mxos_timer_t* timer )
 {
     if ( xTimerDelete( timer->handle, MXOS_WAIT_FOREVER ) != pdPASS )
     {
@@ -724,7 +724,7 @@ merr_t mxos_rtos_deinit_timer( mxos_timer_t* timer )
 }
 
 
-bool mxos_rtos_is_timer_running( mxos_timer_t* timer )
+bool mos_timer_is_runing( mxos_timer_t* timer )
 {
     return ( xTimerIsTimerActive( timer->handle ) != 0 ) ? true : false;
 }
@@ -804,7 +804,7 @@ void mos_thread_resume(mos_thread_id_t id)
  *
  * @returns Time in milliseconds since RTOS started.
  */
-mxos_time_t mxos_rtos_get_time( void )
+mxos_time_t mos_time( void )
 {
     return (mxos_time_t) ( xTaskGetTickCount( ) * ms_to_tick_ratio );
 }

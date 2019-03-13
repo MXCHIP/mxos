@@ -111,10 +111,10 @@ extern mos_worker_thread_id_t mxos_worker_thread;
 #define mxos_thread_sleep                 mxos_rtos_thread_sleep
 #define mxos_thread_msleep                mxos_rtos_thread_msleep
 #define mxos_rtos_reload_timer            mxos_reload_timer
-#define mxos_rtos_deinit_timer            mxos_deinit_timer
-#define mxos_rtos_is_timer_running        mxos_is_timer_running
-#define mxos_rtos_init_event_fd           mxos_create_event_fd
-#define mxos_rtos_deinit_event_fd         mxos_delete_event_fd
+#define mos_timer_delete            mxos_deinit_timer
+#define mos_timer_is_runing        mxos_is_timer_running
+#define mos_event_fd_new           mxos_create_event_fd
+#define mos_event_fd_delete         mxos_delete_event_fd
 
 /** @addtogroup MXOS_Core_APIs
   * @{
@@ -600,7 +600,7 @@ merr_t mxos_rtos_deregister_timed_event( mxos_timed_event_t* event_object );
   *
   * @returns  Time in milliseconds since RTOS started.
   */
-uint32_t mxos_rtos_get_time(void);
+uint32_t mos_time(void);
 
 
 /** 
@@ -617,31 +617,31 @@ uint32_t mxos_rtos_get_time(void);
   * @return    kNoErr        : on success.
   * @return    kGeneralErr   : if an error occurred
   */
-merr_t mxos_rtos_init_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg );
+merr_t mos_timer_new( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg );
 
 
 /** @brief    Starts a RTOS timer running
   *
-  * @note     Timer must have been previously initialised with @ref mxos_rtos_init_timer
+  * @note     Timer must have been previously initialised with @ref mos_timer_new
   *
   * @param    timer    : a pointer to the timer handle to start
   *
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-merr_t mxos_rtos_start_timer( mxos_timer_t* timer );
+merr_t mos_timer_start( mxos_timer_t* timer );
 
 
 /** @brief    Stops a running RTOS timer
   *
-  * @note     Timer must have been previously started with @ref mxos_rtos_init_timer
+  * @note     Timer must have been previously started with @ref mos_timer_new
   *
   * @param    timer    : a pointer to the timer handle to stop
   *
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-merr_t mxos_rtos_stop_timer( mxos_timer_t* timer );
+merr_t mos_timer_stop( mxos_timer_t* timer );
 
 
 /** @brief    Reloads a RTOS timer that has expired
@@ -659,14 +659,14 @@ merr_t mxos_rtos_reload_timer( mxos_timer_t* timer );
 
 /** @brief    De-initialise a RTOS timer
   *
-  * @note     Deletes a RTOS timer created with @ref mxos_rtos_init_timer
+  * @note     Deletes a RTOS timer created with @ref mos_timer_new
   *
   * @param    timer : a pointer to the RTOS timer handle
   *
   * @return   kNoErr        : on success.
   * @return   kGeneralErr   : if an error occurred
   */
-merr_t mxos_rtos_deinit_timer( mxos_timer_t* timer );
+merr_t mos_timer_delete( mxos_timer_t* timer );
 
 
 /** @brief    Check if an RTOS timer is running
@@ -676,7 +676,7 @@ merr_t mxos_rtos_deinit_timer( mxos_timer_t* timer );
   * @return   true        : if running.
   * @return   false       : if not running
   */
-bool mxos_rtos_is_timer_running( mxos_timer_t* timer );
+bool mos_timer_is_runing( mxos_timer_t* timer );
 
 int SetTimer(unsigned long ms, void (*psysTimerHandler)(void));
 int SetTimer_uniq(unsigned long ms, void (*psysTimerHandler)(void));
@@ -690,7 +690,7 @@ int UnSetTimer(void (*psysTimerHandler)(void));
   * @retval   On success, a file descriptor for RTOS event is returned.
   *           On error, -1 is returned.
   */
-int mxos_rtos_init_event_fd(mxos_event_t event_handle);
+int mos_event_fd_new(mxos_event_t event_handle);
 
 /** @brief    De-initialise an endpoint created from a RTOS event
   *
@@ -698,7 +698,7 @@ int mxos_rtos_init_event_fd(mxos_event_t event_handle);
   *
   * @retval   0 for success. On error, -1 is returned.
   */
-int mxos_rtos_deinit_event_fd(int fd);
+int mos_event_fd_delete(int fd);
 
 /**
   * @}

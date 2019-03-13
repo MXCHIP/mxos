@@ -57,7 +57,7 @@ long long ElapsedTimeInNanoseconds(uint32_t inDiff)
 
 uint64_t UpTicks( void )
 {
-    return mxos_rtos_get_time();;
+    return mos_time();;
 }
 
 uint64_t UpTicksPerSecond( void )

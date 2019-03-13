@@ -71,7 +71,7 @@ void SysTick_Handler(void)
   platform_watchdog_kick( );
 }
 
-mxos_time_t mxos_rtos_get_time(void)
+mxos_time_t mos_time(void)
 {
     return no_os_tick;
 }

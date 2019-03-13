@@ -277,10 +277,10 @@ mxos_bool_t smartbridge_helper_timer_stop(smartbridge_helper_timer_t *timer)
     if (!timer->is_started) 
         return MXOS_FALSE;
 
-    if (mxos_rtos_is_timer_running(&timer->timer)) 
-        mxos_rtos_stop_timer(&timer->timer);
+    if (mos_timer_is_runing(&timer->timer)) 
+        mos_timer_stop(&timer->timer);
     
-    mxos_rtos_deinit_timer(&timer->timer);
+    mos_timer_delete(&timer->timer);
     
     timer->is_started = MXOS_FALSE;
     timer->one_shot = MXOS_FALSE;
@@ -299,12 +299,12 @@ mxos_bool_t smartbridge_helper_timer_start(smartbridge_helper_timer_t *timer, mx
     if (timer->is_started) 
         smartbridge_helper_timer_stop(timer);
 
-    if (mxos_rtos_init_timer(&timer->timer, ms, smartbridge_helper_timer_handler, (void *)timer) != kNoErr)
+    if (mos_timer_new(&timer->timer, ms, smartbridge_helper_timer_handler, (void *)timer) != kNoErr)
         return MXOS_FALSE;
 
-    if (mxos_rtos_start_timer(&timer->timer) != kNoErr)
+    if (mos_timer_start(&timer->timer) != kNoErr)
     {
-        mxos_rtos_deinit_timer(&timer->timer);
+        mos_timer_delete(&timer->timer);
         return MXOS_FALSE;
     }
 

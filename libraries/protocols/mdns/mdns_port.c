@@ -169,7 +169,7 @@ uint32_t mdns_time_ms(void)
 int mdns_rand_range(int n)
 {
     int r;
-    srand(mxos_rtos_get_time());
+    srand(mos_time());
     r = rand();
     return r / (RAND_MAX / n + 1);
 }
@@ -475,7 +475,7 @@ int mdns_socket_queue(uint8_t id, mos_queue_id_t **queue, int msg_size)
     {
         if ((mdns_ctrl_queue[id] = mos_queue_new(msg_size, 8)) == NULL)
             return -1;
-        mdns_ctrl_socks[id] = mxos_rtos_init_event_fd(mdns_ctrl_queue[id]);
+        mdns_ctrl_socks[id] = mos_event_fd_new(mdns_ctrl_queue[id]);
     }
 
     if (queue != NULL)

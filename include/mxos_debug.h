@@ -62,7 +62,7 @@ extern "C" {
 
     #define custom_log(N, M, ...) do {if (mxos_debug_enabled==0)break;\
                                       mos_mutex_lock(stdio_tx_mutex );\
-                                      printf("[%ld][%s: %s:%4d] " M "\r\n", mxos_rtos_get_time(), N, SHORT_FILE, __LINE__, ##__VA_ARGS__);\
+                                      printf("[%ld][%s: %s:%4d] " M "\r\n", mos_time(), N, SHORT_FILE, __LINE__, ##__VA_ARGS__);\
                                       mos_mutex_unlock(stdio_tx_mutex );}while(0==1)
 
     #define custom_print(M, ...) do {if (mxos_debug_enabled==0)break;\
@@ -73,7 +73,7 @@ extern "C" {
     #ifndef MXOS_ASSERT_INFO_DISABLE
         #define debug_print_assert(A,B,C,D,E,F) do {if (mxos_debug_enabled==0)break;\
                                                      mos_mutex_lock(stdio_tx_mutex );\
-                                                     printf("[%ld][MXOS:%s:%s:%4d] **ASSERT** %s""\r\n", mxos_rtos_get_time(), D, F, E, (C!=NULL) ? C : "" );\
+                                                     printf("[%ld][MXOS:%s:%s:%4d] **ASSERT** %s""\r\n", mos_time(), D, F, E, (C!=NULL) ? C : "" );\
                                                      mos_mutex_unlock(stdio_tx_mutex );}while(0==1)
     #else  // !MXOS_ASSERT_INFO_ENABLE
         #define debug_print_assert(A,B,C,D,E,F)

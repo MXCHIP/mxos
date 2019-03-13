@@ -210,9 +210,9 @@ merr_t mos_semphr_acquire( mos_semphr_id_t id, uint32_t timeout )
     if( noos_semaphore == NULL)
         return kNotInitializedErr;
 
-    delay_start = mxos_rtos_get_time();
+    delay_start = mos_time();
     while( noos_semaphore->count == 0){
-      if(mxos_rtos_get_time() >= delay_start + timeout_ms && timeout_ms != MXOS_NEVER_TIMEOUT){
+      if(mos_time() >= delay_start + timeout_ms && timeout_ms != MXOS_NEVER_TIMEOUT){
         return kTimeoutErr;
       }
     }
@@ -293,9 +293,9 @@ merr_t mos_mutex_delete( mos_mutex_id_t id )
  */
 merr_t mos_thread_delay( uint32_t num_ms )
 {
-    mxos_time_t start = mxos_rtos_get_time( );
+    mxos_time_t start = mos_time( );
 
-    while ( ( mxos_rtos_get_time( ) - start ) < num_ms )
+    while ( ( mos_time( ) - start ) < num_ms )
     {
         /* do nothing */
     }
@@ -350,17 +350,17 @@ bool mxos_rtos_is_queue_full( mos_queue_id_t* queue )
 }
 
 
-merr_t mxos_rtos_init_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
+merr_t mos_timer_new( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
 {
     return kUnsupportedErr;
 }
 
-merr_t mxos_rtos_start_timer( mxos_timer_t* timer )
+merr_t mos_timer_start( mxos_timer_t* timer )
 {
     return kUnsupportedErr;
 }
 
-merr_t mxos_rtos_stop_timer( mxos_timer_t* timer )
+merr_t mos_timer_stop( mxos_timer_t* timer )
 {
     return kUnsupportedErr;
 }
@@ -370,21 +370,21 @@ merr_t mxos_rtos_reload_timer( mxos_timer_t* timer )
     return kUnsupportedErr;
 }
 
-merr_t mxos_rtos_deinit_timer( mxos_timer_t* timer )
+merr_t mos_timer_delete( mxos_timer_t* timer )
 {
     return kUnsupportedErr;
 }
 
 merr_t mxos_time_get_time(mxos_time_t* time_ptr)
 {
-    mxos_time_t _time = mxos_rtos_get_time();
+    mxos_time_t _time = mos_time();
     *time_ptr = _time + mxos_time_offset;
     return kNoErr;
 }
 
 merr_t mxos_time_set_time(mxos_time_t* time_ptr)
 {
-    mxos_time_offset = *time_ptr - mxos_rtos_get_time();
+    mxos_time_offset = *time_ptr - mos_time();
     return kNoErr;
 }
 

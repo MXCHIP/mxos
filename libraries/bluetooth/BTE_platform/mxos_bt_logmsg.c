@@ -33,7 +33,7 @@ static void printlog(char *M, char * N)
     if (mxos_debug_enabled==0)
       return;
     mos_mutex_lock(stdio_tx_mutex );
-    printf("[%ld][%s] %s\r\n", mxos_rtos_get_time(), M, N);
+    printf("[%ld][%s] %s\r\n", mos_time(), M, N);
     mos_mutex_unlock(stdio_tx_mutex );
 }
 void WPRINT_BT_APP_INFO(const char * info, ...)

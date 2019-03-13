@@ -463,7 +463,7 @@ static void partShow_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, 
 
 static void uptime_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv)
 {
-    cmd_printf("UP time %ldms\r\n", mxos_rtos_get_time());
+    cmd_printf("UP time %ldms\r\n", mos_time());
 }
 
 extern void tftp_ota( void );

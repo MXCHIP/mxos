@@ -187,7 +187,7 @@ merr_t mxos_rtos_register_timed_event( mxos_timed_event_t* event_object, mos_wor
     if( worker_thread->thread == NULL )
         return kNotInitializedErr;
 
-    if ( mxos_rtos_init_timer( &event_object->timer, time_ms, timed_event_handler, (void*) event_object ) != kNoErr )
+    if ( mos_timer_new( &event_object->timer, time_ms, timed_event_handler, (void*) event_object ) != kNoErr )
     {
         return kGeneralErr;
     }
@@ -196,9 +196,9 @@ merr_t mxos_rtos_register_timed_event( mxos_timed_event_t* event_object, mos_wor
     event_object->thread = worker_thread;
     event_object->arg = arg;
 
-    if ( mxos_rtos_start_timer( &event_object->timer ) != kNoErr )
+    if ( mos_timer_start( &event_object->timer ) != kNoErr )
     {
-        mxos_rtos_deinit_timer( &event_object->timer );
+        mos_timer_delete( &event_object->timer );
         return kGeneralErr;
     }
 
@@ -207,7 +207,7 @@ merr_t mxos_rtos_register_timed_event( mxos_timed_event_t* event_object, mos_wor
 
 merr_t mxos_rtos_deregister_timed_event( mxos_timed_event_t* event_object )
 {
-    if ( mxos_rtos_deinit_timer( &event_object->timer ) != kNoErr )
+    if ( mos_timer_delete( &event_object->timer ) != kNoErr )
     {
         return kGeneralErr;
     }
@@ -306,7 +306,7 @@ int SetTimer(unsigned long ms, void (*psysTimerHandler)(void))
 	if (timer == NULL)
 		return -1;
 
-	timer->timeout = mxos_rtos_get_time() + ms;
+	timer->timeout = mos_time() + ms;
 	timer->handler = psysTimerHandler;
     timer->valid = 1;
 	timer->next = NULL;
@@ -330,7 +330,7 @@ int SetTimer_uniq(unsigned long ms, void (*psysTimerHandler)(void))
     p = timer_head;
     while(p != NULL) {
         if (p->handler == psysTimerHandler) {
-            p->timeout = mxos_rtos_get_time() + ms; // update time
+            p->timeout = mos_time() + ms; // update time
             p->valid = 1;
             return 0;
         } else
@@ -366,7 +366,7 @@ static void mxchip_timer_tick(void)
 	while (p != NULL) {
         if (next_time > p->timeout)
             next_time = p->timeout;
-		if (p->timeout < mxos_rtos_get_time()) {
+		if (p->timeout < mos_time()) {
             if (p == timer_head) {
                 timer_head = timer_head->next;
                 if (p->valid == 1)
@@ -386,7 +386,7 @@ static void mxchip_timer_tick(void)
 		p = p->next;
 	}
 
-    cur_time = mxos_rtos_get_time();
+    cur_time = mos_time();
     if (next_time <= cur_time)
         timer_thread_wait = 1;
     else
