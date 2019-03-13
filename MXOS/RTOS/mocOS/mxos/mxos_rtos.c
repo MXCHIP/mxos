@@ -248,6 +248,11 @@ merr_t mos_thread_delay( uint32_t num_ms )
     return kNoErr;
 }
 
+void mos_sleep( float seconds )
+{
+    mos_thread_delay(seconds * 1000);
+}
+
 void *mxos_malloc( size_t xWantedSize )
 {
 	return lib_api_p->malloc(xWantedSize);

@@ -325,6 +325,13 @@ void mxos_rtos_thread_msleep(uint32_t milliseconds);
  */
 merr_t mos_thread_delay( uint32_t num_ms );
 
+/** @brief    Suspend current thread for a specific time
+ *
+ * @param     num_ms : A time interval (Unit: millisecond)
+ *
+ * @return    kNoErr.
+ */
+void mos_sleep( float seconds );
 
 /** @brief    Print Thread status into buffer
   *
