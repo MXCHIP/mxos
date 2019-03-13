@@ -150,56 +150,56 @@ merr_t mxos_adc_take_sampleStreram( mxos_adc_t adc, void* buffer, uint16_t buffe
   return (merr_t) platform_adc_take_sample_stream( &platform_adc_peripherals[adc], buffer, buffer_length );
 }
 
-merr_t mxos_gpio_init( mxos_gpio_t gpio, mxos_gpio_config_t configuration )
+merr_t mhal_gpio_open( mxos_gpio_t gpio, mxos_gpio_config_t configuration )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return (merr_t) platform_gpio_init( &platform_gpio_pins[gpio], configuration );
 }
 
-merr_t mxos_gpio_output_high( mxos_gpio_t gpio )
+merr_t mhal_gpio_high( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return (merr_t) platform_gpio_output_high( &platform_gpio_pins[gpio] );
 }
 
-merr_t mxos_gpio_output_low( mxos_gpio_t gpio )
+merr_t mhal_gpio_low( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return (merr_t) platform_gpio_output_low( &platform_gpio_pins[gpio] );
 }
 
-merr_t mxos_gpio_output_toggle( mxos_gpio_t gpio )
+merr_t mhal_gpio_toggle( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return (merr_t) platform_gpio_output_trigger( &platform_gpio_pins[gpio] );
 }
 
-merr_t mxos_gpio_deinit( mxos_gpio_t gpio )
+merr_t mhal_gpio_close( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return (merr_t) platform_gpio_deinit( &platform_gpio_pins[gpio] );
 }
 
-bool mxos_gpio_input_get( mxos_gpio_t gpio )
+bool mhal_gpio_value( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return platform_gpio_input_get( &platform_gpio_pins[gpio] );
 }
 
-merr_t mxos_gpio_enable_irq( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler, void* arg )
+merr_t mhal_gpio_int_on( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler, void* arg )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return (merr_t) platform_gpio_irq_enable( &platform_gpio_pins[gpio], trigger, handler, arg );
 }
 
-merr_t mxos_gpio_disable_irq( mxos_gpio_t gpio )
+merr_t mhal_gpio_int_off( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
@@ -483,7 +483,7 @@ merr_t MxosSpiSlaveGenerateInterrupt( mxos_spi_t spi, uint32_t pulse_duration_ms
   return (merr_t) platform_spi_slave_generate_interrupt( &platform_spi_slave_drivers[spi], pulse_duration_ms );
 }
 
-merr_t mxos_uart_init( mxos_uart_t uart, const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer )
+merr_t mhal_uart_open( mxos_uart_t uart, const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer )
 {
   if ( uart >= MXOS_UART_NONE )
     return kUnsupportedErr;
@@ -499,7 +499,7 @@ merr_t mxos_uart_init( mxos_uart_t uart, const mxos_uart_config_t* config, ring_
   return (merr_t) platform_uart_init( &platform_uart_drivers[uart], &platform_uart_peripherals[uart], config, optional_rx_buffer );
 }
 
-merr_t mxos_uart_deinit( mxos_uart_t uart )
+merr_t mhal_uart_close( mxos_uart_t uart )
 {
   if ( uart >= MXOS_UART_NONE )
     return kUnsupportedErr;
@@ -507,7 +507,7 @@ merr_t mxos_uart_deinit( mxos_uart_t uart )
   return (merr_t) platform_uart_deinit( &platform_uart_drivers[uart] );
 }
 
-merr_t mxos_uart_send( mxos_uart_t uart, const void* data, uint32_t size )
+merr_t mhal_uart_write( mxos_uart_t uart, const void* data, uint32_t size )
 {
   if ( uart >= MXOS_UART_NONE )
     return kUnsupportedErr;
@@ -515,7 +515,7 @@ merr_t mxos_uart_send( mxos_uart_t uart, const void* data, uint32_t size )
   return (merr_t) platform_uart_transmit_bytes( &platform_uart_drivers[uart], (const uint8_t*) data, size );
 }
 
-merr_t mxos_uart_recv( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout )
+merr_t mhal_uart_read( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout )
 {
   if ( uart >= MXOS_UART_NONE )
     return kUnsupportedErr;
@@ -523,7 +523,7 @@ merr_t mxos_uart_recv( mxos_uart_t uart, void* data, uint32_t size, uint32_t tim
   return (merr_t) platform_uart_receive_bytes( &platform_uart_drivers[uart], (uint8_t*)data, size, timeout );
 }
 
-uint32_t mxos_uart_recvd_data_len( mxos_uart_t uart )
+uint32_t mhal_uart_readd_data_len( mxos_uart_t uart )
 {
   if ( uart >= MXOS_UART_NONE )
     return 0;
@@ -550,7 +550,7 @@ void mxos_wdg_reload( void )
     platform_watchdog_kick( );
 }
 
-mxos_logic_partition_t* mxos_flash_get_info( mxos_partition_t inPartition )
+mxos_logic_partition_t* mhal_flash_get_info( mxos_partition_t inPartition )
 {
     mxos_logic_partition_t *logic_partition = NULL;
     require( inPartition >= 0 && inPartition < MXOS_PARTITION_MAX, exit );
@@ -575,7 +575,7 @@ static merr_t MxosFlashInitialize( mxos_partition_t partition )
   require_action_quiet( partition > MXOS_PARTITION_ERROR, exit, err = kParamErr );
   require_action_quiet( partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
 
-  partition_info = mxos_flash_get_info( partition );
+  partition_info = mhal_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
   
   if( platform_flash_drivers[ partition_info->partition_owner ].flash_mutex == NULL){
@@ -594,7 +594,7 @@ exit:
   return err;
 }
 
-merr_t mxos_flash_erase(mxos_partition_t partition, uint32_t off_set, uint32_t size)
+merr_t mhal_flash_erase(mxos_partition_t partition, uint32_t off_set, uint32_t size)
 {
   merr_t err = kNoErr;
   uint32_t start_addr, end_addr;
@@ -604,7 +604,7 @@ merr_t mxos_flash_erase(mxos_partition_t partition, uint32_t off_set, uint32_t s
   require_action_quiet( partition > MXOS_PARTITION_ERROR && partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
   require_action_quiet( partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
 
-  partition_info = mxos_flash_get_info( partition );
+  partition_info = mhal_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
 #if (!defined BOOTLOADER) && (!defined FIRMWARE_DOWNLOAD)
   require_action_quiet( ( partition_info->partition_options & PAR_OPT_WRITE_MASK ) == PAR_OPT_WRITE_EN, exit, err = kPermissionErr );
@@ -629,7 +629,7 @@ exit:
   return err;
 }
 
-merr_t mxos_flash_write( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength)
+merr_t mhal_flash_write( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength)
 {
   merr_t err = kNoErr;
   uint32_t start_addr, end_addr;
@@ -638,7 +638,7 @@ merr_t mxos_flash_write( mxos_partition_t partition, volatile uint32_t* off_set,
   require_quiet( inBufferLength != 0, exit);
   require_action_quiet( partition > MXOS_PARTITION_ERROR && partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
   
-  partition_info = mxos_flash_get_info( partition );
+  partition_info = mhal_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
 #if (!defined BOOTLOADER) && (!defined FIRMWARE_DOWNLOAD)
   require_action_quiet( ( partition_info->partition_options & PAR_OPT_WRITE_MASK ) == PAR_OPT_WRITE_EN, exit, err = kPermissionErr );
@@ -663,7 +663,7 @@ exit:
   return err;
 }
 
-merr_t mxos_flash_read( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* outBuffer ,uint32_t inBufferLength)
+merr_t mhal_flash_read( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* outBuffer ,uint32_t inBufferLength)
 {
   merr_t err = kNoErr;
   uint32_t start_addr, end_addr;
@@ -672,7 +672,7 @@ merr_t mxos_flash_read( mxos_partition_t partition, volatile uint32_t* off_set, 
   require_quiet( inBufferLength != 0, exit);
   require_action_quiet( partition > MXOS_PARTITION_ERROR && partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
 
-  partition_info = mxos_flash_get_info( partition );
+  partition_info = mhal_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
 #if (!defined BOOTLOADER) && (!defined FIRMWARE_DOWNLOAD)
   require_action_quiet( ( partition_info->partition_options & PAR_OPT_READ_MASK ) == PAR_OPT_READ_EN, exit, err = kPermissionErr );
@@ -706,7 +706,7 @@ merr_t mxos_flash_enable_security( mxos_partition_t partition, uint32_t off_set,
   require_quiet( size != 0, exit);
   require_action_quiet( partition > MXOS_PARTITION_ERROR && partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
 
-  partition_info = mxos_flash_get_info( partition );
+  partition_info = mhal_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
 
   start_addr = partition_info->partition_start_addr + off_set;
@@ -734,7 +734,7 @@ char *mxos_get_bootloader_ver(void)
     uint32_t version_offset = bootloader_partition->partition_length - 0x20;
 
     memset(ver, 0, sizeof(ver));
-    mxos_flash_read( MXOS_PARTITION_BOOTLOADER, &version_offset, (uint8_t *)ver , 32);
+    mhal_flash_read( MXOS_PARTITION_BOOTLOADER, &version_offset, (uint8_t *)ver , 32);
     return ver;
 }
 
@@ -744,12 +744,12 @@ char *mxos_get_bootloader_ver(void)
 void mxos_set_bootload_ver(void)
 {
    uint8_t ver[33];
-   mxos_logic_partition_t *boot_partition = mxos_flash_get_info( MXOS_PARTITION_BOOTLOADER );
+   mxos_logic_partition_t *boot_partition = mhal_flash_get_info( MXOS_PARTITION_BOOTLOADER );
    uint32_t flashaddr =  boot_partition->partition_length - 0x20;
    int i;
 
    memset(ver, 0, sizeof(ver));
-   mxos_flash_read( MXOS_PARTITION_BOOTLOADER, &flashaddr, (uint8_t *)ver , 32);
+   mhal_flash_read( MXOS_PARTITION_BOOTLOADER, &flashaddr, (uint8_t *)ver , 32);
    for(i=0;i<32;i++) {
        if (ver[i] != 0xFF)
            return;
@@ -757,7 +757,7 @@ void mxos_set_bootload_ver(void)
    snprintf((char *)ver, 33, "%s %s %d", MODEL, Bootloader_REVISION , STDIO_UART_BAUDRATE);
    flashaddr =  boot_partition->partition_length - 0x20;
    mxos_flash_disable_security( MXOS_PARTITION_BOOTLOADER, 0x0, boot_partition->partition_length );
-   mxos_flash_write( MXOS_PARTITION_BOOTLOADER, &flashaddr, ver , 32);
+   mhal_flash_write( MXOS_PARTITION_BOOTLOADER, &flashaddr, ver , 32);
 }
 
 merr_t mxos_flash_disable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size )
@@ -769,7 +769,7 @@ merr_t mxos_flash_disable_security( mxos_partition_t partition, uint32_t off_set
   require_quiet( size != 0, exit);
   require_action_quiet( partition > MXOS_PARTITION_ERROR && partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
 
-  partition_info = mxos_flash_get_info( partition );
+  partition_info = mhal_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
 
   start_addr = partition_info->partition_start_addr + off_set;

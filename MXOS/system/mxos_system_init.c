@@ -42,7 +42,7 @@ static merr_t system_config_mode_worker( void *arg )
     mxos_Context_t* in_context = mxos_system_context_get();
     require( in_context, exit );
 
-    mxosWlanPowerOn();
+    mwifi_on();
 #if (MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK)
     err = mxos_easylink( in_context, MXOS_TRUE );
 #elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_SOFTAP)

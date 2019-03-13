@@ -81,7 +81,7 @@ const mxos_api_t *lib_api_p = NULL;
 extern uint32_t _ram_end_;
 #ifdef CONFIG_CPU_MX1290
 extern const platform_peripherals_pinmap_t peripherals_pinmap;
-extern const mxos_gpio_init_t gpio_init[];
+extern const mhal_gpio_open_t gpio_init[];
 #endif
 
 #if defined ( __ICCARM__ )

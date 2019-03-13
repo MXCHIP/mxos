@@ -91,7 +91,7 @@ merr_t easylink_bonjour_start( WiFi_Interface interface, uint32_t easyLink_id, s
 {
     uint8_t mac[6];
 
-    mxos_wlan_get_mac_address( mac );
+    mwifi_get_mac( mac );
     snprintf( srv_name, 32+5, "%s(%02X%02X%02X)", MODEL, mac[3],  mac[4], mac[5] );
 
     memset(&easylink_service, 0x0, sizeof(struct mdns_service));

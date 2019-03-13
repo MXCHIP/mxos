@@ -175,7 +175,7 @@ void SerialUpload(mxos_flash_t flash, uint32_t flashdestination, char * fileName
   uint8_t key;
 
   printf("Select Receive File\n\r");
-  mxos_uart_recv( MXOS_STDIO_UART, &key, 1, MXOS_NEVER_TIMEOUT );
+  mhal_uart_read( MXOS_STDIO_UART, &key, 1, MXOS_NEVER_TIMEOUT );
 
   if (key == CRC16)
   {
@@ -226,7 +226,7 @@ void Main_Menu(void)
 #if 1
     /***************** Command "0" or "BOOTUPDATE": Update the application  *************************/
     if(strcmp(cmdname, "BOOTUPDATE") == 0 || strcmp(cmdname, "0") == 0) {
-      partition = mxos_flash_get_info( MXOS_PARTITION_BOOTLOADER );
+      partition = mhal_flash_get_info( MXOS_PARTITION_BOOTLOADER );
       if (findCommandPara(cmdbuf, "r", NULL, 0) != -1){
         printf ("\n\rRead Bootloader...\n\r");
         SerialUpload( partition->partition_owner, partition->partition_start_addr, "BootLoaderImage.bin", partition->partition_length );
@@ -243,7 +243,7 @@ void Main_Menu(void)
     else
 #endif
     if(strcmp(cmdname, "FWUPDATE") == 0 || strcmp(cmdname, "1") == 0)	{
-      partition = mxos_flash_get_info( MXOS_PARTITION_APPLICATION );
+      partition = mhal_flash_get_info( MXOS_PARTITION_APPLICATION );
       if (findCommandPara(cmdbuf, "r", NULL, 0) != -1){
         printf ("\n\rRead application...\n\r");
         SerialUpload( partition->partition_owner, partition->partition_start_addr, "ApplicationImage.bin", partition->partition_length );
@@ -257,7 +257,7 @@ void Main_Menu(void)
 #if 1
     /***************** Command "2" or "DRIVERUPDATE": Update the RF driver  *************************/
     else if(strcmp(cmdname, "DRIVERUPDATE") == 0 || strcmp(cmdname, "2") == 0) {
-      partition = mxos_flash_get_info( MXOS_PARTITION_RF_FIRMWARE );
+      partition = mhal_flash_get_info( MXOS_PARTITION_RF_FIRMWARE );
       if( partition == NULL ){
         printf ("\n\rNo flash memory for RF firmware, exiting...\n\r");
         continue;
@@ -281,7 +281,7 @@ void Main_Menu(void)
           printf ("\n\rIllegal start address.\n\r");
           continue;
         }
-        partition = mxos_flash_get_info( (mxos_partition_t)id );
+        partition = mhal_flash_get_info( (mxos_partition_t)id );
       }else{
         printf ("\n\rPlease input correct MXOS partition id.\n\r");
         continue;
@@ -292,7 +292,7 @@ void Main_Menu(void)
 
         err = mxos_flash_disable_security( (mxos_partition_t)id, 0x0, partition->partition_length );
         require_noerr( err, exit);
-        mxos_flash_erase( (mxos_partition_t)id, 0x0, partition->partition_length );
+        mhal_flash_erase( (mxos_partition_t)id, 0x0, partition->partition_length );
         continue;
       }
       if (findCommandPara(cmdbuf, "r", NULL, 0) != -1){
@@ -378,7 +378,7 @@ void Main_Menu(void)
     else if(strcmp(cmdname, "MEMORYMAP") == 0 || strcmp(cmdname, "5") == 0)  {
       printf("\r");
       for( i = 0; i <= MXOS_PARTITION_MAX - 1; i++ ){
-        partition = mxos_flash_get_info( (mxos_partition_t)i );
+        partition = mhal_flash_get_info( (mxos_partition_t)i );
         if (partition->partition_owner == MXOS_FLASH_NONE || partition->partition_description == NULL )
             continue;
         printf( "|ID:%d| %11s |  Dev:%ld  | 0x%08lx | 0x%08lx |\r\n", i, partition->partition_description, partition->partition_owner,
@@ -388,7 +388,7 @@ void Main_Menu(void)
     /***************** Command: Excute the application *************************/
     else if(strcmp(cmdname, "BOOT") == 0 || strcmp(cmdname, "6") == 0)	{
       printf ("\n\rBooting.......\n\r");
-      partition = mxos_flash_get_info( MXOS_PARTITION_APPLICATION );
+      partition = mhal_flash_get_info( MXOS_PARTITION_APPLICATION );
       bootloader_start_app( partition->partition_start_addr );
     }
     

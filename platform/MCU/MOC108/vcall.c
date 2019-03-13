@@ -108,27 +108,27 @@ int mxos_wlan_monitor_no_easylink(void)
     return mico_wlan_monitor_no_easylink();
 }
 
-merr_t mxos_wlan_monitor_set_channel(uint8_t channel)
+merr_t mwifi_monitor_set_channel(uint8_t channel)
 {
     return mico_wlan_monitor_set_channel(channel);
 }
 
-void mxos_wlan_register_monitor_cb(monitor_cb_t fn)
+void mwifi_monitor_reg_cb(monitor_cb_t fn)
 {
     mico_wlan_register_monitor_cb(fn);
 }
 
-int mxos_wlan_start_monitor(void)
+int mwifi_monitor_start(void)
 {
     return mico_wlan_start_monitor();
 }
 
-int mxos_wlan_stop_monitor(void)
+int mwifi_monitor_stop(void)
 {
     return mico_wlan_stop_monitor();
 }
 
 merr_t MicoFlashRead(mxos_partition_t inPartition, volatile uint32_t *off_set, uint8_t *outBuffer, uint32_t inBufferLength)
 {
-    return mxos_flash_read(inPartition, off_set, outBuffer, inBufferLength);
+    return mhal_flash_read(inPartition, off_set, outBuffer, inBufferLength);
 }

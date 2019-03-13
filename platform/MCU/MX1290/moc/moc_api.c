@@ -6,35 +6,35 @@ extern const mxos_api_t *lib_api_p;
 /* WIFI MGR */
 merr_t StartNetwork(network_InitTypeDef_st* inNetworkInitPara)
 {
-	return lib_api_p->mxosWlanStart(inNetworkInitPara);
+	return lib_api_p->mwifi_softap_start(inNetworkInitPara);
 }
 merr_t StartAdvNetwork(network_InitTypeDef_adv_st* inNetworkInitParaAdv)
 {
-	return lib_api_p->mxosWlanStartAdv(inNetworkInitParaAdv);
+	return lib_api_p->mwifi_connect(inNetworkInitParaAdv);
 }
 merr_t getNetPara(IPStatusTypedef *outNetpara, WiFi_Interface inInterface)
 {
-	return lib_api_p->mxosWlanGetIPStatus(outNetpara, inInterface);
+	return lib_api_p->mwifi_get_ip(outNetpara, inInterface);
 }
 merr_t CheckNetLink(LinkStatusTypeDef *outStatus)
 {
-	return lib_api_p->mxosWlanGetLinkStatus(outStatus);
+	return lib_api_p->mwifi_get_link_info(outStatus);
 }
 void mxchipStartScan(void)
 {
-	lib_api_p->mxosWlanStartScan();
+	lib_api_p->mwifi_softap_startScan();
 }
 void mxchipStartAdvScan(void)
 {
-	lib_api_p->mxosWlanStartScanAdv();
+	lib_api_p->mwifi_softap_startScanAdv();
 }
 merr_t wifi_power_down(void)
 {
-	return lib_api_p->mxosWlanPowerOff();
+	return lib_api_p->mwifi_off();
 }
 merr_t wifi_power_up(void)
 {
-	return lib_api_p->mxosWlanPowerOn();
+	return lib_api_p->mwifi_on();
 }
 merr_t wlan_disconnect(void)
 {
@@ -42,19 +42,19 @@ merr_t wlan_disconnect(void)
 }
 merr_t sta_disconnect(void)
 {
-	return lib_api_p->mxosWlanSuspendStation();
+	return lib_api_p->mwifi_disconnect();
 }
 merr_t uap_stop(void)
 {
-	return lib_api_p->mxosWlanSuspendSoftAP();
+	return lib_api_p->mwifi_softap_stop();
 }
 merr_t OpenEasylink2_withdata(int inTimeout)
 {
-	return lib_api_p->mxosWlanStartEasyLink(inTimeout);
+	return lib_api_p->mwifi_softap_startEasyLink(inTimeout);
 }
 merr_t OpenEasylink(int inTimeout)
 {
-	return lib_api_p->mxosWlanStartEasyLinkPlus(inTimeout);
+	return lib_api_p->mwifi_softap_startEasyLinkPlus(inTimeout);
 }
 merr_t CloseEasylink2(void)
 {
@@ -66,7 +66,7 @@ merr_t CloseEasylink(void)
 }
 merr_t OpenConfigmodeWPS(int inTimeout)
 {
-	return lib_api_p->mxosWlanStartWPS(inTimeout);
+	return lib_api_p->mwifi_softap_startWPS(inTimeout);
 }
 merr_t CloseConfigmodeWPS(void)
 {
@@ -74,19 +74,19 @@ merr_t CloseConfigmodeWPS(void)
 }
 merr_t OpenAirkiss(int inTimeout)
 {
-	return lib_api_p->mxosWlanStartAirkiss(inTimeout);
+	return lib_api_p->mwifi_softap_startAirkiss(inTimeout);
 }
 merr_t CloseAirkiss(void)
 {
-	return lib_api_p->mxosWlanStopAirkiss();
+	return lib_api_p->mwifi_airkiss_stop();
 }
 void ps_enable(void)
 {
-	lib_api_p->mxosWlanEnablePowerSave();
+	lib_api_p->mwifi_ps_on();
 }
 void ps_disable(void)
 {
-	lib_api_p->mxosWlanDisablePowerSave();
+	lib_api_p->mwifi_ps_off();
 }
 void wifimgr_debug_enable(bool enable)
 {
@@ -96,21 +96,21 @@ int mxos_wlan_monitor_rx_type(int type)
 {
 	return lib_api_p->mxos_wlan_monitor_rx_type(type);
 }
-int mxos_wlan_start_monitor(void)
+int mwifi_monitor_start(void)
 {
-	return lib_api_p->mxos_wlan_start_monitor();
+	return lib_api_p->mwifi_monitor_start();
 }
-int mxos_wlan_stop_monitor(void)
+int mwifi_monitor_stop(void)
 {
-	return lib_api_p->mxos_wlan_stop_monitor();
+	return lib_api_p->mwifi_monitor_stop();
 }
-int mxos_wlan_monitor_set_channel(uint8_t channel)
+int mwifi_monitor_set_channel(uint8_t channel)
 {
-	return lib_api_p->mxos_wlan_monitor_set_channel((int)channel);
+	return lib_api_p->mwifi_monitor_set_channel((int)channel);
 }
-void mxos_wlan_register_monitor_cb(monitor_cb_t fn)
+void mwifi_monitor_reg_cb(monitor_cb_t fn)
 {
-	lib_api_p->mxos_wlan_register_monitor_cb(fn);
+	lib_api_p->mwifi_monitor_reg_cb(fn);
 }
 
 int mxchip_active_scan(char*ssid, int is_adv)
@@ -123,7 +123,7 @@ void wlan_set_channel(int channel)
     lib_api_p->wlan_set_channel(channel);
 }
 
-merr_t mxos_wlan_custom_ie_add(wlan_if_t wlan_if, uint8_t *custom_ie, uint32_t len)
+merr_t mwifi_custom_ie_add(wlan_if_t wlan_if, uint8_t *custom_ie, uint32_t len)
 {
 	return lib_api_p->wifi_manage_custom_ie_add(wlan_if, custom_ie, len);
 }
@@ -140,86 +140,86 @@ merr_t mxos_wlan_custom_ie_delete(wlan_if_t wlan_if, custom_ie_delete_op_t op, u
 {
 	return lib_api_p->;
 } UART */
-mxos_logic_partition_t* mxos_flash_get_info( mxos_partition_t inPartition )
+mxos_logic_partition_t* mhal_flash_get_info( mxos_partition_t inPartition )
 {
-	return lib_api_p->mxos_flash_get_info(inPartition);
+	return lib_api_p->mhal_flash_get_info(inPartition);
 }
-merr_t mxos_flash_erase(mxos_partition_t inPartition, uint32_t off_set, uint32_t size)
+merr_t mhal_flash_erase(mxos_partition_t inPartition, uint32_t off_set, uint32_t size)
 {
-	return lib_api_p->mxos_flash_erase(inPartition, off_set, size);
+	return lib_api_p->mhal_flash_erase(inPartition, off_set, size);
 }
-merr_t mxos_flash_write( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength)
+merr_t mhal_flash_write( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength)
 {
-	 lib_api_p->mxos_flash_write(inPartition, off_set, inBuffer, inBufferLength);
+	 lib_api_p->mhal_flash_write(inPartition, off_set, inBuffer, inBufferLength);
 	 return 0;
 }
-merr_t mxos_flash_read( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* outBuffer, uint32_t inBufferLength)
+merr_t mhal_flash_read( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* outBuffer, uint32_t inBufferLength)
 {
-	return lib_api_p->mxos_flash_read(inPartition, off_set, outBuffer, inBufferLength);
+	return lib_api_p->mhal_flash_read(inPartition, off_set, outBuffer, inBufferLength);
 }
 merr_t mxos_flash_enable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size )
 {
 	return lib_api_p->mxos_flash_enable_security(partition, off_set, size );
 }
 
-merr_t mxos_gpio_init( mxos_gpio_t gpio, mxos_gpio_config_t configuration )
+merr_t mhal_gpio_open( mxos_gpio_t gpio, mxos_gpio_config_t configuration )
 {
-	return lib_api_p->mxos_gpio_init(gpio, configuration );
+	return lib_api_p->mhal_gpio_open(gpio, configuration );
 }
-merr_t mxos_gpio_deinit( mxos_gpio_t gpio )
+merr_t mhal_gpio_close( mxos_gpio_t gpio )
 {
-	return lib_api_p->mxos_gpio_deinit(gpio);
+	return lib_api_p->mhal_gpio_close(gpio);
 }
-merr_t mxos_gpio_output_high( mxos_gpio_t gpio )
+merr_t mhal_gpio_high( mxos_gpio_t gpio )
 {
-	return lib_api_p->mxos_gpio_output_high(gpio);
+	return lib_api_p->mhal_gpio_high(gpio);
 }
-merr_t mxos_gpio_output_low( mxos_gpio_t gpio )
+merr_t mhal_gpio_low( mxos_gpio_t gpio )
 {
-	return lib_api_p->mxos_gpio_output_low(gpio);
+	return lib_api_p->mhal_gpio_low(gpio);
 }
-merr_t mxos_gpio_output_toggle( mxos_gpio_t gpio )
+merr_t mhal_gpio_toggle( mxos_gpio_t gpio )
 {
-	return lib_api_p->mxos_gpio_output_toggle(gpio);
+	return lib_api_p->mhal_gpio_toggle(gpio);
 }
-bool mxos_gpio_input_get( mxos_gpio_t gpio )
+bool mhal_gpio_value( mxos_gpio_t gpio )
 {
-	return lib_api_p->mxos_gpio_input_get(gpio);
+	return lib_api_p->mhal_gpio_value(gpio);
 }
-merr_t mxos_gpio_enable_irq( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler, void* arg )
+merr_t mhal_gpio_int_on( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler, void* arg )
 {
-	return lib_api_p->mxos_gpio_enable_irq(gpio, trigger, handler, arg );
+	return lib_api_p->mhal_gpio_int_on(gpio, trigger, handler, arg );
 }
-merr_t mxos_gpio_disable_irq( mxos_gpio_t gpio )
+merr_t mhal_gpio_int_off( mxos_gpio_t gpio )
 {
-	return lib_api_p->mxos_gpio_disable_irq(gpio);
+	return lib_api_p->mhal_gpio_int_off(gpio);
 }
 
-merr_t mxos_uart_init( mxos_uart_t uart, const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer )
+merr_t mhal_uart_open( mxos_uart_t uart, const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer )
 {
-	return lib_api_p->mxos_uart_init(uart, config, optional_rx_buffer );
+	return lib_api_p->mhal_uart_open(uart, config, optional_rx_buffer );
 }
 
 merr_t mxos_stdio_uart_init( const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer )
 {
-    return lib_api_p->mxos_uart_init(MXOS_STDIO_UART, config, optional_rx_buffer );
+    return lib_api_p->mhal_uart_open(MXOS_STDIO_UART, config, optional_rx_buffer );
 }
 
-merr_t mxos_uart_deinit( mxos_uart_t uart )
+merr_t mhal_uart_close( mxos_uart_t uart )
 {
-	return lib_api_p->mxos_uart_deinit(uart);
+	return lib_api_p->mhal_uart_close(uart);
 }
-merr_t mxos_uart_send( mxos_uart_t uart, const void* data, uint32_t size )
+merr_t mhal_uart_write( mxos_uart_t uart, const void* data, uint32_t size )
 {
-	return lib_api_p->mxos_uart_send(uart, data, size );
+	return lib_api_p->mhal_uart_write(uart, data, size );
 }
-merr_t mxos_uart_recv( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout )
+merr_t mhal_uart_read( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout )
 {
-	return lib_api_p->mxos_uart_recv(uart, data, size, timeout );
+	return lib_api_p->mhal_uart_read(uart, data, size, timeout );
 }
-uint32_t mxos_uart_recvd_data_len( mxos_uart_t uart )
+uint32_t mhal_uart_readd_data_len( mxos_uart_t uart )
 {
-	return lib_api_p->mxos_uart_recvd_data_len(uart);
+	return lib_api_p->mhal_uart_readd_data_len(uart);
 }
 
 void wifistate_Command(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv)
@@ -290,12 +290,12 @@ int mxos_wlan_driver_version( char* outVersion, uint8_t inLength )
 	return lib_api_p->mxos_wlan_driver_version(outVersion, inLength);
 }
 
-void mxos_wlan_get_mac_address( uint8_t *mac )
+void mwifi_get_mac( uint8_t *mac )
 {
 	lib_api_p->wlan_get_mac_address(mac);
 }
 
-void mxos_wlan_get_mac_address_by_interface( wlan_if_t wlan_if, uint8_t *mac )
+void mwifi_get_mac_by_interface( wlan_if_t wlan_if, uint8_t *mac )
 {
 	lib_api_p->wlan_get_mac_address_by_interface(wlan_if, mac);
 }
@@ -700,7 +700,7 @@ int wlan_inject_frame(const uint8_t *buff, size_t len)
 	return lib_api_p->wlan_inject_frame(buff, len);
 }
 
-merr_t mxos_wlan_send_mgnt(uint8_t *buffer, uint32_t length)
+merr_t mwifi_monitor_send_frame(uint8_t *buffer, uint32_t length)
 {
 	// I don't know the return value;
 	lib_api_p->wlan_inject_frame(buffer, length);

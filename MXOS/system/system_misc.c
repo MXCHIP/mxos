@@ -184,7 +184,7 @@ void system_connect_wifi_normal( system_context_t * const inContext)
   mos_mutex_unlock(inContext->flashContentInRam_mutex);
 
   system_log("connect to %s.....", wNetConfig.ap_info.ssid);
-  mxosWlanStartAdv(&wNetConfig);
+  mwifi_connect(&wNetConfig);
 }
 
 void system_connect_wifi_fast( system_context_t * const inContext)
@@ -211,7 +211,7 @@ void system_connect_wifi_fast( system_context_t * const inContext)
 
   wNetConfig.wifi_retry_interval = 100;
   system_log("Connect to %s.....", wNetConfig.ap_info.ssid);
-  mxosWlanStartAdv(&wNetConfig);
+  mwifi_connect(&wNetConfig);
 }
 
 merr_t system_network_daemen_start( system_context_t * const inContext )
@@ -221,7 +221,7 @@ merr_t system_network_daemen_start( system_context_t * const inContext )
 
   mxos_network_init();
   mxos_sys_led(true);
-  mxosWlanGetIPStatus(&para, Station);
+  mwifi_get_ip(&para, Station);
   formatMACAddr(inContext->mxosStatus.mac, (char *)&para.mac);
   mxos_wlan_driver_version(inContext->mxosStatus.rf_version, sizeof(inContext->mxosStatus.rf_version));
   inContext->mxosStatus.rf_version[49] = 0x0;
@@ -243,7 +243,7 @@ merr_t system_network_daemen_start( system_context_t * const inContext )
 #endif
 
   if(inContext->flashContentInRam.mxosSystemConfig.rfPowerSaveEnable == true){
-    mxosWlanEnablePowerSave();
+    mwifi_ps_on();
   }
 
   if(inContext->flashContentInRam.mxosSystemConfig.mcuPowerSaveEnable == true){
@@ -290,13 +290,13 @@ static void PlatformEasyLinkButtonLongPressedCallback(void)
   context = mxos_system_context_get( );
   require( context, exit );
 
-  partition = mxos_flash_get_info( MXOS_PARTITION_PARAMETER_1 );
+  partition = mhal_flash_get_info( MXOS_PARTITION_PARAMETER_1 );
 
-  mxos_flash_erase( MXOS_PARTITION_PARAMETER_1 ,0x0, partition->partition_length );
+  mhal_flash_erase( MXOS_PARTITION_PARAMETER_1 ,0x0, partition->partition_length );
 
-  partition = mxos_flash_get_info( MXOS_PARTITION_PARAMETER_2 );
+  partition = mhal_flash_get_info( MXOS_PARTITION_PARAMETER_2 );
 
-  mxos_flash_erase( MXOS_PARTITION_PARAMETER_2 ,0x0, partition->partition_length );
+  mhal_flash_erase( MXOS_PARTITION_PARAMETER_2 ,0x0, partition->partition_length );
 
   mxos_system_power_perform( context, eState_Software_Reset );
 

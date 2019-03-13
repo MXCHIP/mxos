@@ -513,7 +513,7 @@ static int get_config_idx_from_ip(uint32_t incoming_ip)
 	uint32_t interface_ip, interface_mask;
 	IPStatusTypedef interface_ip_info;
 	for (i = 0; i < MDNS_MAX_SERVICE_CONFIG; i++) {
-	    mxosWlanGetIPStatus(&interface_ip_info, config_g[i].iface_idx);
+	    mwifi_get_ip(&interface_ip_info, config_g[i].iface_idx);
 	    interface_ip = inet_addr(interface_ip_info.ip);
 	    interface_mask = inet_addr(interface_ip_info.mask);
 
@@ -561,7 +561,7 @@ static uint32_t get_interface_ip(int config_idx)
 	uint32_t ip;
 	IPStatusTypedef interface_ip_info;
 
-	mxosWlanGetIPStatus(&interface_ip_info, config_g[config_idx].iface_idx);
+	mwifi_get_ip(&interface_ip_info, config_g[config_idx].iface_idx);
 	ip = inet_addr(interface_ip_info.ip);
 	return ip;
 }

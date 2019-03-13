@@ -577,9 +577,9 @@ int boot2_main( uint8_t will_load_firmware )
 	otp_nvram_addr[3] = otp[3];
 	otp_nvram_addr[4] = otp[4];
 	
-	if ((mxos_gpio_input_get((mxos_gpio_t)BOOT_SEL) == false) &&
-		  (mxos_gpio_input_get((mxos_gpio_t)EasyLink_BUTTON) == false) &&
-		  (mxos_gpio_input_get((mxos_gpio_t)MFG_SEL) == true)) {
+	if ((mhal_gpio_value((mxos_gpio_t)BOOT_SEL) == false) &&
+		  (mhal_gpio_value((mxos_gpio_t)EasyLink_BUTTON) == false) &&
+		  (mhal_gpio_value((mxos_gpio_t)MFG_SEL) == true)) {
 		dbg("load ATE firmware\r\n");
 		load_firmware(0x160000, 0x40000);
 	}

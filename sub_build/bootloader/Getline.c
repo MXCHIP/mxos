@@ -77,7 +77,7 @@ int stdio_break_in(void)
     int i, j;
     
     for(i=0, j=0;i<10;i++) {
-      if (kNoErr != mxos_uart_recv( MXOS_STDIO_UART, &c, 1, 10))
+      if (kNoErr != mhal_uart_read( MXOS_STDIO_UART, &c, 1, 10))
         continue;
 
       if (c == 0x20) {

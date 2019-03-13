@@ -51,10 +51,10 @@ static merr_t _sys_power_state_change_handler(void *arg)
       mxos_sys_reboot( );
       break;
     case eState_Wlan_Powerdown:
-      mxosWlanPowerOff( );
+      mwifi_off( );
       break;
     case eState_Standby:
-      mxosWlanPowerOff( );
+      mwifi_off( );
       mxos_sys_standby( MXOS_WAIT_FOREVER );
       break;
     default:

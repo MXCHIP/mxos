@@ -243,7 +243,7 @@ static void ota_server_thread( void * arg )
     char **pptr = NULL;
     struct in_addr in_addr;
 
-    mxos_logic_partition_t* ota_partition = mxos_flash_get_info( MXOS_PARTITION_OTA_TEMP );
+    mxos_logic_partition_t* ota_partition = mhal_flash_get_info( MXOS_PARTITION_OTA_TEMP );
     
     ota_server_context->ota_control = OTA_CONTROL_START;
 
@@ -255,7 +255,7 @@ static void ota_server_thread( void * arg )
     ota_server_log("OTA server address: %s, host ip: %s", ota_server_context->download_url.host, ota_server_context->download_url.ip);
 
     offset = 0;
-    mxos_flash_erase( MXOS_PARTITION_OTA_TEMP, 0x0, ota_partition->partition_length );
+    mhal_flash_erase( MXOS_PARTITION_OTA_TEMP, 0x0, ota_partition->partition_length );
     
     CRC16_Init( &crc_context );
     if( ota_server_context->ota_check.is_md5 == true ){
@@ -372,7 +372,7 @@ static merr_t onReceivedData( struct _HTTPHeader_t * inHeader, uint32_t inPos, u
         Md5Update( &md5, inData, inLen );
     }
 
-    mxos_flash_write( MXOS_PARTITION_OTA_TEMP, &offset, (uint8_t *) inData, inLen );
+    mhal_flash_write( MXOS_PARTITION_OTA_TEMP, &offset, (uint8_t *) inData, inLen );
 
     ota_server_progress_set(OTA_LOADING);
 

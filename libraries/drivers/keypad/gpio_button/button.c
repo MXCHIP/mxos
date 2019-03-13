@@ -31,8 +31,8 @@ static void button_irq_handler( void* arg )
 
     int interval = -1;
 
-    if ( mxos_gpio_input_get( _context->gpio ) == ((_context->idle == IOBUTTON_IDLE_STATE_HIGH) ? 0 : 1) ) {
-        mxos_gpio_enable_irq( _context->gpio,
+    if ( mhal_gpio_value( _context->gpio ) == ((_context->idle == IOBUTTON_IDLE_STATE_HIGH) ? 0 : 1) ) {
+        mhal_gpio_int_on( _context->gpio,
                            (_context->idle == IOBUTTON_IDLE_STATE_HIGH) ? IRQ_TRIGGER_RISING_EDGE : IRQ_TRIGGER_FALLING_EDGE,
                            button_irq_handler, _context );
         _context->start_time = mos_time() + 1;
@@ -45,7 +45,7 @@ static void button_irq_handler( void* arg )
             if ( _context->pressed_func != NULL )
                 (_context->pressed_func)();
         }
-        mxos_gpio_enable_irq( _context->gpio,
+        mhal_gpio_int_on( _context->gpio,
                            (_context->idle == IOBUTTON_IDLE_STATE_HIGH) ? IRQ_TRIGGER_FALLING_EDGE : IRQ_TRIGGER_RISING_EDGE,
                            button_irq_handler, _context );
         mos_timer_stop( &_context->_user_button_timer );
@@ -67,11 +67,11 @@ void button_init( button_context_t *btn_context )
     btn_context->start_time = 0;
 
     if ( btn_context->idle == IOBUTTON_IDLE_STATE_HIGH ) {
-        mxos_gpio_init( btn_context->gpio, INPUT_PULL_UP );
-        mxos_gpio_enable_irq( btn_context->gpio, IRQ_TRIGGER_FALLING_EDGE, button_irq_handler, btn_context );
+        mhal_gpio_open( btn_context->gpio, INPUT_PULL_UP );
+        mhal_gpio_int_on( btn_context->gpio, IRQ_TRIGGER_FALLING_EDGE, button_irq_handler, btn_context );
     } else {
-        mxos_gpio_init( btn_context->gpio, INPUT_PULL_DOWN );
-        mxos_gpio_enable_irq( btn_context->gpio, IRQ_TRIGGER_RISING_EDGE, button_irq_handler, btn_context );
+        mhal_gpio_open( btn_context->gpio, INPUT_PULL_DOWN );
+        mhal_gpio_int_on( btn_context->gpio, IRQ_TRIGGER_RISING_EDGE, button_irq_handler, btn_context );
     }
 
     mos_timer_new( &btn_context->_user_button_timer, btn_context->long_pressed_timeout,

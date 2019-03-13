@@ -200,7 +200,7 @@ static void switch_channel_thread(void * arg)
         }
 
         if( wlan_channel_walker == MXOS_TRUE){
-            mxos_wlan_monitor_set_channel( wlan_channel );
+            mwifi_monitor_set_channel( wlan_channel );
             mxos_easylink_monitor_delegate_channel_changed( wlan_channel );
             wlan_channel++;
             if ( wlan_channel >= 14 ) wlan_channel = 1;
@@ -240,14 +240,14 @@ static void easylink_monitor_thread( void *arg )
     easylink_sem = mos_semphr_new( 1 );
     easylink_connect_sem = mos_semphr_new( 1 );
 
-    mxos_wlan_register_monitor_cb( monitor_cb );
+    mwifi_monitor_reg_cb( monitor_cb );
 
 restart:
     mxos_system_delegate_config_will_start( );
     system_log("Start easylink monitor mode");
     mxos_easylink_monitor_delegate_will_start( );
     mxosWlanSuspend();
-    mxos_wlan_start_monitor( );
+    mwifi_monitor_start( );
 
     wlan_channel_walker = MXOS_TRUE;
     mxos_time_get_time( &current );
@@ -259,7 +259,7 @@ restart:
     err = mos_semphr_acquire(easylink_sem, MXOS_WAIT_FOREVER );
 
     switch_channel_flag = false;
-    mxos_wlan_stop_monitor();
+    mwifi_monitor_stop();
     mxos_easylink_monitor_delegate_stoped();
 
     /* Easylink force exit by user, clean and exit */
@@ -299,7 +299,7 @@ restart:
                 goto restart;
             } else {
                 system_log("exit easylink combo mode");
-                mxosWlanSuspendStation( );
+                mwifi_disconnect( );
                 goto exit;
             }
         }

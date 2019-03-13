@@ -307,33 +307,33 @@ typedef struct mxos_api_struct
     int (*wlan_get_mac_address)( unsigned char *dest );
     int (*wlan_get_mac_address_by_interface)(wlan_if_t wlan_if, unsigned char *dest);
     int (*mxos_wlan_driver_version)( char* version, int length );
-    merr_t (*mxosWlanStart)( network_InitTypeDef_st* inNetworkInitPara );
-    merr_t (*mxosWlanStartAdv)( network_InitTypeDef_adv_st* inNetworkInitParaAdv );
-    merr_t (*mxosWlanGetIPStatus)( IPStatusTypedef *outNetpara, WiFi_Interface inInterface );
-    merr_t (*mxosWlanGetLinkStatus)( LinkStatusTypeDef *outStatus );
-    merr_t (*mxosWlanStartScan)( void );
-    merr_t (*mxosWlanStartScanAdv)( void );
-    merr_t (*mxosWlanPowerOff)( void );
-    merr_t (*mxosWlanPowerOn)( void );
+    merr_t (*mwifi_softap_start)( network_InitTypeDef_st* inNetworkInitPara );
+    merr_t (*mwifi_connect)( network_InitTypeDef_adv_st* inNetworkInitParaAdv );
+    merr_t (*mwifi_get_ip)( IPStatusTypedef *outNetpara, WiFi_Interface inInterface );
+    merr_t (*mwifi_get_link_info)( LinkStatusTypeDef *outStatus );
+    merr_t (*mwifi_softap_startScan)( void );
+    merr_t (*mwifi_softap_startScanAdv)( void );
+    merr_t (*mwifi_off)( void );
+    merr_t (*mwifi_on)( void );
     merr_t (*mxosWlanSuspend)( void );
-    merr_t (*mxosWlanSuspendStation)( void );
-    merr_t (*mxosWlanSuspendSoftAP)( void );
-    merr_t (*mxosWlanStartEasyLink)( int inTimeout );
-    merr_t (*mxosWlanStartEasyLinkPlus)( int inTimeout );
+    merr_t (*mwifi_disconnect)( void );
+    merr_t (*mwifi_softap_stop)( void );
+    merr_t (*mwifi_softap_startEasyLink)( int inTimeout );
+    merr_t (*mwifi_softap_startEasyLinkPlus)( int inTimeout );
     merr_t (*mxosWlanStopEasyLink)( void );
     merr_t (*mxosWlanStopEasyLinkPlus)( void );
-    merr_t (*mxosWlanStartWPS)( int inTimeout );
+    merr_t (*mwifi_softap_startWPS)( int inTimeout );
     merr_t (*mxosWlanStopWPS)( void );
-    merr_t (*mxosWlanStartAirkiss)( int inTimeout );
-    merr_t (*mxosWlanStopAirkiss)( void );
-    void (*mxosWlanEnablePowerSave)( void );
-    void (*mxosWlanDisablePowerSave)( void );
+    merr_t (*mwifi_softap_startAirkiss)( int inTimeout );
+    merr_t (*mwifi_airkiss_stop)( void );
+    void (*mwifi_ps_on)( void );
+    void (*mwifi_ps_off)( void );
     void (*wifimgr_debug_enable)( bool enable );
     int (*mxos_wlan_monitor_rx_type)( int type );
-    int (*mxos_wlan_start_monitor)( void );
-    int (*mxos_wlan_stop_monitor)( void );
-    int (*mxos_wlan_monitor_set_channel)( int channel );
-    void (*mxos_wlan_register_monitor_cb)( monitor_cb_t fn );
+    int (*mwifi_monitor_start)( void );
+    int (*mwifi_monitor_stop)( void );
+    int (*mwifi_monitor_set_channel)( int channel );
+    void (*mwifi_monitor_reg_cb)( monitor_cb_t fn );
     void (*wlan_set_channel)( int channel );
     int (*mxchip_active_scan)( char*ssid, int is_adv );
     merr_t (*wifi_manage_custom_ie_add)(wlan_if_t wlan_if, uint8_t *custom_ie, uint32_t len);
@@ -360,30 +360,30 @@ typedef struct mxos_api_struct
     void (*iperf_Command)( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv );
 
     /* HAL: GPIO; FLASH; UART */
-    mxos_logic_partition_t* (*mxos_flash_get_info)( mxos_partition_t inPartition );
-    merr_t (*mxos_flash_erase)( mxos_partition_t inPartition, uint32_t off_set, uint32_t size );
-    merr_t (*mxos_flash_write)( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* inBuffer,
+    mxos_logic_partition_t* (*mhal_flash_get_info)( mxos_partition_t inPartition );
+    merr_t (*mhal_flash_erase)( mxos_partition_t inPartition, uint32_t off_set, uint32_t size );
+    merr_t (*mhal_flash_write)( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* inBuffer,
                                 uint32_t inBufferLength );
-    merr_t (*mxos_flash_read)( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* outBuffer,
+    merr_t (*mhal_flash_read)( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* outBuffer,
                                uint32_t inBufferLength );
     merr_t (*mxos_flash_enable_security)( mxos_partition_t partition, uint32_t off_set, uint32_t size );
 
-    merr_t (*mxos_gpio_init)( mxos_gpio_t gpio, mxos_gpio_config_t configuration );
-    merr_t (*mxos_gpio_deinit)( mxos_gpio_t gpio );
-    merr_t (*mxos_gpio_output_high)( mxos_gpio_t gpio );
-    merr_t (*mxos_gpio_output_low)( mxos_gpio_t gpio );
-    merr_t (*mxos_gpio_output_toggle)( mxos_gpio_t gpio );
-    bool (*mxos_gpio_input_get)( mxos_gpio_t gpio );
-    merr_t (*mxos_gpio_enable_irq)( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler,
+    merr_t (*mhal_gpio_open)( mxos_gpio_t gpio, mxos_gpio_config_t configuration );
+    merr_t (*mhal_gpio_close)( mxos_gpio_t gpio );
+    merr_t (*mhal_gpio_high)( mxos_gpio_t gpio );
+    merr_t (*mhal_gpio_low)( mxos_gpio_t gpio );
+    merr_t (*mhal_gpio_toggle)( mxos_gpio_t gpio );
+    bool (*mhal_gpio_value)( mxos_gpio_t gpio );
+    merr_t (*mhal_gpio_int_on)( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler,
                                    void* arg );
-    merr_t (*mxos_gpio_disable_irq)( mxos_gpio_t gpio );
+    merr_t (*mhal_gpio_int_off)( mxos_gpio_t gpio );
 
-    merr_t (*mxos_uart_init)( mxos_uart_t uart, const mxos_uart_config_t* config,
+    merr_t (*mhal_uart_open)( mxos_uart_t uart, const mxos_uart_config_t* config,
                                     ring_buffer_t* optional_rx_buffer );
-    merr_t (*mxos_uart_deinit)( mxos_uart_t uart );
-    merr_t (*mxos_uart_send)( mxos_uart_t uart, const void* data, uint32_t size );
-    merr_t (*mxos_uart_recv)( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout );
-    uint32_t (*mxos_uart_recvd_data_len)( mxos_uart_t uart );
+    merr_t (*mhal_uart_close)( mxos_uart_t uart );
+    merr_t (*mhal_uart_write)( mxos_uart_t uart, const void* data, uint32_t size );
+    merr_t (*mhal_uart_read)( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout );
+    uint32_t (*mhal_uart_readd_data_len)( mxos_uart_t uart );
     void (*MxosUartPinRedirect)( mxos_uart_t uart );
 
     /* Power management*/
@@ -492,7 +492,7 @@ typedef struct user_api_struct
     void (*wifi_reboot_event)( void );
     void (*mxos_rtos_stack_overflow)( char *taskname );
     const platform_peripherals_pinmap_t *pinmaps;
-    const mxos_gpio_init_t *gpio_init;
+    const mhal_gpio_open_t *gpio_init;
     const uint8_t stdio_break_in;
 } user_api_t;
 

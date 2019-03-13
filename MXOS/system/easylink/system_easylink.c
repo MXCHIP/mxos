@@ -104,7 +104,7 @@ static void easylink_uap_configured_cd(uint32_t id)
 {
     easylinkIndentifier = id;
     easylink_success = true;
-    mxosWlanSuspendSoftAP();
+    mwifi_softap_stop();
     mos_semphr_release(easylink_sem );
 }
 #endif
@@ -228,7 +228,7 @@ restart:
     while( mos_semphr_acquire(easylink_sem, 0 ) == kNoErr );
     err = mos_semphr_acquire(easylink_sem, EasyLink_TimeOut );
 #else
-    mxosWlanStartEasyLinkPlus( EasyLink_TimeOut / 1000 );
+    mwifi_softap_startEasyLinkPlus( EasyLink_TimeOut / 1000 );
     while( mos_semphr_acquire(easylink_sem, 0 ) == kNoErr );
     err = mos_semphr_acquire(easylink_sem, MXOS_WAIT_FOREVER );
 #endif
@@ -285,7 +285,7 @@ restart:
         else {
             /*module should power down in default setting*/
             system_log("Wi-Fi power off");
-            mxosWlanPowerOff();
+            mwifi_off();
         }
     }
 

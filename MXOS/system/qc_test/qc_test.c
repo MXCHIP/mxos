@@ -85,7 +85,7 @@ static uint8_t* _qc_test_uart_init( void )
         uart_config.flags        = UART_WAKEUP_DISABLE;
 
         ring_buffer_init( (ring_buffer_t *) &rx_buffer, (uint8_t *) pbuffer, QC_UART_BUFFER_SIZR );
-        mxos_uart_init( MXOS_MFG_TEST, &uart_config, (ring_buffer_t *) &rx_buffer );
+        mhal_uart_open( MXOS_MFG_TEST, &uart_config, (ring_buffer_t *) &rx_buffer );
     }
     return pbuffer;
 }
@@ -93,7 +93,7 @@ static uint8_t* _qc_test_uart_init( void )
 /* Calculate Application firmware's CRC */
 static void _qc_test_calculate_app_crc( char *str, int len )
 {
-    mxos_logic_partition_t *partition_flash = mxos_flash_get_info( MXOS_PARTITION_APPLICATION );
+    mxos_logic_partition_t *partition_flash = mhal_flash_get_info( MXOS_PARTITION_APPLICATION );
     uint8_t *mfgbuf = malloc( 1024 );
     uint16_t crc = 0;
     uint32_t flash_addr = 0x0;
@@ -107,7 +107,7 @@ static void _qc_test_calculate_app_crc( char *str, int len )
         int buf_len = (flash_len > 1024) ? 1024 : flash_len;
         flash_len -= buf_len;
 
-        mxos_flash_read( MXOS_PARTITION_APPLICATION, &flash_addr, (uint8_t *) mfgbuf, buf_len );
+        mhal_flash_read( MXOS_PARTITION_APPLICATION, &flash_addr, (uint8_t *) mfgbuf, buf_len );
         CRC16_Update( &mfg_context, (uint8_t *) mfgbuf, buf_len );
     }
 
@@ -154,7 +154,7 @@ static void _qc_test_thread( void * arg )
 #endif
 
 #ifndef PPP_IF
-    mxos_wlan_get_mac_address( mac );
+    mwifi_get_mac( mac );
     sprintf( str, "%02X-%02X-%02X-%02X-%02X-%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5] );
     QC_TEST_PRINT_STRING( "MAC:", str );
 
@@ -208,7 +208,7 @@ void mxos_mfg_test(mxos_Context_t *inContext)
   wNetConfig.dhcpMode = DHCP_Client;
   
   wNetConfig.wifi_retry_interval = 100;
-  mxosWlanStartAdv(&wNetConfig);
+  mwifi_connect(&wNetConfig);
   
   /* Initialize UART interface */
   uart_config.baud_rate    = 115200;
@@ -219,7 +219,7 @@ void mxos_mfg_test(mxos_Context_t *inContext)
   uart_config.flags = UART_WAKEUP_DISABLE;
   
   ring_buffer_init  ( (ring_buffer_t *)&rx_buffer, (uint8_t *)rx_data, 2048 );
-  mxos_uart_init( UART_FOR_APP, &uart_config, (ring_buffer_t *)&rx_buffer );
+  mhal_uart_open( UART_FOR_APP, &uart_config, (ring_buffer_t *)&rx_buffer );
   mos_thread_new( MXOS_APPLICATION_PRIORITY, "MFG UART Recv", uartRecvMfg_thread, 0x300, NULL );
   
   /* Initialize UDP interface */
@@ -258,7 +258,7 @@ void mxos_mfg_test(mxos_Context_t *inContext)
     /* Recv UDP data and send to COM */
     if (FD_ISSET(testCommandFd, &readfds)) {
       recvLength = recvfrom(testCommandFd, buf, 1500, 0, (struct sockaddr *)&addr, &addrLen);
-      mxos_uart_send(UART_FOR_APP, buf, recvLength);
+      mhal_uart_write(UART_FOR_APP, buf, recvLength);
     }
   }
   
@@ -297,13 +297,13 @@ static size_t _uart_get_one_packet(uint8_t* inBuf, int inBufLen)
   int datalen;
   
   while(1) {
-    if( mxos_uart_recv( UART_FOR_APP, inBuf, inBufLen, 500) == kNoErr){
+    if( mhal_uart_read( UART_FOR_APP, inBuf, inBufLen, 500) == kNoErr){
       return inBufLen;
     }
     else{
-      datalen = mxos_uart_recvd_data_len( UART_FOR_APP );
+      datalen = mhal_uart_readd_data_len( UART_FOR_APP );
       if(datalen){
-        mxos_uart_recv(UART_FOR_APP, inBuf, datalen, 500);
+        mhal_uart_read(UART_FOR_APP, inBuf, datalen, 500);
         return datalen;
       }
     }

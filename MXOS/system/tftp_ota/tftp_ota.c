@@ -99,7 +99,7 @@ void tftp_ota(void)
     uint8_t *tmpbuf;
     md5_context ctx;
     uint8_t mac[6], sta_ip_addr[16];
-    mxos_logic_partition_t* ota_partition = mxos_flash_get_info( MXOS_PARTITION_OTA_TEMP );
+    mxos_logic_partition_t* ota_partition = mhal_flash_get_info( MXOS_PARTITION_OTA_TEMP );
     uint16_t crc = 0;
     CRC16_Context contex;
     
@@ -114,8 +114,8 @@ void tftp_ota(void)
     mxos_system_notify_register( mxos_notify_WIFI_STATUS_CHANGED, (void *)FOTA_WifiStatusHandler, NULL );
     mxosWlanStopEasyLink();
 	  mxosWlanStopEasyLinkPlus();
-    mxosWlanStopAirkiss();
-    mxosWlanSuspendStation();
+    mwifi_airkiss_stop();
+    mwifi_disconnect();
 	mxos_rtos_thread_msleep(10);
 		
     tmpbuf = (uint8_t*)malloc(TMP_BUF_LEN);
@@ -143,7 +143,7 @@ void tftp_ota(void)
     
     wifi_up = 0;
     fota_log("Connect to AP %s...", DEFAULT_OTA_AP);
-    mxosWlanStart(&conf);
+    mwifi_softap_start(&conf);
 
     while(wifi_up == 0) {
         mxos_rtos_thread_msleep(100);
@@ -175,7 +175,7 @@ void tftp_ota(void)
     filelen -= 16; // remove md5.
     fota_log("tftp download image finished, OTA bin len %d", filelen);
     flashaddr = filelen;
-    mxos_flash_read(MXOS_PARTITION_OTA_TEMP, &flashaddr, (uint8_t *)md5_recv, 16);
+    mhal_flash_read(MXOS_PARTITION_OTA_TEMP, &flashaddr, (uint8_t *)md5_recv, 16);
     InitMd5( &ctx );
     CRC16_Init( &contex );
     flashaddr = 0;
@@ -187,7 +187,7 @@ void tftp_ota(void)
             len = left;
         }
         left -= len;
-        mxos_flash_read(MXOS_PARTITION_OTA_TEMP, &flashaddr, (uint8_t *)tmpbuf, len);
+        mhal_flash_read(MXOS_PARTITION_OTA_TEMP, &flashaddr, (uint8_t *)tmpbuf, len);
         Md5Update( &ctx, (uint8_t *)tmpbuf, len);
         CRC16_Update( &contex, tmpbuf, len );
     }

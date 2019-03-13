@@ -128,7 +128,7 @@ static struct fs * ftfs_file_init( struct ftfs_super *sb, mxos_partition_t parti
     uint32_t start_addr = 0;
     mxos_logic_partition_t *ftfs_partition;
 
-    ftfs_partition = mxos_flash_get_info( partition );
+    ftfs_partition = mhal_flash_get_info( partition );
 
     start_addr = ftfs_partition->partition_start_addr;
 
@@ -362,7 +362,7 @@ static merr_t ftfs_scan_files( char* mounted_name, mxos_scan_file_handle arg )
     struct ft_entry entry;
     while ( entry.name[0] != '\0' )
     {
-        mxos_flash_read( MXOS_PARTITION_FILESYS, &addr, (uint8_t *) &entry, sizeof(entry) );
+        mhal_flash_read( MXOS_PARTITION_FILESYS, &addr, (uint8_t *) &entry, sizeof(entry) );
         if(entry.name[0] == '\0')
         break;
         arg( path,(char *)entry.name);

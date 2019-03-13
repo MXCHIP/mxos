@@ -241,7 +241,7 @@ int tsend (tftp_file_info_t *fileinfo, uint32_t ipaddr)
       else
         ssize = fileinfo->filelen;
       fileinfo->filelen -= ssize;
-      mxos_flash_read(fileinfo->flashtype, &flashaddr, (uint8_t *)filebuf, ssize);
+      mhal_flash_read(fileinfo->flashtype, &flashaddr, (uint8_t *)filebuf, ssize);
 
 
       count++;			/* count number of datasize byte portions we read from the file */
@@ -390,7 +390,7 @@ tget (tftp_file_info_t *fileinfo, uint32_t ipaddr)
         return -1;
       }
 
-   mxos_flash_erase(fileinfo->flashtype,fileinfo->flashaddr,fileinfo->filelen);
+   mhal_flash_erase(fileinfo->flashtype,fileinfo->flashaddr,fileinfo->filelen);
   
     memset (packetbuf, 0, sizeof(packetbuf));  /*clear the buffer */
     /* this is the first request message */
@@ -485,7 +485,7 @@ tget (tftp_file_info_t *fileinfo, uint32_t ipaddr)
 	      else
 		{
           if (count + 1 == rcount) {// received right seq no, save and ack
-            mxos_flash_write(fileinfo->flashtype, &flashaddr, (uint8_t *)bufindex, n - 4);
+            mhal_flash_write(fileinfo->flashtype, &flashaddr, (uint8_t *)bufindex, n - 4);
             totalen += n-4;
             count = rcount;
           } 

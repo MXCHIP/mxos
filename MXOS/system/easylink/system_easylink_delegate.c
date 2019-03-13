@@ -30,7 +30,7 @@ static bool _Led_EL_timer_initialized = false;
 static void _led_EL_Timeout_handler( void* arg )
 {
   (void)(arg);
-  mxos_gpio_output_toggle((mxos_gpio_t)MXOS_SYS_LED);
+  mhal_gpio_toggle((mxos_gpio_t)MXOS_SYS_LED);
 }
 
 WEAK void mxos_system_delegate_config_will_start( void )
@@ -114,7 +114,7 @@ WEAK void mxos_system_delegate_easylink_timeout( system_context_t *context )
     }
     else {
         /*module should power down in default setting*/
-        mxosWlanPowerOff();
+        mwifi_off();
     }
 }
 

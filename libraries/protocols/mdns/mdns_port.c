@@ -375,7 +375,7 @@ int mdns_send_msg(struct mdns_message *m, int sock, unsigned short port, netif_t
     /* get message length */
     size = (unsigned int)m->cur - (unsigned int)m->header;
 
-    mxosWlanGetIPStatus(&interface_ip_status, out_interface);
+    mwifi_get_ip(&interface_ip_status, out_interface);
     ip = inet_addr(interface_ip_status.ip);
 
 #ifdef CONFIG_IPV6

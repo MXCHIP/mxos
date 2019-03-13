@@ -447,9 +447,9 @@ const platform_adc_t platform_adc_peripherals[] =
 
 bool mxos_should_enter_bootloader( void )
 {
-  if ((mxos_gpio_input_get((mxos_gpio_t)BOOT_SEL) == false) &&
-	  (mxos_gpio_input_get((mxos_gpio_t)EasyLink_BUTTON) == true) &&
-	  (mxos_gpio_input_get((mxos_gpio_t)MFG_SEL) == true))
+  if ((mhal_gpio_value((mxos_gpio_t)BOOT_SEL) == false) &&
+	  (mhal_gpio_value((mxos_gpio_t)EasyLink_BUTTON) == true) &&
+	  (mhal_gpio_value((mxos_gpio_t)MFG_SEL) == true))
 	  return true;
   else
   	return false;
@@ -457,8 +457,8 @@ bool mxos_should_enter_bootloader( void )
 
 bool mxos_should_enter_mfg_mode( void )
 {
-  if ((mxos_gpio_input_get((mxos_gpio_t)BOOT_SEL) == false) &&
-	  (mxos_gpio_input_get((mxos_gpio_t)MFG_SEL) == false))
+  if ((mhal_gpio_value((mxos_gpio_t)BOOT_SEL) == false) &&
+	  (mhal_gpio_value((mxos_gpio_t)MFG_SEL) == false))
 	  return true;
   else
   	return false;
@@ -466,9 +466,9 @@ bool mxos_should_enter_mfg_mode( void )
 
 bool mxos_should_enter_ate_mode( void )
 {
-  if ((mxos_gpio_input_get((mxos_gpio_t)BOOT_SEL) == false) &&
-	  (mxos_gpio_input_get((mxos_gpio_t)EasyLink_BUTTON) == false) &&
-	  (mxos_gpio_input_get((mxos_gpio_t)MFG_SEL) == true))
+  if ((mhal_gpio_value((mxos_gpio_t)BOOT_SEL) == false) &&
+	  (mhal_gpio_value((mxos_gpio_t)EasyLink_BUTTON) == false) &&
+	  (mhal_gpio_value((mxos_gpio_t)MFG_SEL) == true))
 	  return true;
   else
   	return false;
@@ -513,23 +513,23 @@ static int gpio_test_one( int index)
     in  = gpio_test_mapping[index].input_pin;
     out = gpio_test_mapping[index].output_pin;
 
-    mxos_gpio_init(in, INPUT_HIGH_IMPEDANCE);
-    mxos_gpio_init(out, OUTPUT_PUSH_PULL);
+    mhal_gpio_open(in, INPUT_HIGH_IMPEDANCE);
+    mhal_gpio_open(out, OUTPUT_PUSH_PULL);
     
-    mxos_gpio_output_high(out);
+    mhal_gpio_high(out);
     msleep(1);
-    if (mxos_gpio_input_get(in) != true)
+    if (mhal_gpio_value(in) != true)
         goto EXIT;
     
-    mxos_gpio_output_low(out);
+    mhal_gpio_low(out);
     msleep(1);
-    if (mxos_gpio_input_get(in) != false)
+    if (mhal_gpio_value(in) != false)
         goto EXIT;
 
     ret = 1;
 EXIT:    
-    mxos_gpio_init(in, INPUT_HIGH_IMPEDANCE);
-    mxos_gpio_init(out, INPUT_HIGH_IMPEDANCE);
+    mhal_gpio_open(in, INPUT_HIGH_IMPEDANCE);
+    mhal_gpio_open(out, INPUT_HIGH_IMPEDANCE);
     return ret;
 }
 

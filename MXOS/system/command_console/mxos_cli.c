@@ -415,7 +415,7 @@ static void tftp_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char
     ip = inet_addr(argv[1]);
     parttype = (mxos_partition_t)atoi(argv[4]);
 
-    partition = mxos_flash_get_info( parttype );
+    partition = mhal_flash_get_info( parttype );
     if (partition) {
         cmdinfo.flashtype = parttype;
     } else {
@@ -449,7 +449,7 @@ static void partShow_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, 
     mxos_logic_partition_t *partition;
 
     for( i = MXOS_PARTITION_BOOTLOADER; i <= MXOS_PARTITION_MAX; i++ ){
-        partition = mxos_flash_get_info( i );
+        partition = mhal_flash_get_info( i );
         if (partition == NULL)
             continue;
         if (partition->partition_owner == MXOS_FLASH_NONE)
@@ -800,7 +800,7 @@ int cli_init(void)
   memset((void *)pCli, 0, sizeof(struct cli_st));
   
   ring_buffer_init  ( (ring_buffer_t*)&cli_rx_buffer, (uint8_t*)cli_rx_data, INBUF_SIZE );
-  mxos_uart_init( MXOS_CLI_UART, &cli_uart_config, (ring_buffer_t*)&cli_rx_buffer );
+  mhal_uart_open( MXOS_CLI_UART, &cli_uart_config, (ring_buffer_t*)&cli_rx_buffer );
   
   /* add our built-in commands */
   if (cli_register_commands(&built_ins[0],
@@ -855,14 +855,14 @@ int cli_printf(const char *msg, ...)
 int cli_putstr(const char *msg)
 {
   if (msg[0] != 0)
-    mxos_uart_send( MXOS_CLI_UART, (const char*)msg, strlen(msg) );
+    mhal_uart_write( MXOS_CLI_UART, (const char*)msg, strlen(msg) );
   
   return 0;
 }
 
 int cli_getchar(char *inbuf)
 {
-  if (mxos_uart_recv(MXOS_CLI_UART, inbuf, 1, MXOS_WAIT_FOREVER) == 0)
+  if (mhal_uart_read(MXOS_CLI_UART, inbuf, 1, MXOS_WAIT_FOREVER) == 0)
     return 1;
   else
     return 0;

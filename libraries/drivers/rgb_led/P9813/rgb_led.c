@@ -73,8 +73,8 @@ static void P9813_PIN_write_data(uint8_t blue, uint8_t green, uint8_t red)
 
 void rgb_led_init(void)
 {
-  mxos_gpio_init( (mxos_gpio_t)P9813_PIN_CIN, OUTPUT_PUSH_PULL );
-  mxos_gpio_init( (mxos_gpio_t)P9813_PIN_DIN, OUTPUT_PUSH_PULL );
+  mhal_gpio_open( (mxos_gpio_t)P9813_PIN_CIN, OUTPUT_PUSH_PULL );
+  mhal_gpio_open( (mxos_gpio_t)P9813_PIN_DIN, OUTPUT_PUSH_PULL );
 }
 
 void rgb_led_open(uint8_t red, uint8_t green, uint8_t blue)

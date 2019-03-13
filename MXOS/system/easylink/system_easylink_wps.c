@@ -195,7 +195,7 @@ restart:
         else {
             /*module should power down in default setting*/
             system_log("Wi-Fi power off");
-            mxosWlanPowerOff();
+            mwifi_off();
         }
     }
 

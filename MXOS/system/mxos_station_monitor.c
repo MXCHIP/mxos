@@ -55,7 +55,7 @@ static void station_monitro_func( void * arg )
         if (station_up == 1) {
             if (softap_up) {
                 station_m_log("Stop softap");
-                mxosWlanSuspendSoftAP();
+                mwifi_softap_stop();
                 softap_up = 0;
             }
         } else if (softap_up == 0) {
@@ -77,7 +77,7 @@ static void station_monitro_func( void * arg )
 
             station_m_log("Establish SofAP, SSID:%s and KEY:%s", wNetConfig.wifi_ssid, wNetConfig.wifi_key);
 
-            mxosWlanStart( &wNetConfig );
+            mwifi_softap_start( &wNetConfig );
             softap_up = 1;
         }
     }

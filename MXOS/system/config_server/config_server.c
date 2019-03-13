@@ -310,7 +310,7 @@ static merr_t onReceivedData(struct _HTTPHeader_t * inHeader, uint32_t inPos, ui
   const char *    value;
   size_t          valueSize;
   configContext_t *context = (configContext_t *)inUserContext;
-  mxos_logic_partition_t* ota_partition = mxos_flash_get_info( MXOS_PARTITION_OTA_TEMP );
+  mxos_logic_partition_t* ota_partition = mhal_flash_get_info( MXOS_PARTITION_OTA_TEMP );
 
   err = HTTPGetHeaderField( inHeader->buf, inHeader->len, "Content-Type", NULL, NULL, &value, &valueSize, NULL );
   if(err == kNoErr && strnicmpx( value, valueSize, kMIMEType_MXCHIP_OTA ) == 0){
@@ -328,13 +328,13 @@ static merr_t onReceivedData(struct _HTTPHeader_t * inHeader, uint32_t inPos, ui
        CRC16_Init( &context->crc16_contex );
        mos_mutex_lock(sys_context->flashContentInRam_mutex); //We are write the Flash content, no other write is possible
        context->isFlashLocked = true;
-       err = mxos_flash_erase( MXOS_PARTITION_OTA_TEMP, 0x0, ota_partition->partition_length);
+       err = mhal_flash_erase( MXOS_PARTITION_OTA_TEMP, 0x0, ota_partition->partition_length);
        require_noerr(err, flashErrExit);
-       err = mxos_flash_write( MXOS_PARTITION_OTA_TEMP, &context->offset, (uint8_t *)inData, inLen);
+       err = mhal_flash_write( MXOS_PARTITION_OTA_TEMP, &context->offset, (uint8_t *)inData, inLen);
        require_noerr(err, flashErrExit);
        CRC16_Update( &context->crc16_contex, inData, inLen);
      }else{
-       err = mxos_flash_write( MXOS_PARTITION_OTA_TEMP, &context->offset, (uint8_t *)inData, inLen);
+       err = mhal_flash_write( MXOS_PARTITION_OTA_TEMP, &context->offset, (uint8_t *)inData, inLen);
        require_noerr(err, flashErrExit);
        CRC16_Update( &context->crc16_contex, inData, inLen);
      }
@@ -372,10 +372,10 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
   bool need_reboot = false;
   uint16_t crc;
   configContext_t *http_context = (configContext_t *)inHeader->userContext;
-  mxos_logic_partition_t* ota_partition = mxos_flash_get_info( MXOS_PARTITION_OTA_TEMP );
+  mxos_logic_partition_t* ota_partition = mhal_flash_get_info( MXOS_PARTITION_OTA_TEMP );
   char name[50];
   IPStatusTypedef ip;
-  mxosWlanGetIPStatus(&ip, INTERFACE_STA);
+  mwifi_get_ip(&ip, INTERFACE_STA);
 
   json_object *sectors, *sector = NULL;
 

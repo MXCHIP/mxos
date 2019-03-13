@@ -36,7 +36,7 @@
  *               Function Definitions
  ******************************************************/
 
-void mxos_flash_eraseWrite( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* data_addr, uint32_t size );
+void mhal_flash_eraseWrite( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* data_addr, uint32_t size );
 merr_t tester_block_device_init( mxos_block_device_t* device, mxos_block_device_write_mode_t write_mode );
 merr_t tester_block_flush( mxos_block_device_t * device );
 merr_t tester_block_status( mxos_block_device_t* device, mxos_block_device_status_t* status );
@@ -123,7 +123,7 @@ merr_t tester_block_read( mxos_block_device_t* device, uint64_t start_address, u
     for ( ; count > 0; count-- )
     {
         offset = start_address;
-        err = mxos_flash_read( MXOS_PARTITION_FILESYS, (uint32_t *) &offset, buff, SECTOR_SIZE );
+        err = mhal_flash_read( MXOS_PARTITION_FILESYS, (uint32_t *) &offset, buff, SECTOR_SIZE );
         offset += SECTOR_SIZE;
         buff += SECTOR_SIZE;
         if ( err != kNoErr )
@@ -149,7 +149,7 @@ merr_t tester_block_write( mxos_block_device_t* device, uint64_t start_address, 
     for ( ; size > 0; size-- )
     {
         offset = start_address;
-        mxos_flash_eraseWrite( MXOS_PARTITION_FILESYS, (uint32_t *) &offset, (uint8_t *) data, SECTOR_SIZE );
+        mhal_flash_eraseWrite( MXOS_PARTITION_FILESYS, (uint32_t *) &offset, (uint8_t *) data, SECTOR_SIZE );
         offset += SECTOR_SIZE;
         data += SECTOR_SIZE;
         if ( err != kNoErr )
@@ -161,7 +161,7 @@ merr_t tester_block_write( mxos_block_device_t* device, uint64_t start_address, 
     return err;
 }
 
-void mxos_flash_eraseWrite( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* data_addr, uint32_t size )
+void mhal_flash_eraseWrite( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* data_addr, uint32_t size )
 {
     uint32_t f_sector;
     uint32_t f_addr;
@@ -177,7 +177,7 @@ void mxos_flash_eraseWrite( mxos_partition_t partition, volatile uint32_t* off_s
 
     f_sector_buf = malloc( FLASH_SECTOR );
 
-    mxos_flash_read( partition, &f_addr, f_sector_buf, FLASH_SECTOR );
+    mhal_flash_read( partition, &f_addr, f_sector_buf, FLASH_SECTOR );
 
     for ( pos = 0; pos < size; pos++ )
     {
@@ -188,16 +188,16 @@ void mxos_flash_eraseWrite( mxos_partition_t partition, volatile uint32_t* off_s
     if ( pos != size )
     {
         f_addr -= FLASH_SECTOR;
-        mxos_flash_erase( partition, f_addr, size );
+        mhal_flash_erase( partition, f_addr, size );
 
         for ( pos = 0; pos < size; pos++ )
         {
             f_sector_buf[s_sector + pos] = data_addr[pos];
         }
-        mxos_flash_write( partition, &f_addr, f_sector_buf, FLASH_SECTOR );
+        mhal_flash_write( partition, &f_addr, f_sector_buf, FLASH_SECTOR );
     } else
     {
-        mxos_flash_write( partition, off_set, data_addr, size );
+        mhal_flash_write( partition, off_set, data_addr, size );
     }
 
     free( f_sector_buf );

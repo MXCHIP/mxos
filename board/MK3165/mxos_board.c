@@ -418,37 +418,37 @@ void mxos_board_init( void )
     /* Ensure 802.11 device is in reset. */
     host_platform_init( );
 
-    mxos_gpio_init( (mxos_gpio_t)MXOS_SYS_LED, OUTPUT_PUSH_PULL );
-    mxos_gpio_output_low( (mxos_gpio_t)MXOS_SYS_LED );
-    mxos_gpio_init( (mxos_gpio_t)MXOS_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
-    mxos_gpio_output_high( (mxos_gpio_t)MXOS_RF_LED );
+    mhal_gpio_open( (mxos_gpio_t)MXOS_SYS_LED, OUTPUT_PUSH_PULL );
+    mhal_gpio_low( (mxos_gpio_t)MXOS_SYS_LED );
+    mhal_gpio_open( (mxos_gpio_t)MXOS_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
+    mhal_gpio_high( (mxos_gpio_t)MXOS_RF_LED );
   
-    mxos_gpio_init((mxos_gpio_t)BOOT_SEL, INPUT_PULL_UP);
-    mxos_gpio_init((mxos_gpio_t)MFG_SEL, INPUT_PULL_UP);
+    mhal_gpio_open((mxos_gpio_t)BOOT_SEL, INPUT_PULL_UP);
+    mhal_gpio_open((mxos_gpio_t)MFG_SEL, INPUT_PULL_UP);
 }
 
 
 void mxos_sys_led(bool onoff)
 {
   if (onoff) {
-    mxos_gpio_output_low( (mxos_gpio_t)MXOS_SYS_LED );
+    mhal_gpio_low( (mxos_gpio_t)MXOS_SYS_LED );
   } else {
-    mxos_gpio_output_high( (mxos_gpio_t)MXOS_SYS_LED );
+    mhal_gpio_high( (mxos_gpio_t)MXOS_SYS_LED );
   }
 }
 
 void mxos_rf_led(bool onoff)
 {
   if (onoff) {
-    mxos_gpio_output_low( (mxos_gpio_t)MXOS_RF_LED );
+    mhal_gpio_low( (mxos_gpio_t)MXOS_RF_LED );
   } else {
-    mxos_gpio_output_high( (mxos_gpio_t)MXOS_RF_LED );
+    mhal_gpio_high( (mxos_gpio_t)MXOS_RF_LED );
   }
 }
 
 bool mxos_should_enter_mfg_mode(void)
 {
-  if(mxos_gpio_input_get((mxos_gpio_t)BOOT_SEL)==false && mxos_gpio_input_get((mxos_gpio_t)MFG_SEL)==false)
+  if(mhal_gpio_value((mxos_gpio_t)BOOT_SEL)==false && mhal_gpio_value((mxos_gpio_t)MFG_SEL)==false)
     return true;
   else
     return false;
@@ -456,7 +456,7 @@ bool mxos_should_enter_mfg_mode(void)
 
 bool mxos_should_enter_bootloader(void)
 {
-  if(mxos_gpio_input_get((mxos_gpio_t)BOOT_SEL)==false && mxos_gpio_input_get((mxos_gpio_t)MFG_SEL)==true)
+  if(mhal_gpio_value((mxos_gpio_t)BOOT_SEL)==false && mhal_gpio_value((mxos_gpio_t)MFG_SEL)==true)
     return true;
   else
     return false;

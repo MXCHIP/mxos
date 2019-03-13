@@ -74,7 +74,7 @@ static merr_t checkcrc(uint16_t crc_in, int partition_type, int total_len)
     if (crc_in == 0xFFFF)
         goto exit;
 
-    part = mxos_flash_get_info((mxos_partition_t)partition_type);
+    part = mhal_flash_get_info((mxos_partition_t)partition_type);
     if (part == NULL)
         goto exit;
 
@@ -84,7 +84,7 @@ static merr_t checkcrc(uint16_t crc_in, int partition_type, int total_len)
       } else {
         len = total_len;
       }
-      err = mxos_flash_read( MXOS_PARTITION_OTA_TEMP, &update_data_offset, data , len);
+      err = mhal_flash_read( MXOS_PARTITION_OTA_TEMP, &update_data_offset, data , len);
       require_noerr(err, exit);
 
       total_len -= len;
@@ -116,7 +116,7 @@ Log_Status updateLogCheck( boot_table_t *updateLog, mxos_partition_t *dest_parti
         return Log_UpdateTagNotExist;
 
     if ( updateLog->start_address
-        != mxos_flash_get_info( MXOS_PARTITION_OTA_TEMP )->partition_start_addr )
+        != mhal_flash_get_info( MXOS_PARTITION_OTA_TEMP )->partition_start_addr )
         return Log_StartAddressERROR;
 
     if ( updateLog->type == 'B' )
@@ -128,7 +128,7 @@ Log_Status updateLogCheck( boot_table_t *updateLog, mxos_partition_t *dest_parti
     else
         return Log_contentTypeNotExist;
 
-    if ( updateLog->length > mxos_flash_get_info( *dest_partition_type )->partition_length )
+    if ( updateLog->length > mhal_flash_get_info( *dest_partition_type )->partition_length )
         return Log_dataLengthOverFlow;
 
     if ( checkcrc( updateLog->crc, *dest_partition_type, updateLog->length ) != kNoErr )
@@ -152,10 +152,10 @@ merr_t update(void)
   mxos_partition_t dest_partition;
   merr_t err = kNoErr;
 
-  ota_partition_info = mxos_flash_get_info(MXOS_PARTITION_OTA_TEMP);
+  ota_partition_info = mhal_flash_get_info(MXOS_PARTITION_OTA_TEMP);
   require_action( ota_partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kUnsupportedErr );
   
-  para_partition_info = mxos_flash_get_info(MXOS_PARTITION_PARAMETER_1);
+  para_partition_info = mhal_flash_get_info(MXOS_PARTITION_PARAMETER_1);
   require_action( para_partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kUnsupportedErr );
   
   memset(data, 0xFF, SizePerRW);
@@ -165,7 +165,7 @@ merr_t update(void)
   //require_action( paraSaveInRam, exit, err = kNoMemoryErr );
   memset(paraSaveInRam, 0xFF, para_partition_info->partition_length);
     
-  err = mxos_flash_read( MXOS_PARTITION_PARAMETER_1, &boot_table_offset, (uint8_t *)&updateLog, sizeof(boot_table_t));
+  err = mhal_flash_read( MXOS_PARTITION_PARAMETER_1, &boot_table_offset, (uint8_t *)&updateLog, sizeof(boot_table_t));
   require_noerr(err, exit);
 
   /*Not a correct record, check ota data and erase? */
@@ -174,11 +174,11 @@ merr_t update(void)
     size = ( ota_partition_info->partition_length )/SizePerRW;
     for(i = 0; i <= size; i++){
       if( i==size ){
-        err = mxos_flash_read( MXOS_PARTITION_OTA_TEMP , &update_data_offset, data , ( ota_partition_info->partition_length )%SizePerRW );
+        err = mhal_flash_read( MXOS_PARTITION_OTA_TEMP , &update_data_offset, data , ( ota_partition_info->partition_length )%SizePerRW );
         require_noerr(err, exit);
       }
       else{
-        err = mxos_flash_read( MXOS_PARTITION_OTA_TEMP, &update_data_offset, data , SizePerRW);
+        err = mhal_flash_read( MXOS_PARTITION_OTA_TEMP, &update_data_offset, data , SizePerRW);
         require_noerr(err, exit);
       }
       
@@ -187,7 +187,7 @@ merr_t update(void)
           update_log("Update data need to be erased");
           err = mxos_flash_disable_security( MXOS_PARTITION_OTA_TEMP, 0x0, ota_partition_info->partition_length );
           require_noerr(err, exit);
-          err = mxos_flash_erase( MXOS_PARTITION_OTA_TEMP, 0x0, ota_partition_info->partition_length );
+          err = mhal_flash_erase( MXOS_PARTITION_OTA_TEMP, 0x0, ota_partition_info->partition_length );
           require_noerr(err, exit);
           goto exit;
         }
@@ -199,7 +199,7 @@ merr_t update(void)
 
   if ( updateLogCheck(&updateLog, &dest_partition) != Log_NeedUpdate ) goto exit;
 
-  dest_partition_info = mxos_flash_get_info( dest_partition );
+  dest_partition_info = mhal_flash_get_info( dest_partition );
   require_action( dest_partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kUnsupportedErr );
   
   update_log("Write OTA data to partition: %s, length %ld",
@@ -210,7 +210,7 @@ merr_t update(void)
   
   err = mxos_flash_disable_security( dest_partition, 0x0, dest_partition_info->partition_length );
   require_noerr(err, exit);
-  err = mxos_flash_erase( dest_partition, 0x0, dest_partition_info->partition_length );
+  err = mhal_flash_erase( dest_partition, 0x0, dest_partition_info->partition_length );
   require_noerr(err, exit);
   size = (updateLog.length)/SizePerRW;
   
@@ -223,12 +223,12 @@ merr_t update(void)
     }else{
       copyLength = SizePerRW;
     }
-    err = mxos_flash_read( MXOS_PARTITION_OTA_TEMP, &update_data_offset, data , copyLength);
+    err = mhal_flash_read( MXOS_PARTITION_OTA_TEMP, &update_data_offset, data , copyLength);
     require_noerr(err, exit);
-    err = mxos_flash_write( dest_partition, &dest_offset, data, copyLength);
+    err = mhal_flash_write( dest_partition, &dest_offset, data, copyLength);
     require_noerr(err, exit);
     dest_offset -= copyLength;
-    err = mxos_flash_read( dest_partition, &dest_offset, newData , copyLength);
+    err = mhal_flash_read( dest_partition, &dest_offset, newData , copyLength);
     require_noerr(err, exit);
     err = memcmp(data, newData, copyLength);
     require_noerr_action(err, exit, err = kWriteErr); 
@@ -239,19 +239,19 @@ merr_t update(void)
   para_offset = 0x0;
   err = mxos_flash_disable_security( MXOS_PARTITION_PARAMETER_1, 0x0, para_partition_info->partition_length );
   require_noerr(err, exit);
-  err = mxos_flash_read( MXOS_PARTITION_PARAMETER_1, &para_offset, paraSaveInRam, para_partition_info->partition_length );
+  err = mhal_flash_read( MXOS_PARTITION_PARAMETER_1, &para_offset, paraSaveInRam, para_partition_info->partition_length );
   require_noerr(err, exit);
   memset(paraSaveInRam, 0xff, sizeof(boot_table_t));
-  err = mxos_flash_erase( MXOS_PARTITION_PARAMETER_1, 0x0, para_partition_info->partition_length );
+  err = mhal_flash_erase( MXOS_PARTITION_PARAMETER_1, 0x0, para_partition_info->partition_length );
   require_noerr(err, exit);
   para_offset = 0x0;
-  err = mxos_flash_write( MXOS_PARTITION_PARAMETER_1, &para_offset, paraSaveInRam, para_partition_info->partition_length );
+  err = mhal_flash_write( MXOS_PARTITION_PARAMETER_1, &para_offset, paraSaveInRam, para_partition_info->partition_length );
   require_noerr(err, exit);
   
 
   err = mxos_flash_disable_security( MXOS_PARTITION_OTA_TEMP, 0x0, ota_partition_info->partition_length );
   require_noerr(err, exit);  
-  err = mxos_flash_erase( MXOS_PARTITION_OTA_TEMP, 0x0, ota_partition_info->partition_length );
+  err = mhal_flash_erase( MXOS_PARTITION_OTA_TEMP, 0x0, ota_partition_info->partition_length );
   require_noerr(err, exit);
   update_log("Update success");
   

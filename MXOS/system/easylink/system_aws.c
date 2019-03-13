@@ -207,7 +207,7 @@ restart:
     mxos_system_delegate_config_will_start( );
     system_log("Start AWS mode");
 
-    mxosWlanStartAws( EasyLink_TimeOut / 1000 );
+    mwifi_softap_startAws( EasyLink_TimeOut / 1000 );
     while( mos_semphr_acquire(aws_sem, 0 ) == kNoErr );
     err = mos_semphr_acquire(aws_sem, MXOS_WAIT_FOREVER );
 
@@ -215,7 +215,7 @@ restart:
     if( err != kNoErr && aws_thread_force_exit )
     {
         system_log("AWS waiting for terminate");
-        mxosWlanStopAws( );
+        mwifi_aws_stop( );
         mos_semphr_acquire(aws_sem, 3000 );
         system_log("AWS canceled by user");
         goto exit;
@@ -307,7 +307,7 @@ char* aws_notify_msg_create(system_context_t *context)
     char sn[64];
     uint8_t mac[6];
 
-    mxos_wlan_get_mac_address(mac);
+    mwifi_get_mac(mac);
     sprintf(sn, "%02X0%02X0%02X0%02X0%02X0%02X", 
         mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
     

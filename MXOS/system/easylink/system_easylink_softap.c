@@ -63,7 +63,7 @@ void easylink_uap_configured_cd(uint32_t id)
 {
     easylinkIndentifier = id;
     easylink_success = true;
-    mxosWlanSuspendSoftAP();
+    mwifi_softap_stop();
     mos_semphr_release(easylink_sem );
 }
 
@@ -104,7 +104,7 @@ restart:
     strcpy( (char*) wNetConfig.net_mask, "255.255.255.0" );
     strcpy( (char*) wNetConfig.gateway_ip_addr, "10.10.10.1" );
     wNetConfig.dhcpMode = DHCP_Server;
-    mxosWlanStart( &wNetConfig );
+    mwifi_softap_start( &wNetConfig );
     system_log("Establish soft ap: %s.....", wNetConfig.wifi_ssid);
 
     /* Start bonjour service for device discovery under soft ap mode */
@@ -114,7 +114,7 @@ restart:
     while( mos_semphr_acquire(easylink_sem, 0 ) == kNoErr );
     err = mos_semphr_acquire(easylink_sem, MXOS_WAIT_FOREVER );
 
-    mxosWlanSuspendSoftAP();
+    mwifi_softap_stop();
 
     /* Easylink force exit by user, clean and exit */
     if( err != kNoErr && easylink_thread_force_exit )
@@ -169,7 +169,7 @@ restart:
         else {
             /*module should power down in default setting*/
             system_log("Wi-Fi power off");
-            mxosWlanPowerOff( );
+            mwifi_off( );
         }
 
     }

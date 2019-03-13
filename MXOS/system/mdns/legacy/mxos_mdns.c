@@ -97,7 +97,7 @@ static uint32_t dns_write_record_A( dns_message_iterator_t* iter, dns_sd_service
     IPStatusTypedef para;
     uint32_t ttl = ( service->state == RECORD_NORMAL || service->state == RECORD_UPDATE )? service->ttl:0;
 
-    mxosWlanGetIPStatus(&para, service->interface);
+    mwifi_get_ip(&para, service->interface);
     ipv4_addr = inet_addr(para.ip);
 
     if( ipv4_addr == 0 || ipv4_addr == 0xFFFFFFFF) return 0;

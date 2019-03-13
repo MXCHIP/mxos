@@ -140,6 +140,6 @@ UDRV_API void UPIO_Config( tUPIO_TYPE type, tUPIO pio, tUPIO_CONFIG config, tUPI
 #if 0
 mxos_bool_t bt_bus_is_ready( void )
 {
-    return ( bus_initialised == MXOS_FALSE ) ? MXOS_FALSE : ( ( mxos_gpio_input_get( BLUETOOTH_GPIO_CTS_PIN ) == MXOS_TRUE ) ? MXOS_FALSE : MXOS_TRUE );
+    return ( bus_initialised == MXOS_FALSE ) ? MXOS_FALSE : ( ( mhal_gpio_value( BLUETOOTH_GPIO_CTS_PIN ) == MXOS_TRUE ) ? MXOS_FALSE : MXOS_TRUE );
 }
 #endif

@@ -65,7 +65,7 @@
 /******************************************************
 *               Variables Definitions
 ******************************************************/
-const mxos_gpio_init_t gpio_init[] =
+const mhal_gpio_open_t gpio_init[] =
 {
   {MXOS_GPIO_12, INPUT_PULL_UP, 0},
   {MXOS_GPIO_13, INPUT_PULL_UP, 0},
@@ -146,29 +146,29 @@ void mxos_board_init( void )
        platform_log( "WARNING: Watchdog reset occured previously." );
     }
 
-    mxos_gpio_init( (mxos_gpio_t)MXOS_SYS_LED, OUTPUT_PUSH_PULL );
-    mxos_gpio_output_low( (mxos_gpio_t)MXOS_SYS_LED );
+    mhal_gpio_open( (mxos_gpio_t)MXOS_SYS_LED, OUTPUT_PUSH_PULL );
+    mhal_gpio_low( (mxos_gpio_t)MXOS_SYS_LED );
 
-    mxos_gpio_init( (mxos_gpio_t)MXOS_RF_LED, OUTPUT_PUSH_PULL );
-    mxos_gpio_output_high( (mxos_gpio_t)MXOS_RF_LED );
+    mhal_gpio_open( (mxos_gpio_t)MXOS_RF_LED, OUTPUT_PUSH_PULL );
+    mhal_gpio_high( (mxos_gpio_t)MXOS_RF_LED );
 #endif
 }
 
 void mxos_sys_led(bool onoff)
 {
   if (onoff) {
-    mxos_gpio_output_low( (mxos_gpio_t)MXOS_SYS_LED );
+    mhal_gpio_low( (mxos_gpio_t)MXOS_SYS_LED );
   } else {
-    mxos_gpio_output_high( (mxos_gpio_t)MXOS_SYS_LED );
+    mhal_gpio_high( (mxos_gpio_t)MXOS_SYS_LED );
   }
 }
 
 void mxos_rf_led(bool onoff)
 {
   if (onoff) {
-    mxos_gpio_output_low( (mxos_gpio_t)MXOS_RF_LED );
+    mhal_gpio_low( (mxos_gpio_t)MXOS_RF_LED );
   } else {
-    mxos_gpio_output_high( (mxos_gpio_t)MXOS_RF_LED );
+    mhal_gpio_high( (mxos_gpio_t)MXOS_RF_LED );
   }
 }
 

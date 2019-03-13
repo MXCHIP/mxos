@@ -47,7 +47,7 @@ static FT_FILE *_ft_fopen( struct fs *fs, const char *path, const char *mode )
 
     do
     {
-        mxos_flash_read( MXOS_PARTITION_FILESYS, &addr, (uint8_t *) &entry, sizeof(entry) );
+        mhal_flash_read( MXOS_PARTITION_FILESYS, &addr, (uint8_t *) &entry, sizeof(entry) );
 
         if ( entry.name[0] == '\0' ) /* reached end of table */
         return NULL; /* file not found */
@@ -98,7 +98,7 @@ size_t ft_fread( void *ptr, size_t size, size_t nmemb, file *f )
     {
         if ( stream->fp + size >= stream->length )
             size = stream->length - stream->fp;
-        mxos_flash_read( MXOS_PARTITION_FILESYS, &addr, (uint8_t *) (b + len), size );
+        mhal_flash_read( MXOS_PARTITION_FILESYS, &addr, (uint8_t *) (b + len), size );
         len += size;
         stream->fp += size;
         if ( stream->fp >= stream->length )
@@ -218,7 +218,7 @@ struct fs *ftfs_init( struct ftfs_super *sb, mxos_partition_t partition )
 //    struct ftfs_super sb;
     mxos_logic_partition_t *ftfs_partition;
 
-    ftfs_partition = mxos_flash_get_info( partition );
+    ftfs_partition = mhal_flash_get_info( partition );
 
     start_addr = ftfs_partition->partition_start_addr;
 

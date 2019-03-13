@@ -67,7 +67,7 @@ WEAK void user_key2_clicked_callback( void )
 mos_semphr_id_t mfg_test_state_change_sem = NULL;
 volatile int16_t mfg_test_module_number = 0;
 volatile bool scanap_done = false;
-extern void mxos_wlan_get_mac_address( uint8_t *mac );
+extern void mwifi_get_mac( uint8_t *mac );
 
 static void mf_printf( char *str )
 {
@@ -246,7 +246,7 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
                 //mxos_thread_msleep(500);
 
                 scanap_done = false;
-                mxosWlanStartScan( );
+                mwifi_softap_startScan( );
                 while ( (!scanap_done) || (kNoErr != mos_semphr_acquire(mfg_test_state_change_sem, MXOS_WAIT_FOREVER )) )
                     ;
                 break;
