@@ -37,7 +37,7 @@ typedef void (*mxos_notify_WIFI_SCAN_ADV_COMPLETE_function)       ( ScanResult_a
 typedef void (*mxos_notify_WIFI_STATUS_CHANGED_function)          ( WiFiEvent status, void * inContext );
 typedef void (*mxos_notify_WiFI_PARA_CHANGED_function)            ( apinfo_adv_t *ap_info, char *key, int key_len, void * inContext );
 typedef void (*mxos_notify_DHCP_COMPLETE_function)                ( IPStatusTypedef *pnet, void * inContext );
-typedef void (*mxos_notify_EASYLINK_COMPLETE_function)            ( network_InitTypeDef_st *nwkpara, void * inContext );
+typedef void (*mxos_notify_EASYLINK_COMPLETE_function)            ( mwifi_softap_attr_t *nwkpara, void * inContext );
 typedef void (*mxos_notify_EASYLINK_GET_EXTRA_DATA_function)      ( int datalen, char*data, void * inContext );
 typedef void (*mxos_notify_TCP_CLIENT_CONNECTED_function)         ( int fd, void * inContext );
 typedef void (*mxos_notify_DNS_RESOLVE_COMPLETED_function)        ( uint8_t *hostname, uint32_t ip, void * inContext );
@@ -142,7 +142,7 @@ void NetCallback(IPStatusTypedef *pnet)
   }
 }
 
-void RptConfigmodeRslt(network_InitTypeDef_st *nwkpara)
+void RptConfigmodeRslt(mwifi_softap_attr_t *nwkpara)
 {
   _Notify_list_t *temp =  Notify_list[mxos_notify_EASYLINK_WPS_COMPLETED];
   if(temp == NULL)
@@ -331,7 +331,7 @@ merr_t mxos_system_notify_remove_all( mxos_notify_types_t notify_type)
 // }
 
 
-// void RptConfigmodeRslt(network_InitTypeDef_st *nwkpara)
+// void RptConfigmodeRslt(mwifi_softap_attr_t *nwkpara)
 // {
 
 // }

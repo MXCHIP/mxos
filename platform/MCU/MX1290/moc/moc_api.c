@@ -3,14 +3,35 @@
 
 extern const mxos_api_t *lib_api_p;
 
+typedef struct _network_InitTypeDef_st 
+{ 
+  char wifi_mode;               /**< DHCP mode: @ref wlanInterfaceTypedef.*/
+  char wifi_ssid[32];           /**< SSID of the wlan needs to be connected.*/
+  char wifi_key[64];            /**< Security key of the wlan needs to be connected, ignored in an open system.*/
+  char local_ip_addr[16];       /**< Static IP configuration, Local IP address. */
+  char net_mask[16];            /**< Static IP configuration, Netmask. */
+  char gateway_ip_addr[16];     /**< Static IP configuration, Router IP address. */
+  char dnsServer_ip_addr[16];   /**< Static IP configuration, DNS server IP address. */
+  char dhcpMode;                /**< DHCP mode, @ref DHCP_Disable, @ref DHCP_Client and @ref DHCP_Server. */
+  char reserved[32];            
+  int  wifi_retry_interval;     /**< Retry interval if an error is occured when connecting an access point, 
+                                     time unit is millisecond. */
+} network_InitTypeDef_st; 
+
 /* WIFI MGR */
-merr_t StartNetwork(network_InitTypeDef_st* inNetworkInitPara)
+merr_t StartNetwork(mwifi_softap_attr_t* attr)
 {
-	return lib_api_p->mwifi_softap_start(inNetworkInitPara);
+	network_InitTypeDef_st wNetConfig;
+	memset(&wNetConfig, 0x00, sizoef(wNetConfig));
+	memcpy(wNetConfig.wifi_ssid, attr, sizeof(mwifi_softap_attr_t));
+    wNetConfig.wifi_mode = Soft_AP;
+    wNetConfig.dhcpMode = DHCP_Server;
+
+	return lib_api_p->mwifi_softap_start(attr);
 }
-merr_t StartAdvNetwork(network_InitTypeDef_adv_st* inNetworkInitParaAdv)
+merr_t StartAdvNetwork(wifi_connect_attr_t* attr)
 {
-	return lib_api_p->mwifi_connect(inNetworkInitParaAdv);
+	return lib_api_p->mwifi_connect(attr);
 }
 merr_t getNetPara(IPStatusTypedef *outNetpara, WiFi_Interface inInterface)
 {

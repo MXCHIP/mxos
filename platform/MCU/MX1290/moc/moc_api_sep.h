@@ -157,8 +157,8 @@ typedef struct {
 	int (*wlan_get_mac_address)(unsigned char *dest);
 	int (*wlan_get_mac_address_by_interface)(wlan_if_t wlan_if, unsigned char *dest);
 	int (*mxos_wlan_driver_version)( char* version, int length );
-	merr_t (*mwifi_softap_start)(network_InitTypeDef_st* inNetworkInitPara);
-	merr_t (*mwifi_connect)(network_InitTypeDef_adv_st* inNetworkInitParaAdv);
+	merr_t (*mwifi_softap_start)(mwifi_softap_attr_t* attr);
+	merr_t (*mwifi_connect)(wifi_connect_attr_t* attr);
 	merr_t (*mwifi_get_ip)(IPStatusTypedef *outNetpara, WiFi_Interface inInterface);
 	merr_t (*mwifi_get_link_info)(LinkStatusTypeDef *outStatus);
 	void (*mwifi_softap_startScan)(void);

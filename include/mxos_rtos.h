@@ -173,15 +173,14 @@ void mxos_rtos_exit_critical( void );
 
 /** @brief Creates and starts a new thread
   *
-  * @param thread     : Pointer to variable that will receive the thread handle (can be null)
   * @param priority   : A priority number.
   * @param name       : a text name for the thread (can be null)
   * @param function   : the main thread function
   * @param stack_size : stack size for this thread
   * @param arg        : argument which will be passed to thread function
   *
-  * @return    kNoErr          : on success.
-  * @return    kGeneralErr     : if an error occurred
+  * @retval   On success, an identifier of created thread is returned.
+  *           On error, 0 is returned.
   */
 mos_thread_id_t mos_thread_new( uint8_t priority, const char* name, mos_thread_func_t function, uint32_t stack_size, void *arg );
 

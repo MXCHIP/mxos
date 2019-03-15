@@ -60,7 +60,7 @@ extern void ApListAdvCallback( ScanResult_adv *pApAdvList );
 extern void WifiStatusHandler( WiFiEvent status );
 extern void connected_ap_info( apinfo_adv_t *ap_info, char *key, int key_len );
 extern void NetCallback( IPStatusTypedef *pnet );
-extern void RptConfigmodeRslt( network_InitTypeDef_st *nwkpara );
+extern void RptConfigmodeRslt( mwifi_softap_attr_t *nwkpara );
 extern void easylink_user_data_result( int datalen, char*data );
 extern void socket_connected( int fd );
 extern void dns_ip_set( uint8_t *hostname, uint32_t ip );

@@ -76,7 +76,7 @@ void easylink_softap_thread( void *inContext )
 {
     merr_t err = kNoErr;
     system_context_t *context = (system_context_t *) inContext;
-    network_InitTypeDef_st wNetConfig;
+    mwifi_softap_attr_t wNetConfig;
 
     easylinkIndentifier = 0x0;
     easylink_success = false;
@@ -94,8 +94,7 @@ restart:
 
     mxos_system_delegate_config_will_start( );
 
-    memset( &wNetConfig, 0, sizeof(network_InitTypeDef_st) );
-    wNetConfig.wifi_mode = Soft_AP;
+    memset( &wNetConfig, 0, sizeof(mwifi_softap_attr_t) );
     snprintf( wNetConfig.wifi_ssid, 32, "EasyLink_%c%c%c%c%c%c",
               context->mxosStatus.mac[9], context->mxosStatus.mac[10], context->mxosStatus.mac[12],
               context->mxosStatus.mac[13], context->mxosStatus.mac[15], context->mxosStatus.mac[16] );
@@ -103,7 +102,6 @@ restart:
     strcpy( (char*) wNetConfig.local_ip_addr, "10.10.10.1" );
     strcpy( (char*) wNetConfig.net_mask, "255.255.255.0" );
     strcpy( (char*) wNetConfig.gateway_ip_addr, "10.10.10.1" );
-    wNetConfig.dhcpMode = DHCP_Server;
     mwifi_softap_start( &wNetConfig );
     system_log("Establish soft ap: %s.....", wNetConfig.wifi_ssid);
 

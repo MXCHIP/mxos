@@ -337,7 +337,7 @@ merr_t mxos_easylink_usr( mxos_Context_t * const in_context, mxos_bool_t enable 
   * @param  nwkpara: Wlan configurations
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-merr_t mxos_easylink_usr_save_result( network_InitTypeDef_st *nwkpara );
+merr_t mxos_easylink_usr_save_result( mwifi_softap_attr_t *nwkpara );
 
 /**
   * @brief  Start wlan configuration mode: EasyLink softap protocol
@@ -372,7 +372,7 @@ merr_t mxos_easylink_monitor_with_easylink( mxos_Context_t * const in_context, m
   * @param  nwkpara: Wlan configurations
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-merr_t mxos_easylink_monitor_save_result( network_InitTypeDef_st *nwkpara );
+merr_t mxos_easylink_monitor_save_result( mwifi_softap_attr_t *nwkpara );
 
 /**
   * @brief  Tell EasyLink monitor routine that change wlan channel periodically
@@ -520,7 +520,7 @@ typedef enum{
   mxos_notify_WIFI_STATUS_CHANGED,        /**< Wlan connection status is changed, type: void (*function)(WiFiEvent status, void* arg)*/
   mxos_notify_WiFI_PARA_CHANGED,          /**< Wlan parameters has received (channel, BSSID, key...), called when connect to a wlan, type: void (*function)(apinfo_adv_t *ap_info, char *key, int key_len, void* arg)*/
   mxos_notify_DHCP_COMPLETED,             /**< MXOS has get the IP address from DHCP server, type: void (*function)(IPStatusTypedef *pnet, void* arg)*/
-  mxos_notify_EASYLINK_WPS_COMPLETED,     /**< EasyLink receive SSID, Key, type: void (*function)(network_InitTypeDef_st *nwkpara, void* arg)*/
+  mxos_notify_EASYLINK_WPS_COMPLETED,     /**< EasyLink receive SSID, Key, type: void (*function)(mwifi_softap_attr_t *nwkpara, void* arg)*/
   mxos_notify_EASYLINK_GET_EXTRA_DATA,    /**< EasyLink receive extra data, type: void (*function)(int datalen, char*data, void* arg)*/
   mxos_notify_TCP_CLIENT_CONNECTED,       /**< A tcp client has connected to TCP server, type: void (*function)(int fd, void* arg)*/
   mxos_notify_DNS_RESOLVE_COMPLETED,      /**< A DNS host address has resolved, type: void (*function)(uint8_t *hostname, uint32_t ip,  void* arg)*/

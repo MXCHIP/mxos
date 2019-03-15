@@ -31,7 +31,7 @@
  ******************************************************/
 /* EasyLink event callback functions*/
 static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const inContext );
-static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t * const inContext );
+static void easylink_complete_cb( mwifi_softap_attr_t *nwkpara, system_context_t * const inContext );
 static void easylink_extra_data_cb( int datalen, char* data, system_context_t * const inContext );
 
 /* Thread perform easylink and connect to wlan */
@@ -70,7 +70,7 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
 }
 
 /* MXOS callback when EasyLink is finished step 1, return SSID and KEY */
-static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t * const inContext )
+static void easylink_complete_cb( mwifi_softap_attr_t *nwkpara, system_context_t * const inContext )
 {
     merr_t err = kNoErr;
 

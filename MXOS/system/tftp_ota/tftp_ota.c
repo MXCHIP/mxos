@@ -90,7 +90,7 @@ static void FOTA_WifiStatusHandler(WiFiEvent event, void * arg)
   */
 void tftp_ota(void)
 {
-    network_InitTypeDef_st conf;
+    mwifi_softap_attr_t conf;
     tftp_file_info_t fileinfo;
     uint32_t ipaddr = inet_addr(DEFAULT_OTA_SERVER), flashaddr;
     int filelen, maxretry = 5, len, left, i = 0;
@@ -132,7 +132,7 @@ void tftp_ota(void)
         
     fota_log("Staic IP = %s", sta_ip_addr);  
     
-    memset(&conf, 0, sizeof(network_InitTypeDef_st));
+    memset(&conf, 0, sizeof(mwifi_softap_attr_t));
     
     conf.wifi_mode = Station;
     strcpy(conf.wifi_ssid, DEFAULT_OTA_AP);

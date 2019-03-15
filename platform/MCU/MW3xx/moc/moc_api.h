@@ -301,8 +301,8 @@ typedef struct mxos_api_struct
     /* WIFI MGR */
     int (*wlan_get_mac_address)( unsigned char *dest );
     int (*mxos_wlan_driver_version)( char* version, int length );
-    merr_t (*mwifi_softap_start)( network_InitTypeDef_st* inNetworkInitPara );
-    merr_t (*mwifi_connect)( network_InitTypeDef_adv_st* inNetworkInitParaAdv );
+    merr_t (*mwifi_softap_start)( mwifi_softap_attr_t* attr );
+    merr_t (*mwifi_connect)( wifi_connect_attr_t* attr );
     merr_t (*mwifi_get_ip)( IPStatusTypedef *outNetpara, WiFi_Interface inInterface );
 #ifdef MOCIP_CONFIG_IPV6
     merr_t (*mxosWlanGetIP6Status)(ipv6_addr_t ipv6_addr[], uint8_t ipv6_addr_num, WiFi_Interface inInterface);
@@ -452,7 +452,7 @@ typedef struct mxos_api_struct
 	void (*ssl_set_client_cert)(const char *cert_pem, const char *private_key_pem);
 	void* (*ssl_connect_sni)(int fd, int calen, char*ca, char *sni_servername, int *errno);
 
-	merr_t (*mwifi_softap_startEnt)(network_Enterprise_st* inNetworkInitPara);
+	merr_t (*mwifi_softap_startEnt)(network_Enterprise_st* attr);
 
     iis_api_t *iis_apis;
 
@@ -484,7 +484,7 @@ typedef struct user_api_struct
     void (*WifiStatusHandler)( WiFiEvent status );
     void (*connected_ap_info)( apinfo_adv_t *ap_info, char *key, int key_len );
     void (*NetCallback)( IPStatusTypedef *pnet );
-    void (*RptConfigmodeRslt)( network_InitTypeDef_st *nwkpara );
+    void (*RptConfigmodeRslt)( mwifi_softap_attr_t *nwkpara );
     void (*easylink_user_data_result)( int datalen, char*data );
     void (*socket_connected)( int fd );
     void (*dns_ip_set)( uint8_t *hostname, uint32_t ip );

@@ -167,8 +167,8 @@ exit:
 
 void system_connect_wifi_normal( system_context_t * const inContext)
 {
-  network_InitTypeDef_adv_st wNetConfig;
-  memset(&wNetConfig, 0x0, sizeof(network_InitTypeDef_adv_st));
+  wifi_connect_attr_t wNetConfig;
+  memset(&wNetConfig, 0x0, sizeof(wifi_connect_attr_t));
   
   mos_mutex_lock(inContext->flashContentInRam_mutex);
   strncpy((char*)wNetConfig.ap_info.ssid, inContext->flashContentInRam.mxosSystemConfig.ssid, maxSsidLen);
@@ -189,8 +189,8 @@ void system_connect_wifi_normal( system_context_t * const inContext)
 
 void system_connect_wifi_fast( system_context_t * const inContext)
 {
-  network_InitTypeDef_adv_st wNetConfig;
-  memset(&wNetConfig, 0x0, sizeof(network_InitTypeDef_adv_st));
+  wifi_connect_attr_t wNetConfig;
+  memset(&wNetConfig, 0x0, sizeof(wifi_connect_attr_t));
   
   mos_mutex_lock(inContext->flashContentInRam_mutex);
   strncpy((char*)wNetConfig.ap_info.ssid, inContext->flashContentInRam.mxosSystemConfig.ssid, maxSsidLen);

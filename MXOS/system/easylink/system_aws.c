@@ -33,7 +33,7 @@
  ******************************************************/
 /* EasyLink event callback functions*/
 static void aws_wifi_status_cb( WiFiEvent event, system_context_t * const inContext );
-static void aws_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t * const inContext );
+static void aws_complete_cb( mwifi_softap_attr_t *nwkpara, system_context_t * const inContext );
 
 /* Thread perform easylink and connect to wlan */
 static void aws_thread( void *inContext ); /* Perform easylink and connect to wlan */
@@ -70,7 +70,7 @@ static void aws_wifi_status_cb( WiFiEvent event, system_context_t * const inCont
 }
 
 /* MXOS callback when EasyLink is finished step 1, return SSID and KEY */
-static void aws_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t * const inContext )
+static void aws_complete_cb( mwifi_softap_attr_t *nwkpara, system_context_t * const inContext )
 {
     merr_t err = kNoErr;
 

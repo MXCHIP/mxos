@@ -177,7 +177,7 @@ static size_t _uart_get_one_packet(uint8_t* inBuf, int inBufLen);
 
 void mxos_mfg_test(mxos_Context_t *inContext)
 {
-  network_InitTypeDef_adv_st wNetConfig;
+  wifi_connect_attr_t wNetConfig;
   int testCommandFd, scanFd;
   uint8_t *buf = NULL;
   int recvLength = -1;
@@ -199,7 +199,7 @@ void mxos_mfg_test(mxos_Context_t *inContext)
   require_action(rx_data, exit, err = kNoMemoryErr);
   
   /* Connect to a predefined Wlan */
-  memset( &wNetConfig, 0x0, sizeof(network_InitTypeDef_adv_st) );
+  memset( &wNetConfig, 0x0, sizeof(wifi_connect_attr_t) );
   
   strncpy( (char*)wNetConfig.ap_info.ssid, "William Xu", maxSsidLen );
   wNetConfig.ap_info.security = SECURITY_TYPE_AUTO;

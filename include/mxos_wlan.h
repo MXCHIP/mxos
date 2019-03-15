@@ -282,9 +282,8 @@ typedef  struct  _ScanResult
 /** 
  *  @brief  Input network paras, used in mwifi_softap_start function.  
  */
-typedef struct _network_InitTypeDef_st 
-{ 
-  char wifi_mode;               /**< DHCP mode: @ref wlanInterfaceTypedef.*/
+typedef struct 
+{
   char wifi_ssid[32];           /**< SSID of the wlan needs to be connected.*/
   char wifi_key[64];            /**< Security key of the wlan needs to be connected, ignored in an open system.*/
   char local_ip_addr[16];       /**< Static IP configuration, Local IP address. */
@@ -292,10 +291,7 @@ typedef struct _network_InitTypeDef_st
   char gateway_ip_addr[16];     /**< Static IP configuration, Router IP address. */
   char dnsServer_ip_addr[16];   /**< Static IP configuration, DNS server IP address. */
   char dhcpMode;                /**< DHCP mode, @ref DHCP_Disable, @ref DHCP_Client and @ref DHCP_Server. */
-  char reserved[32];            
-  int  wifi_retry_interval;     /**< Retry interval if an error is occured when connecting an access point, 
-                                     time unit is millisecond. */
-} network_InitTypeDef_st; 
+} mwifi_softap_attr_t; 
 
 typedef struct _network_Enterprise_st 
 { 
@@ -317,7 +313,7 @@ typedef struct _network_Enterprise_st
 } network_Enterprise_st; 
 
 /** 
- *  @brief  Advanced precise wlan parameters, used in @ref network_InitTypeDef_adv_st.  
+ *  @brief  Advanced precise wlan parameters, used in @ref wifi_connect_attr_t.  
  */
 typedef struct   
 { 
@@ -332,7 +328,7 @@ typedef struct
 /** 
  *  @brief  Input network precise paras in mwifi_connect function.  
  */
-typedef struct _network_InitTypeDef_adv_st
+typedef struct
 {
   apinfo_adv_t ap_info;         /**< @ref apinfo_adv_t. */
   char  key[64];                /**< Security key or PMK of the wlan. */
@@ -345,7 +341,7 @@ typedef struct _network_InitTypeDef_adv_st
   char  reserved[32]; 
   int   wifi_retry_interval;    /**< Retry interval if an error is occured when connecting an access point, 
                                   time unit is millisecond. */
-} network_InitTypeDef_adv_st;
+} wifi_connect_attr_t;
 
 /** 
  *  @brief  Current link status in station mode.  
@@ -425,17 +421,17 @@ void mxos_wlan_set_default_interface(netif_t interface);
  *          matchs the input SSID, and read the security mode. Then try to connect    
  *          to the target wlan. If any error occurs in the connection procedure or  
  *          disconnected after a successful connection, MXOS start the reconnection 
- *          procedure in backgound after a time interval defined in inNetworkInitPara.
+ *          procedure in backgound after a time interval defined in attr.
  *          Call this function twice when setup coexistence mode (staion + soft ap). 
  *          This function retruns immediately in station mode, and the connection will 
  *          be executed in background.
  *
- *  @param  inNetworkInitPara: Specifies wlan parameters. 
+ *  @param  attr: Specifies wlan parameters. 
  *
  *  @return In station mode, allways retrurn kWlanNoErr.
  *          In soft ap mode, return kWlanXXXErr
  */
-merr_t mwifi_softap_start(network_InitTypeDef_st* inNetworkInitPara);
+merr_t mwifi_softap_start(mwifi_softap_attr_t* attr);
 
 /** @brief  Connect to a Wi-Fi network with advantage settings (station mode only)
  * 
@@ -450,12 +446,12 @@ merr_t mwifi_softap_start(network_InitTypeDef_st* inNetworkInitPara);
  *          If input SSID length is 0, MXOS use BSSID to connect the target wlan.
  *          If both SSID and BSSID are all wrong, the connection will be failed.
  *
- *  @param  inNetworkInitParaAdv: Specifies the precise wlan parameters.
+ *  @param  attr: Specifies the precise wlan parameters.
  *
  *  @retrun Allways return kWlanNoErr although error occurs in first fast try 
  *          kWlanTimeoutErr: DHCP client timeout
  */
-merr_t mwifi_connect(network_InitTypeDef_adv_st* inNetworkInitParaAdv);
+merr_t mwifi_connect(wifi_connect_attr_t* attr);
 
 /** @brief  Read current IP status on a network interface.
  * 
@@ -576,7 +572,7 @@ merr_t mwifi_softap_stop(void);
  *          Easylink APP.  
  *          MXOS sends a callback: mxos_notify_EASYLINK_WPS_COMPLETED
  *          with function:
- *          void (*function)(network_InitTypeDef_st *nwkpara, mxos_Context_t * const inContext);
+ *          void (*function)(mwifi_softap_attr_t *nwkpara, mxos_Context_t * const inContext);
  *          that provide SSID and password, nwkpara is NULL if timeout or get an error
  *          More
  *          MXOS sends a callback: mxos_notify_EASYLINK_GET_EXTRA_DATA
@@ -680,7 +676,7 @@ merr_t mxos_wlan_stop_wps(void);
  *          Easylink APP.  
  *          MXOS sends a callback: mxos_notify_EASYLINK_WPS_COMPLETED
  *          with function:
- *          void (*function)(network_InitTypeDef_st *nwkpara, mxos_Context_t * const inContext);
+ *          void (*function)(mwifi_softap_attr_t *nwkpara, mxos_Context_t * const inContext);
  *          that provide SSID and password, nwkpara is NULL if timeout or get an error
  *
  *  @param  inTimeout: If airkiss is executed longer than this parameter in backgound.
