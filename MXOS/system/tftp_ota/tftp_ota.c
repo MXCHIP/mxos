@@ -90,7 +90,7 @@ static void FOTA_WifiStatusHandler(WiFiEvent event, void * arg)
   */
 void tftp_ota(void)
 {
-    network_InitTypeDef_st conf;
+    mwifi_softap_attr_t conf;
     tftp_file_info_t fileinfo;
     uint32_t ipaddr = inet_addr(DEFAULT_OTA_SERVER), flashaddr;
     int filelen, maxretry = 5, len, left, i = 0;
@@ -99,7 +99,7 @@ void tftp_ota(void)
     uint8_t *tmpbuf;
     md5_context ctx;
     uint8_t mac[6], sta_ip_addr[16];
-    mxos_logic_partition_t* ota_partition = mxos_flash_get_info( MXOS_PARTITION_OTA_TEMP );
+    mxos_logic_partition_t* ota_partition = mhal_flash_get_info( MXOS_PARTITION_OTA_TEMP );
     uint16_t crc = 0;
     CRC16_Context contex;
     
@@ -114,8 +114,8 @@ void tftp_ota(void)
     mxos_system_notify_register( mxos_notify_WIFI_STATUS_CHANGED, (void *)FOTA_WifiStatusHandler, NULL );
     mxosWlanStopEasyLink();
 	  mxosWlanStopEasyLinkPlus();
-    mxosWlanStopAirkiss();
-    mxosWlanSuspendStation();
+    mwifi_airkiss_stop();
+    mwifi_disconnect();
 	mxos_rtos_thread_msleep(10);
 		
     tmpbuf = (uint8_t*)malloc(TMP_BUF_LEN);
@@ -132,7 +132,7 @@ void tftp_ota(void)
         
     fota_log("Staic IP = %s", sta_ip_addr);  
     
-    memset(&conf, 0, sizeof(network_InitTypeDef_st));
+    memset(&conf, 0, sizeof(mwifi_softap_attr_t));
     
     conf.wifi_mode = Station;
     strcpy(conf.wifi_ssid, DEFAULT_OTA_AP);
@@ -143,7 +143,7 @@ void tftp_ota(void)
     
     wifi_up = 0;
     fota_log("Connect to AP %s...", DEFAULT_OTA_AP);
-    mxosWlanStart(&conf);
+    mwifi_softap_start(&conf);
 
     while(wifi_up == 0) {
         mxos_rtos_thread_msleep(100);
@@ -175,7 +175,7 @@ void tftp_ota(void)
     filelen -= 16; // remove md5.
     fota_log("tftp download image finished, OTA bin len %d", filelen);
     flashaddr = filelen;
-    mxos_flash_read(MXOS_PARTITION_OTA_TEMP, &flashaddr, (uint8_t *)md5_recv, 16);
+    mhal_flash_read(MXOS_PARTITION_OTA_TEMP, &flashaddr, (uint8_t *)md5_recv, 16);
     InitMd5( &ctx );
     CRC16_Init( &contex );
     flashaddr = 0;
@@ -187,7 +187,7 @@ void tftp_ota(void)
             len = left;
         }
         left -= len;
-        mxos_flash_read(MXOS_PARTITION_OTA_TEMP, &flashaddr, (uint8_t *)tmpbuf, len);
+        mhal_flash_read(MXOS_PARTITION_OTA_TEMP, &flashaddr, (uint8_t *)tmpbuf, len);
         Md5Update( &ctx, (uint8_t *)tmpbuf, len);
         CRC16_Update( &contex, tmpbuf, len );
     }
@@ -220,19 +220,19 @@ void tftp_ota(void)
 /******************************************************
  *              MXOS_FORCE_OTA
  *****************************************************/
-mxos_semaphore_t force_ota_sem;
+mos_semphr_id_t force_ota_sem;
 
-static void force_thread(mxos_thread_arg_t arg){
+static void force_thread(void * arg){
     extern void tftp_ota();
     tftp_ota();
 }
 
-OSStatus start_force_ota()
+merr_t start_force_ota()
 {
-   OSStatus err;
+   merr_t err;
 
-   err =  mxos_rtos_create_thread( NULL, MXOS_APPLICATION_PRIORITY, "Force OTA", force_thread, 0x1000,0 );
-   require_noerr_action( err, exit, fota_log("ERROR: Unable to start the  force ota thread.") );
+   require_action_string( mos_thread_new( MXOS_APPLICATION_PRIORITY, "Force OTA", force_thread, 0x1000, NULL ) != NULL, 
+   exit, err = kGeneralErr, "ERROR: Unable to start the  force ota thread." );
 
    exit:
            return err;
@@ -247,7 +247,7 @@ static void mxosNotify_ApListCallback(ScanResult *pApList, mxos_Context_t * cons
         if(NULL != force_ota_sem)
         {
         	fota_log("set force_ota_sem");
-            mxos_rtos_set_semaphore(&force_ota_sem);
+            mos_semphr_release(force_ota_sem);
         }
     }else{
     	fota_log("num = %d,ssid = %s",pApList->ApNum,pApList->ApList->ssid);
@@ -256,9 +256,9 @@ static void mxosNotify_ApListCallback(ScanResult *pApList, mxos_Context_t * cons
     }
 }
 
-OSStatus start_forceota_check()
+merr_t start_forceota_check()
 {
-	OSStatus err = kNoErr;
+	merr_t err = kNoErr;
 	if((mxos_system_context_get( )->mxosSystemConfig.reserved & FORCE_OTA_SUEECSS)==0)
 	{
 		#define FORCE_OTA_AP "MXOS_OTA_AP"
@@ -267,11 +267,11 @@ OSStatus start_forceota_check()
 		err =  mxos_system_notify_register( mxos_notify_WIFI_SCAN_COMPLETED, (void *)mxosNotify_ApListCallback, NULL );
 		require_noerr( err, exit );
 		fota_log("Start scan");
-		mxos_rtos_init_semaphore(&force_ota_sem,1);
+		force_ota_sem = mos_semphr_new(1);
 		mxchip_active_scan(FORCE_OTA_AP,0);
-		err = mxos_rtos_get_semaphore(&force_ota_sem,MXOS_WAIT_FOREVER);
+		err = mos_semphr_acquire(force_ota_sem,MXOS_WAIT_FOREVER);
 		if(NULL != force_ota_sem)
-		mxos_rtos_deinit_semaphore(&force_ota_sem);
+		mos_semphr_delete(force_ota_sem);
 		err = mxos_system_notify_remove( mxos_notify_WIFI_SCAN_COMPLETED, (void *)mxosNotify_ApListCallback);
 		require_noerr( err, exit );
 	}

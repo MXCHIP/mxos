@@ -56,8 +56,8 @@ extern "C" {
  ******************************************************/
 
 /* MXOS <-> RTOS API */
-extern OSStatus mxos_rtos_init  ( void );
-extern OSStatus mxos_rtos_deinit( void );
+extern merr_t mxos_rtos_init  ( void );
+extern merr_t mxos_rtos_deinit( void );
 
 
 #ifdef __cplusplus

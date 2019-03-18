@@ -36,7 +36,7 @@
 #define ring_buffer_utils_log(M, ...) custom_log("RingBufferUtils", M, ##__VA_ARGS__)
 #define ring_buffer_utils_log_trace() custom_log_trace("RingBufferUtils")
 
-OSStatus ring_buffer_init( ring_buffer_t* ring_buffer, uint8_t* buffer, uint32_t size )
+merr_t ring_buffer_init( ring_buffer_t* ring_buffer, uint8_t* buffer, uint32_t size )
 {
   if (ring_buffer)
   {
@@ -50,7 +50,7 @@ OSStatus ring_buffer_init( ring_buffer_t* ring_buffer, uint8_t* buffer, uint32_t
     return kParamErr;
 }
 
-OSStatus ring_buffer_deinit( ring_buffer_t* ring_buffer )
+merr_t ring_buffer_deinit( ring_buffer_t* ring_buffer )
 {
   UNUSED_PARAMETER(ring_buffer);
   return kNoErr;
@@ -68,7 +68,7 @@ uint32_t ring_buffer_used_space( ring_buffer_t* ring_buffer )
   return ((head_to_end + ring_buffer->tail) % ring_buffer->size);
 }
 
-OSStatus ring_buffer_get_data( ring_buffer_t* ring_buffer, uint8_t** data, uint32_t* contiguous_bytes )
+merr_t ring_buffer_get_data( ring_buffer_t* ring_buffer, uint8_t** data, uint32_t* contiguous_bytes )
 {
   uint32_t head_to_end = ring_buffer->size - ring_buffer->head;
   
@@ -78,7 +78,7 @@ OSStatus ring_buffer_get_data( ring_buffer_t* ring_buffer, uint8_t** data, uint3
   return kNoErr;
 }
 
-OSStatus ring_buffer_consume( ring_buffer_t* ring_buffer, uint32_t bytes_consumed )
+merr_t ring_buffer_consume( ring_buffer_t* ring_buffer, uint32_t bytes_consumed )
 {
   ring_buffer->head = (ring_buffer->head + bytes_consumed) % ring_buffer->size;
   return kNoErr;
@@ -109,7 +109,7 @@ uint32_t ring_buffer_write( ring_buffer_t* ring_buffer, const uint8_t* data, uin
   return amount_to_copy;
 }
 
-OSStatus ring_buffer_read( ring_buffer_t* ring_buffer, uint8_t* data, uint32_t data_length, uint32_t* number_of_bytes_read )
+merr_t ring_buffer_read( ring_buffer_t* ring_buffer, uint8_t* data, uint32_t data_length, uint32_t* number_of_bytes_read )
 {
   uint32_t max_bytes_to_read;
   uint32_t i;

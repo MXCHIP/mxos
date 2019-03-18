@@ -53,8 +53,8 @@
  *               Static Function Declarations
  ******************************************************/
 
-static OSStatus peripheral_app_connection_handler               ( void* arg );
-static OSStatus peripheral_app_disconnection_handler            ( void* arg );
+static merr_t peripheral_app_connection_handler               ( void* arg );
+static merr_t peripheral_app_disconnection_handler            ( void* arg );
 
 /******************************************************
  *               Variable Definitions
@@ -97,7 +97,7 @@ static void peripheral_gatt_disconnection_handler( uint16_t connection_handle )
         if ( peripheral_helper_socket_check_actions_enabled( peripheral_socket, SOCKET_ACTION_HOST_DISCONNECT ) == MXOS_TRUE )
         {
             /* Disconnection is originated from the host. Notify app thread that disconnection is complete */
-            mxos_rtos_set_semaphore( &peripheral_socket->semaphore );
+            mos_semphr_release(peripheral_socket->semaphore );
         }
         else
         {
@@ -110,7 +110,7 @@ static void peripheral_gatt_disconnection_handler( uint16_t connection_handle )
             /* If disconnection happens when connection is still being established. Notify app */
             if ( connecting_peripheral_socket == peripheral_socket )
             {
-                mxos_rtos_set_semaphore( &connecting_peripheral_socket->semaphore );
+                mos_semphr_release(connecting_peripheral_socket->semaphore );
             }
         }
     }
@@ -119,7 +119,7 @@ static void peripheral_gatt_disconnection_handler( uint16_t connection_handle )
         /* If disconnection happens when connection is still being established. Notify app */
         if ( connecting_peripheral_socket != NULL )
         {
-            mxos_rtos_set_semaphore( &connecting_peripheral_socket->semaphore );
+            mos_semphr_release(connecting_peripheral_socket->semaphore );
         }
     }
 }
@@ -245,13 +245,13 @@ mxos_bt_gatt_status_t bt_peripheral_gatt_callback( mxos_bt_gatt_evt_t event, mxo
     return status;
 }
 
-OSStatus mxos_bt_peripheral_init(   mxos_bt_peripheral_socket_t*                   socket, 
+merr_t mxos_bt_peripheral_init(   mxos_bt_peripheral_socket_t*                   socket, 
                                     const mxos_bt_smart_security_settings_t*       settings,
                                     mxos_bt_peripheral_connection_callback_t       connection_callback,
                                     mxos_bt_peripheral_disconnection_callback_t    disconnection_callback,
                                     mxos_bt_smart_bonding_callback_t               bonding_callback )
 {
-    OSStatus result;
+    merr_t result;
 
     if ( initialised == MXOS_TRUE )
     {
@@ -265,8 +265,8 @@ OSStatus mxos_bt_peripheral_init(   mxos_bt_peripheral_socket_t*                
     socket->connection_handle = SOCKET_INVALID_CONNECTION_HANDLE;
 
     /* Initialise socket semaphore */
-    result = mxos_rtos_init_semaphore( &socket->semaphore, 1 );
-    require_noerr(result, exit);
+    socket->semaphore = mos_semphr_new( 1 );
+    require_action(socket->semaphore != NULL, exit, err = kGeneralErr);
 
     /* Initialise callbacks */
     socket->connection_callback = connection_callback;
@@ -309,7 +309,7 @@ exit:
     return result;
 }
 
-OSStatus mxos_bt_peripheral_deinit( void )
+merr_t mxos_bt_peripheral_deinit( void )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -327,15 +327,15 @@ OSStatus mxos_bt_peripheral_deinit( void )
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_peripheral_delete_socket( mxos_bt_peripheral_socket_t* socket )
+merr_t mxos_bt_peripheral_delete_socket( mxos_bt_peripheral_socket_t* socket )
 {
-    OSStatus result;
+    merr_t result;
     if ( initialised == MXOS_FALSE )
     {
         return MXOS_BT_SMART_APPL_UNINITIALISED;
     }
 
-    result = mxos_rtos_deinit_semaphore( &socket->semaphore );
+    result = mos_semphr_delete(socket->semaphore );
     if ( result != MXOS_BT_SUCCESS )
     {
         return result;
@@ -346,7 +346,7 @@ OSStatus mxos_bt_peripheral_delete_socket( mxos_bt_peripheral_socket_t* socket )
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_peripheral_disconnect( void )
+merr_t mxos_bt_peripheral_disconnect( void )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -357,7 +357,7 @@ OSStatus mxos_bt_peripheral_disconnect( void )
     peripheral_helper_socket_set_actions( peripheral_socket, SOCKET_ACTION_HOST_DISCONNECT );
 
     /* Clean-up accidentally set semaphores */
-    while( mxos_rtos_get_semaphore( &peripheral_socket->semaphore, MXOS_NO_WAIT ) == MXOS_BT_SUCCESS )
+    while( mos_semphr_acquire(peripheral_socket->semaphore, MXOS_NO_WAIT ) == MXOS_BT_SUCCESS )
     {
     }
 
@@ -366,7 +366,7 @@ OSStatus mxos_bt_peripheral_disconnect( void )
     {
         peripheral_bt_interface_disconnect( peripheral_socket->connection_handle );
         /* Wait for disconnection */
-        mxos_rtos_get_semaphore( &peripheral_socket->semaphore, 5 * 1000 );
+        mos_semphr_acquire(peripheral_socket->semaphore, 5 * 1000 );
     }
     else
     {
@@ -390,7 +390,7 @@ OSStatus mxos_bt_peripheral_disconnect( void )
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_peripheral_gatt_indicate_attribute_value ( mxos_bt_peripheral_socket_t* socket, const mxos_bt_ext_attribute_value_t* attribute )
+merr_t mxos_bt_peripheral_gatt_indicate_attribute_value ( mxos_bt_peripheral_socket_t* socket, const mxos_bt_ext_attribute_value_t* attribute )
 {
     mxos_bt_peripheral_socket_status_t status;
 
@@ -414,7 +414,7 @@ OSStatus mxos_bt_peripheral_gatt_indicate_attribute_value ( mxos_bt_peripheral_s
 }
 
 
-OSStatus mxos_bt_peripheral_gatt_notify_attribute_value ( mxos_bt_peripheral_socket_t* socket, const mxos_bt_ext_attribute_value_t* attribute )
+merr_t mxos_bt_peripheral_gatt_notify_attribute_value ( mxos_bt_peripheral_socket_t* socket, const mxos_bt_ext_attribute_value_t* attribute )
 {
     mxos_bt_peripheral_socket_status_t status;
 
@@ -441,17 +441,17 @@ OSStatus mxos_bt_peripheral_gatt_notify_attribute_value ( mxos_bt_peripheral_soc
 
 
 
-OSStatus mxos_bt_peripheral_start_advertisements( mxos_bt_smart_advertising_settings_t* settings, mxos_bt_smart_advertising_complete_callback_t complete_callback)
+merr_t mxos_bt_peripheral_start_advertisements( mxos_bt_smart_advertising_settings_t* settings, mxos_bt_smart_advertising_complete_callback_t complete_callback)
 {
     return peripheral_bt_interface_start_advertisements( settings, complete_callback );
 }
 
-OSStatus mxos_bt_peripheral_stop_advertisements( void )
+merr_t mxos_bt_peripheral_stop_advertisements( void )
 {
     return peripheral_bt_interface_stop_advertisements();
 }
 
-OSStatus mxos_bt_peripheral_update_advertisements_white_list( mxos_bool_t add, mxos_bt_device_address_t device_address )
+merr_t mxos_bt_peripheral_update_advertisements_white_list( mxos_bool_t add, mxos_bt_device_address_t device_address )
 {
     if ( initialised == MXOS_FALSE ) 
     {
@@ -460,7 +460,7 @@ OSStatus mxos_bt_peripheral_update_advertisements_white_list( mxos_bool_t add, m
     return peripheral_bt_interface_update_advertisements_white_list( add, device_address );
 }
 
-OSStatus mxos_bt_peripheral_get_advertisements_white_list_size( uint8_t *size )
+merr_t mxos_bt_peripheral_get_advertisements_white_list_size( uint8_t *size )
 {
     if ( initialised == MXOS_FALSE ) 
     {
@@ -473,7 +473,7 @@ OSStatus mxos_bt_peripheral_get_advertisements_white_list_size( uint8_t *size )
     return peripheral_bt_interface_get_advertisements_white_list_size( size );
 }
 
-OSStatus mxos_bt_peripheral_set_advertisements_filter_policy( mxos_bt_peripheral_adv_filter_policy_t policy )
+merr_t mxos_bt_peripheral_set_advertisements_filter_policy( mxos_bt_peripheral_adv_filter_policy_t policy )
 {
     if ( initialised == MXOS_FALSE ) 
     {
@@ -482,7 +482,7 @@ OSStatus mxos_bt_peripheral_set_advertisements_filter_policy( mxos_bt_peripheral
     return peripheral_bt_interface_set_advertisements_filter_policy( policy );
 }
 
-OSStatus mxos_bt_peripheral_get_socket_status( mxos_bt_peripheral_socket_t* socket, mxos_bt_peripheral_socket_status_t* status )
+merr_t mxos_bt_peripheral_get_socket_status( mxos_bt_peripheral_socket_t* socket, mxos_bt_peripheral_socket_status_t* status )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -513,9 +513,9 @@ OSStatus mxos_bt_peripheral_get_socket_status( mxos_bt_peripheral_socket_t* sock
     return MXOS_BT_SUCCESS;
 }
 
-static OSStatus bt_peripheral_get_buffer( void** buffer, uint32_t size )
+static merr_t bt_peripheral_get_buffer( void** buffer, uint32_t size )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     require_action( buffer != NULL, exit, err = kParamErr );
     /* Allocate buffer object */
     *buffer = malloc( size );
@@ -524,9 +524,9 @@ exit:
     return err;
 }
 
-static OSStatus bt_peripheral_resize_buffer( void** buffer, uint32_t size )
+static merr_t bt_peripheral_resize_buffer( void** buffer, uint32_t size )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     require_action( buffer != NULL, exit, err = kParamErr );
     /* Allocate buffer object */
     *buffer = realloc( *buffer, size );
@@ -535,9 +535,9 @@ exit:
     return err;
 }
 
-static OSStatus bt_peripheral_release_buffer( void* buffer )
+static merr_t bt_peripheral_release_buffer( void* buffer )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     require_action( buffer != NULL, exit, err = kParamErr );
     free( buffer );
 exit:
@@ -547,7 +547,7 @@ exit:
 mxos_bt_ext_attribute_value_t* mxos_bt_peripheral_ext_attribute_add( uint16_t handle, uint16_t value_length, const uint8_t* value, mxos_bt_peripheral_attribute_handler handler )
 {
     mxos_bt_ext_attribute_value_t* new_attribite = NULL;
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     void*          value_buffer;
 
     require_action( initialised == MXOS_TRUE, exit, err = kNotInitializedErr );
@@ -593,9 +593,9 @@ exit:
     return new_attribite;
 }
 
-OSStatus mxos_bt_peripheral_ext_attribute_remove( mxos_bt_ext_attribute_value_t* attribute )
+merr_t mxos_bt_peripheral_ext_attribute_remove( mxos_bt_ext_attribute_value_t* attribute )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action( initialised == MXOS_TRUE, exit, err = kNotInitializedErr );
 
@@ -618,9 +618,9 @@ exit:
     return err;    
 }
 
-OSStatus mxos_bt_peripheral_ext_attribute_value_write( mxos_bt_ext_attribute_value_t* attribute, uint16_t length, uint16_t offset, const uint8_t* value )
+merr_t mxos_bt_peripheral_ext_attribute_value_write( mxos_bt_ext_attribute_value_t* attribute, uint16_t length, uint16_t offset, const uint8_t* value )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action( initialised == MXOS_TRUE, exit, err = kNotInitializedErr );
 
@@ -663,9 +663,9 @@ static bool compare_attribute_by_handle( linked_list_node_t* node_to_compare, vo
     }
 }
 
-OSStatus mxos_bt_peripheral_ext_attribute_find_by_handle( uint16_t handle, mxos_bt_ext_attribute_value_t** attribute_found )
+merr_t mxos_bt_peripheral_ext_attribute_find_by_handle( uint16_t handle, mxos_bt_ext_attribute_value_t** attribute_found )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action( ( initialised == MXOS_TRUE ) && ( attribute_found != NULL ), exit, err = kParamErr );
 
@@ -679,7 +679,7 @@ exit:
  *               Callback Definitions
  ******************************************************/
 
-static OSStatus peripheral_app_connection_handler( void* arg )
+static merr_t peripheral_app_connection_handler( void* arg )
 {
     mxos_bt_peripheral_socket_t* socket = (mxos_bt_peripheral_socket_t *)arg;
 
@@ -693,11 +693,11 @@ static OSStatus peripheral_app_connection_handler( void* arg )
         else 
         {
             mxos_bt_start_pairing(socket->remote_device.address, socket->remote_device.address_type, &socket->security_settings);
-            mxos_rtos_get_semaphore(&socket->semaphore, MXOS_NEVER_TIMEOUT);
+            mos_semphr_acquire(socket->semaphore, MXOS_NEVER_TIMEOUT);
             mxos_bt_start_encryption(&socket->remote_device.address);
         }
 
-        mxos_rtos_get_semaphore(&socket->semaphore, MXOS_NEVER_TIMEOUT);
+        mos_semphr_acquire(socket->semaphore, MXOS_NEVER_TIMEOUT);
     }
 
     /* Finished */
@@ -714,7 +714,7 @@ static OSStatus peripheral_app_connection_handler( void* arg )
 }
 
 
-static OSStatus peripheral_app_disconnection_handler( void* arg )
+static merr_t peripheral_app_disconnection_handler( void* arg )
 {
     mxos_bt_peripheral_socket_t* socket = (mxos_bt_peripheral_socket_t *)arg;
 

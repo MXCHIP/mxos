@@ -44,7 +44,7 @@
  *               Function Declarations
  ******************************************************/
 
-OSStatus platform_random_number_read( void *inBuffer, int inByteCount )
+merr_t platform_random_number_read( void *inBuffer, int inByteCount )
 {
     // PLATFORM_TO_DO
      // PLATFORM_TO_DO
@@ -60,12 +60,12 @@ OSStatus platform_random_number_read( void *inBuffer, int inByteCount )
     pByte = (uint8_t *)pWord+inWordCount*4;
 
     for(idx = 0; idx<inWordCount; idx++, pWord++){
-        srand(mxos_rtos_get_time());
+        srand(mos_time());
         *pWord = rand();
     }
 
     if(remainByteCount){
-        srand(mxos_rtos_get_time());
+        srand(mos_time());
         tempRDM = rand();
         memcpy(pByte, &tempRDM, (size_t)remainByteCount);
     }

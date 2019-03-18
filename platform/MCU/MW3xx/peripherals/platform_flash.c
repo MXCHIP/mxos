@@ -54,9 +54,9 @@ static mdev_t *flash_dev = NULL;
 ******************************************************/
 
 
-OSStatus platform_flash_init( const platform_flash_t *peripheral )
+merr_t platform_flash_init( const platform_flash_t *peripheral )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action_quiet( peripheral != NULL, exit, err = kParamErr );
     require_action_quiet( peripheral->flash_type == FLASH_TYPE_SPI, exit, err = kUnsupportedErr );
@@ -71,9 +71,9 @@ exit:
     return err;
 }
 
-OSStatus platform_flash_erase( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address )
+merr_t platform_flash_erase( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action_quiet( peripheral != NULL, exit, err = kParamErr );
     require_action_quiet( peripheral->flash_type == FLASH_TYPE_SPI, exit, err = kUnsupportedErr );
@@ -88,10 +88,10 @@ exit:
     return err;
 }
 
-OSStatus platform_flash_write( const platform_flash_t *peripheral, volatile uint32_t* start_address, uint8_t* data,
+merr_t platform_flash_write( const platform_flash_t *peripheral, volatile uint32_t* start_address, uint8_t* data,
                                uint32_t length )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action_quiet( peripheral != NULL, exit, err = kParamErr );
     require_action_quiet( peripheral->flash_type == FLASH_TYPE_SPI, exit, err = kUnsupportedErr );
@@ -108,9 +108,9 @@ exit:
     return err;
 }
 
-OSStatus platform_flash_read( const platform_flash_t *peripheral, volatile uint32_t* start_address, uint8_t* data ,uint32_t length  )
+merr_t platform_flash_read( const platform_flash_t *peripheral, volatile uint32_t* start_address, uint8_t* data ,uint32_t length  )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action_quiet( peripheral != NULL, exit, err = kParamErr );
     require_action_quiet( peripheral->flash_type == FLASH_TYPE_SPI, exit, err = kUnsupportedErr );
@@ -128,7 +128,7 @@ exit:
     return err;
 }
 
-OSStatus platform_flash_enable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address )
+merr_t platform_flash_enable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address )
 {
     UNUSED_PARAMETER(peripheral);
     UNUSED_PARAMETER(start_address);
@@ -137,7 +137,7 @@ OSStatus platform_flash_enable_protect( const platform_flash_t *peripheral, uint
     return kNoErr;
 }
 
-OSStatus platform_flash_disable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address )
+merr_t platform_flash_disable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address )
 {
     UNUSED_PARAMETER(peripheral);
     UNUSED_PARAMETER(start_address);

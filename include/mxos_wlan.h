@@ -43,30 +43,30 @@
 extern "C" {
 #endif
   
-#define mxosWlanStart             StartNetwork
-#define mxosWlanStartAdv          StartAdvNetwork
-#define mxosWlanGetIPStatus       getNetPara
-#define mxosWlanGetLinkStatus     CheckNetLink
-#define mxosWlanStartScan         mxchipStartScan
-#define mxosWlanStartScanAdv      mxchipStartAdvScan
-#define mxosWlanPowerOff          wifi_power_down
-#define mxosWlanPowerOn           wifi_power_up
+#define mwifi_softap_start             StartNetwork
+#define mwifi_connect          StartAdvNetwork
+#define mwifi_get_ip       getNetPara
+#define mwifi_get_link_info     CheckNetLink
+#define mwifi_softap_startScan         mxchipStartScan
+#define mwifi_softap_startScanAdv      mxchipStartAdvScan
+#define mwifi_off          wifi_power_down
+#define mwifi_on           wifi_power_up
 #define mxosWlanSuspend           wlan_disconnect
-#define mxosWlanSuspendStation    sta_disconnect
-#define mxosWlanSuspendSoftAP     uap_stop
-#define mxosWlanStartEasyLink     OpenEasylink2_withdata
+#define mwifi_disconnect    sta_disconnect
+#define mwifi_softap_stop     uap_stop
+#define mwifi_softap_startEasyLink     OpenEasylink2_withdata
 #define mxosWlanStopEasyLink      CloseEasylink2
-#define mxosWlanStartEasyLinkPlus OpenEasylink
+#define mwifi_softap_startEasyLinkPlus OpenEasylink
 #define mxosWlanStopEasyLinkPlus  CloseEasylink
-#define mxosWlanEnablePowerSave   ps_enable
-#define mxosWlanDisablePowerSave  ps_disable
-#define mxosWlanStartAirkiss      OpenAirkiss
-#define mxosWlanStopAirkiss       CloseAirkiss
+#define mwifi_ps_on   ps_enable
+#define mwifi_ps_off  ps_disable
+#define mwifi_softap_startAirkiss      OpenAirkiss
+#define mwifi_airkiss_stop       CloseAirkiss
 
 #define WiFi_Interface  wlanInterfaceTypedef
 #define net_para_st     IPStatusTypedef
 
-#define mxos_wlan_get_mac_address wlan_get_mac_address
+#define mwifi_get_mac wlan_get_mac_address
 
 /** @addtogroup MXOS_Core_APIs
   * @{
@@ -77,7 +77,7 @@ extern "C" {
   * @{
   */
 
-// ==== OSStatus extension for MXOS wlan ====
+// ==== merr_t extension for MXOS wlan ====
 #define kWlanNoErr                            0     /**< No error occurred in wlan operation. */
 #define kWlanPendingErr                       1     /**< Pending. */
 #define kWlanTimeoutErr                       2     /**< Timeout occurred in wlan operation. */
@@ -174,7 +174,7 @@ enum wlan_sec_type_e{
    SECURITY_TYPE_WPA2_TKIP,   /**< WPA2 /w TKIP */
    SECURITY_TYPE_WPA2_AES,    /**< WPA2 /w AES */
    SECURITY_TYPE_WPA2_MIXED,  /**< WPA2 /w AES or TKIP */
-   SECURITY_TYPE_AUTO,        /**< It is used when calling @ref mxosWlanStartAdv, MXOS read security type from scan result. */
+   SECURITY_TYPE_AUTO,        /**< It is used when calling @ref mwifi_connect, MXOS read security type from scan result. */
 };
 typedef uint8_t wlan_sec_type_t;
 
@@ -280,11 +280,10 @@ typedef  struct  _ScanResult
 } ScanResult;  
 
 /** 
- *  @brief  Input network paras, used in mxosWlanStart function.  
+ *  @brief  Input network paras, used in mwifi_softap_start function.  
  */
-typedef struct _network_InitTypeDef_st 
-{ 
-  char wifi_mode;               /**< DHCP mode: @ref wlanInterfaceTypedef.*/
+typedef struct 
+{
   char wifi_ssid[32];           /**< SSID of the wlan needs to be connected.*/
   char wifi_key[64];            /**< Security key of the wlan needs to be connected, ignored in an open system.*/
   char local_ip_addr[16];       /**< Static IP configuration, Local IP address. */
@@ -292,10 +291,7 @@ typedef struct _network_InitTypeDef_st
   char gateway_ip_addr[16];     /**< Static IP configuration, Router IP address. */
   char dnsServer_ip_addr[16];   /**< Static IP configuration, DNS server IP address. */
   char dhcpMode;                /**< DHCP mode, @ref DHCP_Disable, @ref DHCP_Client and @ref DHCP_Server. */
-  char reserved[32];            
-  int  wifi_retry_interval;     /**< Retry interval if an error is occured when connecting an access point, 
-                                     time unit is millisecond. */
-} network_InitTypeDef_st; 
+} mwifi_softap_attr_t; 
 
 typedef struct _network_Enterprise_st 
 { 
@@ -317,7 +313,7 @@ typedef struct _network_Enterprise_st
 } network_Enterprise_st; 
 
 /** 
- *  @brief  Advanced precise wlan parameters, used in @ref network_InitTypeDef_adv_st.  
+ *  @brief  Advanced precise wlan parameters, used in @ref wifi_connect_attr_t.  
  */
 typedef struct   
 { 
@@ -330,9 +326,9 @@ typedef struct
 }   apinfo_adv_t;
 
 /** 
- *  @brief  Input network precise paras in mxosWlanStartAdv function.  
+ *  @brief  Input network precise paras in mwifi_connect function.  
  */
-typedef struct _network_InitTypeDef_adv_st
+typedef struct
 {
   apinfo_adv_t ap_info;         /**< @ref apinfo_adv_t. */
   char  key[64];                /**< Security key or PMK of the wlan. */
@@ -345,7 +341,7 @@ typedef struct _network_InitTypeDef_adv_st
   char  reserved[32]; 
   int   wifi_retry_interval;    /**< Retry interval if an error is occured when connecting an access point, 
                                   time unit is millisecond. */
-} network_InitTypeDef_adv_st;
+} wifi_connect_attr_t;
 
 /** 
  *  @brief  Current link status in station mode.  
@@ -407,7 +403,7 @@ typedef struct _wifi_mgmt_frame_tx
   * @{
   */
 
-void mxos_wlan_get_mac_address( uint8_t *mac );
+void mwifi_get_mac( uint8_t *mac );
 
 /** @brief  Set default network interface
  *
@@ -425,24 +421,24 @@ void mxos_wlan_set_default_interface(netif_t interface);
  *          matchs the input SSID, and read the security mode. Then try to connect    
  *          to the target wlan. If any error occurs in the connection procedure or  
  *          disconnected after a successful connection, MXOS start the reconnection 
- *          procedure in backgound after a time interval defined in inNetworkInitPara.
+ *          procedure in backgound after a time interval defined in attr.
  *          Call this function twice when setup coexistence mode (staion + soft ap). 
  *          This function retruns immediately in station mode, and the connection will 
  *          be executed in background.
  *
- *  @param  inNetworkInitPara: Specifies wlan parameters. 
+ *  @param  attr: Specifies wlan parameters. 
  *
  *  @return In station mode, allways retrurn kWlanNoErr.
  *          In soft ap mode, return kWlanXXXErr
  */
-OSStatus mxosWlanStart(network_InitTypeDef_st* inNetworkInitPara);
+merr_t mwifi_softap_start(mwifi_softap_attr_t* attr);
 
 /** @brief  Connect to a Wi-Fi network with advantage settings (station mode only)
  * 
  *  @detail This function can connect to an access point with precise settings,
  *          that greatly speed up the connection if the input settings are correct
  *          and fixed. If this fast connection is failed for some reason, MXOS 
- *          change back to normal: scan + connect mode refer to @ref mxosWlanStart.
+ *          change back to normal: scan + connect mode refer to @ref mwifi_softap_start.
  *          This function returns after the fast connection try.
  *
  *  @note   This function cannot establish a soft ap, use StartNetwork() for this
@@ -450,36 +446,36 @@ OSStatus mxosWlanStart(network_InitTypeDef_st* inNetworkInitPara);
  *          If input SSID length is 0, MXOS use BSSID to connect the target wlan.
  *          If both SSID and BSSID are all wrong, the connection will be failed.
  *
- *  @param  inNetworkInitParaAdv: Specifies the precise wlan parameters.
+ *  @param  attr: Specifies the precise wlan parameters.
  *
  *  @retrun Allways return kWlanNoErr although error occurs in first fast try 
  *          kWlanTimeoutErr: DHCP client timeout
  */
-OSStatus mxosWlanStartAdv(network_InitTypeDef_adv_st* inNetworkInitParaAdv);
+merr_t mwifi_connect(wifi_connect_attr_t* attr);
 
 /** @brief  Read current IP status on a network interface.
  * 
  *  @param  outNetpara: Point to the buffer to store the IP address. 
  *  @param  inInterface: Specifies wlan interface. 
- *             @arg Soft_AP: The soft AP that established by mxosWlanStart()
+ *             @arg Soft_AP: The soft AP that established by mwifi_softap_start()
  *             @arg Station: The interface that connected to an access point
  *
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanGetIPStatus(IPStatusTypedef *outNetpara, netif_t netif);
+merr_t mwifi_get_ip(IPStatusTypedef *outNetpara, netif_t netif);
 
 /** @brief  Read current IPv6 status on a network interface.
  *
  *  @param  outNetpara: Point to the buffer to store the IPv6 address.
  *  @param  inInterface: Specifies wlan interface.
- *             @arg Soft_AP: The soft AP that established by mxosWlanStart()
+ *             @arg Soft_AP: The soft AP that established by mwifi_softap_start()
  *             @arg Station: The interface that connected to an access point
  *
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanGetIP6Status(ipv6_addr_t ipv6_addr[], uint8_t ipv6_addr_num, netif_t netif);
+merr_t mxosWlanGetIP6Status(ipv6_addr_t ipv6_addr[], uint8_t ipv6_addr_num, netif_t netif);
 
 /** @brief  Read current wireless link status on station interface.
  * 
@@ -488,7 +484,7 @@ OSStatus mxosWlanGetIP6Status(ipv6_addr_t ipv6_addr[], uint8_t ipv6_addr_num, ne
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanGetLinkStatus(LinkStatusTypeDef *outStatus);
+merr_t mwifi_get_link_info(LinkStatusTypeDef *outStatus);
 
 /** @brief  Start a wlan scanning in 2.4GHz asynchronous.
  *  
@@ -497,7 +493,7 @@ OSStatus mxosWlanGetLinkStatus(LinkStatusTypeDef *outStatus);
  *          void (*function)(ScanResult *pApList, mxos_Context_t * const inContext)
  *          Register callback function using @ref mxos_add_notification() before scan.
  */
-void mxosWlanStartScan(void);
+void mwifi_softap_startScan(void);
 
 /** @brief  Start a wlan scanning in 2.4GHz asynchronous.
  *  
@@ -506,7 +502,7 @@ void mxosWlanStartScan(void);
  *          void (*function)(ScanResultAdv *pApList, mxos_Context_t * const inContext)
  *          Register callback function using @ref mxos_add_notification() before scan.
  */
-void mxosWlanStartScanAdv(void);
+void mwifi_softap_startScanAdv(void);
 
 /** @brief  Start a wlan scanning specified SSID in 2.4GHz in MXOS backfround.
  *
@@ -523,7 +519,7 @@ int mxchip_active_scan(char*ssid, int is_adv);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanPowerOff(void);
+merr_t mwifi_off(void);
 
 /** @brief  Open the RF's power supply and do some necessary initialization.
  *
@@ -533,7 +529,7 @@ OSStatus mxosWlanPowerOff(void);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanPowerOn(void);
+merr_t mwifi_on(void);
 
 /**@brief  Close all the Wi-Fi connections, station mode and soft ap mode
  * 
@@ -543,7 +539,7 @@ OSStatus mxosWlanPowerOn(void);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanSuspend(void);
+merr_t mxosWlanSuspend(void);
 
 /** @brief  Close the connection in station mode
  * 
@@ -553,14 +549,14 @@ OSStatus mxosWlanSuspend(void);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanSuspendStation(void);
+merr_t mwifi_disconnect(void);
 
 /** @brief  Stop soft ap and close all stations' connections
  * 
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanSuspendSoftAP(void);
+merr_t mwifi_softap_stop(void);
 /**
   * @}
   */
@@ -576,7 +572,7 @@ OSStatus mxosWlanSuspendSoftAP(void);
  *          Easylink APP.  
  *          MXOS sends a callback: mxos_notify_EASYLINK_WPS_COMPLETED
  *          with function:
- *          void (*function)(network_InitTypeDef_st *nwkpara, mxos_Context_t * const inContext);
+ *          void (*function)(mwifi_softap_attr_t *nwkpara, mxos_Context_t * const inContext);
  *          that provide SSID and password, nwkpara is NULL if timeout or get an error
  *          More
  *          MXOS sends a callback: mxos_notify_EASYLINK_GET_EXTRA_DATA
@@ -590,7 +586,7 @@ OSStatus mxosWlanSuspendSoftAP(void);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanStartEasyLink(int inTimeout);
+merr_t mwifi_softap_startEasyLink(int inTimeout);
 
 /** @brief  Start EasyLink plus configuration with user extra data
  *
@@ -609,8 +605,8 @@ OSStatus mxosWlanStartEasyLink(int inTimeout);
  *  @return   kGeneralErr   : if an error occurred
  */
 
-OSStatus mxosWlanStartEasyLinkPlus(int inTimeout);
-OSStatus mxosWlanStartAws(int inTimeout);
+merr_t mwifi_softap_startEasyLinkPlus(int inTimeout);
+merr_t mwifi_softap_startAws(int inTimeout);
 
 
 /** @brief  Start EasyLink plus configuration with UAP coexistence
@@ -624,7 +620,7 @@ OSStatus mxosWlanStartAws(int inTimeout);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxos_wlan_easylink_uap_start(int timeout, char *ssid, char*key, int channel);
+merr_t mxos_wlan_easylink_uap_start(int timeout, char *ssid, char*key, int channel);
 
 
 /** @brief  Stop EasyLink configuration procedure
@@ -632,9 +628,9 @@ OSStatus mxos_wlan_easylink_uap_start(int timeout, char *ssid, char*key, int cha
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxosWlanStopEasyLink(void);
-OSStatus mxosWlanStopEasyLinkPlus(void);
-OSStatus mxosWlanStopAws(void);
+merr_t mxosWlanStopEasyLink(void);
+merr_t mxosWlanStopEasyLinkPlus(void);
+merr_t mwifi_aws_stop(void);
 
 /**
   * @}
@@ -654,14 +650,14 @@ OSStatus mxosWlanStopAws(void);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxos_wlan_start_wps(mxos_wps_device_detail_t* wps_config, int inTimeout);
+merr_t mxos_wlan_start_wps(mxos_wps_device_detail_t* wps_config, int inTimeout);
 
 /** @brief  Stop WPS configuration procedure
  *  
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxos_wlan_stop_wps(void);
+merr_t mxos_wlan_stop_wps(void);
 
 
 /**
@@ -680,7 +676,7 @@ OSStatus mxos_wlan_stop_wps(void);
  *          Easylink APP.  
  *          MXOS sends a callback: mxos_notify_EASYLINK_WPS_COMPLETED
  *          with function:
- *          void (*function)(network_InitTypeDef_st *nwkpara, mxos_Context_t * const inContext);
+ *          void (*function)(mwifi_softap_attr_t *nwkpara, mxos_Context_t * const inContext);
  *          that provide SSID and password, nwkpara is NULL if timeout or get an error
  *
  *  @param  inTimeout: If airkiss is executed longer than this parameter in backgound.
@@ -688,13 +684,13 @@ OSStatus mxos_wlan_stop_wps(void);
  *
  *  @retval kNoErr.
  */
-OSStatus mxosWlanStartAirkiss(int inTimeout);
+merr_t mwifi_softap_startAirkiss(int inTimeout);
 
 /** @brief  Stop wechat airkiss configuration procedure
  *  
  *  @retval kNoErr.
  */
-OSStatus mxosWlanStopAirkiss(void);
+merr_t mwifi_airkiss_stop(void);
 /**
   * @}
   */
@@ -712,14 +708,14 @@ OSStatus mxosWlanStopAirkiss(void);
  * @retval  None
  */
 
-void mxosWlanEnablePowerSave(void);
+void mwifi_ps_on(void);
 
 /**
  * @brief  Disable IEEE power save mode
  *
  * @retval  None
  */
-void mxosWlanDisablePowerSave(void); 
+void mwifi_ps_off(void); 
 
 /**
   * @}
@@ -769,35 +765,35 @@ int mxos_wlan_monitor_rx_type(int type);
  *  @detail This function disconnect wifi station and softAP. 
  *       
  */
-int mxos_wlan_start_monitor(void);
+int mwifi_monitor_start(void);
 
 /** @brief  Stop wifi monitor mode
  * 
  */
-int mxos_wlan_stop_monitor(void);
+int mwifi_monitor_stop(void);
 
 /** @brief  Set the monitor channel
  * 
  *  @detail This function change the monitor channel (from 1~13).
  *       it can change the channel dynamically, don't need restart monitor mode.
  */
-OSStatus mxos_wlan_monitor_set_channel( uint8_t channel );
+merr_t mwifi_monitor_set_channel( uint8_t channel );
 
 /** @brief  Get the monitor channel
  * 
  *  @detail This function get the monitor channel (from 1~13).
  *       it can change the channel dynamically, don't need restart monitor mode.
  */
-OSStatus mxos_wlan_monitor_get_channel( uint8_t *channel );
+merr_t mwifi_monitor_get_channel( uint8_t *channel );
 
 /** @brief  Register the monitor callback function
  *        Once received a 802.11 packet call the registered function to return the packet.
  */
-void mxos_wlan_register_monitor_cb(monitor_cb_t fn);
+void mwifi_monitor_reg_cb(monitor_cb_t fn);
 
 /** @brief  Send management frame
  */
-OSStatus mxos_wlan_send_mgnt(uint8_t *buffer, uint32_t length);
+merr_t mwifi_monitor_send_frame(uint8_t *buffer, uint32_t length);
 
 /**@brief Add a custom IE to a WLAN interface
  *
@@ -808,7 +804,7 @@ OSStatus mxos_wlan_send_mgnt(uint8_t *buffer, uint32_t length);
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus mxos_wlan_custom_ie_add(wlan_if_t wlan_if, uint8_t *custom_ie, uint32_t len);
+merr_t mwifi_custom_ie_add(wlan_if_t wlan_if, uint8_t *custom_ie, uint32_t len);
 
 enum custom_ie_delete_op_e
 {
@@ -827,7 +823,7 @@ typedef uint8_t custom_ie_delete_op_t;
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus mxos_wlan_custom_ie_delete(wlan_if_t wlan_if, custom_ie_delete_op_t op, uint8_t *option_data, uint32_t len);
+merr_t mxos_wlan_custom_ie_delete(wlan_if_t wlan_if, custom_ie_delete_op_t op, uint8_t *option_data, uint32_t len);
 
 /**@brief Get the MAC address of an WLAN interface
  *
@@ -836,7 +832,7 @@ OSStatus mxos_wlan_custom_ie_delete(wlan_if_t wlan_if, custom_ie_delete_op_t op,
  *
  * @return    None
  */
-void mxos_wlan_get_mac_address_by_interface( wlan_if_t wlan_if, uint8_t *mac );
+void mwifi_get_mac_by_interface( wlan_if_t wlan_if, uint8_t *mac );
 /**
   * @}
   */

@@ -49,7 +49,7 @@
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus bma2x2_sensor_init(void);
+merr_t bma2x2_sensor_init(void);
 
 
 /**
@@ -62,7 +62,7 @@ OSStatus bma2x2_sensor_init(void);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus bma2x2_data_readout(s16 *v_accel_x_s16, s16 *v_accel_y_s16, s16 *v_accel_z_s16);
+merr_t bma2x2_data_readout(s16 *v_accel_x_s16, s16 *v_accel_y_s16, s16 *v_accel_z_s16);
 
 
 /**
@@ -71,7 +71,7 @@ OSStatus bma2x2_data_readout(s16 *v_accel_x_s16, s16 *v_accel_y_s16, s16 *v_acce
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus bma2x2_sensor_deinit(void);
+merr_t bma2x2_sensor_deinit(void);
 
 /**
   * @}

@@ -26,7 +26,7 @@
 
 int infrared_reflective_init(void)
 {
-  OSStatus err = kUnknownErr;
+  merr_t err = kUnknownErr;
   
   err = mxos_adc_init(INFARAED_REFLECTIVE_ADC, INFARAED_REFLECTIVE_ADC_SAMPLE_CYCLE);
   if(kNoErr != err){
@@ -39,7 +39,7 @@ int infrared_reflective_init(void)
 int infrared_reflective_read(uint16_t *data)
 {
   int ret = 0;
-  OSStatus err = kUnknownErr;
+  merr_t err = kUnknownErr;
   
   // init ADC
   err = mxos_adc_init(INFARAED_REFLECTIVE_ADC, INFARAED_REFLECTIVE_ADC_SAMPLE_CYCLE);

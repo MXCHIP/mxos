@@ -21,9 +21,9 @@
 
 #include "json_c/json.h"
 
-OSStatus config_server_create_sector(json_object* sectors, char* const name,  json_object *menus)
+merr_t config_server_create_sector(json_object* sectors, char* const name,  json_object *menus)
 {
-  OSStatus err;
+  merr_t err;
   json_object *object;
   err = kNoErr;
 
@@ -37,9 +37,9 @@ exit:
   return err;
 }
 
-OSStatus config_server_create_string_cell(json_object* menus, char* const name,  char* const content, char* const privilege, json_object* secectionArray)
+merr_t config_server_create_string_cell(json_object* menus, char* const name,  char* const content, char* const privilege, json_object* secectionArray)
 {
-  OSStatus err;
+  merr_t err;
   json_object *object;
   err = kNoErr;
 
@@ -59,9 +59,9 @@ exit:
   return err;
 }
 
-OSStatus config_server_create_number_cell(json_object* menus, char* const name,  int content, char* const privilege, json_object* secectionArray)
+merr_t config_server_create_number_cell(json_object* menus, char* const name,  int content, char* const privilege, json_object* secectionArray)
 {
-  OSStatus err;
+  merr_t err;
   json_object *object;
   err = kNoErr;
 
@@ -81,9 +81,9 @@ exit:
   return err;
 }
 
-OSStatus config_server_create_float_cell(json_object* menus, char* const name,  float content, char* const privilege, json_object* secectionArray)
+merr_t config_server_create_float_cell(json_object* menus, char* const name,  float content, char* const privilege, json_object* secectionArray)
 {
-  OSStatus err;
+  merr_t err;
   json_object *object;
   err = kNoErr;
 
@@ -104,9 +104,9 @@ exit:
 }
 
 
-OSStatus config_server_create_bool_cell(json_object* menus, char* const name,  boolean switcher, char* const privilege)
+merr_t config_server_create_bool_cell(json_object* menus, char* const name,  boolean switcher, char* const privilege)
 {
-  OSStatus err;
+  merr_t err;
   json_object *object;
   err = kNoErr;
 
@@ -121,9 +121,9 @@ exit:
   return err;
 }
 
-OSStatus config_server_create_sub_menu_cell(json_object* menus, char* const name, json_object* lowerSectors)
+merr_t config_server_create_sub_menu_cell(json_object* menus, char* const name, json_object* lowerSectors)
 {
-  OSStatus err;
+  merr_t err;
   json_object *object;
   err = kNoErr;
 

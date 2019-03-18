@@ -60,11 +60,11 @@ extern void ApListAdvCallback( ScanResult_adv *pApAdvList );
 extern void WifiStatusHandler( WiFiEvent status );
 extern void connected_ap_info( apinfo_adv_t *ap_info, char *key, int key_len );
 extern void NetCallback( IPStatusTypedef *pnet );
-extern void RptConfigmodeRslt( network_InitTypeDef_st *nwkpara );
+extern void RptConfigmodeRslt( mwifi_softap_attr_t *nwkpara );
 extern void easylink_user_data_result( int datalen, char*data );
 extern void socket_connected( int fd );
 extern void dns_ip_set( uint8_t *hostname, uint32_t ip );
-extern void join_fail( OSStatus err );
+extern void join_fail( merr_t err );
 extern void wifi_reboot_event( void );
 extern void mxos_rtos_stack_overflow( char *taskname );
 
@@ -76,12 +76,12 @@ void moc_app_main( const mxos_api_t *lib_api_t );
 ******************************************************/
 
 extern uint32_t app_stack_size;
-extern mxos_mutex_t stdio_tx_mutex;
+extern mos_mutex_id_t stdio_tx_mutex;
 const mxos_api_t *lib_api_p = NULL;
 extern uint32_t _ram_end_;
 #ifdef CONFIG_CPU_MX1290
 extern const platform_peripherals_pinmap_t peripherals_pinmap;
-extern const mxos_gpio_init_t gpio_init[];
+extern const mhal_gpio_open_t gpio_init[];
 #endif
 
 #if defined ( __ICCARM__ )
@@ -144,7 +144,7 @@ extern void _memory_init( void );
 static void pre_main( void )
 {
     main( );
-    mxos_rtos_delete_thread( NULL );
+    mos_thread_delete( NULL );
 }
 
 #ifdef CONFIG_CPU_MX1290
@@ -172,7 +172,7 @@ void moc_app_main( const mxos_api_t *moc_kernel_apis )
 	lib_api_p = moc_kernel_apis;
 #endif
  
-    mxos_rtos_init_mutex( &stdio_tx_mutex );
+    stdio_tx_mutex = mos_mutex_new( );
 #ifdef CONFIG_CPU_MX1290
  	init_debug_uart();
 #endif
@@ -183,8 +183,7 @@ void moc_app_main( const mxos_api_t *moc_kernel_apis )
     /* Init nano second clock counter */
     platform_init_nanosecond_clock();
 
-    mxos_rtos_create_thread( NULL, MXOS_APPLICATION_PRIORITY, "app_thread", (mxos_thread_function_t)pre_main,
-                             app_stack_size, 0 );
+    mos_thread_new( MXOS_APPLICATION_PRIORITY, "app_thread", (mos_thread_func_t)pre_main, app_stack_size, NULL );
    
     return;
 

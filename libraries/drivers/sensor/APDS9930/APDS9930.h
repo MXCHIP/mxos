@@ -115,7 +115,7 @@
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus apds9930_sensor_init(void);
+merr_t apds9930_sensor_init(void);
 
 /**
  * @brief Deinitialize ADPS9930 device  .
@@ -123,7 +123,7 @@ OSStatus apds9930_sensor_init(void);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus apds9930_sensor_deinit(void);
+merr_t apds9930_sensor_deinit(void);
 
 /**
  * @brief  Read data from ADPS9930  device  .
@@ -134,7 +134,7 @@ OSStatus apds9930_sensor_deinit(void);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus apds9930_data_readout(uint16_t *Prox_data, uint16_t *Lux_data);
+merr_t apds9930_data_readout(uint16_t *Prox_data, uint16_t *Lux_data);
 
 
 /**

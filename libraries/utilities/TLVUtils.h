@@ -61,7 +61,7 @@
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus TLVGetNext( 
+merr_t TLVGetNext( 
         const uint8_t *     inSrc, 
         const uint8_t *     inEnd, 
         uint8_t *           outID, 

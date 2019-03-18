@@ -90,38 +90,38 @@ noos_mutex_t mutex_pool[MUTEX_POOL_NUM];
  *               Function Definitions
  ******************************************************/
 
-OSStatus mxos_rtos_create_thread( mxos_thread_t* thread, uint8_t priority, const char* name, mxos_thread_function_t function, uint32_t stack_size, uint32_t arg )
+mos_thread_id_t mos_thread_new( uint8_t priority, const char* name, mos_thread_func_t function, uint32_t stack_size, void *arg )
+{
+    return NULL;
+}
+
+merr_t mos_thread_delete( mos_thread_id_t id )
+{
+    return kUnsupportedErr;
+}
+
+merr_t mos_thread_join( mos_thread_id_t id )
+{
+    return kUnsupportedErr;
+}
+
+bool mxos_rtos_is_current_thread( mos_thread_id_t* thread )
+{
+    return kUnsupportedErr;
+}
+
+merr_t mxos_rtos_thread_force_awake( mos_thread_id_t* thread )
+{
+    return kUnsupportedErr;
+}
+
+
+merr_t mxos_rtos_print_thread_status( char* pcWriteBuffer, int xWriteBufferLen )
 {
     return kNoErr;
 }
 
-OSStatus mxos_rtos_delete_thread( mxos_thread_t* thread )
-{
-    return kUnsupportedErr;
-}
-
-OSStatus mxos_rtos_thread_join( mxos_thread_t* thread )
-{
-    return kUnsupportedErr;
-}
-
-bool mxos_rtos_is_current_thread( mxos_thread_t* thread )
-{
-    return kUnsupportedErr;
-}
-
-OSStatus mxos_rtos_thread_force_awake( mxos_thread_t* thread )
-{
-    return kUnsupportedErr;
-}
-
-
-OSStatus mxos_rtos_print_thread_status( char* pcWriteBuffer, int xWriteBufferLen )
-{
-    return kNoErr;
-}
-
-OSStatus semaphore_pool_alloc( noos_semaphore_t **semaphore )
+merr_t semaphore_pool_alloc( noos_semaphore_t **semaphore )
 {
 	if(semaphore_pool_init == 0)
 	{
@@ -144,7 +144,7 @@ OSStatus semaphore_pool_alloc( noos_semaphore_t **semaphore )
 	return kGeneralErr;
 }
 
-OSStatus semaphore_pool_free( noos_semaphore_t **semaphore )
+merr_t semaphore_pool_free( noos_semaphore_t **semaphore )
 {
 	if(semaphore != NULL)
 	{
@@ -157,7 +157,7 @@ OSStatus semaphore_pool_free( noos_semaphore_t **semaphore )
 	return kGeneralErr;
 }
 
-OSStatus mutex_pool_alloc( noos_mutex_t **mutex )
+merr_t mutex_pool_alloc( noos_mutex_t **mutex )
 {
 	if(mutex_pool_init == 0)
 	{
@@ -180,7 +180,7 @@ OSStatus mutex_pool_alloc( noos_mutex_t **mutex )
 	return kGeneralErr;
 }
 
-OSStatus mutex_pool_free( noos_mutex_t **mutex )
+merr_t mutex_pool_free( noos_mutex_t **mutex )
 {
 	if(mutex != NULL)
 	{
@@ -193,27 +193,26 @@ OSStatus mutex_pool_free( noos_mutex_t **mutex )
 	return kGeneralErr;
 }
 
-OSStatus mxos_rtos_init_semaphore( mxos_semaphore_t* semaphore, int count )
+mos_semphr_id_t mos_semphr_new( uint32_t count )
 {
     noos_semaphore_t *noos_semaphore;
     UNUSED_PARAMETER( count );
     semaphore_pool_alloc(&noos_semaphore);
     noos_semaphore->count = 0;
-    *semaphore = (void *)noos_semaphore;
-    return kNoErr;
+    return noos_semaphore;
 }
 
-OSStatus mxos_rtos_get_semaphore( mxos_semaphore_t* semaphore, uint32_t timeout_ms )
+merr_t mos_semphr_acquire( mos_semphr_id_t id, uint32_t timeout )
 {
-    noos_semaphore_t *noos_semaphore = (noos_semaphore_t *)*semaphore;
+    noos_semaphore_t *noos_semaphore = (noos_semaphore_t *)id;
     int delay_start;
 
     if( noos_semaphore == NULL)
         return kNotInitializedErr;
 
-    delay_start = mxos_rtos_get_time();
+    delay_start = mos_time();
     while( noos_semaphore->count == 0){
-      if(mxos_rtos_get_time() >= delay_start + timeout_ms && timeout_ms != MXOS_NEVER_TIMEOUT){
+      if(mos_time() >= delay_start + timeout_ms && timeout_ms != MXOS_NEVER_TIMEOUT){
         return kTimeoutErr;
       }
     }
@@ -225,9 +224,9 @@ OSStatus mxos_rtos_get_semaphore( mxos_semaphore_t* semaphore, uint32_t timeout_
     return kNoErr;
 }
 
-OSStatus mxos_rtos_set_semaphore( mxos_semaphore_t* semaphore )
+merr_t mos_semphr_release( mos_semphr_id_t id )
 {
-    noos_semaphore_t *noos_semaphore = (noos_semaphore_t *)*semaphore;
+    noos_semaphore_t *noos_semaphore = (noos_semaphore_t *)id;
 
     if( noos_semaphore == NULL)
         return kNotInitializedErr;
@@ -239,51 +238,48 @@ OSStatus mxos_rtos_set_semaphore( mxos_semaphore_t* semaphore )
     return kNoErr;
 }
 
-OSStatus mxos_rtos_deinit_semaphore( mxos_semaphore_t* semaphore )
+merr_t mos_semphr_delete( mos_semphr_id_t id )
 {
-    noos_semaphore_t *noos_semaphore = (noos_semaphore_t *)*semaphore;
+    noos_semaphore_t *noos_semaphore = (noos_semaphore_t *)id;
 
     if( noos_semaphore == NULL)
         return kNotInitializedErr;
 
     semaphore_pool_free(&noos_semaphore);
-    *semaphore = NULL;
 
     return kNoErr;
 }
 
 
-OSStatus mxos_rtos_init_mutex( mxos_mutex_t* mutex )
+mos_mutex_id_t mos_mutex_new( void )
 {
     noos_mutex_t *noos_mutex;
     mutex_pool_alloc(&noos_mutex);
     noos_mutex->reversed = 0;
-    *mutex = (void *)noos_mutex;
-    return kNoErr;
+    return noos_mutex;
 }
 
 
-OSStatus mxos_rtos_lock_mutex( mxos_mutex_t* mutex )
+merr_t mos_mutex_lock( mos_mutex_id_t id )
 {
-    UNUSED_PARAMETER(mutex);
+    UNUSED_PARAMETER(id);
     return kNoErr;
 }
 
-OSStatus mxos_rtos_unlock_mutex( mxos_mutex_t* mutex )
+merr_t mos_mutex_unlock( mos_mutex_id_t id )
 {
-    UNUSED_PARAMETER(mutex);
+    UNUSED_PARAMETER(id);
     return kNoErr;
 }
 
-OSStatus mxos_rtos_deinit_mutex( mxos_mutex_t* mutex )
+merr_t mos_mutex_delete( mos_mutex_id_t id )
 {
-    noos_mutex_t *noos_mutex = (noos_mutex_t *)*mutex;
+    noos_mutex_t *noos_mutex = (noos_mutex_t *)id;
 
     if( noos_mutex == NULL)
         return kNotInitializedErr;
 
     mutex_pool_free(&noos_mutex);
-    *mutex = NULL;
     return kNoErr;
 }
 
@@ -292,14 +288,14 @@ OSStatus mxos_rtos_deinit_mutex( mxos_mutex_t* mutex )
  *
  * Simply implemented with a tight loop
  *
- * @return OSStatus : kNoErr if delay was successful
+ * @return merr_t : kNoErr if delay was successful
  *
  */
-OSStatus mxos_rtos_delay_milliseconds( uint32_t num_ms )
+merr_t mos_thread_delay( uint32_t num_ms )
 {
-    mxos_time_t start = mxos_rtos_get_time( );
+    mxos_time_t start = mos_time( );
 
-    while ( ( mxos_rtos_get_time( ) - start ) < num_ms )
+    while ( ( mos_time( ) - start ) < num_ms )
     {
         /* do nothing */
     }
@@ -315,80 +311,80 @@ void mxos_rtos_exit_critical( void )
 {
 }
 
-OSStatus mxos_rtos_init_queue( mxos_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages )
+mos_queue_id_t mos_queue_new( uint32_t message_size, uint32_t number_of_messages )
 {
-    return kNoErr;
+    return NULL;
 }
 
-OSStatus mxos_rtos_push_to_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
+merr_t mos_queue_push( mos_queue_id_t id, void* message, uint32_t timeout_ms )
 {
     return kUnsupportedErr;
 }
 
 
-OSStatus mxos_rtos_push_to_queue_front( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
+merr_t mos_queue_push_front( mos_queue_id_t* queue, void* message, uint32_t timeout_ms )
 {
     return kUnsupportedErr;
 }
 
 
-OSStatus mxos_rtos_pop_from_queue( mxos_queue_t* queue, void* message, uint32_t timeout_ms )
+merr_t mos_queue_pop( mos_queue_id_t id, void* message, uint32_t timeout_ms )
 {
     return kUnsupportedErr;
 }
 
 
-OSStatus mxos_rtos_deinit_queue( mxos_queue_t* queue )
+merr_t mos_queue_delete( mos_queue_id_t id )
 {
     return kUnsupportedErr;
 }
 
-bool mxos_rtos_is_queue_empty( mxos_queue_t* queue )
+bool mxos_rtos_is_queue_empty( mos_queue_id_t* queue )
 {
     return kUnsupportedErr;
 }
 
-bool mxos_rtos_is_queue_full( mxos_queue_t* queue )
+bool mxos_rtos_is_queue_full( mos_queue_id_t* queue )
 {
     return kUnsupportedErr;
 }
 
 
-OSStatus mxos_rtos_init_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
+merr_t mos_timer_new( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
 {
     return kUnsupportedErr;
 }
 
-OSStatus mxos_rtos_start_timer( mxos_timer_t* timer )
+merr_t mos_timer_start( mxos_timer_t* timer )
 {
     return kUnsupportedErr;
 }
 
-OSStatus mxos_rtos_stop_timer( mxos_timer_t* timer )
+merr_t mos_timer_stop( mxos_timer_t* timer )
 {
     return kUnsupportedErr;
 }
 
-OSStatus mxos_rtos_reload_timer( mxos_timer_t* timer )
+merr_t mxos_rtos_reload_timer( mxos_timer_t* timer )
 {
     return kUnsupportedErr;
 }
 
-OSStatus mxos_rtos_deinit_timer( mxos_timer_t* timer )
+merr_t mos_timer_delete( mxos_timer_t* timer )
 {
     return kUnsupportedErr;
 }
 
-OSStatus mxos_time_get_time(mxos_time_t* time_ptr)
+merr_t mxos_time_get_time(mxos_time_t* time_ptr)
 {
-    mxos_time_t _time = mxos_rtos_get_time();
+    mxos_time_t _time = mos_time();
     *time_ptr = _time + mxos_time_offset;
     return kNoErr;
 }
 
-OSStatus mxos_time_set_time(mxos_time_t* time_ptr)
+merr_t mxos_time_set_time(mxos_time_t* time_ptr)
 {
-    mxos_time_offset = *time_ptr - mxos_rtos_get_time();
+    mxos_time_offset = *time_ptr - mos_time();
     return kNoErr;
 }
 

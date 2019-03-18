@@ -107,7 +107,7 @@ typedef struct
  *               Static Function Declarations
  ******************************************************/
 
-static OSStatus sync_ntp_time( void* arg );
+static merr_t sync_ntp_time( void* arg );
 
 /******************************************************
  *               Variable Definitions
@@ -122,16 +122,16 @@ static struct in_addr ntp_server[2];
  *               Function Definitions
  ******************************************************/
 
-OSStatus sntp_start_auto_time_sync( uint32_t interval_ms, time_synced_fun call_back )
+merr_t sntp_start_auto_time_sync( uint32_t interval_ms, time_synced_fun call_back )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     uint8_t random_initial;
 
     time_synced_call_back = call_back;
     /* Synchronize time with NTP server and schedule for re-sync every one day */
     MxosRandomNumberRead( &random_initial, 1 );
     /* prevent thundering herd scenarios by randomizing per RFC4330 */
-    //mxos_rtos_delay_milliseconds(300 * (unsigned int)random_initial);
+    //mos_thread_delay(300 * (unsigned int)random_initial);
     mxos_rtos_send_asynchronous_event( MXOS_NETWORKING_WORKER_THREAD, sync_ntp_time, 0 );
     if ( interval_ms < MIN_POLL_INTERVAL )
         interval_ms = MIN_POLL_INTERVAL;
@@ -140,7 +140,7 @@ OSStatus sntp_start_auto_time_sync( uint32_t interval_ms, time_synced_fun call_b
     return err;
 }
 
-OSStatus sntp_set_server_ip_address( uint32_t index, struct in_addr address )
+merr_t sntp_set_server_ip_address( uint32_t index, struct in_addr address )
 {
     if ( (index != 0) && (index != 1) )
         return kParamErr;
@@ -149,7 +149,7 @@ OSStatus sntp_set_server_ip_address( uint32_t index, struct in_addr address )
     return kNoErr;
 }
 
-OSStatus sntp_clr_server_ip_address( uint32_t index )
+merr_t sntp_clr_server_ip_address( uint32_t index )
 {
     if ( index > 1 )
         return kParamErr;
@@ -158,15 +158,15 @@ OSStatus sntp_clr_server_ip_address( uint32_t index )
     return kNoErr;
 }
 
-OSStatus sntp_stop_auto_time_sync( void )
+merr_t sntp_stop_auto_time_sync( void )
 {
     return mxos_rtos_deregister_timed_event( &sync_ntp_time_event );
 }
 
-OSStatus sntp_get_time( const struct in_addr *ntp_server_ip, ntp_timestamp_t* timestamp)
+merr_t sntp_get_time( const struct in_addr *ntp_server_ip, ntp_timestamp_t* timestamp)
 {
     int                Ntp_fd = -1;
-    OSStatus           err;
+    merr_t           err;
     ntp_packet_t       data;
     mxos_utc_time_t    utc_time;
     fd_set             readfds;
@@ -239,9 +239,9 @@ OSStatus sntp_get_time( const struct in_addr *ntp_server_ip, ntp_timestamp_t* ti
     return err;
 }
 
-static OSStatus sync_ntp_time( void* arg )
+static merr_t sync_ntp_time( void* arg )
 {
-    OSStatus             err = kGeneralErr;
+    merr_t             err = kGeneralErr;
     ntp_timestamp_t      current_time;
     struct hostent *     hostent_content = NULL;
     struct in_addr       ntp_server_ip;
@@ -289,7 +289,7 @@ static OSStatus sync_ntp_time( void* arg )
         }
         else
         {
-            mxos_rtos_delay_milliseconds( TIME_BTW_ATTEMPTS );
+            mos_thread_delay( TIME_BTW_ATTEMPTS );
             ntp_log( "failed, trying again..." );
         }
     }

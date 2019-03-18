@@ -70,8 +70,8 @@ static void timed_event_handler( void* arg );
  *               Variable Definitions
  ******************************************************/
 
-mxos_worker_thread_t mxos_hardware_io_worker_thread;
-mxos_worker_thread_t mxos_worker_thread;
+mos_worker_thread_id_t mxos_hardware_io_worker_thread;
+mos_worker_thread_id_t mxos_worker_thread;
 
 /******************************************************
  *               Function Definitions
@@ -80,21 +80,21 @@ mxos_worker_thread_t mxos_worker_thread;
 /* Entry point for user Application */
 extern int application_start( void );
 
-OSStatus mxos_rtos_init( void )
+merr_t mxos_rtos_init( void )
 {
-    OSStatus result = kNoErr;
+    merr_t result = kNoErr;
 
     rtos_log("Started MXOS RTOS interface for %s %s", RTOS_NAME, RTOS_VERSION );
 
     /*
-    result = mxos_rtos_create_worker_thread( MXOS_HARDWARE_IO_WORKER_THREAD, MXOS_DEFAULT_WORKER_PRIORITY, HARDWARE_IO_WORKER_THREAD_STACK_SIZE, HARDWARE_IO_WORKER_THREAD_QUEUE_SIZE );
+    result = mos_worker_thread_new( MXOS_HARDWARE_IO_WORKER_THREAD, MXOS_DEFAULT_WORKER_PRIORITY, HARDWARE_IO_WORKER_THREAD_STACK_SIZE, HARDWARE_IO_WORKER_THREAD_QUEUE_SIZE );
     if ( result != kNoErr )
     {
         rtos_log("Failed to create MXOS_NETWORKING_WORKER_THREAD");
     }
     */
 
-    result = mxos_rtos_create_worker_thread( MXOS_NETWORKING_WORKER_THREAD, MXOS_NETWORK_WORKER_PRIORITY, NETWORKING_WORKER_THREAD_STACK_SIZE, NETWORKING_WORKER_THREAD_QUEUE_SIZE );
+    result = mos_worker_thread_new( MXOS_NETWORKING_WORKER_THREAD, MXOS_NETWORK_WORKER_PRIORITY, NETWORKING_WORKER_THREAD_STACK_SIZE, NETWORKING_WORKER_THREAD_QUEUE_SIZE );
     if ( result != kNoErr )
     {
         rtos_log("Failed to create MXOS_NETWORKING_WORKER_THREAD");
@@ -104,20 +104,20 @@ OSStatus mxos_rtos_init( void )
 }
 
 
-OSStatus mxos_rtos_deinit( void )
+merr_t mxos_rtos_deinit( void )
 {
-    OSStatus result = mxos_rtos_delete_worker_thread( MXOS_HARDWARE_IO_WORKER_THREAD );
+    merr_t result = mos_worker_thread_delete( MXOS_HARDWARE_IO_WORKER_THREAD );
 
     if ( result == kNoErr )
     {
-        result = mxos_rtos_delete_worker_thread( MXOS_NETWORKING_WORKER_THREAD );
+        result = mos_worker_thread_delete( MXOS_NETWORKING_WORKER_THREAD );
     }
 
     return result;
 }
 
 
-OSStatus mxos_rtos_delay_microseconds( uint32_t microseconds )
+merr_t mxos_rtos_delay_microseconds( uint32_t microseconds )
 {
     uint32_t current_time;
     uint32_t duration;
@@ -133,15 +133,15 @@ OSStatus mxos_rtos_delay_microseconds( uint32_t microseconds )
     return kNoErr;
 }
 
-static void worker_thread_main( uint32_t arg )
+static void worker_thread_main( void *arg )
 {
-    mxos_worker_thread_t* worker_thread = (mxos_worker_thread_t*) arg;
+    mos_worker_thread_id_t* worker_thread = (mos_worker_thread_id_t*) arg;
 
     while ( 1 )
     {
         mxos_event_message_t message;
 
-        if ( mxos_rtos_pop_from_queue( &worker_thread->event_queue, &message, MXOS_WAIT_FOREVER ) == kNoErr )
+        if ( mos_queue_pop(worker_thread->event_queue, &message, MXOS_WAIT_FOREVER ) == kNoErr )
         {
             message.function( message.arg );
         }
@@ -149,32 +149,32 @@ static void worker_thread_main( uint32_t arg )
 }
 
 
-OSStatus mxos_rtos_create_worker_thread( mxos_worker_thread_t* worker_thread, uint8_t priority, uint32_t stack_size, uint32_t event_queue_size )
+merr_t mos_worker_thread_new( mos_worker_thread_id_t* worker_thread, uint8_t priority, uint32_t stack_size, uint32_t event_queue_size )
 {
     memset( worker_thread, 0, sizeof( *worker_thread ) );
 
-    if ( mxos_rtos_init_queue( &worker_thread->event_queue, "worker queue", sizeof(mxos_event_message_t), event_queue_size ) != kNoErr )
+    if ((worker_thread->event_queue = mos_queue_new( sizeof(mxos_event_message_t), event_queue_size )) == NULL )
     {
         return kGeneralErr;
     }
 
-    if ( mxos_rtos_create_thread( &worker_thread->thread, priority , "worker thread", worker_thread_main, stack_size, (mxos_thread_arg_t) worker_thread ) != kNoErr )
+    if ((worker_thread->thread = mos_thread_new( priority , "worker thread", worker_thread_main, stack_size, worker_thread )) == NULL )
     {
-        mxos_rtos_deinit_queue( &worker_thread->event_queue );
+        mos_queue_delete(worker_thread->event_queue );
         return kGeneralErr;
     }
 
     return kNoErr;
 }
 
-OSStatus mxos_rtos_delete_worker_thread( mxos_worker_thread_t* worker_thread )
+merr_t mos_worker_thread_delete( mos_worker_thread_id_t* worker_thread )
 {
-    if ( mxos_rtos_delete_thread( &worker_thread->thread ) != kNoErr )
+    if ( mos_thread_delete( worker_thread->thread ) != kNoErr )
     {
         return kGeneralErr;
     }
 
-    if ( mxos_rtos_deinit_queue( &worker_thread->event_queue ) != kNoErr )
+    if ( mos_queue_delete(worker_thread->event_queue ) != kNoErr )
     {
         return kGeneralErr;
     }
@@ -182,12 +182,12 @@ OSStatus mxos_rtos_delete_worker_thread( mxos_worker_thread_t* worker_thread )
     return kNoErr;
 }
 
-OSStatus mxos_rtos_register_timed_event( mxos_timed_event_t* event_object, mxos_worker_thread_t* worker_thread, event_handler_t function, uint32_t time_ms, void* arg )
+merr_t mxos_rtos_register_timed_event( mxos_timed_event_t* event_object, mos_worker_thread_id_t* worker_thread, event_handler_t function, uint32_t time_ms, void* arg )
 {
     if( worker_thread->thread == NULL )
         return kNotInitializedErr;
 
-    if ( mxos_rtos_init_timer( &event_object->timer, time_ms, timed_event_handler, (void*) event_object ) != kNoErr )
+    if ( mos_timer_new( &event_object->timer, time_ms, timed_event_handler, (void*) event_object ) != kNoErr )
     {
         return kGeneralErr;
     }
@@ -196,18 +196,18 @@ OSStatus mxos_rtos_register_timed_event( mxos_timed_event_t* event_object, mxos_
     event_object->thread = worker_thread;
     event_object->arg = arg;
 
-    if ( mxos_rtos_start_timer( &event_object->timer ) != kNoErr )
+    if ( mos_timer_start( &event_object->timer ) != kNoErr )
     {
-        mxos_rtos_deinit_timer( &event_object->timer );
+        mos_timer_delete( &event_object->timer );
         return kGeneralErr;
     }
 
     return kNoErr;
 }
 
-OSStatus mxos_rtos_deregister_timed_event( mxos_timed_event_t* event_object )
+merr_t mxos_rtos_deregister_timed_event( mxos_timed_event_t* event_object )
 {
-    if ( mxos_rtos_deinit_timer( &event_object->timer ) != kNoErr )
+    if ( mos_timer_delete( &event_object->timer ) != kNoErr )
     {
         return kGeneralErr;
     }
@@ -216,7 +216,7 @@ OSStatus mxos_rtos_deregister_timed_event( mxos_timed_event_t* event_object )
     return kNoErr;
 }
 
-OSStatus mxos_rtos_send_asynchronous_event( mxos_worker_thread_t* worker_thread, event_handler_t function, void* arg )
+merr_t mxos_rtos_send_asynchronous_event( mos_worker_thread_id_t* worker_thread, event_handler_t function, void* arg )
 {
     mxos_event_message_t message;
 
@@ -226,7 +226,7 @@ OSStatus mxos_rtos_send_asynchronous_event( mxos_worker_thread_t* worker_thread,
     message.function = function;
     message.arg = arg;
 
-    return mxos_rtos_push_to_queue( &worker_thread->event_queue, &message, MXOS_NO_WAIT );
+    return mos_queue_push(worker_thread->event_queue, &message, MXOS_NO_WAIT );
 }
 
 static void timed_event_handler( void* arg )
@@ -237,27 +237,27 @@ static void timed_event_handler( void* arg )
     message.function = event_object->function;
     message.arg = event_object->arg;
 
-    mxos_rtos_push_to_queue( &event_object->thread->event_queue, &message, MXOS_NO_WAIT );
+    mos_queue_push(event_object->thread->event_queue, &message, MXOS_NO_WAIT );
 }
 
 void mxos_rtos_thread_sleep(uint32_t seconds)
 {
-    mxos_rtos_delay_milliseconds(seconds*1000);
+    mos_thread_delay(seconds*1000);
 
 }
 void mxos_rtos_thread_msleep(uint32_t mseconds)
 {
-    mxos_rtos_delay_milliseconds(mseconds);
+    mos_thread_delay(mseconds);
 }
 
 void sleep(uint32_t seconds)
 {
-    mxos_rtos_delay_milliseconds(seconds*1000);
+    mos_thread_delay(seconds*1000);
 }
 
 void msleep(uint32_t mseconds)
 {
-    mxos_rtos_delay_milliseconds(mseconds);
+    mos_thread_delay(mseconds);
 }
 
 
@@ -272,7 +272,7 @@ struct mxchip_timer {
     int valid;
 };
 struct mxchip_timer *timer_head = NULL;
-static mxos_semaphore_t timer_sem;
+static mos_semphr_id_t timer_sem;
 static int mxchip_timer_inited = 0;
 static uint32_t timer_thread_wait = MXOS_NEVER_TIMEOUT;
 
@@ -284,12 +284,10 @@ int mxchip_timer_init(void)
 
     if (mxchip_timer_inited)
         return 0;
-    ret = mxos_rtos_init_semaphore(&timer_sem, 1);
-    if (ret != 0)
+    if ((timer_sem = mos_semphr_new(1)) == NULL)
         return -1;
 
-    ret = mxos_rtos_create_thread(NULL, MXOS_DEFAULT_WORKER_PRIORITY, "mxchipTimer", (mxos_thread_function_t)timer_thread_func, 2048, 0);
-    if (ret != 0)
+    if (mos_thread_new(MXOS_DEFAULT_WORKER_PRIORITY, "mxchipTimer", (mos_thread_func_t)timer_thread_func, 2048, NULL) == NULL)
         return -1;
 
     mxchip_timer_inited = 1;
@@ -308,7 +306,7 @@ int SetTimer(unsigned long ms, void (*psysTimerHandler)(void))
 	if (timer == NULL)
 		return -1;
 
-	timer->timeout = mxos_rtos_get_time() + ms;
+	timer->timeout = mos_time() + ms;
 	timer->handler = psysTimerHandler;
     timer->valid = 1;
 	timer->next = NULL;
@@ -320,7 +318,7 @@ int SetTimer(unsigned long ms, void (*psysTimerHandler)(void))
             p = p->next;
         p->next = timer;
     }
-    mxos_rtos_set_semaphore(&timer_sem);
+    mos_semphr_release(timer_sem);
     return 0;
 }
 
@@ -332,7 +330,7 @@ int SetTimer_uniq(unsigned long ms, void (*psysTimerHandler)(void))
     p = timer_head;
     while(p != NULL) {
         if (p->handler == psysTimerHandler) {
-            p->timeout = mxos_rtos_get_time() + ms; // update time
+            p->timeout = mos_time() + ms; // update time
             p->valid = 1;
             return 0;
         } else
@@ -368,7 +366,7 @@ static void mxchip_timer_tick(void)
 	while (p != NULL) {
         if (next_time > p->timeout)
             next_time = p->timeout;
-		if (p->timeout < mxos_rtos_get_time()) {
+		if (p->timeout < mos_time()) {
             if (p == timer_head) {
                 timer_head = timer_head->next;
                 if (p->valid == 1)
@@ -388,7 +386,7 @@ static void mxchip_timer_tick(void)
 		p = p->next;
 	}
 
-    cur_time = mxos_rtos_get_time();
+    cur_time = mos_time();
     if (next_time <= cur_time)
         timer_thread_wait = 1;
     else
@@ -400,7 +398,7 @@ static void mxchip_timer_tick(void)
 static void timer_thread_func(void* arg)
 {
     while(1) {
-        mxos_rtos_get_semaphore(&timer_sem, timer_thread_wait);
+        mos_semphr_acquire(timer_sem, timer_thread_wait);
         mxchip_timer_tick();
     }
 }

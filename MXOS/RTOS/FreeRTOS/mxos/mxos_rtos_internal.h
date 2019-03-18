@@ -85,4 +85,4 @@
  *               Function Declarations
  ******************************************************/
 
-OSStatus init_timer_thread(void);
+merr_t init_timer_thread(void);

@@ -94,9 +94,9 @@ typedef enum
 typedef struct
 {
     bt_smart_gatt_subprocedure_t subprocedure;
-    mxos_mutex_t                 mutex;
-    mxos_semaphore_t             done_semaphore;
-    OSStatus                     result;
+    mos_mutex_id_t                 mutex;
+    mos_semphr_id_t             done_semaphore;
+    merr_t                     result;
     mxos_bt_uuid_t               uuid;
     mxos_bt_smart_attribute_t*  attr_head;
     mxos_bt_smart_attribute_t*  attr_tail;
@@ -126,10 +126,10 @@ typedef struct
  *               Function Declarations
  ******************************************************/
 
-OSStatus  smartbridge_helper_delete_scan_result_list          ( void );
-OSStatus  smartbridge_helper_add_scan_result_to_list          ( mxos_bt_smart_scan_result_t* result );
-OSStatus  smartbridge_helper_find_device_in_scan_result_list  ( mxos_bt_device_address_t* address, mxos_bt_smart_address_type_t type,  mxos_bt_smart_scan_result_t** result );
-OSStatus  smartbridge_helper_get_scan_results                 ( mxos_bt_smart_scan_result_t** result_list, uint32_t* count );
+merr_t  smartbridge_helper_delete_scan_result_list          ( void );
+merr_t  smartbridge_helper_add_scan_result_to_list          ( mxos_bt_smart_scan_result_t* result );
+merr_t  smartbridge_helper_find_device_in_scan_result_list  ( mxos_bt_device_address_t* address, mxos_bt_smart_address_type_t type,  mxos_bt_smart_scan_result_t** result );
+merr_t  smartbridge_helper_get_scan_results                 ( mxos_bt_smart_scan_result_t** result_list, uint32_t* count );
 
 mxos_bool_t    smartbridge_helper_socket_check_actions_enabled      ( mxos_bt_smartbridge_socket_t* socket, uint8_t action_bits );
 mxos_bool_t    smartbridge_helper_socket_check_actions_disabled     ( mxos_bt_smartbridge_socket_t* socket, uint8_t action_bits );
@@ -143,12 +143,12 @@ mxos_bool_t    peripheral_helper_socket_check_actions_disabled     ( mxos_bt_per
 void           peripheral_helper_socket_set_actions                ( mxos_bt_peripheral_socket_t* socket, uint8_t action_bits );
 void           peripheral_helper_socket_clear_actions              ( mxos_bt_peripheral_socket_t* socket, uint8_t action_bits );
 
-OSStatus  subprocedure_notify_complete               ( gatt_subprocedure_t* subprocedure );
-OSStatus  subprocedure_unlock                        ( gatt_subprocedure_t* subprocedure );
-OSStatus  subprocedure_lock                          ( gatt_subprocedure_t* subprocedure );
-OSStatus  subprocedure_reset                         ( gatt_subprocedure_t* subprocedure );
-OSStatus  subprocedure_wait_for_completion           ( gatt_subprocedure_t* subprocedure );
-OSStatus  subprocedure_wait_clear_semaphore          ( gatt_subprocedure_t* subprocedure );
+merr_t  subprocedure_notify_complete               ( gatt_subprocedure_t* subprocedure );
+merr_t  subprocedure_unlock                        ( gatt_subprocedure_t* subprocedure );
+merr_t  subprocedure_lock                          ( gatt_subprocedure_t* subprocedure );
+merr_t  subprocedure_reset                         ( gatt_subprocedure_t* subprocedure );
+merr_t  subprocedure_wait_for_completion           ( gatt_subprocedure_t* subprocedure );
+merr_t  subprocedure_wait_clear_semaphore          ( gatt_subprocedure_t* subprocedure );
 
 /* This function is used to stop a active timer.
  * return MXOS_TRUE if successful, otherwise, return MXOS_FALSE

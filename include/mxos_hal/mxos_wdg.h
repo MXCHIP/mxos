@@ -87,7 +87,7 @@
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus mxos_wdg_init( uint32_t timeout );
+merr_t mxos_wdg_init( uint32_t timeout );
 
 /**
  * @biref Reload watchdog counter.
@@ -105,7 +105,7 @@ void mxos_wdg_reload( void );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus mxos_wdg_deinit( void );
+merr_t mxos_wdg_deinit( void );
 
 /** @} */
 /** @} */

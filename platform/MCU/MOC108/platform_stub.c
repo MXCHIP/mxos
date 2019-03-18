@@ -98,7 +98,7 @@ int __wrap_printf (const char* format, ...)
 	size = vsnprintf(print_buf, sizeof(print_buf) - 1, format, ap);
 	va_end(ap);
 
-	mxos_uart_send(MXOS_STDIO_UART, print_buf, size);
+	mhal_uart_write(MXOS_STDIO_UART, print_buf, size);
 
 	return size;
 }

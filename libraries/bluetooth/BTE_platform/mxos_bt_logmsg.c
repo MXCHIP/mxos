@@ -26,15 +26,15 @@
 #include "mxos_rtos.h"
 
 extern int mxos_debug_enabled;
-extern mxos_mutex_t stdio_tx_mutex;
+extern mos_mutex_id_t stdio_tx_mutex;
 
 static void printlog(char *M, char * N)
 {
     if (mxos_debug_enabled==0)
       return;
-    mxos_rtos_lock_mutex( &stdio_tx_mutex );
-    printf("[%ld][%s] %s\r\n", mxos_rtos_get_time(), M, N);
-    mxos_rtos_unlock_mutex( &stdio_tx_mutex );
+    mos_mutex_lock(stdio_tx_mutex );
+    printf("[%ld][%s] %s\r\n", mos_time(), M, N);
+    mos_mutex_unlock(stdio_tx_mutex );
 }
 void WPRINT_BT_APP_INFO(const char * info, ...)
 {
@@ -49,7 +49,7 @@ void WPRINT_BT_APP_INFO(const char * info, ...)
 
 #if BT_USE_TRACES == TRUE
 
-//extern mxos_mutex_t global_trace_mutex;
+//extern mos_mutex_id_t global_trace_mutex;
 
 UINT8 mxos_log_enabled = 1;
 

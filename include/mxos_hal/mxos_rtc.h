@@ -77,19 +77,19 @@
 /** Initialize the RTC peripheral
  *
  */
-OSStatus mxos_rtc_init(void);
+merr_t mxos_rtc_init(void);
 
 /** Get the current time from the RTC peripheral
  *
  * @return The current time
  */
-OSStatus mxos_rtc_get_time(time_t *t);
+merr_t mxos_rtc_get_time(time_t *t);
 
 /** Set the current time to the RTC peripheral
  *
  * @param t The current time to be set
  */
-OSStatus mxos_rtc_set_time(time_t t);
+merr_t mxos_rtc_set_time(time_t t);
 
 /** @} */
 /** @} */

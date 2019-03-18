@@ -71,7 +71,7 @@ static void uart_8bit_cb(int port_num)
     		ring_buffer_write( driver->rx_ring_buffer, &recv_byte,1 );
 			if ( ( driver->rx_size > 0 ) &&
 					( ring_buffer_used_space( driver->rx_ring_buffer) >= driver->rx_size ) ) {
-				mxos_rtos_set_semaphore( &driver->rx_complete );
+				mos_semphr_release(driver->rx_complete );
 
 				driver->rx_size = 0;
 
@@ -107,7 +107,7 @@ static void uart_9bit_cb(int port_num)
 			
 			if ( ( driver->rx_size > 0 ) &&
 					( ring_buffer_used_space( driver->rx_ring_buffer ) >= driver->rx_size ) ) {
-				mxos_rtos_set_semaphore( &driver->rx_complete );
+				mos_semphr_release(driver->rx_complete );
 				driver->rx_size = 0;
 			}
 		} else {
@@ -155,7 +155,7 @@ static void fill_cb_array()
 #endif
 }
 
-OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart_t* peripheral, const platform_uart_config_t* config, ring_buffer_t* optional_ring_buffer )
+merr_t platform_uart_init( platform_uart_driver_t* driver, const platform_uart_t* peripheral, const platform_uart_config_t* config, ring_buffer_t* optional_ring_buffer )
 //int platform_uart_init(int port_id, const platform_uart_config_t* config, ring_buffer_t* optional_ring_buffer)
 {
 	UART_CFG_Type uartcfg;
@@ -282,10 +282,10 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
 	/* Configure the pinmux for uart pins */
 	board_uart_pin_config(driver->id);
 
-	mxos_rtos_init_semaphore( &driver->tx_complete, 1 );
-    mxos_rtos_init_semaphore( &driver->rx_complete, 1 );
-    mxos_rtos_init_semaphore( &driver->sem_wakeup,  1 );
-    mxos_rtos_init_mutex    ( &driver->tx_mutex );
+    driver->tx_complete = mos_semphr_new( 1 );
+    driver->rx_complete = mos_semphr_new( 1 );
+		driver->sem_wakeup = mos_semphr_new( 1 );
+    driver->tx_mutex = mos_mutex_new( );
 	return WM_SUCCESS;
 }
 
@@ -294,9 +294,9 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
 //	return os_total_ticks_get();
 //}
 
-OSStatus platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* data_in, uint32_t expected_data_size, uint32_t timeout_ms )
+merr_t platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* data_in, uint32_t expected_data_size, uint32_t timeout_ms )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
 
    if (( data_in == NULL ) || ( expected_data_size == 0 )) {
    		err = kParamErr;
@@ -314,7 +314,7 @@ OSStatus platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* d
         /* Set rx_size and wait in rx_complete semaphore until data reaches rx_size or timeout occurs */
         driver->rx_size = transfer_size;
         
-        if ( mxos_rtos_get_semaphore( &driver->rx_complete, timeout_ms) != kNoErr )
+        if ( mos_semphr_acquire(driver->rx_complete, timeout_ms) != kNoErr )
         {
           driver->rx_size = 0;
           return kTimeoutErr;
@@ -356,13 +356,13 @@ exit:
   return err;
 }
 
-OSStatus platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8_t* data_out, uint32_t size )
-//OSStatus platform_uart_transmit_bytes( int port_id, const uint8_t* data_out, uint32_t size )
+merr_t platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8_t* data_out, uint32_t size )
+//merr_t platform_uart_transmit_bytes( int port_id, const uint8_t* data_out, uint32_t size )
 {
   int i;
   
   if (driver->tx_mutex)
-  	mxos_rtos_lock_mutex( &driver->tx_mutex );
+  	mos_mutex_lock(driver->tx_mutex );
   for(i=0; i<size; i++) {
 		while (UART_GetLineStatus(driver->id,
 					  UART_LINESTATUS_TDRQ) != SET) {
@@ -372,7 +372,7 @@ OSStatus platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uin
 		UART_SendData(driver->id, data_out[i]);
 	}
   if (driver->tx_mutex)
-  	mxos_rtos_unlock_mutex( &driver->tx_mutex );
+  	mos_mutex_unlock(driver->tx_mutex );
   return kNoErr;
 }
 
@@ -383,13 +383,13 @@ uint32_t platform_uart_get_length_in_buffer( platform_uart_driver_t* driver )
 }
 
 
-OSStatus platform_uart_deinit( platform_uart_driver_t* driver )
+merr_t platform_uart_deinit( platform_uart_driver_t* driver )
 {
   
-  mxos_rtos_deinit_semaphore( &driver->rx_complete );
-  mxos_rtos_deinit_semaphore( &driver->tx_complete );
-  mxos_rtos_deinit_semaphore( &driver->sem_wakeup );
-  mxos_rtos_deinit_mutex( &driver->tx_mutex );
+  mos_semphr_delete(driver->rx_complete );
+  mos_semphr_delete(driver->tx_complete );
+  mos_semphr_delete(driver->sem_wakeup );
+  mos_mutex_delete( driver->tx_mutex );
   driver->rx_size              = 0;
   driver->tx_size              = 0;
   driver->last_transmit_result = kNoErr;
@@ -444,7 +444,7 @@ static void uart_8bit_cb(int port_num)
     		ring_buffer_write( driver->rx_ring_buffer, &recv_byte,1 );
 			if ( ( driver->rx_size > 0 ) &&
 					( ring_buffer_used_space( driver->rx_ring_buffer) >= driver->rx_size ) ) {
-				mxos_rtos_set_semaphore( &driver->rx_complete );
+				mos_semphr_release(driver->rx_complete );
 				driver->rx_size = 0;
 
 			}
@@ -479,7 +479,7 @@ static void uart_9bit_cb(int port_num)
 			
 			if ( ( driver->rx_size > 0 ) &&
 					( ring_buffer_used_space( driver->rx_ring_buffer ) >= driver->rx_size ) ) {
-				mxos_rtos_set_semaphore( &driver->rx_complete );
+				mos_semphr_release(driver->rx_complete );
 				driver->rx_size = 0;
 			}
 		} else {
@@ -672,9 +672,9 @@ uint32_t mxos_get_time_no_os(void)
 	return os_total_ticks_get();
 }
 
-OSStatus platform_uart_receive_bytes( int port_id, uint8_t* data_in, uint32_t expected_data_size, uint32_t timeout_ms )
+merr_t platform_uart_receive_bytes( int port_id, uint8_t* data_in, uint32_t expected_data_size, uint32_t timeout_ms )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
 	platform_uart_driver_t* driver;
 
 	if (port_id < 0 || port_id >= NUM_UART_PORTS) {
@@ -702,7 +702,7 @@ OSStatus platform_uart_receive_bytes( int port_id, uint8_t* data_in, uint32_t ex
         /* Set rx_size and wait in rx_complete semaphore until data reaches rx_size or timeout occurs */
         driver->rx_size = transfer_size;
         
-        if ( mxos_rtos_get_semaphore( &driver->rx_complete, timeout_ms) != kNoErr )
+        if ( mos_semphr_acquire(driver->rx_complete, timeout_ms) != kNoErr )
         {
           driver->rx_size = 0;
           return kTimeoutErr;
@@ -745,7 +745,7 @@ exit:
 }
 
 
-OSStatus platform_uart_transmit_bytes( int port_id, const uint8_t* data_out, uint32_t size )
+merr_t platform_uart_transmit_bytes( int port_id, const uint8_t* data_out, uint32_t size )
 {
   int i;
   
@@ -767,7 +767,7 @@ OSStatus platform_uart_transmit_bytes( int port_id, const uint8_t* data_out, uin
 
 
 
-OSStatus platform_uart_get_length_in_buffer( int port_id )
+merr_t platform_uart_get_length_in_buffer( int port_id )
 {  
   platform_uart_driver_t* driver;
 
@@ -783,7 +783,7 @@ OSStatus platform_uart_get_length_in_buffer( int port_id )
 }
 
 
-OSStatus platform_uart_deinit( int port_id )
+merr_t platform_uart_deinit( int port_id )
 {
   platform_uart_driver_t* driver;
 
@@ -795,10 +795,10 @@ OSStatus platform_uart_deinit( int port_id )
 	
 	driver = &uart_drivers[port_id];
   
-  mxos_rtos_deinit_semaphore( &driver->rx_complete );
-  mxos_rtos_deinit_semaphore( &driver->tx_complete );
-  mxos_rtos_deinit_semaphore( &driver->sem_wakeup );
-  mxos_rtos_deinit_mutex( &driver->tx_mutex );
+  mos_semphr_delete(driver->rx_complete );
+  mos_semphr_delete(driver->tx_complete );
+  mos_semphr_delete(driver->sem_wakeup );
+  mos_mutex_delete( driver->tx_mutex );
   driver->rx_size              = 0;
   driver->tx_size              = 0;
   driver->last_transmit_result = kNoErr;

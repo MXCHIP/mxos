@@ -50,8 +50,8 @@
  ******************************************************/
 
 /* function */
-static void _eth_arch_rx_task(mxos_thread_arg_t arg);
-static void _eth_arch_phy_task(mxos_thread_arg_t arg);
+static void _eth_arch_rx_task(void * arg);
+static void _eth_arch_phy_task(void * arg);
 
 #if LWIP_IPV4
 static err_t _eth_arch_netif_output_ipv4(struct netif *netif, struct pbuf *q, ip_addr_t *ipaddr);
@@ -66,7 +66,7 @@ static err_t _eth_arch_low_level_igmp_mac_filter(struct netif *netif, ip_addr_t 
 static void _eth_arch_default_mac_address(char *mac);
 
 static void ETH_AddMacFilter(ETH_HandleTypeDef *heth, uint8_t *Addr, uint8_t enable);
-static OSStatus ETH_INIT( void );
+static merr_t ETH_INIT( void );
 
 MXOS_WEAK uint8_t mbed_otp_mac_address(char *mac);
 
@@ -96,7 +96,7 @@ __ALIGN_BEGIN uint8_t Rx_Buff[ETH_RXBUFNB][ETH_RX_BUF_SIZE] __ALIGN_END; /* Ethe
 #endif
 __ALIGN_BEGIN uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __ALIGN_END; /* Ethernet Transmit Buffer */
 
-static mxos_semaphore_t rx_ready_sem;    /* receive ready semaphore */
+static mos_semphr_id_t rx_ready_sem;    /* receive ready semaphore */
 static sys_mutex_t tx_lock_mutex;
 
 /******************************************************
@@ -111,7 +111,7 @@ static sys_mutex_t tx_lock_mutex;
  */
 void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *heth)
 {
-    mxos_rtos_set_semaphore(&rx_ready_sem);
+    mos_semphr_release(rx_ready_sem);
 }
 
 
@@ -177,9 +177,9 @@ static void ETH_AddMacFilter(ETH_HandleTypeDef *heth, uint8_t *Addr, uint8_t ena
  * @param  None
  * @retval None
  */
-static OSStatus ETH_INIT( void )
+static merr_t ETH_INIT( void )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     uint8_t MACAddr[6];
     HAL_StatusTypeDef hal_eth_init_status;
 
@@ -439,13 +439,13 @@ static struct pbuf * _eth_arch_low_level_input(struct netif *netif)
  *
  * \param[in] netif the lwip network interface structure
  */
-static void _eth_arch_rx_task(mxos_thread_arg_t arg)
+static void _eth_arch_rx_task(void * arg)
 {
     struct netif   *netif = (struct netif*)arg;
     struct pbuf    *p;
 
     while (1) {
-        mxos_rtos_get_semaphore(&rx_ready_sem, 100);
+        mos_semphr_acquire(rx_ready_sem, 100);
         do {
             p = _eth_arch_low_level_input(netif);
             if (p != NULL) {
@@ -462,7 +462,7 @@ static void _eth_arch_rx_task(mxos_thread_arg_t arg)
  *
  * \param[in] netif the lwip network interface structure
  */
-static void _eth_arch_phy_task(mxos_thread_arg_t arg)
+static void _eth_arch_phy_task(void * arg)
 {
     struct netif   *netif = (struct netif*)arg;
     uint32_t phy_status = 0;
@@ -481,7 +481,7 @@ static void _eth_arch_phy_task(mxos_thread_arg_t arg)
             }
             phy_status = status;
         }
-        mxos_rtos_delay_milliseconds(PHY_TASK_WAIT);
+        mos_thread_delay(PHY_TASK_WAIT);
     }
 }
 
@@ -579,7 +579,7 @@ err_t eth_arch_enetif_init(struct netif *netif)
     netif->linkoutput = _eth_arch_low_level_output;
 
     /* semaphore */
-    mxos_rtos_init_semaphore(&rx_ready_sem, 16);
+    rx_ready_sem = mos_semphr_new(16);
 
     sys_mutex_new(&tx_lock_mutex);
 
@@ -587,12 +587,12 @@ err_t eth_arch_enetif_init(struct netif *netif)
     _eth_arch_low_level_init(netif);
 
     /* Check link status */
-    mxos_rtos_create_thread(NULL, MXOS_APPLICATION_PRIORITY, "_eth_arch_phy_task", _eth_arch_phy_task, 0x500, (mxos_thread_arg_t)netif);
+    mos_thread_new( MXOS_APPLICATION_PRIORITY, "_eth_arch_phy_task", _eth_arch_phy_task, 0x500, netif);
 
     eth_log( "eth_arch_enetif_init done");
     
     /* Ethernet rx task */
-    mxos_rtos_create_thread(NULL, MXOS_RTOS_HIGEST_PRIORITY, "_eth_arch_rx_task", _eth_arch_rx_task, 0x1000, (mxos_thread_arg_t)netif);
+    mos_thread_new( MXOS_RTOS_HIGEST_PRIORITY, "_eth_arch_rx_task", _eth_arch_rx_task, 0x1000, netif);
     return ERR_OK;
 }
 

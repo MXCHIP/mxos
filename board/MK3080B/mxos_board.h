@@ -161,7 +161,7 @@ typedef struct
     int8_t pin;
     unsigned char config; /* @ref mxos_gpio_config_t */
     unsigned char out; /* 0: low, 1: high */
-}mxos_gpio_init_t;
+}mhal_gpio_open_t;
 
 typedef struct
 {

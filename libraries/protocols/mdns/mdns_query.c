@@ -1572,7 +1572,7 @@ static void do_querier(void)
 	uint32_t start_wait, stop_wait, sleep_time, next_event;
 	int status, len = 0;
 	query_enabled = 1;
-	mxos_queue_t *ctrl_query_queue;
+	mos_queue_id_t *ctrl_query_queue;
 	query_ctrl_msg ctrl_msg;
 
 	MDNS_LOG("do_querier() launched\r\n");
@@ -1614,7 +1614,7 @@ static void do_querier(void)
                 continue;
             }
 
-            ret = mxos_rtos_pop_from_queue(ctrl_query_queue, &ctrl_msg, 0);
+            ret = mos_queue_pop(ctrl_query_queue, &ctrl_msg, 0);
 			/* we at least need a command and length */
 			if (ret == -1) {
 				MDNS_LOG("Warning: querier failed to get control message\r\n");
@@ -1739,7 +1739,7 @@ static void do_querier(void)
 	if (!query_enabled) {
 		MDNS_LOG("Signalled to stop mdns_querier\r\n");
 		query_enabled = 1;
-		mxos_rtos_delete_thread(NULL);
+		mos_thread_delete(NULL);
 	}
 
 }
@@ -1826,7 +1826,7 @@ static int signal_and_wait_for_query_halt()
 	}
 
 	while (query_enabled && num_iterations--)
-	    mxos_rtos_delay_milliseconds(check_interval);
+	    mos_thread_delay(check_interval);
 
 	if (!num_iterations)
 		MDNS_LOG("Error: timed out waiting for mdns querier to stop\r\n");
@@ -1856,7 +1856,7 @@ int query_halt(void)
 		query_enabled = 0;
 	}
 
-	ret = mxos_rtos_delete_thread(query_thread);
+	ret = mos_thread_delete(query_thread);
 	if (ret != kNoErr)
 		MDNS_LOG("Warning: failed to delete thread.\r\n");
 

@@ -58,7 +58,7 @@ struct cli_st {
   char outbuf[OUTBUF_SIZE];
 } ;
 static struct cli_st *pCli = NULL;
-mxos_semaphore_t log_rx_interrupt_sema;
+mos_semphr_id_t log_rx_interrupt_sema;
 
 #else
 
@@ -353,7 +353,7 @@ static void print_bad_command(char *cmd_string)
 * Input collectors handle their own lexical analysis and must pass complete
 * command lines to CLI.
 */
-static void cli_main( uint32_t data )
+static void cli_main( void *data )
 {
   while (1) {
     int ret;
@@ -364,7 +364,7 @@ static void cli_main( uint32_t data )
       continue;
     msg = pCli->inbuf;
 #else
-	while(mxos_rtos_get_semaphore(&log_rx_interrupt_sema, MXOS_NEVER_TIMEOUT) != kNoErr);
+	while(mos_semphr_acquire(log_rx_interrupt_sema, MXOS_NEVER_TIMEOUT) != kNoErr);
 	msg = log_buf;
 #endif
     
@@ -383,7 +383,7 @@ static void cli_main( uint32_t data )
   cli_printf("CLI exited\r\n");
   free(pCli);
   pCli = NULL;
-  mxos_rtos_delete_thread(NULL);
+  mos_thread_delete(NULL);
 }
 
 #ifndef MOC
@@ -415,7 +415,7 @@ static void tftp_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char
     ip = inet_addr(argv[1]);
     parttype = (mxos_partition_t)atoi(argv[4]);
 
-    partition = mxos_flash_get_info( parttype );
+    partition = mhal_flash_get_info( parttype );
     if (partition) {
         cmdinfo.flashtype = parttype;
     } else {
@@ -449,7 +449,7 @@ static void partShow_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, 
     mxos_logic_partition_t *partition;
 
     for( i = MXOS_PARTITION_BOOTLOADER; i <= MXOS_PARTITION_MAX; i++ ){
-        partition = mxos_flash_get_info( i );
+        partition = mhal_flash_get_info( i );
         if (partition == NULL)
             continue;
         if (partition->partition_owner == MXOS_FLASH_NONE)
@@ -463,19 +463,19 @@ static void partShow_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, 
 
 static void uptime_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv)
 {
-    cmd_printf("UP time %ldms\r\n", mxos_rtos_get_time());
+    cmd_printf("UP time %ldms\r\n", mos_time());
 }
 
 extern void tftp_ota( void );
-void tftp_ota_thread( mxos_thread_arg_t arg )
+void tftp_ota_thread( void * arg )
 {
     tftp_ota( );
-    mxos_rtos_delete_thread( NULL );
+    mos_thread_delete( NULL );
 }
     
 static void ota_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv )
 {
-    mxos_rtos_create_thread( NULL, MXOS_APPLICATION_PRIORITY, "LOCAL OTA", tftp_ota_thread, 0x4096, 0 );
+    mos_thread_new( MXOS_APPLICATION_PRIORITY, "LOCAL OTA", tftp_ota_thread, 0x4096, NULL );
 }
 
 static void help_command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv);
@@ -750,7 +750,7 @@ int cli_init(void)
     return kNoMemoryErr;
   
   memset((void *)pCli, 0, sizeof(struct cli_st));
-  mxos_rtos_init_semaphore(&log_rx_interrupt_sema, 1);
+  log_rx_interrupt_sema = mos_semphr_new(1);
   
   /* add our built-in commands */
   if (cli_register_commands(&built_ins[0],
@@ -767,8 +767,8 @@ int cli_init(void)
 
   cli_register_commands(rtl8195_clis, sizeof(rtl8195_clis)/sizeof(struct cli_command));
 
-  ret = mxos_rtos_create_thread(NULL, MXOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 4096, 0);
-  if (ret != kNoErr) {
+  if (mos_thread_new( MXOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 4096, NULL) == NULL)
+  {
     printf("Error: Failed to create cli thread: %d\r\n",
                ret);
     free(pCli);
@@ -800,7 +800,7 @@ int cli_init(void)
   memset((void *)pCli, 0, sizeof(struct cli_st));
   
   ring_buffer_init  ( (ring_buffer_t*)&cli_rx_buffer, (uint8_t*)cli_rx_data, INBUF_SIZE );
-  mxos_uart_init( MXOS_CLI_UART, &cli_uart_config, (ring_buffer_t*)&cli_rx_buffer );
+  mhal_uart_open( MXOS_CLI_UART, &cli_uart_config, (ring_buffer_t*)&cli_rx_buffer );
   
   /* add our built-in commands */
   if (cli_register_commands(&built_ins[0],
@@ -815,10 +815,9 @@ int cli_init(void)
   cli_register_commands(user_clis, 1);
 #endif
   
-  ret = mxos_rtos_create_thread(NULL, MXOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 4096, 0);
-  if (ret != kNoErr) {
-    cli_printf("Error: Failed to create cli thread: %d\r\n",
-               ret);
+  if (mos_thread_new( MXOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 4096, NULL) == NULL)
+  {
+    cli_printf("Error: Failed to create cli thread\r\n");
     free(pCli);
     pCli = NULL;
     return kGeneralErr;
@@ -856,14 +855,14 @@ int cli_printf(const char *msg, ...)
 int cli_putstr(const char *msg)
 {
   if (msg[0] != 0)
-    mxos_uart_send( MXOS_CLI_UART, (const char*)msg, strlen(msg) );
+    mhal_uart_write( MXOS_CLI_UART, (const char*)msg, strlen(msg) );
   
   return 0;
 }
 
 int cli_getchar(char *inbuf)
 {
-  if (mxos_uart_recv(MXOS_CLI_UART, inbuf, 1, MXOS_WAIT_FOREVER) == 0)
+  if (mhal_uart_read(MXOS_CLI_UART, inbuf, 1, MXOS_WAIT_FOREVER) == 0)
     return 1;
   else
     return 0;

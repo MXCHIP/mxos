@@ -136,7 +136,7 @@ extern "C" {
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */ 
-OSStatus lsm9ds1_mag_sensor_init(void);
+merr_t lsm9ds1_mag_sensor_init(void);
 
 
 /**
@@ -149,7 +149,7 @@ OSStatus lsm9ds1_mag_sensor_init(void);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */ 
-OSStatus lsm9ds1_mag_read_data(int16_t *MAG_X, int16_t *MAG_Y, int16_t *MAG_Z);
+merr_t lsm9ds1_mag_read_data(int16_t *MAG_X, int16_t *MAG_Y, int16_t *MAG_Z);
 
 
 
@@ -159,7 +159,7 @@ OSStatus lsm9ds1_mag_read_data(int16_t *MAG_X, int16_t *MAG_Y, int16_t *MAG_Z);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */ 
-OSStatus lsm9ds1_mag_sensor_deinit(void);
+merr_t lsm9ds1_mag_sensor_deinit(void);
 
 
 /**
@@ -168,7 +168,7 @@ OSStatus lsm9ds1_mag_sensor_deinit(void);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */ 
-OSStatus lsm9ds1_acc_gyr_sensor_init(void);
+merr_t lsm9ds1_acc_gyr_sensor_init(void);
 
 
 /**
@@ -181,7 +181,7 @@ OSStatus lsm9ds1_acc_gyr_sensor_init(void);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */ 
-OSStatus lsm9ds1_acc_read_data(int16_t *ACC_X, int16_t *ACC_Y, int16_t *ACC_Z);
+merr_t lsm9ds1_acc_read_data(int16_t *ACC_X, int16_t *ACC_Y, int16_t *ACC_Z);
 
 
 /**
@@ -194,7 +194,7 @@ OSStatus lsm9ds1_acc_read_data(int16_t *ACC_X, int16_t *ACC_Y, int16_t *ACC_Z);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */ 
-OSStatus lsm9ds1_gyr_read_data(int16_t *GYR_X, int16_t *GYR_Y, int16_t *GYR_Z);
+merr_t lsm9ds1_gyr_read_data(int16_t *GYR_X, int16_t *GYR_Y, int16_t *GYR_Z);
 
 
 
@@ -204,7 +204,7 @@ OSStatus lsm9ds1_gyr_read_data(int16_t *GYR_X, int16_t *GYR_Y, int16_t *GYR_Z);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */ 
-OSStatus lsm9ds1_acc_gyr_sensor_deinit(void);
+merr_t lsm9ds1_acc_gyr_sensor_deinit(void);
 
 /**
   * @}

@@ -59,7 +59,7 @@
 *               Static Function Declarations
 ******************************************************/
 
-extern OSStatus mxos_platform_init      ( void );
+extern merr_t mxos_platform_init      ( void );
 
 /******************************************************
 *               Variable Definitions
@@ -88,7 +88,7 @@ extern const platform_spi_t wifi_spi;
 *               Function Definitions
 ******************************************************/
 
-OSStatus mxos_platform_init( void )
+merr_t mxos_platform_init( void )
 {
 #if defined(__CC_ARM)
   platform_log("Platform initialised, build by RVMDK");
@@ -122,94 +122,94 @@ OSStatus mxos_platform_init( void )
   return kNoErr;
 }
 
-OSStatus mxos_adc_init( mxos_adc_t adc, uint32_t sampling_cycle )
+merr_t mxos_adc_init( mxos_adc_t adc, uint32_t sampling_cycle )
 {
   if ( adc >= MXOS_ADC_NONE )
     return kUnsupportedErr;
-  return (OSStatus) platform_adc_init( &platform_adc_peripherals[adc], sampling_cycle );
+  return (merr_t) platform_adc_init( &platform_adc_peripherals[adc], sampling_cycle );
 }
 
-OSStatus  mxos_adc_deinit( mxos_adc_t adc )
+merr_t  mxos_adc_deinit( mxos_adc_t adc )
 {
   if ( adc >= MXOS_ADC_NONE )
     return kUnsupportedErr;
-  return (OSStatus) platform_adc_deinit( &platform_adc_peripherals[adc] );
+  return (merr_t) platform_adc_deinit( &platform_adc_peripherals[adc] );
 }
 
-OSStatus mxos_adc_take_sample( mxos_adc_t adc, uint16_t* output )
+merr_t mxos_adc_take_sample( mxos_adc_t adc, uint16_t* output )
 {
   if ( adc >= MXOS_ADC_NONE )
     return kUnsupportedErr;
-  return (OSStatus) platform_adc_take_sample( &platform_adc_peripherals[adc], output );
+  return (merr_t) platform_adc_take_sample( &platform_adc_peripherals[adc], output );
 }
 
-OSStatus mxos_adc_take_sampleStreram( mxos_adc_t adc, void* buffer, uint16_t buffer_length )
+merr_t mxos_adc_take_sampleStreram( mxos_adc_t adc, void* buffer, uint16_t buffer_length )
 {
   if ( adc >= MXOS_ADC_NONE )
     return kUnsupportedErr;
-  return (OSStatus) platform_adc_take_sample_stream( &platform_adc_peripherals[adc], buffer, buffer_length );
+  return (merr_t) platform_adc_take_sample_stream( &platform_adc_peripherals[adc], buffer, buffer_length );
 }
 
-OSStatus mxos_gpio_init( mxos_gpio_t gpio, mxos_gpio_config_t configuration )
+merr_t mhal_gpio_open( mxos_gpio_t gpio, mxos_gpio_config_t configuration )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
-  return (OSStatus) platform_gpio_init( &platform_gpio_pins[gpio], configuration );
+  return (merr_t) platform_gpio_init( &platform_gpio_pins[gpio], configuration );
 }
 
-OSStatus mxos_gpio_output_high( mxos_gpio_t gpio )
+merr_t mhal_gpio_high( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
-  return (OSStatus) platform_gpio_output_high( &platform_gpio_pins[gpio] );
+  return (merr_t) platform_gpio_output_high( &platform_gpio_pins[gpio] );
 }
 
-OSStatus mxos_gpio_output_low( mxos_gpio_t gpio )
+merr_t mhal_gpio_low( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
-  return (OSStatus) platform_gpio_output_low( &platform_gpio_pins[gpio] );
+  return (merr_t) platform_gpio_output_low( &platform_gpio_pins[gpio] );
 }
 
-OSStatus mxos_gpio_output_toggle( mxos_gpio_t gpio )
+merr_t mhal_gpio_toggle( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
-  return (OSStatus) platform_gpio_output_trigger( &platform_gpio_pins[gpio] );
+  return (merr_t) platform_gpio_output_trigger( &platform_gpio_pins[gpio] );
 }
 
-OSStatus mxos_gpio_deinit( mxos_gpio_t gpio )
+merr_t mhal_gpio_close( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
-  return (OSStatus) platform_gpio_deinit( &platform_gpio_pins[gpio] );
+  return (merr_t) platform_gpio_deinit( &platform_gpio_pins[gpio] );
 }
 
-bool mxos_gpio_input_get( mxos_gpio_t gpio )
+bool mhal_gpio_value( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
   return platform_gpio_input_get( &platform_gpio_pins[gpio] );
 }
 
-OSStatus mxos_gpio_enable_irq( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler, void* arg )
+merr_t mhal_gpio_int_on( mxos_gpio_t gpio, mxos_gpio_irq_trigger_t trigger, mxos_gpio_irq_handler_t handler, void* arg )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
-  return (OSStatus) platform_gpio_irq_enable( &platform_gpio_pins[gpio], trigger, handler, arg );
+  return (merr_t) platform_gpio_irq_enable( &platform_gpio_pins[gpio], trigger, handler, arg );
 }
 
-OSStatus mxos_gpio_disable_irq( mxos_gpio_t gpio )
+merr_t mhal_gpio_int_off( mxos_gpio_t gpio )
 {
   if ( gpio >= MXOS_GPIO_NONE )
     return kUnsupportedErr;
-  return (OSStatus) platform_gpio_irq_disable( &platform_gpio_pins[gpio] );
+  return (merr_t) platform_gpio_irq_disable( &platform_gpio_pins[gpio] );
 }
 
-OSStatus mxos_i2c_init( mxos_i2c_device_t* device )
+merr_t mxos_i2c_init( mxos_i2c_device_t* device )
 {
   platform_i2c_config_t config;
-  OSStatus result;
+  merr_t result;
 
   if ( device->port >= MXOS_I2C_NONE )
     return kUnsupportedErr;
@@ -220,16 +220,16 @@ OSStatus mxos_i2c_init( mxos_i2c_device_t* device )
   config.speed_mode    = device->speed_mode;
 
   if( platform_i2c_drivers[device->port].i2c_mutex == NULL)
-    mxos_rtos_init_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
+    mos_mutex_new( &platform_i2c_drivers[device->port].i2c_mutex );
   
-  mxos_rtos_lock_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
-  result = (OSStatus) platform_i2c_init( &platform_i2c_peripherals[device->port], &config );
-  mxos_rtos_unlock_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
+  mos_mutex_lock(platform_i2c_drivers[device->port].i2c_mutex );
+  result = (merr_t) platform_i2c_init( &platform_i2c_peripherals[device->port], &config );
+  mos_mutex_unlock(platform_i2c_drivers[device->port].i2c_mutex );
 
   return result;
 }
 
-OSStatus mxos_i2c_deinit( mxos_i2c_device_t* device )
+merr_t mxos_i2c_deinit( mxos_i2c_device_t* device )
 {
   platform_i2c_config_t config;
 
@@ -242,11 +242,11 @@ OSStatus mxos_i2c_deinit( mxos_i2c_device_t* device )
   config.speed_mode    = device->speed_mode;
 
   if( platform_i2c_drivers[device->port].i2c_mutex != NULL){
-    mxos_rtos_deinit_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
+    mos_mutex_delete( platform_i2c_drivers[device->port].i2c_mutex );
     platform_i2c_drivers[device->port].i2c_mutex = NULL;
   }
     
-  return (OSStatus) platform_i2c_deinit( &platform_i2c_peripherals[device->port], &config );
+  return (merr_t) platform_i2c_deinit( &platform_i2c_peripherals[device->port], &config );
 }
 
 bool mxos_i2c_probe_dev( mxos_i2c_device_t* device, int retries )
@@ -262,31 +262,31 @@ bool mxos_i2c_probe_dev( mxos_i2c_device_t* device, int retries )
   config.flags         &= ~I2C_DEVICE_USE_DMA ;
   config.speed_mode    = device->speed_mode;
 
-  mxos_rtos_lock_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
+  mos_mutex_lock(platform_i2c_drivers[device->port].i2c_mutex );
   ret = platform_i2c_probe_device( &platform_i2c_peripherals[device->port], &config, retries );
-  mxos_rtos_unlock_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
+  mos_mutex_unlock(platform_i2c_drivers[device->port].i2c_mutex );
 
   return ret;
 }
 
-OSStatus mxos_i2c_build_tx_msg( mxos_i2c_message_t* message, const void* tx_buffer, uint16_t  tx_buffer_length, uint16_t retries )
+merr_t mxos_i2c_build_tx_msg( mxos_i2c_message_t* message, const void* tx_buffer, uint16_t  tx_buffer_length, uint16_t retries )
 {
-  return (OSStatus) platform_i2c_init_tx_message( message, tx_buffer, tx_buffer_length, retries );
+  return (merr_t) platform_i2c_init_tx_message( message, tx_buffer, tx_buffer_length, retries );
 }
 
-OSStatus mxos_i2c_build_rx_msg( mxos_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length, uint16_t retries )
+merr_t mxos_i2c_build_rx_msg( mxos_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length, uint16_t retries )
 {
-  return (OSStatus) platform_i2c_init_rx_message( message, rx_buffer, rx_buffer_length, retries );
+  return (merr_t) platform_i2c_init_rx_message( message, rx_buffer, rx_buffer_length, retries );
 }
 
-OSStatus mxos_i2c_build_comb_msg( mxos_i2c_message_t* message, const void* tx_buffer, void* rx_buffer, uint16_t tx_buffer_length, uint16_t rx_buffer_length, uint16_t retries )
+merr_t mxos_i2c_build_comb_msg( mxos_i2c_message_t* message, const void* tx_buffer, void* rx_buffer, uint16_t tx_buffer_length, uint16_t rx_buffer_length, uint16_t retries )
 {
-  return (OSStatus) platform_i2c_init_combined_message( message, tx_buffer, rx_buffer, tx_buffer_length, rx_buffer_length, retries );
+  return (merr_t) platform_i2c_init_combined_message( message, tx_buffer, rx_buffer, tx_buffer_length, rx_buffer_length, retries );
 }
 
-OSStatus mxos_i2c_transfer( mxos_i2c_device_t* device, mxos_i2c_message_t* messages, uint16_t number_of_messages )
+merr_t mxos_i2c_transfer( mxos_i2c_device_t* device, mxos_i2c_message_t* messages, uint16_t number_of_messages )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   platform_i2c_config_t config;
   
   if ( device->port >= MXOS_I2C_NONE )
@@ -297,9 +297,9 @@ OSStatus mxos_i2c_transfer( mxos_i2c_device_t* device, mxos_i2c_message_t* messa
   config.flags         &= ~I2C_DEVICE_USE_DMA ;
   config.speed_mode    = device->speed_mode;
   
-  mxos_rtos_lock_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
+  mos_mutex_lock(platform_i2c_drivers[device->port].i2c_mutex );
   err = platform_i2c_transfer( &platform_i2c_peripherals[device->port], &config, messages, number_of_messages );
-  mxos_rtos_unlock_mutex( &platform_i2c_drivers[device->port].i2c_mutex );
+  mos_mutex_unlock(platform_i2c_drivers[device->port].i2c_mutex );
 
   return err;
 }
@@ -318,41 +318,41 @@ void mxos_sys_standby( uint32_t secondsToWakeup )
 }
 
 
-OSStatus mxos_pwm_init(mxos_pwm_t pwm, uint32_t frequency, float duty_cycle)
+merr_t mxos_pwm_init(mxos_pwm_t pwm, uint32_t frequency, float duty_cycle)
 {
   if ( pwm >= MXOS_PWM_NONE )
     return kUnsupportedErr;
-  return (OSStatus) platform_pwm_init( &platform_pwm_peripherals[pwm], frequency, duty_cycle );
+  return (merr_t) platform_pwm_init( &platform_pwm_peripherals[pwm], frequency, duty_cycle );
 }
 
-OSStatus mxos_pwm_start( mxos_pwm_t pwm )
+merr_t mxos_pwm_start( mxos_pwm_t pwm )
 {
   if ( pwm >= MXOS_PWM_NONE )
     return kUnsupportedErr;
-  return (OSStatus) platform_pwm_start( &platform_pwm_peripherals[pwm] );
+  return (merr_t) platform_pwm_start( &platform_pwm_peripherals[pwm] );
 }
 
-OSStatus mxos_pwm_stop( mxos_pwm_t pwm )
+merr_t mxos_pwm_stop( mxos_pwm_t pwm )
 {
   if ( pwm >= MXOS_PWM_NONE )
     return kUnsupportedErr;
-  return (OSStatus) platform_pwm_stop( &platform_pwm_peripherals[pwm] );
+  return (merr_t) platform_pwm_stop( &platform_pwm_peripherals[pwm] );
 }
 
-OSStatus mxos_rtc_get_time(mxos_rtc_time_t* time)
+merr_t mxos_rtc_get_time(mxos_rtc_time_t* time)
 {
-  return (OSStatus) platform_rtc_get_time( time );
+  return (merr_t) platform_rtc_get_time( time );
 }
 
-OSStatus mxos_rtc_set_time(mxos_rtc_time_t* time)
+merr_t mxos_rtc_set_time(mxos_rtc_time_t* time)
 {
-  return (OSStatus) platform_rtc_set_time( time );
+  return (merr_t) platform_rtc_set_time( time );
 }
 
-OSStatus mxos_spi_init( const mxos_spi_device_t* spi )
+merr_t mxos_spi_init( const mxos_spi_device_t* spi )
 {
   platform_spi_config_t config;
-  OSStatus              err = kNoErr;
+  merr_t              err = kNoErr;
 
   if ( spi->port >= MXOS_SPI_NONE )
     return kUnsupportedErr;
@@ -365,23 +365,23 @@ OSStatus mxos_spi_init( const mxos_spi_device_t* spi )
 #endif
 
   if( platform_spi_drivers[spi->port].spi_mutex == NULL)
-    mxos_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+    mos_mutex_new( &platform_spi_drivers[spi->port].spi_mutex );
   
   config.chip_select = &platform_gpio_pins[spi->chip_select];
   config.speed       = spi->speed;
   config.mode        = spi->mode;
   config.bits        = spi->bits;
 
-  mxos_rtos_lock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+  mos_mutex_lock(platform_spi_drivers[spi->port].spi_mutex );
   err = platform_spi_init( &platform_spi_drivers[spi->port], &platform_spi_peripherals[spi->port], &config );
-  mxos_rtos_unlock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+  mos_mutex_unlock(platform_spi_drivers[spi->port].spi_mutex );
 
   return err;
 }
 
-OSStatus mxos_spi_deinit( const mxos_spi_device_t* spi )
+merr_t mxos_spi_deinit( const mxos_spi_device_t* spi )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
 
   if ( spi->port >= MXOS_SPI_NONE )
     return kUnsupportedErr;
@@ -395,19 +395,19 @@ OSStatus mxos_spi_deinit( const mxos_spi_device_t* spi )
 #endif
 
   if( platform_spi_drivers[spi->port].spi_mutex == NULL)
-    mxos_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+    mos_mutex_new( &platform_spi_drivers[spi->port].spi_mutex );
   
-  mxos_rtos_lock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+  mos_mutex_lock(platform_spi_drivers[spi->port].spi_mutex );
   err = platform_spi_deinit( &platform_spi_drivers[spi->port] );
-  mxos_rtos_unlock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+  mos_mutex_unlock(platform_spi_drivers[spi->port].spi_mutex );
 
   return err;
 }
 
-OSStatus mxos_spi_transfer( const mxos_spi_device_t* spi, const mxos_spi_message_segment_t* segments, uint16_t number_of_segments )
+merr_t mxos_spi_transfer( const mxos_spi_device_t* spi, const mxos_spi_message_segment_t* segments, uint16_t number_of_segments )
 {
   platform_spi_config_t config;
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
 
   if ( spi->port >= MXOS_SPI_NONE )
     return kUnsupportedErr;
@@ -420,70 +420,70 @@ OSStatus mxos_spi_transfer( const mxos_spi_device_t* spi, const mxos_spi_message
 #endif
 
   if( platform_spi_drivers[spi->port].spi_mutex == NULL)
-    mxos_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+    mos_mutex_new( &platform_spi_drivers[spi->port].spi_mutex );
 
   config.chip_select = &platform_gpio_pins[spi->chip_select];
   config.speed       = spi->speed;
   config.mode        = spi->mode;
   config.bits        = spi->bits;
 
-  mxos_rtos_lock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+  mos_mutex_lock(platform_spi_drivers[spi->port].spi_mutex );
   err = platform_spi_init( &platform_spi_drivers[spi->port], &platform_spi_peripherals[spi->port], &config );
   err = platform_spi_transfer( &platform_spi_drivers[spi->port], &config, segments, number_of_segments );
-  mxos_rtos_unlock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+  mos_mutex_unlock(platform_spi_drivers[spi->port].spi_mutex );
 
   return err;
 }
 
-OSStatus MxosSpiSlaveInitialize( mxos_spi_t spi, const mxos_spi_slave_config_t* config )
+merr_t MxosSpiSlaveInitialize( mxos_spi_t spi, const mxos_spi_slave_config_t* config )
 {
   if ( spi >= MXOS_SPI_NONE )
     return kUnsupportedErr;
 
-  return (OSStatus) platform_spi_slave_init( &platform_spi_slave_drivers[spi], &platform_spi_peripherals[spi], config );
+  return (merr_t) platform_spi_slave_init( &platform_spi_slave_drivers[spi], &platform_spi_peripherals[spi], config );
 }
 
-OSStatus MxosSpiSlaveFinalize( mxos_spi_t spi )
+merr_t MxosSpiSlaveFinalize( mxos_spi_t spi )
 {
   if ( spi >= MXOS_SPI_NONE )
     return kUnsupportedErr;
 
-  return (OSStatus) platform_spi_slave_deinit( &platform_spi_slave_drivers[spi] );
+  return (merr_t) platform_spi_slave_deinit( &platform_spi_slave_drivers[spi] );
 }
 
-OSStatus  MxosSpiSlaveSendErrorStatus( mxos_spi_t spi, mxos_spi_slave_transfer_status_t error_status )
+merr_t  MxosSpiSlaveSendErrorStatus( mxos_spi_t spi, mxos_spi_slave_transfer_status_t error_status )
 {
   if ( spi >= MXOS_SPI_NONE )
     return kUnsupportedErr;
 
-  return (OSStatus) platform_spi_slave_send_error_status( &platform_spi_slave_drivers[spi], error_status );
+  return (merr_t) platform_spi_slave_send_error_status( &platform_spi_slave_drivers[spi], error_status );
 }
 
-OSStatus MxosSpiSlaveReceiveCommand( mxos_spi_t spi, mxos_spi_slave_command_t* command, uint32_t timeout_ms )
+merr_t MxosSpiSlaveReceiveCommand( mxos_spi_t spi, mxos_spi_slave_command_t* command, uint32_t timeout_ms )
 {
   if ( spi >= MXOS_SPI_NONE )
     return kUnsupportedErr;  
 
-  return (OSStatus) platform_spi_slave_receive_command( &platform_spi_slave_drivers[spi], command, timeout_ms );
+  return (merr_t) platform_spi_slave_receive_command( &platform_spi_slave_drivers[spi], command, timeout_ms );
 }
 
-OSStatus MxosSpiSlaveTransferData( mxos_spi_t spi, mxos_spi_slave_transfer_direction_t direction, mxos_spi_slave_data_buffer_t* buffer, uint32_t timeout_ms )
+merr_t MxosSpiSlaveTransferData( mxos_spi_t spi, mxos_spi_slave_transfer_direction_t direction, mxos_spi_slave_data_buffer_t* buffer, uint32_t timeout_ms )
 {
   if ( spi >= MXOS_SPI_NONE )
     return kUnsupportedErr;  
 
-  return (OSStatus) platform_spi_slave_transfer_data( &platform_spi_slave_drivers[spi], direction, buffer, timeout_ms );
+  return (merr_t) platform_spi_slave_transfer_data( &platform_spi_slave_drivers[spi], direction, buffer, timeout_ms );
 }
 
-OSStatus MxosSpiSlaveGenerateInterrupt( mxos_spi_t spi, uint32_t pulse_duration_ms )
+merr_t MxosSpiSlaveGenerateInterrupt( mxos_spi_t spi, uint32_t pulse_duration_ms )
 {
   if ( spi >= MXOS_SPI_NONE )
     return kUnsupportedErr;
 
-  return (OSStatus) platform_spi_slave_generate_interrupt( &platform_spi_slave_drivers[spi], pulse_duration_ms );
+  return (merr_t) platform_spi_slave_generate_interrupt( &platform_spi_slave_drivers[spi], pulse_duration_ms );
 }
 
-OSStatus mxos_uart_init( mxos_uart_t uart, const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer )
+merr_t mhal_uart_open( mxos_uart_t uart, const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer )
 {
   if ( uart >= MXOS_UART_NONE )
     return kUnsupportedErr;
@@ -496,53 +496,53 @@ OSStatus mxos_uart_init( mxos_uart_t uart, const mxos_uart_config_t* config, rin
   }
 #endif
   
-  return (OSStatus) platform_uart_init( &platform_uart_drivers[uart], &platform_uart_peripherals[uart], config, optional_rx_buffer );
+  return (merr_t) platform_uart_init( &platform_uart_drivers[uart], &platform_uart_peripherals[uart], config, optional_rx_buffer );
 }
 
-OSStatus mxos_uart_deinit( mxos_uart_t uart )
+merr_t mhal_uart_close( mxos_uart_t uart )
 {
   if ( uart >= MXOS_UART_NONE )
     return kUnsupportedErr;
 
-  return (OSStatus) platform_uart_deinit( &platform_uart_drivers[uart] );
+  return (merr_t) platform_uart_deinit( &platform_uart_drivers[uart] );
 }
 
-OSStatus mxos_uart_send( mxos_uart_t uart, const void* data, uint32_t size )
+merr_t mhal_uart_write( mxos_uart_t uart, const void* data, uint32_t size )
 {
   if ( uart >= MXOS_UART_NONE )
     return kUnsupportedErr;
 
-  return (OSStatus) platform_uart_transmit_bytes( &platform_uart_drivers[uart], (const uint8_t*) data, size );
+  return (merr_t) platform_uart_transmit_bytes( &platform_uart_drivers[uart], (const uint8_t*) data, size );
 }
 
-OSStatus mxos_uart_recv( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout )
+merr_t mhal_uart_read( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout )
 {
   if ( uart >= MXOS_UART_NONE )
     return kUnsupportedErr;
 
-  return (OSStatus) platform_uart_receive_bytes( &platform_uart_drivers[uart], (uint8_t*)data, size, timeout );
+  return (merr_t) platform_uart_receive_bytes( &platform_uart_drivers[uart], (uint8_t*)data, size, timeout );
 }
 
-uint32_t mxos_uart_recvd_data_len( mxos_uart_t uart )
+uint32_t mhal_uart_readd_data_len( mxos_uart_t uart )
 {
   if ( uart >= MXOS_UART_NONE )
     return 0;
   
-  return (OSStatus) platform_uart_get_length_in_buffer( &platform_uart_drivers[uart] );
+  return (merr_t) platform_uart_get_length_in_buffer( &platform_uart_drivers[uart] );
 }
 
-OSStatus MxosRandomNumberRead( void *inBuffer, int inByteCount )
+merr_t MxosRandomNumberRead( void *inBuffer, int inByteCount )
 {
-  return (OSStatus) platform_random_number_read( inBuffer, inByteCount );
+  return (merr_t) platform_random_number_read( inBuffer, inByteCount );
 }
 
 void mxos_sys_reboot( void )
 {
   platform_mcu_reset();
 }
-OSStatus mxos_wdg_init( uint32_t timeout )
+merr_t mxos_wdg_init( uint32_t timeout )
 {
-    return (OSStatus) platform_watchdog_init( timeout );
+    return (merr_t) platform_watchdog_init( timeout );
 }
 
 void mxos_wdg_reload( void )
@@ -550,7 +550,7 @@ void mxos_wdg_reload( void )
     platform_watchdog_kick( );
 }
 
-mxos_logic_partition_t* mxos_flash_get_info( mxos_partition_t inPartition )
+mxos_logic_partition_t* mhal_flash_get_info( mxos_partition_t inPartition )
 {
     mxos_logic_partition_t *logic_partition = NULL;
     require( inPartition >= 0 && inPartition < MXOS_PARTITION_MAX, exit );
@@ -567,36 +567,36 @@ exit:
 }
 
 
-static OSStatus MxosFlashInitialize( mxos_partition_t partition )
+static merr_t MxosFlashInitialize( mxos_partition_t partition )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   mxos_logic_partition_t *partition_info;
   
   require_action_quiet( partition > MXOS_PARTITION_ERROR, exit, err = kParamErr );
   require_action_quiet( partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
 
-  partition_info = mxos_flash_get_info( partition );
+  partition_info = mhal_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
   
   if( platform_flash_drivers[ partition_info->partition_owner ].flash_mutex == NULL){
-    err = mxos_rtos_init_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+    err = mos_mutex_new( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
     require_noerr( err, exit );
   }
   
-  mxos_rtos_lock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+  mos_mutex_lock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   
   err = platform_flash_init( &platform_flash_peripherals[ partition_info->partition_owner ] );
   platform_flash_drivers[ partition_info->partition_owner ].peripheral = (platform_flash_t *)&platform_flash_peripherals[ partition_info->partition_owner ];
   platform_flash_drivers[ partition_info->partition_owner ].initialized = true;
-  mxos_rtos_unlock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+  mos_mutex_unlock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   
 exit: 
   return err;
 }
 
-OSStatus mxos_flash_erase(mxos_partition_t partition, uint32_t off_set, uint32_t size)
+merr_t mhal_flash_erase(mxos_partition_t partition, uint32_t off_set, uint32_t size)
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   uint32_t start_addr, end_addr;
   mxos_logic_partition_t *partition_info;
 
@@ -604,7 +604,7 @@ OSStatus mxos_flash_erase(mxos_partition_t partition, uint32_t off_set, uint32_t
   require_action_quiet( partition > MXOS_PARTITION_ERROR && partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
   require_action_quiet( partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
 
-  partition_info = mxos_flash_get_info( partition );
+  partition_info = mhal_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
 #if (!defined BOOTLOADER) && (!defined FIRMWARE_DOWNLOAD)
   require_action_quiet( ( partition_info->partition_options & PAR_OPT_WRITE_MASK ) == PAR_OPT_WRITE_EN, exit, err = kPermissionErr );
@@ -621,24 +621,24 @@ OSStatus mxos_flash_erase(mxos_partition_t partition, uint32_t off_set, uint32_t
     require_noerr_quiet( err, exit );
   }
 
-  mxos_rtos_lock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+  mos_mutex_lock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   err = platform_flash_erase( &platform_flash_peripherals[ partition_info->partition_owner ], start_addr, end_addr );
-  mxos_rtos_unlock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+  mos_mutex_unlock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
 
 exit:
   return err;
 }
 
-OSStatus mxos_flash_write( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength)
+merr_t mhal_flash_write( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength)
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   uint32_t start_addr, end_addr;
   mxos_logic_partition_t *partition_info;
 
   require_quiet( inBufferLength != 0, exit);
   require_action_quiet( partition > MXOS_PARTITION_ERROR && partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
   
-  partition_info = mxos_flash_get_info( partition );
+  partition_info = mhal_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
 #if (!defined BOOTLOADER) && (!defined FIRMWARE_DOWNLOAD)
   require_action_quiet( ( partition_info->partition_options & PAR_OPT_WRITE_MASK ) == PAR_OPT_WRITE_EN, exit, err = kPermissionErr );
@@ -654,25 +654,25 @@ OSStatus mxos_flash_write( mxos_partition_t partition, volatile uint32_t* off_se
     require_noerr_quiet( err, exit );
   }
 
-  mxos_rtos_lock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+  mos_mutex_lock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   err = platform_flash_write( &platform_flash_peripherals[ partition_info->partition_owner ], &start_addr, inBuffer, inBufferLength );
   *off_set = start_addr - partition_info->partition_start_addr;
-  mxos_rtos_unlock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+  mos_mutex_unlock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   
 exit:
   return err;
 }
 
-OSStatus mxos_flash_read( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* outBuffer ,uint32_t inBufferLength)
+merr_t mhal_flash_read( mxos_partition_t partition, volatile uint32_t* off_set, uint8_t* outBuffer ,uint32_t inBufferLength)
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   uint32_t start_addr, end_addr;
   mxos_logic_partition_t *partition_info;
 
   require_quiet( inBufferLength != 0, exit);
   require_action_quiet( partition > MXOS_PARTITION_ERROR && partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
 
-  partition_info = mxos_flash_get_info( partition );
+  partition_info = mhal_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
 #if (!defined BOOTLOADER) && (!defined FIRMWARE_DOWNLOAD)
   require_action_quiet( ( partition_info->partition_options & PAR_OPT_READ_MASK ) == PAR_OPT_READ_EN, exit, err = kPermissionErr );
@@ -688,25 +688,25 @@ OSStatus mxos_flash_read( mxos_partition_t partition, volatile uint32_t* off_set
     require_noerr_quiet( err, exit );
   }
 
-  mxos_rtos_lock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+  mos_mutex_lock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   err = platform_flash_read( &platform_flash_peripherals[ partition_info->partition_owner ], &start_addr, outBuffer, inBufferLength );
   *off_set = start_addr - partition_info->partition_start_addr;
-  mxos_rtos_unlock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+  mos_mutex_unlock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
 
 exit:
   return err;
 }
 
-OSStatus mxos_flash_enable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size )
+merr_t mxos_flash_enable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   uint32_t start_addr, end_addr;
   mxos_logic_partition_t *partition_info;
 
   require_quiet( size != 0, exit);
   require_action_quiet( partition > MXOS_PARTITION_ERROR && partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
 
-  partition_info = mxos_flash_get_info( partition );
+  partition_info = mhal_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
 
   start_addr = partition_info->partition_start_addr + off_set;
@@ -719,9 +719,9 @@ OSStatus mxos_flash_enable_security( mxos_partition_t partition, uint32_t off_se
     require_noerr_quiet( err, exit );
   }
 
-  mxos_rtos_lock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+  mos_mutex_lock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   err = platform_flash_enable_protect( &platform_flash_peripherals[ partition_info->partition_owner ], start_addr, end_addr);
-  mxos_rtos_unlock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+  mos_mutex_unlock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   
 exit:
   return err;
@@ -734,7 +734,7 @@ char *mxos_get_bootloader_ver(void)
     uint32_t version_offset = bootloader_partition->partition_length - 0x20;
 
     memset(ver, 0, sizeof(ver));
-    mxos_flash_read( MXOS_PARTITION_BOOTLOADER, &version_offset, (uint8_t *)ver , 32);
+    mhal_flash_read( MXOS_PARTITION_BOOTLOADER, &version_offset, (uint8_t *)ver , 32);
     return ver;
 }
 
@@ -744,12 +744,12 @@ char *mxos_get_bootloader_ver(void)
 void mxos_set_bootload_ver(void)
 {
    uint8_t ver[33];
-   mxos_logic_partition_t *boot_partition = mxos_flash_get_info( MXOS_PARTITION_BOOTLOADER );
+   mxos_logic_partition_t *boot_partition = mhal_flash_get_info( MXOS_PARTITION_BOOTLOADER );
    uint32_t flashaddr =  boot_partition->partition_length - 0x20;
    int i;
 
    memset(ver, 0, sizeof(ver));
-   mxos_flash_read( MXOS_PARTITION_BOOTLOADER, &flashaddr, (uint8_t *)ver , 32);
+   mhal_flash_read( MXOS_PARTITION_BOOTLOADER, &flashaddr, (uint8_t *)ver , 32);
    for(i=0;i<32;i++) {
        if (ver[i] != 0xFF)
            return;
@@ -757,19 +757,19 @@ void mxos_set_bootload_ver(void)
    snprintf((char *)ver, 33, "%s %s %d", MODEL, Bootloader_REVISION , STDIO_UART_BAUDRATE);
    flashaddr =  boot_partition->partition_length - 0x20;
    mxos_flash_disable_security( MXOS_PARTITION_BOOTLOADER, 0x0, boot_partition->partition_length );
-   mxos_flash_write( MXOS_PARTITION_BOOTLOADER, &flashaddr, ver , 32);
+   mhal_flash_write( MXOS_PARTITION_BOOTLOADER, &flashaddr, ver , 32);
 }
 
-OSStatus mxos_flash_disable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size )
+merr_t mxos_flash_disable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   uint32_t start_addr, end_addr;
   mxos_logic_partition_t *partition_info;
 
   require_quiet( size != 0, exit);
   require_action_quiet( partition > MXOS_PARTITION_ERROR && partition < MXOS_PARTITION_MAX, exit, err = kParamErr );
 
-  partition_info = mxos_flash_get_info( partition );
+  partition_info = mhal_flash_get_info( partition );
   require_action_quiet( partition_info->partition_owner != MXOS_FLASH_NONE, exit, err = kNotFoundErr );
 
   start_addr = partition_info->partition_start_addr + off_set;
@@ -782,9 +782,9 @@ OSStatus mxos_flash_disable_security( mxos_partition_t partition, uint32_t off_s
     require_noerr_quiet( err, exit );
   }
 
-  mxos_rtos_lock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+  mos_mutex_lock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   err = platform_flash_disable_protect( &platform_flash_peripherals[ partition_info->partition_owner ], start_addr, end_addr);
-  mxos_rtos_unlock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+  mos_mutex_unlock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   
 exit:
   return err;

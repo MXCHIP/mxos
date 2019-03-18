@@ -390,7 +390,7 @@ static int max_response_growth(int num_services)
 	return 2 * 3 + 4 * 2 * num_services;
 }
 
-static mxos_mutex_t mdns_mutex;
+static mos_mutex_id_t mdns_mutex;
 
 enum mdns_iface_state {
 	STOPPED = 0,
@@ -513,7 +513,7 @@ static int get_config_idx_from_ip(uint32_t incoming_ip)
 	uint32_t interface_ip, interface_mask;
 	IPStatusTypedef interface_ip_info;
 	for (i = 0; i < MDNS_MAX_SERVICE_CONFIG; i++) {
-	    mxosWlanGetIPStatus(&interface_ip_info, config_g[i].iface_idx);
+	    mwifi_get_ip(&interface_ip_info, config_g[i].iface_idx);
 	    interface_ip = inet_addr(interface_ip_info.ip);
 	    interface_mask = inet_addr(interface_ip_info.mask);
 
@@ -561,7 +561,7 @@ static uint32_t get_interface_ip(int config_idx)
 	uint32_t ip;
 	IPStatusTypedef interface_ip_info;
 
-	mxosWlanGetIPStatus(&interface_ip_info, config_g[config_idx].iface_idx);
+	mwifi_get_ip(&interface_ip_info, config_g[config_idx].iface_idx);
 	ip = inet_addr(interface_ip_info.ip);
 	return ip;
 }
@@ -2047,13 +2047,13 @@ int probe_state_machine(int idx, int *state, int *event,
 			state[idx] = READY_TO_RESPOND;
 
 			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
-			mxos_rtos_delay_milliseconds(100);
+			mos_thread_delay(100);
 			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
-			mxos_rtos_delay_milliseconds(200);
+			mos_thread_delay(200);
 			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
-			mxos_rtos_delay_milliseconds(500);
+			mos_thread_delay(500);
 			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
-			mxos_rtos_delay_milliseconds(1000);
+			mos_thread_delay(1000);
 			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
 
 		} else if (event[idx] == EVENT_RX && from_v4->sin_addr.s_addr != get_interface_ip(idx)) {
@@ -2163,7 +2163,7 @@ static int send_init_probes(int idx, int *state, int *event,
 	fd_set fds;
 	struct sockaddr_storage from;
 
-	mxos_rtos_lock_mutex(&mdns_mutex);
+	mos_mutex_lock(mdns_mutex);
 	/* Per RFC 6762 Section 8.1, wait for random ammount of time
 	 * between 0 and 250 ms before the first probe.
 	 */
@@ -2225,7 +2225,7 @@ static int send_init_probes(int idx, int *state, int *event,
 		}
 
 	}
-	mxos_rtos_unlock_mutex(&mdns_mutex);
+	mos_mutex_unlock(mdns_mutex);
 	interface_state[idx] = RUNNING;
 	return event[idx];
 }
@@ -2364,7 +2364,7 @@ static inline void mdns_ctrl_reannounce(netif_t iface, int *state)
 		mr_stats.tx_reannounce++;
 		mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[config_idx].iface_idx, 0);
 		if (i < 1)
-			mxos_rtos_delay_milliseconds(1000);
+			mos_thread_delay(1000);
 	}
 	state[config_idx] = READY_TO_RESPOND;
 }
@@ -2478,10 +2478,9 @@ static void do_responder(void)
 	int event[MDNS_MAX_SERVICE_CONFIG];
 	uint32_t start_wait, stop_wait;
 	responder_enabled = 1;
-	mxos_queue_t *ctrl_responder_queue;
+	mos_queue_id_t *ctrl_responder_queue;
 
-	ret = mxos_rtos_init_mutex(&mdns_mutex);
-	if (ret != MXOS_SUCCESS)
+	if ((mdns_mutex = mos_mutex_new()) == NULL)
 		return;
 	for (i = 0; i < MDNS_MAX_SERVICE_CONFIG; i++) {
 		SET_TIMEOUT(&probe_wait_time[i], 0);
@@ -2515,7 +2514,7 @@ static void do_responder(void)
 		        continue;
 		    }
 
-		    ret = mxos_rtos_pop_from_queue(ctrl_responder_queue, &msg, 0);
+		    ret = mos_queue_pop(ctrl_responder_queue, &msg, 0);
 			if (ret == -1) {
 				MDNS_LOG("Warning: responder failed to get control message");
 			} else {
@@ -2621,8 +2620,8 @@ static void do_responder(void)
 	}
 	if (!responder_enabled) {
 		MDNS_LOG("Signalled to stop mdns_responder");
-		mxos_rtos_deinit_mutex(&mdns_mutex);
-		mxos_rtos_delete_thread(NULL);
+		mos_mutex_delete(mdns_mutex);
+		mos_thread_delete(NULL);
 	}
 }
 
@@ -2716,7 +2715,7 @@ static int signal_and_wait_for_responder_halt()
 	}
 
 	while (responder_enabled && num_iterations--)
-	    mxos_rtos_delay_milliseconds(check_interval);
+	    mos_thread_delay(check_interval);
 
 	if (!num_iterations)
 		MDNS_LOG("Error: timed out waiting for mdns responder to stop");
@@ -2745,7 +2744,7 @@ int responder_halt(void)
 		responder_enabled = false;
 	}
 
-	ret = mxos_rtos_delete_thread(responder_thread);
+	ret = mos_thread_delete(responder_thread);
 	if (ret != kNoErr)
 		MDNS_LOG("Warning: failed to delete thread.");
 

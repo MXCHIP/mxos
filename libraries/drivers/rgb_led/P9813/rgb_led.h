@@ -44,11 +44,11 @@
 #define P9813_PIN_DIN       (MXOS_GPIO_NONE)
 #endif
 
-#define P9813_PIN_CIN_Clr()        mxos_gpio_output_low(P9813_PIN_CIN)  
-#define P9813_PIN_CIN_Set()        mxos_gpio_output_high(P9813_PIN_CIN)
+#define P9813_PIN_CIN_Clr()        mhal_gpio_low(P9813_PIN_CIN)  
+#define P9813_PIN_CIN_Set()        mhal_gpio_high(P9813_PIN_CIN)
 
-#define P9813_PIN_DIN_Clr()        mxos_gpio_output_low(P9813_PIN_DIN) 
-#define P9813_PIN_DIN_Set()        mxos_gpio_output_high(P9813_PIN_DIN)
+#define P9813_PIN_DIN_Clr()        mhal_gpio_low(P9813_PIN_DIN) 
+#define P9813_PIN_DIN_Set()        mhal_gpio_high(P9813_PIN_DIN)
 
 //-------------------- user interfaces ---------------------------
 

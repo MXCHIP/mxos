@@ -45,9 +45,9 @@ void qc_scan( void )
     /* Register user function when wlan scan is completed */
     mxos_system_notify_register( mxos_notify_WIFI_SCAN_COMPLETED, (void *) mxosNotify_ApListCallback, NULL );
 
-    mxosWlanStartScan();
+    mwifi_softap_startScan();
 
-    mxos_rtos_delay_milliseconds(2000);
+    mos_thread_delay(2000);
 }
 
 

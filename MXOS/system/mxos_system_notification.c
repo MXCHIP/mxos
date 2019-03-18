@@ -37,13 +37,13 @@ typedef void (*mxos_notify_WIFI_SCAN_ADV_COMPLETE_function)       ( ScanResult_a
 typedef void (*mxos_notify_WIFI_STATUS_CHANGED_function)          ( WiFiEvent status, void * inContext );
 typedef void (*mxos_notify_WiFI_PARA_CHANGED_function)            ( apinfo_adv_t *ap_info, char *key, int key_len, void * inContext );
 typedef void (*mxos_notify_DHCP_COMPLETE_function)                ( IPStatusTypedef *pnet, void * inContext );
-typedef void (*mxos_notify_EASYLINK_COMPLETE_function)            ( network_InitTypeDef_st *nwkpara, void * inContext );
+typedef void (*mxos_notify_EASYLINK_COMPLETE_function)            ( mwifi_softap_attr_t *nwkpara, void * inContext );
 typedef void (*mxos_notify_EASYLINK_GET_EXTRA_DATA_function)      ( int datalen, char*data, void * inContext );
 typedef void (*mxos_notify_TCP_CLIENT_CONNECTED_function)         ( int fd, void * inContext );
 typedef void (*mxos_notify_DNS_RESOLVE_COMPLETED_function)        ( uint8_t *hostname, uint32_t ip, void * inContext );
 typedef void (*mxos_notify_READ_APP_INFO_function)                ( char *str, int len, void * inContext );
 typedef void (*mxos_notify_SYS_WILL_POWER_OFF_function)           ( void * inContext );
-typedef void (*mxos_notify_WIFI_CONNECT_FAILED_function)          ( OSStatus err, void * inContext );
+typedef void (*mxos_notify_WIFI_CONNECT_FAILED_function)          ( merr_t err, void * inContext );
 typedef void (*mxos_notify_WIFI_FATAL_ERROR_function)             ( void * inContext );
 typedef void (*mxos_notify_STACK_OVERFLOW_ERROR_function)         ( char *taskname, void * const inContext );
 typedef void (*mxos_notify_GPRS_STATUS_CHANGED_function)          ( notify_netif_status_t status, const mxos_gprs_net_addr_t* pnet );
@@ -142,7 +142,7 @@ void NetCallback(IPStatusTypedef *pnet)
   }
 }
 
-void RptConfigmodeRslt(network_InitTypeDef_st *nwkpara)
+void RptConfigmodeRslt(mwifi_softap_attr_t *nwkpara)
 {
   _Notify_list_t *temp =  Notify_list[mxos_notify_EASYLINK_WPS_COMPLETED];
   if(temp == NULL)
@@ -207,7 +207,7 @@ void sendNotifySYSWillPowerOff(void)
   }    
 }
 
-void join_fail(OSStatus err)
+void join_fail(merr_t err)
 {
   _Notify_list_t *temp =  Notify_list[mxos_notify_WIFI_CONNECT_FAILED];
   if(temp == NULL)
@@ -259,9 +259,9 @@ void mxos_gprs_status_handler(notify_netif_status_t status, const mxos_gprs_net_
   }  
 }
 
-OSStatus mxos_system_notify_register( mxos_notify_types_t notify_type, void* functionAddress, void* arg )
+merr_t mxos_system_notify_register( mxos_notify_types_t notify_type, void* functionAddress, void* arg )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   _Notify_list_t *temp =  Notify_list[notify_type];
   _Notify_list_t *notify = (_Notify_list_t *)malloc(sizeof(_Notify_list_t));
   require_action(notify, exit, err = kNoMemoryErr);
@@ -285,9 +285,9 @@ exit:
   return err;
 }
 
-OSStatus mxos_system_notify_remove( mxos_notify_types_t notify_type, void *functionAddress )
+merr_t mxos_system_notify_remove( mxos_notify_types_t notify_type, void *functionAddress )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   _Notify_list_t *temp = Notify_list[notify_type];
   _Notify_list_t *temp2 = temp;
   require_action(Notify_list[notify_type], exit, err = kDeletedErr);
@@ -311,7 +311,7 @@ exit:
   return err;
 }
 
-OSStatus mxos_system_notify_remove_all( mxos_notify_types_t notify_type)
+merr_t mxos_system_notify_remove_all( mxos_notify_types_t notify_type)
 {
     _Notify_list_t *temp = Notify_list[notify_type];;
 
@@ -331,7 +331,7 @@ OSStatus mxos_system_notify_remove_all( mxos_notify_types_t notify_type)
 // }
 
 
-// void RptConfigmodeRslt(network_InitTypeDef_st *nwkpara)
+// void RptConfigmodeRslt(mwifi_softap_attr_t *nwkpara)
 // {
 
 // }

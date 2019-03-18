@@ -46,19 +46,19 @@ typedef enum
 /******************************************************
  *             Variables
  ******************************************************/
-static mxos_mutex_t Spi_mutex = NULL;
+static mos_mutex_id_t Spi_mutex = NULL;
 static bool spi_initialized = false;
 
-static mxos_semaphore_t spi_transfer_finished_semaphore = NULL;
+static mos_semphr_id_t spi_transfer_finished_semaphore = NULL;
 
 /******************************************************
  *             Function declarations
  ******************************************************/
 extern void wlan_notify_irq( void );
 
-static OSStatus wlan_spi_init( void );
-static OSStatus wlan_spi_deinit( void );
-static OSStatus wlan_spi_transfer( const mxos_spi_message_segment_t segment );
+static merr_t wlan_spi_init( void );
+static merr_t wlan_spi_deinit( void );
+static merr_t wlan_spi_transfer( const mxos_spi_message_segment_t segment );
 
 /******************************************************
  *             Function definitions
@@ -98,11 +98,11 @@ void platform_wifi_spi_rx_dma_irq( void )
     /* Clear interrupt */
     clear_dma_interrupts( wifi_spi.rx_dma.stream, wifi_spi.rx_dma.complete_flags );
 
-    mxos_rtos_set_semaphore( &spi_transfer_finished_semaphore );
+    mos_semphr_release(spi_transfer_finished_semaphore );
 }
 
 /* This function is called by wlan driver */
-OSStatus host_platform_bus_init( void )
+merr_t host_platform_bus_init( void )
 {
     /* Setup the interrupt input for WLAN_IRQ */
     platform_gpio_init( &wifi_spi_pins[WIFI_PIN_SPI_IRQ], INPUT_HIGH_IMPEDANCE );
@@ -112,12 +112,12 @@ OSStatus host_platform_bus_init( void )
 }
 
 /* This function is called by wlan driver */
-OSStatus host_platform_bus_deinit( void )
+merr_t host_platform_bus_deinit( void )
 {
     return platform_wlan_spi_deinit( &wifi_spi_pins[WIFI_PIN_SPI_CS] );
 }
 
-OSStatus host_platform_spi_transfer( bus_transfer_direction_t dir, uint8_t* buffer, uint16_t buffer_length )
+merr_t host_platform_spi_transfer( bus_transfer_direction_t dir, uint8_t* buffer, uint16_t buffer_length )
 {
     platform_spi_message_segment_t segment = { buffer, NULL, buffer_length };
 
@@ -127,7 +127,7 @@ OSStatus host_platform_spi_transfer( bus_transfer_direction_t dir, uint8_t* buff
     return platform_wlan_spi_transfer( &wifi_spi_pins[WIFI_PIN_SPI_CS], &segment, 1 );
 }
 
-OSStatus wlan_spi_init()
+merr_t wlan_spi_init()
 {
     SPI_InitTypeDef  spi_init;
     DMA_InitTypeDef  dma_init_structure;
@@ -142,7 +142,7 @@ OSStatus wlan_spi_init()
 
     if( spi_transfer_finished_semaphore == NULL )
     {
-      mxos_rtos_init_semaphore( &spi_transfer_finished_semaphore, 1 );
+      spi_transfer_finished_semaphore = mos_semphr_new( 1 );
     }
 
     /* Enable SPI_SLAVE DMA clock */
@@ -255,7 +255,7 @@ OSStatus wlan_spi_init()
     return kNoErr;
 }
 
-OSStatus wlan_spi_deinit()
+merr_t wlan_spi_deinit()
 {
     uint32_t         a;
     
@@ -292,9 +292,9 @@ OSStatus wlan_spi_deinit()
     return kNoErr;
 }
 
-OSStatus wlan_spi_transfer( const mxos_spi_message_segment_t segment )
+merr_t wlan_spi_transfer( const mxos_spi_message_segment_t segment )
 {
-    OSStatus result;
+    merr_t result;
     static uint8_t  dummy = 0xFF;
   
     platform_mcu_powersave_disable();
@@ -329,7 +329,7 @@ OSStatus wlan_spi_transfer( const mxos_spi_message_segment_t segment )
     DMA_Cmd( wifi_spi.tx_dma.stream, ENABLE );
     
     /* Wait for DMA to complete */
-    result = mxos_rtos_get_semaphore( &spi_transfer_finished_semaphore, 100 );
+    result = mos_semphr_acquire(spi_transfer_finished_semaphore, 100 );
 
     DMA_Cmd( wifi_spi.rx_dma.stream, DISABLE );
     DMA_Cmd( wifi_spi.tx_dma.stream, DISABLE );
@@ -345,27 +345,27 @@ OSStatus wlan_spi_transfer( const mxos_spi_message_segment_t segment )
 
 
 /* This function is called by other spi devices use the same port as wlan spi bus*/
-OSStatus platform_wlan_spi_init( const platform_gpio_t* chip_select )
+merr_t platform_wlan_spi_init( const platform_gpio_t* chip_select )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     if( Spi_mutex == NULL)
     {
-        mxos_rtos_init_mutex( &Spi_mutex );
+        Spi_mutex = mos_mutex_new( );
     }
-    require( Spi_mutex, exit );
+    require_action( Spi_mutex != NULL, exit, err = kGeneralErr);
 
-    mxos_rtos_lock_mutex( &Spi_mutex );
+    mos_mutex_lock(Spi_mutex );
     platform_gpio_init( chip_select, OUTPUT_PUSH_PULL );
     platform_gpio_output_high( chip_select );
     err = wlan_spi_init();
-    mxos_rtos_unlock_mutex( &Spi_mutex ); 
+    mos_mutex_unlock(Spi_mutex ); 
 exit:
     if( err != kNoErr )
     {
         if( Spi_mutex )
         {
-            mxos_rtos_deinit_mutex( &Spi_mutex );
+            mos_mutex_delete( Spi_mutex );
             Spi_mutex = NULL;
         }
     }
@@ -373,27 +373,27 @@ exit:
 }
 
 /* This function is called by other spi devices use the same port as wlan spi bus*/
-OSStatus platform_wlan_spi_deinit( const platform_gpio_t* chip_select )
+merr_t platform_wlan_spi_deinit( const platform_gpio_t* chip_select )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     require_quiet( Spi_mutex, exit );
 
-    mxos_rtos_lock_mutex( &Spi_mutex );
+    mos_mutex_lock(Spi_mutex );
     platform_gpio_init( chip_select, INPUT_HIGH_IMPEDANCE );
     err = wlan_spi_deinit();
-    mxos_rtos_unlock_mutex( &Spi_mutex );
+    mos_mutex_unlock(Spi_mutex );
 
-    mxos_rtos_deinit_mutex( &Spi_mutex );
+    mos_mutex_delete( Spi_mutex );
     Spi_mutex = NULL;
 exit:
     return err;
 }
 
 /* This function is called by other spi devices use the same port as wlan spi bus*/
-OSStatus platform_wlan_spi_transfer( const platform_gpio_t* chip_select, const platform_spi_message_segment_t* segments, uint16_t number_of_segments )
+merr_t platform_wlan_spi_transfer( const platform_gpio_t* chip_select, const platform_spi_message_segment_t* segments, uint16_t number_of_segments )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     uint8_t i;
 
     if( Spi_mutex == NULL)
@@ -402,7 +402,7 @@ OSStatus platform_wlan_spi_transfer( const platform_gpio_t* chip_select, const p
         require_noerr(err, exit);
     }
 
-    mxos_rtos_lock_mutex( &Spi_mutex );
+    mos_mutex_lock(Spi_mutex );
 
     platform_gpio_output_low( chip_select );
 
@@ -416,7 +416,7 @@ OSStatus platform_wlan_spi_transfer( const platform_gpio_t* chip_select, const p
 
     platform_gpio_output_high( chip_select );
 
-    mxos_rtos_unlock_mutex( &Spi_mutex );
+    mos_mutex_unlock(Spi_mutex );
 exit:
     return err;
 }

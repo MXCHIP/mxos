@@ -126,7 +126,7 @@ static uint8_t*                     user_data;
 static uint32_t                     user_data_size;
 static uint8_t*                     dma_data_source;
 static uint32_t                     dma_transfer_size;
-static mxos_semaphore_t             sdio_transfer_finished_semaphore;
+static mos_semphr_id_t             sdio_transfer_finished_semaphore;
 static bool                         sdio_transfer_failed;
 static bus_transfer_direction_t     current_transfer_direction;
 static uint32_t                     current_command;
@@ -139,7 +139,7 @@ static sdio_block_size_t find_optimal_block_size    ( uint32_t data_size );
 static void              sdio_prepare_data_transfer ( bus_transfer_direction_t direction, sdio_block_size_t block_size, /*@unique@*/ uint8_t* data, uint16_t data_size ) /*@modifies dma_data_source, user_data, user_data_size, dma_transfer_size@*/;
 
 void dma_irq ( void );
-OSStatus host_platform_sdio_transfer( bus_transfer_direction_t direction, sdio_command_t command, sdio_transfer_mode_t mode, sdio_block_size_t block_size, uint32_t argument, /*@null@*/ uint32_t* data, uint16_t data_size, sdio_response_needed_t response_expected, /*@out@*/ /*@null@*/ uint32_t* response );
+merr_t host_platform_sdio_transfer( bus_transfer_direction_t direction, sdio_command_t command, sdio_transfer_mode_t mode, sdio_block_size_t block_size, uint32_t argument, /*@null@*/ uint32_t* data, uint16_t data_size, sdio_response_needed_t response_expected, /*@out@*/ /*@null@*/ uint32_t* response );
 extern void wlan_notify_irq( void );
 
 /******************************************************
@@ -153,7 +153,7 @@ static void sdio_oob_irq_handler( void* arg )
     wlan_notify_irq( );
 }
 
-OSStatus host_enable_oob_interrupt( void )
+merr_t host_enable_oob_interrupt( void )
 {
     platform_gpio_init( &wifi_sdio_pins[WIFI_PIN_SDIO_OOB_IRQ], INPUT_HIGH_IMPEDANCE );
     platform_gpio_irq_enable( &wifi_sdio_pins[WIFI_PIN_SDIO_OOB_IRQ], IRQ_TRIGGER_RISING_EDGE, sdio_oob_irq_handler, 0 );
@@ -167,7 +167,7 @@ uint8_t host_platform_get_oob_interrupt_pin( void )
 
 #elif defined (MXOS_DISABLE_MCU_POWERSAVE) && !(defined (SDIO_1_BIT)) //SDIO 4 Bit mode and disable MCU powersave, do not need OOB interrupt 
 
-OSStatus host_enable_oob_interrupt( void )
+merr_t host_enable_oob_interrupt( void )
 {
     return kNoErr;
 }
@@ -193,7 +193,7 @@ bool host_platform_is_sdio_int_asserted(void)
         return true; // SDIO D1 is low, data need read
 }
 
-OSStatus host_enable_oob_interrupt( void )
+merr_t host_enable_oob_interrupt( void )
 {
     return kNoErr;
 }
@@ -219,7 +219,7 @@ void sdio_irq( void )
     {
         sdio_transfer_failed = true;
         SDIO->ICR = (uint32_t) 0xffffffff;
-        mxos_rtos_set_semaphore( &sdio_transfer_finished_semaphore );
+        mos_semphr_release(sdio_transfer_finished_semaphore );
     }
     else
     {
@@ -228,7 +228,7 @@ void sdio_irq( void )
             if ( ( SDIO->RESP1 & 0x800 ) != 0 )
             {
                 sdio_transfer_failed = true;
-                mxos_rtos_set_semaphore( &sdio_transfer_finished_semaphore );
+                mos_semphr_release(sdio_transfer_finished_semaphore );
             }
             else if (current_command == SDIO_CMD_53)
             {
@@ -272,12 +272,12 @@ void sdio_irq( void )
 /* Function picked up by linker script */
 void dma_irq( void )
 {
-    OSStatus result;
+    merr_t result;
 
     /* Clear interrupt */
     DMA2->LIFCR = (uint32_t) (0x3F << 22);
 
-    result = mxos_rtos_set_semaphore( &sdio_transfer_finished_semaphore );
+    result = mos_semphr_release(sdio_transfer_finished_semaphore );
 
     /* check result if in debug mode */
     check_string(result == kNoErr, "failed to set dma semaphore" );
@@ -285,18 +285,17 @@ void dma_irq( void )
     (void) result; /* ignore result if in release mode */
 }
 
-OSStatus host_platform_bus_init( void )
+merr_t host_platform_bus_init( void )
 {
     SDIO_InitTypeDef sdio_init_structure;
-    OSStatus         result;
+    merr_t         result;
     uint8_t          a;
 
     platform_mcu_powersave_disable();
 
-    result = mxos_rtos_init_semaphore( &sdio_transfer_finished_semaphore, 1 );
-    if ( result != kNoErr )
+    if ((sdio_transfer_finished_semaphore = mos_semphr_new( 1 )) == NULL)
     {
-        return result;
+        return kGeneralErr;
     }
 
     /* Turn on SDIO IRQ */
@@ -356,9 +355,9 @@ OSStatus host_platform_bus_init( void )
     return kNoErr;
 }
 
-OSStatus host_platform_sdio_enumerate( void )
+merr_t host_platform_sdio_enumerate( void )
 {
-    OSStatus       result;
+    merr_t       result;
     uint32_t       loop_count;
     uint32_t       data = 0;
 
@@ -387,12 +386,12 @@ OSStatus host_platform_sdio_enumerate( void )
     return kNoErr;
 }
 
-OSStatus host_platform_bus_deinit( void )
+merr_t host_platform_bus_deinit( void )
 {
-    OSStatus result;
+    merr_t result;
     uint32_t     a;
 
-    result = mxos_rtos_deinit_semaphore( &sdio_transfer_finished_semaphore );
+    result = mos_semphr_delete(sdio_transfer_finished_semaphore );
 
     platform_mcu_powersave_disable();
 
@@ -429,10 +428,10 @@ OSStatus host_platform_bus_deinit( void )
     return result;
 }
 
-OSStatus host_platform_sdio_transfer( bus_transfer_direction_t direction, sdio_command_t command, sdio_transfer_mode_t mode, sdio_block_size_t block_size, uint32_t argument, /*@null@*/ uint32_t* data, uint16_t data_size, sdio_response_needed_t response_expected, /*@out@*/ /*@null@*/ uint32_t* response )
+merr_t host_platform_sdio_transfer( bus_transfer_direction_t direction, sdio_command_t command, sdio_transfer_mode_t mode, sdio_block_size_t block_size, uint32_t argument, /*@null@*/ uint32_t* data, uint16_t data_size, sdio_response_needed_t response_expected, /*@out@*/ /*@null@*/ uint32_t* response )
 {
     uint32_t loop_count = 0;
-    OSStatus result;
+    merr_t result;
     uint16_t attempts = 0;
 
     check_string(!((command == SDIO_CMD_53) && (data == NULL)), "Bad args" );
@@ -488,7 +487,7 @@ restart:
         SDIO->CMD = (uint32_t) ( command | SDIO_Response_Short | SDIO_Wait_No | SDIO_CPSM_Enable );
 
         /* Wait for the whole transfer to complete */
-        result = mxos_rtos_get_semaphore( &sdio_transfer_finished_semaphore, (uint32_t) 50 );
+        result = mos_semphr_acquire(sdio_transfer_finished_semaphore, (uint32_t) 50 );
         if ( result != kNoErr )
         {
             goto exit;
@@ -652,12 +651,12 @@ static uint32_t sdio_get_blocksize_dctrl(sdio_block_size_t block_size)
     }
 }
 
-OSStatus host_platform_bus_enable_interrupt( void )
+merr_t host_platform_bus_enable_interrupt( void )
 {
     return  kNoErr;
 }
 
-OSStatus host_platform_bus_disable_interrupt( void )
+merr_t host_platform_bus_disable_interrupt( void )
 {
     return  kNoErr;
 }

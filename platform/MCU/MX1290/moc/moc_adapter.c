@@ -50,9 +50,9 @@ void init_debug_uart(void)
 }
 #endif
 
-static void _mxos_rtos_thread_yield(void)
+static void _mos_thread_yield(void)
 {
-   mxos_rtos_delay_milliseconds( 0 );
+   mos_thread_delay( 0 );
 }
 
 
@@ -68,30 +68,30 @@ mxos_api_t *moc_adapter(new_mxos_api_t *new_mxos_api)
   mxos_api.system_config_set = _system_config_set;
   mxos_api.mxos_network_init = (void(*)())_kernel_api.os_apis->mxos_network_init;
 
-  mxos_api.mxos_rtos_create_thread = (int (*)(void **, uint8_t, char const *, void (*)(uint32_t), uint32_t, void *))_kernel_api.os_apis->mxos_rtos_create_thread;
-  mxos_api.mxos_rtos_delete_thread = _kernel_api.os_apis->mxos_rtos_delete_thread;
-  mxos_api.mxos_rtos_delete_thread = _kernel_api.os_apis->mxos_rtos_delete_thread;
-  mxos_api.mxos_rtos_thread_yield = _mxos_rtos_thread_yield;
-  mxos_api.mxos_rtos_suspend_thread = _kernel_api.os_apis->mxos_rtos_suspend_thread;
+  mxos_api.mos_thread_new = (int (*)(void **, uint8_t, char const *, void (*)(void *), uint32_t, void *))_kernel_api.os_apis->mos_thread_new;
+  mxos_api.mos_thread_delete = _kernel_api.os_apis->mos_thread_delete;
+  mxos_api.mos_thread_delete = _kernel_api.os_apis->mos_thread_delete;
+  mxos_api.mos_thread_yield = _mos_thread_yield;
+  mxos_api.mos_thread_suspend = _kernel_api.os_apis->mos_thread_suspend;
   mxos_api.mxos_rtos_suspend_all_thread = _kernel_api.os_apis->mxos_rtos_suspend_all_thread;
   mxos_api.mxos_rtos_resume_all_thread = (long(*)(void))_kernel_api.os_apis->mxos_rtos_resume_all_thread;
-  mxos_api.mxos_rtos_thread_join = _kernel_api.os_apis->mxos_rtos_thread_join;
+  mxos_api.mos_thread_join = _kernel_api.os_apis->mos_thread_join;
   mxos_api.mxos_rtos_thread_force_awake = _kernel_api.os_apis->mxos_rtos_thread_force_awake;
   mxos_api.mxos_rtos_is_current_thread = _kernel_api.os_apis->mxos_rtos_is_current_thread;
   mxos_api.mxos_thread_sleep = _kernel_api.os_apis->mxos_thread_sleep;
   mxos_api.mxos_thread_msleep = _kernel_api.os_apis->mxos_thread_msleep;
-  mxos_api.mxos_rtos_init_semaphore = _kernel_api.os_apis->mxos_rtos_init_semaphore;
-  mxos_api.mxos_rtos_set_semaphore = _kernel_api.os_apis->mxos_rtos_set_semaphore;
-  mxos_api.mxos_rtos_get_semaphore = _kernel_api.os_apis->mxos_rtos_get_semaphore;
-  mxos_api.mxos_rtos_deinit_semaphore = _kernel_api.os_apis->mxos_rtos_deinit_semaphore;
-  mxos_api.mxos_rtos_init_mutex = _kernel_api.os_apis->mxos_rtos_init_mutex;
-  mxos_api.mxos_rtos_lock_mutex = _kernel_api.os_apis->mxos_rtos_lock_mutex;
-  mxos_api.mxos_rtos_unlock_mutex = _kernel_api.os_apis->mxos_rtos_unlock_mutex;
-  mxos_api.mxos_rtos_deinit_mutex = _kernel_api.os_apis->mxos_rtos_deinit_mutex;
-  mxos_api.mxos_rtos_init_queue = _kernel_api.os_apis->mxos_rtos_init_queue;
-  mxos_api.mxos_rtos_push_to_queue = _kernel_api.os_apis->mxos_rtos_push_to_queue;
-  mxos_api.mxos_rtos_pop_from_queue = _kernel_api.os_apis->mxos_rtos_pop_from_queue;
-  mxos_api.mxos_rtos_deinit_queue = _kernel_api.os_apis->mxos_rtos_deinit_queue;
+  mxos_api.mos_semphr_new = _kernel_api.os_apis->mos_semphr_new;
+  mxos_api.mos_semphr_release = _kernel_api.os_apis->mos_semphr_release;
+  mxos_api.mos_semphr_acquire = _kernel_api.os_apis->mos_semphr_acquire;
+  mxos_api.mos_semphr_delete = _kernel_api.os_apis->mos_semphr_delete;
+  mxos_api.mos_mutex_new = _kernel_api.os_apis->mos_mutex_new;
+  mxos_api.mos_mutex_lock = _kernel_api.os_apis->mos_mutex_lock;
+  mxos_api.mos_mutex_unlock = _kernel_api.os_apis->mos_mutex_unlock;
+  mxos_api.mos_mutex_delete = _kernel_api.os_apis->mos_mutex_delete;
+  mxos_api.mos_queue_new = _kernel_api.os_apis->mos_queue_new;
+  mxos_api.mos_queue_push = _kernel_api.os_apis->mos_queue_push;
+  mxos_api.mos_queue_pop = _kernel_api.os_apis->mos_queue_pop;
+  mxos_api.mos_queue_delete = _kernel_api.os_apis->mos_queue_delete;
   mxos_api.mxos_rtos_is_queue_empty = _kernel_api.os_apis->mxos_rtos_is_queue_empty;
   mxos_api.mxos_rtos_is_queue_full = (int (*)(void * *))_kernel_api.os_apis->mxos_rtos_is_queue_full;
   mxos_api.mxos_get_time = _kernel_api.os_apis->mxos_get_time;
@@ -168,33 +168,33 @@ mxos_api_t *moc_adapter(new_mxos_api_t *new_mxos_api)
   mxos_api.wlan_get_mac_address_by_interface = _kernel_api.wifi_apis->wlan_get_mac_address_by_interface;
   mxos_api.mxos_wlan_get_channel = _kernel_api.wifi_apis->mxos_wlan_get_channel;
   mxos_api.mxos_wlan_driver_version = _kernel_api.wifi_apis->mxos_wlan_driver_version;
-  mxos_api.mxosWlanStart = _kernel_api.wifi_apis->mxosWlanStart;
-  mxos_api.mxosWlanStartAdv = _kernel_api.wifi_apis->mxosWlanStartAdv;
-  mxos_api.mxosWlanGetIPStatus = _kernel_api.wifi_apis->mxosWlanGetIPStatus;
-  mxos_api.mxosWlanGetLinkStatus = _kernel_api.wifi_apis->mxosWlanGetLinkStatus;
-  mxos_api.mxosWlanStartScan = (int(*)(void))_kernel_api.wifi_apis->mxosWlanStartScan;
-  mxos_api.mxosWlanStartScanAdv = (int(*)(void))_kernel_api.wifi_apis->mxosWlanStartScanAdv;
-  mxos_api.mxosWlanPowerOff = _kernel_api.wifi_apis->mxosWlanPowerOff;
-  mxos_api.mxosWlanPowerOn = _kernel_api.wifi_apis->mxosWlanPowerOn;
+  mxos_api.mwifi_softap_start = _kernel_api.wifi_apis->mwifi_softap_start;
+  mxos_api.mwifi_connect = _kernel_api.wifi_apis->mwifi_connect;
+  mxos_api.mwifi_get_ip = _kernel_api.wifi_apis->mwifi_get_ip;
+  mxos_api.mwifi_get_link_info = _kernel_api.wifi_apis->mwifi_get_link_info;
+  mxos_api.mwifi_softap_startScan = (int(*)(void))_kernel_api.wifi_apis->mwifi_softap_startScan;
+  mxos_api.mwifi_softap_startScanAdv = (int(*)(void))_kernel_api.wifi_apis->mwifi_softap_startScanAdv;
+  mxos_api.mwifi_off = _kernel_api.wifi_apis->mwifi_off;
+  mxos_api.mwifi_on = _kernel_api.wifi_apis->mwifi_on;
   mxos_api.mxosWlanSuspend = _kernel_api.wifi_apis->mxosWlanSuspend;
-  mxos_api.mxosWlanSuspendStation = _kernel_api.wifi_apis->mxosWlanSuspendStation;
-  mxos_api.mxosWlanSuspendSoftAP = _kernel_api.wifi_apis->mxosWlanSuspendSoftAP;
-  mxos_api.mxosWlanStartEasyLink = _kernel_api.wifi_apis->mxosWlanStartEasyLink;
-  mxos_api.mxosWlanStartEasyLinkPlus = _kernel_api.wifi_apis->mxosWlanStartEasyLink;
+  mxos_api.mwifi_disconnect = _kernel_api.wifi_apis->mwifi_disconnect;
+  mxos_api.mwifi_softap_stop = _kernel_api.wifi_apis->mwifi_softap_stop;
+  mxos_api.mwifi_softap_startEasyLink = _kernel_api.wifi_apis->mwifi_softap_startEasyLink;
+  mxos_api.mwifi_softap_startEasyLinkPlus = _kernel_api.wifi_apis->mwifi_softap_startEasyLink;
   mxos_api.mxosWlanStopEasyLink = _kernel_api.wifi_apis->mxosWlanStopEasyLink;
   mxos_api.mxosWlanStopEasyLinkPlus = _kernel_api.wifi_apis->mxosWlanStopEasyLink;
-  mxos_api.mxosWlanStartWPS = NULL;
+  mxos_api.mwifi_softap_startWPS = NULL;
   mxos_api.mxosWlanStopWPS = NULL;
-  mxos_api.mxosWlanStartAirkiss = _kernel_api.wifi_apis->mxosWlanStartEasyLink;
-  mxos_api.mxosWlanStopAirkiss = _kernel_api.wifi_apis->mxosWlanStopEasyLink;
-  mxos_api.mxosWlanEnablePowerSave = _kernel_api.wifi_apis->mxosWlanEnablePowerSave;
-  mxos_api.mxosWlanDisablePowerSave = _kernel_api.wifi_apis->mxosWlanDisablePowerSave;
+  mxos_api.mwifi_softap_startAirkiss = _kernel_api.wifi_apis->mwifi_softap_startEasyLink;
+  mxos_api.mwifi_airkiss_stop = _kernel_api.wifi_apis->mxosWlanStopEasyLink;
+  mxos_api.mwifi_ps_on = _kernel_api.wifi_apis->mwifi_ps_on;
+  mxos_api.mwifi_ps_off = _kernel_api.wifi_apis->mwifi_ps_off;
   mxos_api.wifimgr_debug_enable = _kernel_api.wifi_apis->wifimgr_debug_enable;
   mxos_api.mxos_wlan_monitor_rx_type = _kernel_api.wifi_apis->mxos_wlan_monitor_rx_type;
-  mxos_api.mxos_wlan_start_monitor = _kernel_api.wifi_apis->mxos_wlan_start_monitor;
-  mxos_api.mxos_wlan_stop_monitor = _kernel_api.wifi_apis->mxos_wlan_stop_monitor;
-  mxos_api.mxos_wlan_monitor_set_channel = _kernel_api.wifi_apis->mxos_wlan_monitor_set_channel;
-  mxos_api.mxos_wlan_register_monitor_cb = _kernel_api.wifi_apis->mxos_wlan_register_monitor_cb;
+  mxos_api.mwifi_monitor_start = _kernel_api.wifi_apis->mwifi_monitor_start;
+  mxos_api.mwifi_monitor_stop = _kernel_api.wifi_apis->mwifi_monitor_stop;
+  mxos_api.mwifi_monitor_set_channel = _kernel_api.wifi_apis->mwifi_monitor_set_channel;
+  mxos_api.mwifi_monitor_reg_cb = _kernel_api.wifi_apis->mwifi_monitor_reg_cb;
   mxos_api.wlan_set_channel = _kernel_api.wifi_apis->wlan_set_channel;
   mxos_api.mxchip_active_scan = _kernel_api.wifi_apis->mxchip_active_scan;
   mxos_api.wifi_manage_custom_ie_add = _kernel_api.wifi_apis->wifi_manage_custom_ie_add;
@@ -219,24 +219,24 @@ mxos_api_t *moc_adapter(new_mxos_api_t *new_mxos_api)
   mxos_api.driver_state_Command = _kernel_api.cli_apis->driver_state_Command;
   mxos_api.iperf_Command = _kernel_api.cli_apis->iperf_Command;
   
-  mxos_api.mxos_flash_get_info = _kernel_api.flash_apis->mxos_flash_get_info;
-  mxos_api.mxos_flash_erase = _kernel_api.flash_apis->mxos_flash_erase;
-  mxos_api.mxos_flash_write = _kernel_api.flash_apis->mxos_flash_write;
-  mxos_api.mxos_flash_read = _kernel_api.flash_apis->mxos_flash_read;
+  mxos_api.mhal_flash_get_info = _kernel_api.flash_apis->mhal_flash_get_info;
+  mxos_api.mhal_flash_erase = _kernel_api.flash_apis->mhal_flash_erase;
+  mxos_api.mhal_flash_write = _kernel_api.flash_apis->mhal_flash_write;
+  mxos_api.mhal_flash_read = _kernel_api.flash_apis->mhal_flash_read;
   mxos_api.mxos_flash_enable_security = _kernel_api.flash_apis->mxos_flash_enable_security;
-  mxos_api.mxos_gpio_init = _kernel_api.gpio_apis->mxos_gpio_init;
-  mxos_api.mxos_gpio_deinit = _kernel_api.gpio_apis->mxos_gpio_deinit;
-  mxos_api.mxos_gpio_output_high = _kernel_api.gpio_apis->mxos_gpio_output_high;
-  mxos_api.mxos_gpio_output_low = _kernel_api.gpio_apis->mxos_gpio_output_low;
-  mxos_api.mxos_gpio_output_toggle = _kernel_api.gpio_apis->mxos_gpio_output_toggle;
-  mxos_api.mxos_gpio_input_get = _kernel_api.gpio_apis->mxos_gpio_input_get;
-  mxos_api.mxos_gpio_enable_irq = _kernel_api.gpio_apis->mxos_gpio_enable_irq;
-  mxos_api.mxos_gpio_disable_irq = _kernel_api.gpio_apis->mxos_gpio_disable_irq;
-  mxos_api.mxos_uart_init = _kernel_api.uart_apis->mxos_uart_init;
-  mxos_api.mxos_uart_deinit = _kernel_api.uart_apis->mxos_uart_deinit;
-  mxos_api.mxos_uart_send = _kernel_api.uart_apis->mxos_uart_send;
-  mxos_api.mxos_uart_recv = _kernel_api.uart_apis->mxos_uart_recv;
-  mxos_api.mxos_uart_recvd_data_len = _kernel_api.uart_apis->mxos_uart_recvd_data_len;
+  mxos_api.mhal_gpio_open = _kernel_api.gpio_apis->mhal_gpio_open;
+  mxos_api.mhal_gpio_close = _kernel_api.gpio_apis->mhal_gpio_close;
+  mxos_api.mhal_gpio_high = _kernel_api.gpio_apis->mhal_gpio_high;
+  mxos_api.mhal_gpio_low = _kernel_api.gpio_apis->mhal_gpio_low;
+  mxos_api.mhal_gpio_toggle = _kernel_api.gpio_apis->mhal_gpio_toggle;
+  mxos_api.mhal_gpio_value = _kernel_api.gpio_apis->mhal_gpio_value;
+  mxos_api.mhal_gpio_int_on = _kernel_api.gpio_apis->mhal_gpio_int_on;
+  mxos_api.mhal_gpio_int_off = _kernel_api.gpio_apis->mhal_gpio_int_off;
+  mxos_api.mhal_uart_open = _kernel_api.uart_apis->mhal_uart_open;
+  mxos_api.mhal_uart_close = _kernel_api.uart_apis->mhal_uart_close;
+  mxos_api.mhal_uart_write = _kernel_api.uart_apis->mhal_uart_write;
+  mxos_api.mhal_uart_read = _kernel_api.uart_apis->mhal_uart_read;
+  mxos_api.mhal_uart_readd_data_len = _kernel_api.uart_apis->mhal_uart_readd_data_len;
   mxos_api.MxosUartPinRedirect = _kernel_api.uart_apis->MxosUartPinRedirect;
   
   mxos_api.pm_mcu_state = _kernel_api.ps_apis->pm_mcu_state;
@@ -334,9 +334,9 @@ int disable_log_uart(void)
     return _kernel_api.uart_apis->disable_log_uart();
 }
 
-void mxos_rtos_resume_thread(mxos_thread_t* thread)
+void mos_thread_resume(mos_thread_id_t thread)
 {
-    _kernel_api.os_apis->mxos_rtos_resume_thread(thread);
+    _kernel_api.os_apis->mos_thread_resume(&thread);
 }
 
 #define extra_apis _kernel_api.ssl_crypto_apis->extra_crypto_apis
@@ -487,7 +487,7 @@ int mxos_init_once_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t
     return _kernel_api.os_apis->mxos_init_once_timer( timer, time_ms, function, arg );
 }
 
-OSStatus MxosRtcSetalarm(time_t *time, rtc_irq_handler handler)
+merr_t MxosRtcSetalarm(time_t *time, rtc_irq_handler handler)
 {
     return _kernel_api.rtc_apis->MxosRtcSetalarm( time, handler );
 }

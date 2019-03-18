@@ -87,11 +87,11 @@ static void _bonjour_generate_txt_record( char *txt_record, uint16_t txt_record_
 
 
 
-OSStatus easylink_bonjour_start( WiFi_Interface interface, uint32_t easyLink_id, system_context_t * const inContext )
+merr_t easylink_bonjour_start( WiFi_Interface interface, uint32_t easyLink_id, system_context_t * const inContext )
 {
     uint8_t mac[6];
 
-    mxos_wlan_get_mac_address( mac );
+    mwifi_get_mac( mac );
     snprintf( srv_name, 32+5, "%s(%02X%02X%02X)", MODEL, mac[3],  mac[4], mac[5] );
 
     memset(&easylink_service, 0x0, sizeof(struct mdns_service));
@@ -109,9 +109,9 @@ OSStatus easylink_bonjour_start( WiFi_Interface interface, uint32_t easyLink_id,
     return kNoErr;
 }
 
-OSStatus easylink_bonjour_update( WiFi_Interface interface, uint32_t easyLink_id, system_context_t * const inContext )
+merr_t easylink_bonjour_update( WiFi_Interface interface, uint32_t easyLink_id, system_context_t * const inContext )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     _bonjour_generate_txt_record( keyvals, EASYLINK_BONJOUR_TXT_LEN, easyLink_id, interface, inContext );
     err = mdns_set_txt_rec(&easylink_service, keyvals, '.');

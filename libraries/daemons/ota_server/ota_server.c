@@ -48,7 +48,7 @@ static CRC16_Context crc_context;
 static md5_context md5;
 static uint32_t offset = 0;
 
-static OSStatus onReceivedData( struct _HTTPHeader_t * httpHeader,
+static merr_t onReceivedData( struct _HTTPHeader_t * httpHeader,
                                 uint32_t pos,
                                 uint8_t *data,
                                 size_t len,
@@ -87,9 +87,9 @@ static int ota_server_send( uint8_t *data, int datalen )
     return res;
 }
 
-static OSStatus ota_server_connect( struct sockaddr_in *addr, socklen_t addrlen )
+static merr_t ota_server_connect( struct sockaddr_in *addr, socklen_t addrlen )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 #if OTA_USE_HTTPS
     int ssl_errno = 0;
 #endif
@@ -232,9 +232,9 @@ static void ota_server_progress_set( OTA_STATE_E state )
         ota_server_context->ota_server_cb(state, progress);
 }
 
-static void ota_server_thread( mxos_thread_arg_t arg )
+static void ota_server_thread( void * arg )
 {
-    OSStatus err;
+    merr_t err;
     uint16_t crc16 = 0;
     char md5_value[16] = {0};
     char md5_value_string[33] = {0};
@@ -243,7 +243,7 @@ static void ota_server_thread( mxos_thread_arg_t arg )
     char **pptr = NULL;
     struct in_addr in_addr;
 
-    mxos_logic_partition_t* ota_partition = mxos_flash_get_info( MXOS_PARTITION_OTA_TEMP );
+    mxos_logic_partition_t* ota_partition = mhal_flash_get_info( MXOS_PARTITION_OTA_TEMP );
     
     ota_server_context->ota_control = OTA_CONTROL_START;
 
@@ -255,7 +255,7 @@ static void ota_server_thread( mxos_thread_arg_t arg )
     ota_server_log("OTA server address: %s, host ip: %s", ota_server_context->download_url.host, ota_server_context->download_url.ip);
 
     offset = 0;
-    mxos_flash_erase( MXOS_PARTITION_OTA_TEMP, 0x0, ota_partition->partition_length );
+    mhal_flash_erase( MXOS_PARTITION_OTA_TEMP, 0x0, ota_partition->partition_length );
     
     CRC16_Init( &crc_context );
     if( ota_server_context->ota_check.is_md5 == true ){
@@ -353,14 +353,14 @@ DELETE:
     }
 
     ota_server_log("ota server thread will delete");
-    mxos_rtos_delete_thread(NULL);
+    mos_thread_delete(NULL);
 }
 
 /*one request may receive multi reply*/
-static OSStatus onReceivedData( struct _HTTPHeader_t * inHeader, uint32_t inPos, uint8_t * inData,
+static merr_t onReceivedData( struct _HTTPHeader_t * inHeader, uint32_t inPos, uint8_t * inData,
                                 size_t inLen, void * inUserContext )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     if ( inLen == 0 )
         return err;
@@ -372,7 +372,7 @@ static OSStatus onReceivedData( struct _HTTPHeader_t * inHeader, uint32_t inPos,
         Md5Update( &md5, inData, inLen );
     }
 
-    mxos_flash_write( MXOS_PARTITION_OTA_TEMP, &offset, (uint8_t *) inData, inLen );
+    mhal_flash_write( MXOS_PARTITION_OTA_TEMP, &offset, (uint8_t *) inData, inLen );
 
     ota_server_progress_set(OTA_LOADING);
 
@@ -391,9 +391,9 @@ static OSStatus onReceivedData( struct _HTTPHeader_t * inHeader, uint32_t inPos,
     return err;
 }
 
-static OSStatus ota_server_set_url( char *url )
+static merr_t ota_server_set_url( char *url )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     url_field_t *url_t;
     char *pos = NULL;
 
@@ -426,9 +426,9 @@ exit:
     return err;
 }
 
-OSStatus ota_server_start( char *url, char *md5, ota_server_cb_fn call_back )
+merr_t ota_server_start( char *url, char *md5, ota_server_cb_fn call_back )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action(url, exit, err = kParamErr);
 
@@ -460,7 +460,8 @@ OSStatus ota_server_start( char *url, char *md5, ota_server_cb_fn call_back )
 
     ota_server_context->ota_server_cb = call_back;
 
-    err = mxos_rtos_create_thread( NULL, MXOS_APPLICATION_PRIORITY, "OTA", ota_server_thread, OTA_SERVER_THREAD_STACK_SIZE, 0 );
+    require_action(mos_thread_new( MXOS_APPLICATION_PRIORITY, "OTA", ota_server_thread, 
+    OTA_SERVER_THREAD_STACK_SIZE, NULL ) != NULL, exit, err = kGeneralErr);
 exit:
     return err;
 }

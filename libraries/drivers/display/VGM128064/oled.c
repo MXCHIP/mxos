@@ -32,9 +32,9 @@ mxos_i2c_device_t ssd1106_i2c_device = {
   OLED_I2C_PORT, 0x3C, I2C_ADDRESS_WIDTH_7BIT, I2C_STANDARD_SPEED_MODE
 };
 
-OSStatus ssd1106_i2c_bus_write(uint8_t reg_addr, uint8_t *reg_data, uint8_t cnt)
+merr_t ssd1106_i2c_bus_write(uint8_t reg_addr, uint8_t *reg_data, uint8_t cnt)
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   require_action_quiet(_oled_avalid == 1, exit, err = kNotFoundErr);
   mxos_i2c_message_t ssd1106_i2c_msg = {NULL, NULL, 0, 0, 10, false};
 
@@ -119,9 +119,9 @@ void OLED_WR_Bytes(u8 *dat, u8 len, u8 cmd)
   config.bits        = mxoskit_spi_oled.bits;
   
   if( platform_spi_drivers[mxoskit_spi_oled.port].spi_mutex == NULL)
-    mxos_rtos_init_mutex( &platform_spi_drivers[mxoskit_spi_oled.port].spi_mutex );
+    platform_spi_drivers[mxoskit_spi_oled.port].spi_mutex = mos_mutex_new( );
 
-  mxos_rtos_lock_mutex( &platform_spi_drivers[mxoskit_spi_oled.port].spi_mutex );
+  mos_mutex_lock(platform_spi_drivers[mxoskit_spi_oled.port].spi_mutex );
 
   platform_spi_init( &platform_spi_drivers[mxoskit_spi_oled.port], &platform_spi_peripherals[mxoskit_spi_oled.port], &config );
   OLED_DC_INIT();   
@@ -135,7 +135,7 @@ void OLED_WR_Bytes(u8 *dat, u8 len, u8 cmd)
   
   OLED_DC_Set();   
 
-  mxos_rtos_unlock_mutex( &platform_spi_drivers[mxoskit_spi_oled.port].spi_mutex );
+  mos_mutex_unlock(platform_spi_drivers[mxoskit_spi_oled.port].spi_mutex );
 #endif //defined (MOC) && (MOC == 1)
 #endif  //SSD1106_USE_I2C
 }

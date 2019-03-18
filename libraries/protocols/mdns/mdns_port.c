@@ -72,7 +72,7 @@
  ******************************************************************************/
 mdns_responder_stats mr_stats;
 
-static mxos_thread_t mdns_querier_thread, mdns_responder_thread;
+static mos_thread_id_t mdns_querier_thread, mdns_responder_thread;
 static bool is_responder_started, is_querier_started;
 
 struct sockaddr_in mdns_mquery_v4group = {sizeof(struct sockaddr_in), AF_INET, htons(5353), INADDR_MULTICAST_MDNS};
@@ -130,20 +130,20 @@ void *mdns_thread_create(mdns_thread_entry entry, int id)
     void *ret = NULL;
     if (id == MDNS_THREAD_RESPONDER)
     {
-        if (mxos_rtos_create_thread(&mdns_responder_thread, MXOS_APPLICATION_PRIORITY,
-                                    "mdns_resp_thread", (mxos_thread_function_t)entry,
-                                    MDNS_RESPONDER_THREAD_STACK, 0) == kNoErr)
+        if ((mdns_responder_thread = mos_thread_new(MXOS_APPLICATION_PRIORITY,
+                                    "mdns_resp_thread", (mos_thread_func_t)entry,
+                                    MDNS_RESPONDER_THREAD_STACK, 0)) != NULL)
         {
-            ret = &mdns_responder_thread;
+            ret = mdns_responder_thread;
         }
     }
     else if (id == MDNS_THREAD_QUERIER)
     {
-        if (mxos_rtos_create_thread(&mdns_querier_thread, MXOS_APPLICATION_PRIORITY,
-                                    "mdns_querier_thread", (mxos_thread_function_t)entry,
-                                    MDNS_QUERIER_THREAD_STACK, 0) == kNoErr)
+        if ((mdns_querier_thread = mos_thread_new(MXOS_APPLICATION_PRIORITY,
+                                    "mdns_querier_thread", (mos_thread_func_t)entry,
+                                    MDNS_QUERIER_THREAD_STACK, 0)) != NULL)
         {
-            ret = &mdns_querier_thread;
+            ret = mdns_querier_thread;
         }
     }
     return ret;
@@ -151,12 +151,12 @@ void *mdns_thread_create(mdns_thread_entry entry, int id)
 
 void mdns_thread_delete(void *t)
 {
-    mxos_rtos_delete_thread((mxos_thread_t *)t);
+    mos_thread_delete((mos_thread_id_t)t);
 }
 
 void mdns_thread_yield(void *t)
 {
-    mxos_rtos_thread_yield();
+    mos_thread_yield();
 }
 
 uint32_t mdns_time_ms(void)
@@ -169,7 +169,7 @@ uint32_t mdns_time_ms(void)
 int mdns_rand_range(int n)
 {
     int r;
-    srand(mxos_rtos_get_time());
+    srand(mos_time());
     r = rand();
     return r / (RAND_MAX / n + 1);
 }
@@ -177,7 +177,7 @@ int mdns_rand_range(int n)
 /****************************Mdns Main Entry Functions***************************/
 int mdns_start(const char *domain, char *hostname)
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     err = mxos_system_notify_register(mxos_notify_WIFI_STATUS_CHANGED,
                                       (void *)net_status_changed_delegate, NULL);
@@ -375,7 +375,7 @@ int mdns_send_msg(struct mdns_message *m, int sock, unsigned short port, netif_t
     /* get message length */
     size = (unsigned int)m->cur - (unsigned int)m->header;
 
-    mxosWlanGetIPStatus(&interface_ip_status, out_interface);
+    mwifi_get_ip(&interface_ip_status, out_interface);
     ip = inet_addr(interface_ip_status.ip);
 
 #ifdef CONFIG_IPV6
@@ -464,20 +464,18 @@ int mdns_send_msg(struct mdns_message *m, int sock, unsigned short port, netif_t
     return MXOS_SUCCESS;
 }
 
-mxos_queue_t mdns_ctrl_queue[2] = {NULL, NULL};
+mos_queue_id_t mdns_ctrl_queue[2] = {NULL, NULL};
 int mdns_ctrl_socks[2] = {-1, -1};
 
-int mdns_socket_queue(uint8_t id, mxos_queue_t **queue, int msg_size)
+int mdns_socket_queue(uint8_t id, mos_queue_id_t **queue, int msg_size)
 {
     int ret = 0;
 
     if (mdns_ctrl_socks[id] < 0 && msg_size > 0)
     {
-        ret = mxos_rtos_init_queue(&mdns_ctrl_queue[id], "CTRL_RESPONDER",
-                                   msg_size, 8);
-        if (ret != 0)
+        if ((mdns_ctrl_queue[id] = mos_queue_new(msg_size, 8)) == NULL)
             return -1;
-        mdns_ctrl_socks[id] = mxos_rtos_init_event_fd(mdns_ctrl_queue[id]);
+        mdns_ctrl_socks[id] = mos_event_fd_new(mdns_ctrl_queue[id]);
     }
 
     if (queue != NULL)
@@ -491,10 +489,10 @@ int mdns_socket_queue(uint8_t id, mxos_queue_t **queue, int msg_size)
 int mdns_socket_close(int *s)
 {
     if (*s == mdns_ctrl_socks[MDNS_CTRL_RESPONDER])
-        mxos_rtos_deinit_queue(&mdns_ctrl_queue[MDNS_CTRL_RESPONDER]);
+        mos_queue_delete(mdns_ctrl_queue[MDNS_CTRL_RESPONDER]);
 
     if (*s == mdns_ctrl_socks[MDNS_CTRL_QUERIER])
-        mxos_rtos_deinit_queue(&mdns_ctrl_queue[MDNS_CTRL_QUERIER]);
+        mos_queue_delete(mdns_ctrl_queue[MDNS_CTRL_QUERIER]);
 
     close(*s);
     *s = -1;

@@ -87,7 +87,7 @@ typedef struct
 typedef struct
 {
     platform_spi_t*     peripheral;
-    mxos_mutex_t        spi_mutex;
+    mos_mutex_id_t        spi_mutex;
     mxos_bool_t         initialized;
 } platform_spi_driver_t;
 
@@ -103,7 +103,7 @@ typedef struct
 
 typedef struct
 {
-    mxos_mutex_t              i2c_mutex;
+    mos_mutex_id_t              i2c_mutex;
 } platform_i2c_driver_t;
 
 typedef void (* wakeup_irq_handler_t)(void *arg);
@@ -117,14 +117,14 @@ typedef struct
 {
     uint8_t                    id;
     ring_buffer_t*             rx_ring_buffer;
-    mxos_semaphore_t           rx_complete;
-    mxos_semaphore_t           tx_complete;
-    mxos_mutex_t               tx_mutex;
-    mxos_semaphore_t           sem_wakeup;
+    mos_semphr_id_t           rx_complete;
+    mos_semphr_id_t           tx_complete;
+    mos_mutex_id_t               tx_mutex;
+    mos_semphr_id_t           sem_wakeup;
     volatile uint32_t          tx_size;
     volatile uint32_t          rx_size;
-    volatile OSStatus          last_receive_result;
-    volatile OSStatus          last_transmit_result;
+    volatile merr_t          last_receive_result;
+    volatile merr_t          last_transmit_result;
     platform_uart_driver_flow_control_t   flow_control;
 } platform_uart_driver_t;
 
@@ -139,7 +139,7 @@ typedef struct
 typedef struct
 {
     const platform_flash_t*    peripheral;
-    mxos_mutex_t               flash_mutex;
+    mos_mutex_id_t               flash_mutex;
     volatile bool              initialized;
 } platform_flash_driver_t;
 
@@ -156,17 +156,17 @@ typedef struct
 
 
 
-//OSStatus platform_gpio_irq_manager_init      ( void );
+//merr_t platform_gpio_irq_manager_init      ( void );
 //uint8_t  platform_gpio_get_port_number       ( platform_gpio_port_t* gpio_port );
-//OSStatus platform_gpio_enable_clock          ( const platform_gpio_t* gpio );
-//OSStatus platform_gpio_set_alternate_function( platform_gpio_port_t* gpio_port, uint8_t pin_number, GPIOOType_TypeDef output_type, GPIOPuPd_TypeDef pull_up_down_type, uint8_t alternation_function );
+//merr_t platform_gpio_enable_clock          ( const platform_gpio_t* gpio );
+//merr_t platform_gpio_set_alternate_function( platform_gpio_port_t* gpio_port, uint8_t pin_number, GPIOOType_TypeDef output_type, GPIOPuPd_TypeDef pull_up_down_type, uint8_t alternation_function );
 //
-//OSStatus platform_mcu_powersave_init         ( void );
+//merr_t platform_mcu_powersave_init         ( void );
 //
-//OSStatus platform_rtc_init                   ( void );
-//OSStatus platform_rtc_enter_powersave        ( void );
-//OSStatus platform_rtc_abort_powersave        ( void );
-//OSStatus platform_rtc_exit_powersave         ( uint32_t requested_sleep_time, uint32_t *cpu_sleep_time );
+//merr_t platform_rtc_init                   ( void );
+//merr_t platform_rtc_enter_powersave        ( void );
+//merr_t platform_rtc_abort_powersave        ( void );
+//merr_t platform_rtc_exit_powersave         ( uint32_t requested_sleep_time, uint32_t *cpu_sleep_time );
 //
 //uint8_t  platform_uart_get_port_number       ( platform_uart_port_t* uart );
 //void     platform_uart_irq                   ( platform_uart_driver_t* driver );

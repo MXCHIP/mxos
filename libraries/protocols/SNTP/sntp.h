@@ -79,11 +79,11 @@ typedef void (* time_synced_fun)( void );
  *               Function Declarations
  ******************************************************/
 
-OSStatus sntp_start_auto_time_sync( uint32_t interval_ms, time_synced_fun call_back );
-OSStatus sntp_stop_auto_time_sync( void );
-OSStatus sntp_get_time( const struct in_addr *addr, ntp_timestamp_t* timestamp );
-OSStatus sntp_set_server_ip_address(uint32_t index, struct in_addr address);
-OSStatus sntp_clr_server_ip_address(uint32_t index);
+merr_t sntp_start_auto_time_sync( uint32_t interval_ms, time_synced_fun call_back );
+merr_t sntp_stop_auto_time_sync( void );
+merr_t sntp_get_time( const struct in_addr *addr, ntp_timestamp_t* timestamp );
+merr_t sntp_set_server_ip_address(uint32_t index, struct in_addr address);
+merr_t sntp_clr_server_ip_address(uint32_t index);
 
 
 /**

@@ -194,30 +194,30 @@ const platform_adc_t platform_adc_peripherals[] = {};
 
 void mxos_board_init( void )
 {
-  mxos_gpio_init( (mxos_gpio_t)MXOS_SYS_LED, OUTPUT_PUSH_PULL );
-  mxos_gpio_output_low( (mxos_gpio_t)MXOS_SYS_LED );
-  mxos_gpio_init( (mxos_gpio_t)MXOS_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
-  mxos_gpio_output_high( (mxos_gpio_t)MXOS_RF_LED );
+  mhal_gpio_open( (mxos_gpio_t)MXOS_SYS_LED, OUTPUT_PUSH_PULL );
+  mhal_gpio_low( (mxos_gpio_t)MXOS_SYS_LED );
+  mhal_gpio_open( (mxos_gpio_t)MXOS_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
+  mhal_gpio_high( (mxos_gpio_t)MXOS_RF_LED );
   
-  mxos_gpio_init((mxos_gpio_t)BOOT_SEL, INPUT_PULL_UP);
-  mxos_gpio_init((mxos_gpio_t)MFG_SEL, INPUT_PULL_UP);
+  mhal_gpio_open((mxos_gpio_t)BOOT_SEL, INPUT_PULL_UP);
+  mhal_gpio_open((mxos_gpio_t)MFG_SEL, INPUT_PULL_UP);
 }
 
 void mxos_sys_led(bool onoff)
 {
   if (onoff) {
-    mxos_gpio_output_low( (mxos_gpio_t)MXOS_SYS_LED );
+    mhal_gpio_low( (mxos_gpio_t)MXOS_SYS_LED );
   } else {
-    mxos_gpio_output_high( (mxos_gpio_t)MXOS_SYS_LED );
+    mhal_gpio_high( (mxos_gpio_t)MXOS_SYS_LED );
   }
 }
 
 void mxos_rf_led(bool onoff)
 {
   if (onoff) {
-    mxos_gpio_output_low( (mxos_gpio_t)MXOS_RF_LED );
+    mhal_gpio_low( (mxos_gpio_t)MXOS_RF_LED );
   } else {
-    mxos_gpio_output_high( (mxos_gpio_t)MXOS_RF_LED );
+    mhal_gpio_high( (mxos_gpio_t)MXOS_RF_LED );
   }
 }
 

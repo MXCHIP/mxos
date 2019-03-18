@@ -69,10 +69,10 @@ char expired(Timer* timer)
 
   long left = 0;
   if (timer->over_flow) {
-    left = 0xFFFFFFFF - mxos_rtos_get_time() + timer->end_time;
+    left = 0xFFFFFFFF - mos_time() + timer->end_time;
   }
   else {
-    left = timer->end_time - mxos_rtos_get_time();
+    left = timer->end_time - mos_time();
   }
 
   return (left < 0);
@@ -81,7 +81,7 @@ char expired(Timer* timer)
 
 void countdown_ms(Timer* timer, unsigned int timeout)
 {
-  uint32_t current_time = mxos_rtos_get_time();
+  uint32_t current_time = mos_time();
   timer->end_time = current_time + timeout;
   if(timer->end_time < current_time) {
     timer->over_flow = true;
@@ -91,7 +91,7 @@ void countdown_ms(Timer* timer, unsigned int timeout)
 
 void countdown(Timer* timer, unsigned int timeout)
 {
-  uint32_t current_time = mxos_rtos_get_time();
+  uint32_t current_time = mos_time();
   timer->end_time = current_time + (timeout * 1000);
   if(timer->end_time < current_time) {
     timer->over_flow = true;
@@ -105,10 +105,10 @@ int left_ms(Timer* timer)
 
   long left = 0;
   if (timer->over_flow) {
-    left = 0xFFFFFFFF - mxos_rtos_get_time() + timer->end_time;
+    left = 0xFFFFFFFF - mos_time() + timer->end_time;
   }
   else {
-    left = timer->end_time - mxos_rtos_get_time();
+    left = timer->end_time - mos_time();
   }
 
   return (left < 0) ? 0 : left;
@@ -249,7 +249,7 @@ void MXOS_disconnect(Network* n)
   }
 }
 
-static OSStatus usergethostbyname( const char * domain, uint8_t * addr, uint8_t addrLen )
+static merr_t usergethostbyname( const char * domain, uint8_t * addr, uint8_t addrLen )
 {
     struct hostent* host = NULL;
     struct in_addr in_addr;
@@ -287,7 +287,7 @@ int SSL_ConnectNetwork(Network* n, char* addr, int port, int ca_str_len, char* c
   unsigned long ipAddress;
   char mqtt_server_ipstr[16];
   int retVal = -1;
-  OSStatus err = kUnknownErr;
+  merr_t err = kUnknownErr;
   int nNetTimeout_ms = MQTT_CLIENT_SOCKET_TIMEOUT;  // socket send && recv timeout = 5s
   int opt = 0;
 #ifdef MXOS_MQTT_CLIENT_SUPPORT_SSL
@@ -391,7 +391,7 @@ int ConnectNetwork(Network* n, char* addr, int port)
   unsigned long ipAddress;
   char mqtt_server_ipstr[16];
   int retVal = -1;
-  OSStatus err = kUnknownErr;
+  merr_t err = kUnknownErr;
   int nNetTimeout_ms = MQTT_CLIENT_SOCKET_TIMEOUT;  // socket send && recv timeout = 5s
   int opt = 0;
 

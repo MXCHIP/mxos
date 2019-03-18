@@ -35,28 +35,27 @@
 #endif
 
 static mxos_system_monitor_t* system_monitors[MAXIMUM_NUMBER_OF_SYSTEM_MONITORS];
-void mxos_system_monitor_thread_main( uint32_t arg );
+void mxos_system_monitor_thread_main( void *arg );
 
-OSStatus MXOSStartSystemMonitor ( void )
+merr_t MXOSStartSystemMonitor ( void )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   require_noerr(mxos_wdg_init( DEFAULT_SYSTEM_MONITOR_PERIOD + 1000 ), exit);
   memset(system_monitors, 0, sizeof(system_monitors));
 
-  err = mxos_rtos_create_thread(NULL, 0, "SYS MONITOR", mxos_system_monitor_thread_main, STACK_SIZE_mxos_system_MONITOR_THREAD, 0 );
-  require_noerr(err, exit);
+  require_action(mos_thread_new( 0, "SYS MONITOR", mxos_system_monitor_thread_main, STACK_SIZE_mxos_system_MONITOR_THREAD, NULL ) != NULL, exit, err = kGeneralErr);
 exit:
   return err;
 }
 
-void mxos_system_monitor_thread_main( uint32_t arg )
+void mxos_system_monitor_thread_main( void *arg )
 {
   (void)arg;
   
   while (1)
   {
     int a;
-    uint32_t current_time = mxos_rtos_get_time();
+    uint32_t current_time = mos_time();
     
     for (a = 0; a < MAXIMUM_NUMBER_OF_SYSTEM_MONITORS; ++a)
     {
@@ -76,7 +75,7 @@ void mxos_system_monitor_thread_main( uint32_t arg )
   }
 }
 
-OSStatus mxos_system_monitor_register(mxos_system_monitor_t* system_monitor, uint32_t initial_permitted_delay)
+merr_t mxos_system_monitor_register(mxos_system_monitor_t* system_monitor, uint32_t initial_permitted_delay)
 {
   int a;
   
@@ -85,7 +84,7 @@ OSStatus mxos_system_monitor_register(mxos_system_monitor_t* system_monitor, uin
   {
     if (system_monitors[a] == NULL)
     {
-      system_monitor->last_update = mxos_rtos_get_time();
+      system_monitor->last_update = mos_time();
       system_monitor->longest_permitted_delay = initial_permitted_delay;
       system_monitors[a] = system_monitor;
       return kNoErr;
@@ -95,9 +94,9 @@ OSStatus mxos_system_monitor_register(mxos_system_monitor_t* system_monitor, uin
   return kUnknownErr;
 }
 
-OSStatus mxos_system_monitor_update(mxos_system_monitor_t* system_monitor, uint32_t permitted_delay)
+merr_t mxos_system_monitor_update(mxos_system_monitor_t* system_monitor, uint32_t permitted_delay)
 {
-  uint32_t current_time = mxos_rtos_get_time();
+  uint32_t current_time = mos_time();
   /* Update the system monitor if it hasn't already passed it's permitted delay */
   if ((current_time - system_monitor->last_update) <= system_monitor->longest_permitted_delay)
   {
@@ -119,9 +118,9 @@ static void _watchdog_reload_timer_handler( void* arg )
 }
 
 
-OSStatus mxos_system_monitor_daemen_start( void )
+merr_t mxos_system_monitor_daemen_start( void )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   /*Start system monotor thread*/
   err = MXOSStartSystemMonitor( );
   require_noerr_string( err, exit, "ERROR: Unable to start the system monitor." );
@@ -129,8 +128,8 @@ OSStatus mxos_system_monitor_daemen_start( void )
   /* Register first monitor */
   err = mxos_system_monitor_register(&mxos_monitor, APPLICATION_WATCHDOG_TIMEOUT_SECONDS*1000);
   require_noerr( err, exit );
-  mxos_rtos_init_timer(&_watchdog_reload_timer,APPLICATION_WATCHDOG_TIMEOUT_SECONDS*1000/2, _watchdog_reload_timer_handler, NULL);
-  mxos_rtos_start_timer(&_watchdog_reload_timer);
+  mos_timer_new(&_watchdog_reload_timer,APPLICATION_WATCHDOG_TIMEOUT_SECONDS*1000/2, _watchdog_reload_timer_handler, NULL);
+  mos_timer_start(&_watchdog_reload_timer);
 exit:
   return err;
 }

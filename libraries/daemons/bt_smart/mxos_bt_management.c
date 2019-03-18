@@ -67,8 +67,8 @@ static mxos_bt_dev_status_t    smartbridge_bt_stack_management_callback    ( mxo
 /******************************************************
  *               Variable Definitions
  ******************************************************/
-mxos_worker_thread_t                    mxos_bt_worker_thread;
-mxos_worker_thread_t                    mxos_bt_evt_worker_thread;
+mos_worker_thread_id_t                    mxos_bt_worker_thread;
+mos_worker_thread_id_t                    mxos_bt_evt_worker_thread;
 
 mxos_bt_local_identity_keys_t           local_identity_keys;
 mxos_bt_device_sec_keys_t               device_link_keys;
@@ -80,7 +80,7 @@ extern mxos_bt_peripheral_socket_t*     connecting_peripheral_socket;
 extern const mxos_bt_cfg_buf_pool_t     mxos_bt_cfg_buf_pools[];
 static char                             bt_device_name[BT_DEVICE_NAME_MAX_LENGTH + 1] = { 0 };
 mxos_bool_t                             bt_initialised           = MXOS_FALSE;
-static mxos_semaphore_t                 wait_bt_initialised_sem  = NULL;
+static mos_semphr_id_t                 wait_bt_initialised_sem  = NULL;
 static mxos_bt_device_address_t         bt_address               = { 0 };
 
 extern void peripheral_bt_interface_advertisements_state_change_callback( mxos_bt_ble_advert_mode_t state );
@@ -90,9 +90,9 @@ extern void smartbridge_auto_connection_encryption_check(const mxos_bt_dev_pairi
  *               Function Definitions
  ******************************************************/
 
-OSStatus mxos_bt_init( mxos_bt_mode_t mode, const char* device_name, uint8_t client_links, uint8_t server_links )
+merr_t mxos_bt_init( mxos_bt_mode_t mode, const char* device_name, uint8_t client_links, uint8_t server_links )
 {
-    OSStatus result = MXOS_BT_SUCCESS;
+    merr_t result = MXOS_BT_SUCCESS;
 
     if ( bt_initialised == MXOS_TRUE )
     {
@@ -108,7 +108,7 @@ OSStatus mxos_bt_init( mxos_bt_mode_t mode, const char* device_name, uint8_t cli
     }
 
     /* Create the BT Woker thread */
-    result = mxos_rtos_create_worker_thread(MXOS_BT_WORKER_THREAD, 
+    result = mos_worker_thread_new(MXOS_BT_WORKER_THREAD, 
                                             MXOS_APPLICATION_PRIORITY, 
                                             MXOS_BT_WORKER_THREAD_STACK_SIZE, 
                                             MXOS_BT_WORKER_THREAD_QUEUE_SIZE);
@@ -119,7 +119,7 @@ OSStatus mxos_bt_init( mxos_bt_mode_t mode, const char* device_name, uint8_t cli
     }
 
     /* Create the BT Event Woker thread */
-    result = mxos_rtos_create_worker_thread(MXOS_BT_EVT_WORKER_THREAD,
+    result = mos_worker_thread_new(MXOS_BT_EVT_WORKER_THREAD,
                                             MXOS_APPLICATION_PRIORITY,
                                             MXOS_BT_EVT_WORKER_THREAD_STACK_SIZE,
                                             MXOS_BT_EVT_WORKER_THREAD_QUEUE_SIZE);
@@ -131,7 +131,7 @@ OSStatus mxos_bt_init( mxos_bt_mode_t mode, const char* device_name, uint8_t cli
 
     /* Initialise Bluetooth Stack */
     wait_bt_initialised_sem = NULL;
-    mxos_rtos_init_semaphore( &wait_bt_initialised_sem, 1 );
+    wait_bt_initialised_sem = mos_semphr_new( 1 );
 
     mxos_bt_cfg_settings.device_name = (uint8_t *)device_name;
     mxos_bt_cfg_settings.max_simultaneous_links = client_links + server_links;
@@ -144,31 +144,31 @@ OSStatus mxos_bt_init( mxos_bt_mode_t mode, const char* device_name, uint8_t cli
         bt_smartbridge_log( "Error initialising Bluetooth stack" );
         goto err2;
     }
-    mxos_rtos_get_semaphore( &wait_bt_initialised_sem, MXOS_NEVER_TIMEOUT );
-    mxos_rtos_deinit_semaphore( &wait_bt_initialised_sem );
+    mos_semphr_acquire(wait_bt_initialised_sem, MXOS_NEVER_TIMEOUT );
+    mos_semphr_delete(wait_bt_initialised_sem );
 
     mxos_bt_dev_read_local_addr( bt_address );
     memset( bt_device_name, 0, sizeof( bt_device_name ) );
     memcpy( bt_device_name, device_name, strnlen( device_name, BT_DEVICE_NAME_MAX_LENGTH ) );
-    mxos_rtos_delay_milliseconds(10);
+    mos_thread_delay(10);
 
     result = MXOS_BT_SUCCESS;
     goto exit;
     
 err2: 
-    mxos_rtos_deinit_semaphore( &wait_bt_initialised_sem );
-    mxos_rtos_delete_worker_thread(MXOS_BT_EVT_WORKER_THREAD);
+    mos_semphr_delete(wait_bt_initialised_sem );
+    mos_worker_thread_delete(MXOS_BT_EVT_WORKER_THREAD);
     
 err1:
-    mxos_rtos_delete_worker_thread(MXOS_BT_WORKER_THREAD);
+    mos_worker_thread_delete(MXOS_BT_WORKER_THREAD);
     
 exit:
     return result;
 }
 
-OSStatus mxos_bt_deinit( void )
+merr_t mxos_bt_deinit( void )
 {
-    OSStatus result;
+    merr_t result;
 
     if ( bt_initialised == MXOS_FALSE )
     {
@@ -182,25 +182,25 @@ OSStatus mxos_bt_deinit( void )
         return result;
     }
     
-    mxos_rtos_delete_worker_thread(MXOS_BT_WORKER_THREAD);
-    mxos_rtos_delete_worker_thread(MXOS_BT_EVT_WORKER_THREAD);
+    mos_worker_thread_delete(MXOS_BT_WORKER_THREAD);
+    mos_worker_thread_delete(MXOS_BT_EVT_WORKER_THREAD);
 
     memset( bt_device_name, 0, sizeof( bt_device_name ) );
     bt_initialised = MXOS_FALSE;
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_init_address( const mxos_bt_device_address_t* address, const mxos_bt_device_address_t* mask )
+merr_t mxos_bt_init_address( const mxos_bt_device_address_t* address, const mxos_bt_device_address_t* mask )
 {
     UNUSED_PARAMETER(address);
     UNUSED_PARAMETER(mask);
     return MXOS_BT_UNSUPPORTED;
 }
 
-OSStatus mxos_bt_start_mfgtest_mode( const mxos_uart_config_t* config )
+merr_t mxos_bt_start_mfgtest_mode( const mxos_uart_config_t* config )
 {
 #ifdef BT_MFGTEST_MODE
-    OSStatus result = bt_bus_init();
+    merr_t result = bt_bus_init();
     if ( result != MXOS_BT_SUCCESS )
     {
         bt_manager_log( "Error initialising Bluetooth transport bus" );
@@ -213,7 +213,7 @@ OSStatus mxos_bt_start_mfgtest_mode( const mxos_uart_config_t* config )
 #endif
 }
 
-OSStatus mxos_bt_device_get_address( mxos_bt_device_address_t* address )
+merr_t mxos_bt_device_get_address( mxos_bt_device_address_t* address )
 {
     if ( bt_initialised == MXOS_FALSE )
     {
@@ -250,9 +250,9 @@ mxos_bool_t mxos_bt_device_is_discoverable( void )
 }
 
 
-OSStatus mxos_bt_start_pairing( mxos_bt_device_address_t address, mxos_bt_smart_address_type_t type, const mxos_bt_smart_security_settings_t* settings )
+merr_t mxos_bt_start_pairing( mxos_bt_device_address_t address, mxos_bt_smart_address_type_t type, const mxos_bt_smart_security_settings_t* settings )
 {
-    OSStatus    err = kNoErr;
+    merr_t    err = kNoErr;
     uint8_t     integer_passkey[4]        = { 0 };
 
     /* update the security settings as per passed by the application */
@@ -268,18 +268,18 @@ OSStatus mxos_bt_start_pairing( mxos_bt_device_address_t address, mxos_bt_smart_
     return err;
 }
 
-OSStatus mxos_bt_stop_pairing( mxos_bt_device_address_t address )
+merr_t mxos_bt_stop_pairing( mxos_bt_device_address_t address )
 {
-    OSStatus    err = kNoErr;
+    merr_t    err = kNoErr;
 
     err = mxos_bt_dev_sec_bond_cancel( address );
     bt_manager_log( "mxos_bt_stop_pairing, ret = %d", err );
     return err;
 }
 
-OSStatus mxos_bt_start_encryption( mxos_bt_device_address_t* address )
+merr_t mxos_bt_start_encryption( mxos_bt_device_address_t* address )
 {
-    OSStatus    err = kNoErr;
+    merr_t    err = kNoErr;
     uint32_t security_level = INTERNAL_SECURITY_LEVEL;
 
     err = mxos_bt_dev_set_encryption( *address, BT_TRANSPORT_LE, &security_level );
@@ -287,14 +287,14 @@ OSStatus mxos_bt_start_encryption( mxos_bt_device_address_t* address )
     return err;
 }
 
-OSStatus mxos_bt_clear_whitelist( void )
+merr_t mxos_bt_clear_whitelist( void )
 {
     if ( TRUE != mxos_bt_ble_clear_white_list( ) )
         return kGeneralErr;
     return kNoErr;
 }
 
-OSStatus mxos_bt_get_whitelist_capability( uint8_t* size )
+merr_t mxos_bt_get_whitelist_capability( uint8_t* size )
 {
     if ( size == (uint8_t *)0 ) 
     {
@@ -323,7 +323,7 @@ static mxos_bt_dev_status_t smartbridge_bt_stack_management_callback( mxos_bt_ma
                 bt_initialised = MXOS_TRUE;
                 if( wait_bt_initialised_sem )
                 {
-                    mxos_rtos_set_semaphore( &wait_bt_initialised_sem );
+                    mos_semphr_release(wait_bt_initialised_sem );
                 }
             }
             break;
@@ -396,7 +396,7 @@ static mxos_bt_dev_status_t smartbridge_bt_stack_management_callback( mxos_bt_ma
             {
                 if ( smartbridge_helper_socket_check_actions_enabled( connecting_socket, SOCKET_ACTION_INITIATE_PAIRING ) == MXOS_TRUE )
                 {
-                    if( connecting_socket->semaphore ) mxos_rtos_set_semaphore( &connecting_socket->semaphore );
+                    if( connecting_socket->semaphore ) mos_semphr_release(connecting_socket->semaphore );
                 }
             }
 
@@ -404,7 +404,7 @@ static mxos_bt_dev_status_t smartbridge_bt_stack_management_callback( mxos_bt_ma
             {
                 if ( peripheral_helper_socket_check_actions_enabled( connecting_peripheral_socket, SOCKET_ACTION_INITIATE_PAIRING ) == MXOS_TRUE )
                 {
-                    if( connecting_peripheral_socket->semaphore ) mxos_rtos_set_semaphore( &connecting_peripheral_socket->semaphore );
+                    if( connecting_peripheral_socket->semaphore ) mos_semphr_release(connecting_peripheral_socket->semaphore );
                 }
             }
 
@@ -430,7 +430,7 @@ static mxos_bt_dev_status_t smartbridge_bt_stack_management_callback( mxos_bt_ma
                 if ( smartbridge_helper_socket_check_actions_enabled( connecting_socket, SOCKET_ACTION_INITIATE_PAIRING ) == MXOS_TRUE ||
                      smartbridge_helper_socket_check_actions_enabled( connecting_socket, SOCKET_ACTION_ENCRYPT_USING_BOND_INFO ) ==  MXOS_TRUE )
                 {
-                    if( connecting_socket->semaphore ) mxos_rtos_set_semaphore( &connecting_socket->semaphore );
+                    if( connecting_socket->semaphore ) mos_semphr_release(connecting_socket->semaphore );
                 }
             }
             
@@ -439,7 +439,7 @@ static mxos_bt_dev_status_t smartbridge_bt_stack_management_callback( mxos_bt_ma
                 if ( peripheral_helper_socket_check_actions_enabled( connecting_peripheral_socket, SOCKET_ACTION_INITIATE_PAIRING ) == MXOS_TRUE  ||
                      peripheral_helper_socket_check_actions_enabled( connecting_peripheral_socket, SOCKET_ACTION_ENCRYPT_USING_BOND_INFO ) ==  MXOS_TRUE )
                 {
-                    if( connecting_peripheral_socket->semaphore ) mxos_rtos_set_semaphore( &connecting_peripheral_socket->semaphore );
+                    if( connecting_peripheral_socket->semaphore ) mos_semphr_release(connecting_peripheral_socket->semaphore );
                 }
                 break;
             }
@@ -686,11 +686,11 @@ static mxos_bt_dev_status_t smartbridge_bt_stack_management_callback( mxos_bt_ma
  *
  *  @param[in] response     the response to current bonding event.
  *
- *  @return OSStatus
+ *  @return merr_t
  */
-OSStatus mxos_bt_smart_bond_reply(const mxos_bt_smart_bond_reply_t *response)
+merr_t mxos_bt_smart_bond_reply(const mxos_bt_smart_bond_reply_t *response)
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     if (!response) return kParamErr;
 

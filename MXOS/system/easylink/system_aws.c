@@ -33,19 +33,19 @@
  ******************************************************/
 /* EasyLink event callback functions*/
 static void aws_wifi_status_cb( WiFiEvent event, system_context_t * const inContext );
-static void aws_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t * const inContext );
+static void aws_complete_cb( mwifi_softap_attr_t *nwkpara, system_context_t * const inContext );
 
 /* Thread perform easylink and connect to wlan */
-static void aws_thread( uint32_t inContext ); /* Perform easylink and connect to wlan */
+static void aws_thread( void *inContext ); /* Perform easylink and connect to wlan */
 char* aws_notify_msg_create(system_context_t *context);
 
 /******************************************************
  *               Variables Definitions
  ******************************************************/
-static mxos_semaphore_t aws_sem;         /**< Used to suspend thread while easylink. */
-static mxos_semaphore_t aws_connect_sem; /**< Used to suspend thread while connection. */
+static mos_semphr_id_t aws_sem;         /**< Used to suspend thread while easylink. */
+static mos_semphr_id_t aws_connect_sem; /**< Used to suspend thread while connection. */
 static bool aws_success = false;         /**< true: connect to wlan, false: start soft ap mode or roll back to previous settings */
-static mxos_thread_t aws_thread_handler = NULL;
+static mos_thread_id_t aws_thread_handler = NULL;
 static bool aws_thread_force_exit = false;
 
 
@@ -61,7 +61,7 @@ static void aws_wifi_status_cb( WiFiEvent event, system_context_t * const inCont
         case NOTIFY_STATION_UP:
             inContext->flashContentInRam.mxosSystemConfig.configured = allConfigured;
             mxos_system_context_update( &inContext->flashContentInRam ); //Update Flash content
-            mxos_rtos_set_semaphore( &aws_connect_sem ); //Notify Easylink thread
+            mos_semphr_release(aws_connect_sem ); //Notify Easylink thread
             break;
         default:
             break;
@@ -70,14 +70,14 @@ static void aws_wifi_status_cb( WiFiEvent event, system_context_t * const inCont
 }
 
 /* MXOS callback when EasyLink is finished step 1, return SSID and KEY */
-static void aws_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t * const inContext )
+static void aws_complete_cb( mwifi_softap_attr_t *nwkpara, system_context_t * const inContext )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     require_action_string( nwkpara, exit, err = kTimeoutErr, "AWS Timeout or terminated" );
 
     /* Store SSID and KEY*/
-    mxos_rtos_lock_mutex( &inContext->flashContentInRam_mutex );
+    mos_mutex_lock(inContext->flashContentInRam_mutex );
     memcpy( inContext->flashContentInRam.mxosSystemConfig.ssid, nwkpara->wifi_ssid, maxSsidLen );
     memset( inContext->flashContentInRam.mxosSystemConfig.bssid, 0x0, 6 );
     memcpy( inContext->flashContentInRam.mxosSystemConfig.user_key, nwkpara->wifi_key, maxKeyLen );
@@ -85,7 +85,7 @@ static void aws_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t *
     memcpy( inContext->flashContentInRam.mxosSystemConfig.key, nwkpara->wifi_key, maxKeyLen );
     inContext->flashContentInRam.mxosSystemConfig.keyLength = strlen( nwkpara->wifi_key );
     inContext->flashContentInRam.mxosSystemConfig.dhcpEnable = true;
-    mxos_rtos_unlock_mutex( &inContext->flashContentInRam_mutex );
+    mos_mutex_unlock(inContext->flashContentInRam_mutex );
     system_log("Get SSID: %s, Key: %s", inContext->flashContentInRam.mxosSystemConfig.ssid, inContext->flashContentInRam.mxosSystemConfig.user_key);
     aws_success = true;
     exit:
@@ -94,7 +94,7 @@ static void aws_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t *
         /*EasyLink timeout or error*/
         aws_success = false;
     }
-    mxos_rtos_set_semaphore( &aws_sem );
+    mos_semphr_release(aws_sem );
     return;
 }
 
@@ -183,9 +183,9 @@ static int aws_broadcast_notification(char *msg, int msg_num)
     return result;
 }
 
-static void aws_thread( uint32_t arg )
+static void aws_thread( void *arg )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     system_context_t *context = (system_context_t *) arg;
     char *aws_msg = aws_notify_msg_create(context);
 
@@ -200,23 +200,23 @@ static void aws_thread( uint32_t arg )
     mxos_system_notify_register( mxos_notify_EASYLINK_WPS_COMPLETED,    (void *) aws_complete_cb,      context );
     mxos_system_notify_register( mxos_notify_WIFI_STATUS_CHANGED,       (void *) aws_wifi_status_cb,   context );
 
-    mxos_rtos_init_semaphore( &aws_sem,            1 );
-    mxos_rtos_init_semaphore( &aws_connect_sem,    1 );
+    aws_sem = mos_semphr_new( 1 );
+    aws_connect_sem = mos_semphr_new( 1 );
 
 restart:
     mxos_system_delegate_config_will_start( );
     system_log("Start AWS mode");
 
-    mxosWlanStartAws( EasyLink_TimeOut / 1000 );
-    while( mxos_rtos_get_semaphore( &aws_sem, 0 ) == kNoErr );
-    err = mxos_rtos_get_semaphore( &aws_sem, MXOS_WAIT_FOREVER );
+    mwifi_softap_startAws( EasyLink_TimeOut / 1000 );
+    while( mos_semphr_acquire(aws_sem, 0 ) == kNoErr );
+    err = mos_semphr_acquire(aws_sem, MXOS_WAIT_FOREVER );
 
     /* Easylink force exit by user, clean and exit */
     if( err != kNoErr && aws_thread_force_exit )
     {
         system_log("AWS waiting for terminate");
-        mxosWlanStopAws( );
-        mxos_rtos_get_semaphore( &aws_sem, 3000 );
+        mwifi_aws_stop( );
+        mos_semphr_acquire(aws_sem, 3000 );
         system_log("AWS canceled by user");
         goto exit;
     }
@@ -229,8 +229,8 @@ restart:
         system_connect_wifi_normal( context );
 
         /* Wait for station connection */
-        while( mxos_rtos_get_semaphore( &aws_connect_sem, 0 ) == kNoErr );
-        err = mxos_rtos_get_semaphore( &aws_connect_sem, EasyLink_ConnectWlan_Timeout );
+        while( mos_semphr_acquire(aws_connect_sem, 0 ) == kNoErr );
+        err = mos_semphr_acquire(aws_connect_sem, EasyLink_ConnectWlan_Timeout );
         /* AWS force exit by user, clean and exit */
         if( err != kNoErr && aws_thread_force_exit )
         {
@@ -265,15 +265,15 @@ exit:
     mxos_system_notify_remove( mxos_notify_WIFI_STATUS_CHANGED, (void *)aws_wifi_status_cb );
     mxos_system_notify_remove( mxos_notify_EASYLINK_WPS_COMPLETED, (void *)aws_complete_cb );
 
-    mxos_rtos_deinit_semaphore( &aws_sem );
-    mxos_rtos_deinit_semaphore( &aws_connect_sem );
+    mos_semphr_delete(aws_sem );
+    mos_semphr_delete(aws_connect_sem );
     aws_thread_handler = NULL;
-    mxos_rtos_delete_thread( NULL );
+    mos_thread_delete( NULL );
 }
 
-OSStatus mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enable )
+merr_t mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enable )
 {
-    OSStatus err = kUnknownErr;
+    merr_t err = kUnknownErr;
 
     require_action( in_context, exit, err = kNotPreparedErr );
 
@@ -282,16 +282,18 @@ OSStatus mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enabl
         system_log("EasyLink processing, force stop..");
         aws_thread_force_exit = true;
         mxos_rtos_thread_force_awake( &aws_thread_handler );
-        mxos_rtos_thread_join( &aws_thread_handler );
+        mos_thread_join( aws_thread_handler );
     }
 
     if ( enable == MXOS_TRUE ) {
-        err = mxos_rtos_create_thread( &aws_thread_handler, MXOS_APPLICATION_PRIORITY, "aws", aws_thread,
-                                       0x1000, (mxos_thread_arg_t) in_context );
-        require_noerr_string( err, exit, "ERROR: Unable to start the EasyLink thread." );
+        aws_thread_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "aws", aws_thread,
+                                       0x1000, (void *) in_context );
+        require_action_string( aws_thread_handler != NULL, exit, err = kGeneralErr, "ERROR: Unable to start the EasyLink thread." );
+
+        err = kNoErr;
 
         /* Make sure easylink is already running, and waiting for sem trigger */
-        mxos_rtos_delay_milliseconds( 1000 );
+        mos_thread_delay( 1000 );
     }
 
     exit:
@@ -305,7 +307,7 @@ char* aws_notify_msg_create(system_context_t *context)
     char sn[64];
     uint8_t mac[6];
 
-    mxos_wlan_get_mac_address(mac);
+    mwifi_get_mac(mac);
     sprintf(sn, "%02X0%02X0%02X0%02X0%02X0%02X", 
         mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
     

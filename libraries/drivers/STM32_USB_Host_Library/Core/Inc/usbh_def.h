@@ -458,8 +458,8 @@ typedef struct _USBH_HandleTypeDef
   void                 (* pUser )(struct _USBH_HandleTypeDef *pHandle, uint8_t id);
   
 #if (USBH_USE_OS == 1)
-  mxos_queue_t          os_event;   
-  mxos_thread_t         thread; 
+  mos_queue_id_t          os_event;   
+  mos_thread_id_t         thread; 
 #endif  
   
 } USBH_HandleTypeDef;

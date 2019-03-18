@@ -103,7 +103,7 @@ typedef struct
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if the SPI device could not be initialised
  */
-OSStatus mxos_spi_init( const mxos_spi_device_t* spi );
+merr_t mxos_spi_init( const mxos_spi_device_t* spi );
 
 
 /**@brief Transmits and/or receives data from a SPI device
@@ -115,7 +115,7 @@ OSStatus mxos_spi_init( const mxos_spi_device_t* spi );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-OSStatus mxos_spi_transfer( const mxos_spi_device_t* spi, const mxos_spi_message_segment_t* segments, uint16_t number_of_segments );
+merr_t mxos_spi_transfer( const mxos_spi_device_t* spi, const mxos_spi_message_segment_t* segments, uint16_t number_of_segments );
 
 
 /**@brief De-initialises a SPI interface
@@ -127,7 +127,7 @@ OSStatus mxos_spi_transfer( const mxos_spi_device_t* spi, const mxos_spi_message
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred
  */
-OSStatus mxos_spi_deinit( const mxos_spi_device_t* spi );
+merr_t mxos_spi_deinit( const mxos_spi_device_t* spi );
 
 /** @} */
 /** @} */

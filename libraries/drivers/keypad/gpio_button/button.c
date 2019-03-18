@@ -31,24 +31,24 @@ static void button_irq_handler( void* arg )
 
     int interval = -1;
 
-    if ( mxos_gpio_input_get( _context->gpio ) == ((_context->idle == IOBUTTON_IDLE_STATE_HIGH) ? 0 : 1) ) {
-        mxos_gpio_enable_irq( _context->gpio,
+    if ( mhal_gpio_value( _context->gpio ) == ((_context->idle == IOBUTTON_IDLE_STATE_HIGH) ? 0 : 1) ) {
+        mhal_gpio_int_on( _context->gpio,
                            (_context->idle == IOBUTTON_IDLE_STATE_HIGH) ? IRQ_TRIGGER_RISING_EDGE : IRQ_TRIGGER_FALLING_EDGE,
                            button_irq_handler, _context );
-        _context->start_time = mxos_rtos_get_time() + 1;
-        mxos_rtos_start_timer( &_context->_user_button_timer );
+        _context->start_time = mos_time() + 1;
+        mos_timer_start( &_context->_user_button_timer );
     }
     else {
-        interval = (int) mxos_rtos_get_time() + 1 - _context->start_time;
+        interval = (int) mos_time() + 1 - _context->start_time;
         if ( (_context->start_time != 0) && interval > 50 && interval < _context->long_pressed_timeout ) {
             /* button clicked once */
             if ( _context->pressed_func != NULL )
                 (_context->pressed_func)();
         }
-        mxos_gpio_enable_irq( _context->gpio,
+        mhal_gpio_int_on( _context->gpio,
                            (_context->idle == IOBUTTON_IDLE_STATE_HIGH) ? IRQ_TRIGGER_FALLING_EDGE : IRQ_TRIGGER_RISING_EDGE,
                            button_irq_handler, _context );
-        mxos_rtos_stop_timer( &_context->_user_button_timer );
+        mos_timer_stop( &_context->_user_button_timer );
         _context->start_time = 0;
     }
 }
@@ -67,14 +67,14 @@ void button_init( button_context_t *btn_context )
     btn_context->start_time = 0;
 
     if ( btn_context->idle == IOBUTTON_IDLE_STATE_HIGH ) {
-        mxos_gpio_init( btn_context->gpio, INPUT_PULL_UP );
-        mxos_gpio_enable_irq( btn_context->gpio, IRQ_TRIGGER_FALLING_EDGE, button_irq_handler, btn_context );
+        mhal_gpio_open( btn_context->gpio, INPUT_PULL_UP );
+        mhal_gpio_int_on( btn_context->gpio, IRQ_TRIGGER_FALLING_EDGE, button_irq_handler, btn_context );
     } else {
-        mxos_gpio_init( btn_context->gpio, INPUT_PULL_DOWN );
-        mxos_gpio_enable_irq( btn_context->gpio, IRQ_TRIGGER_RISING_EDGE, button_irq_handler, btn_context );
+        mhal_gpio_open( btn_context->gpio, INPUT_PULL_DOWN );
+        mhal_gpio_int_on( btn_context->gpio, IRQ_TRIGGER_RISING_EDGE, button_irq_handler, btn_context );
     }
 
-    mxos_rtos_init_timer( &btn_context->_user_button_timer, btn_context->long_pressed_timeout,
+    mos_timer_new( &btn_context->_user_button_timer, btn_context->long_pressed_timeout,
                           button_timeout_handler, btn_context );
 
 }

@@ -95,7 +95,7 @@ typedef struct
 typedef struct 
 {
     linked_list_t   list;
-    mxos_mutex_t    mutex;
+    mos_mutex_id_t    mutex;
 } smartbridge_auto_conn_list_t;
 
 /******************************************************
@@ -106,27 +106,27 @@ typedef struct
  *               Static Function Declarations
  ******************************************************/
 
-static OSStatus smartbridge_app_notification_handler             ( void* arg );
-static OSStatus smartbridge_app_disconnection_handler            ( void* arg );
+static merr_t smartbridge_app_notification_handler             ( void* arg );
+static merr_t smartbridge_app_disconnection_handler            ( void* arg );
 
 static void        smartbridge_gatt_auto_conn_handler            ( mxos_bt_device_address_t bdaddr, uint16_t connection_handle );
 static mxos_bool_t smartbridge_gap_auto_conn_user_cfg            ( const mxos_bt_device_address_t device_address, const uint8_t *device_name, const uint8_t *p_data, uint8_t length );
-static OSStatus    smartbridge_gap_auto_conn_asyn_event_handler  ( void *arg );
-static OSStatus    smartbridge_gap_auto_conn_scan_report_handler ( const mxos_bt_smart_advertising_report_t *report );
-static OSStatus    smartbridge_gap_auto_conn_scan_cmpl_handler   ( void *arg );
-static OSStatus    smartbridge_gap_auto_conn_cryption            ( void* arg );
+static merr_t    smartbridge_gap_auto_conn_asyn_event_handler  ( void *arg );
+static merr_t    smartbridge_gap_auto_conn_scan_report_handler ( const mxos_bt_smart_advertising_report_t *report );
+static merr_t    smartbridge_gap_auto_conn_scan_cmpl_handler   ( void *arg );
+static merr_t    smartbridge_gap_auto_conn_cryption            ( void* arg );
 
-static OSStatus    smartbridge_auto_conn_user_parms              ( void* arg );
+static merr_t    smartbridge_auto_conn_user_parms              ( void* arg );
 static int8_t      smartbridge_auto_conn_dev_alloc               ( void );
 static int8_t      smartbridge_auto_conn_find_dev_by_addr        ( const mxos_bt_device_address_t device_address );
-static OSStatus    smartbridge_auto_conn_list_init               ( void );
-static OSStatus    smartbridge_auto_conn_list_deinit             ( void );
-static OSStatus    smartbridge_auto_conn_list_add                ( const mxos_bt_smart_advertising_report_t *report );
-static OSStatus    smartbridge_auto_conn_list_remove             ( mxos_bt_device_address_t bdaddr );
-static OSStatus    smartbridge_auto_conn_list_clear              ( void );
-static OSStatus    smartbridge_auto_conn_list_remove_by_state    ( smartbridge_auto_conn_state_t state );
-static OSStatus    smartbridge_auto_conn_list_set_state          ( const mxos_bt_device_address_t bdaddr, smartbridge_auto_conn_state_t state );
-static OSStatus    smartbridge_auto_conn_list_get_by_state       ( mxos_bt_smart_advertising_report_t **report, smartbridge_auto_conn_state_t state );
+static merr_t    smartbridge_auto_conn_list_init               ( void );
+static merr_t    smartbridge_auto_conn_list_deinit             ( void );
+static merr_t    smartbridge_auto_conn_list_add                ( const mxos_bt_smart_advertising_report_t *report );
+static merr_t    smartbridge_auto_conn_list_remove             ( mxos_bt_device_address_t bdaddr );
+static merr_t    smartbridge_auto_conn_list_clear              ( void );
+static merr_t    smartbridge_auto_conn_list_remove_by_state    ( smartbridge_auto_conn_state_t state );
+static merr_t    smartbridge_auto_conn_list_set_state          ( const mxos_bt_device_address_t bdaddr, smartbridge_auto_conn_state_t state );
+static merr_t    smartbridge_auto_conn_list_get_by_state       ( mxos_bt_smart_advertising_report_t **report, smartbridge_auto_conn_state_t state );
 
 /******************************************************
  *               Variable Definitions
@@ -141,7 +141,7 @@ extern gatt_subprocedure_t              smartbridge_subprocedure;
 mxos_bt_gatt_char_declaration_t         current_characteristic;
 
 /** Auto Connection Establishment Procedure */
-static mxos_semaphore_t                                       g_auto_conn_sem = NULL;
+static mos_semphr_id_t                                       g_auto_conn_sem = NULL;
 static smartbridge_auto_conn_entity_t                         g_auto_conn_dev_table[BTM_BLE_MAX_BG_CONN_DEV_NUM];
 static mxos_bt_smartbridge_auto_connection_parms_cback_t      g_auto_conn_cback = NULL;
 static mxos_bt_smart_scan_settings_t                          g_auto_conn_scan_cfg;
@@ -164,7 +164,7 @@ static void smartbridge_gatt_connection_handler( uint16_t connection_handle )
     bt_smartbridge_socket_manager_insert_socket( connecting_socket );
 
     /* Notify app thread that link is connected */
-    mxos_rtos_set_semaphore( &connecting_socket->semaphore );
+    mos_semphr_release(connecting_socket->semaphore );
 }
 
 static void smartbridge_gatt_auto_conn_handler( mxos_bt_device_address_t bdaddr, uint16_t connection_handle )
@@ -201,7 +201,7 @@ static void smartbridge_gatt_auto_conn_handler( mxos_bt_device_address_t bdaddr,
     bt_smartbridge_socket_manager_insert_socket(p_socket);
 
     /* Tell smartbridge_gap_auto_conn_asyn_event_handler a connection is ready. */
-    mxos_rtos_set_semaphore(&g_auto_conn_sem);
+    mos_semphr_release(g_auto_conn_sem);
 }
 
 static void smartbridge_gatt_disconnection_handler( uint16_t connection_handle )
@@ -227,7 +227,7 @@ static void smartbridge_gatt_disconnection_handler( uint16_t connection_handle )
         if ( smartbridge_helper_socket_check_actions_enabled( removed_socket, SOCKET_ACTION_HOST_DISCONNECT ) == MXOS_TRUE )
         {
             /* Disconnection is originated from the host. Notify app thread that disconnection is complete */
-            mxos_rtos_set_semaphore( &removed_socket->semaphore );
+            mos_semphr_release(removed_socket->semaphore );
         }
         else
         {
@@ -240,7 +240,7 @@ static void smartbridge_gatt_disconnection_handler( uint16_t connection_handle )
             /* If disconnection happens when connection is still being established. Notify app */
             if ( connecting_socket == removed_socket )
             {
-                mxos_rtos_set_semaphore( &connecting_socket->semaphore );
+                mos_semphr_release(connecting_socket->semaphore );
             }
         }
     }
@@ -249,7 +249,7 @@ static void smartbridge_gatt_disconnection_handler( uint16_t connection_handle )
         /* If disconnection happens when connection is still being established. Notify app */
         if ( connecting_socket != NULL )
         {
-            mxos_rtos_set_semaphore( &connecting_socket->semaphore );
+            mos_semphr_release(connecting_socket->semaphore );
         }
     }
 }
@@ -318,7 +318,7 @@ static void smartbridge_gatt_read_operation_complete_handler( mxos_bt_gatt_data_
 
 }
 
-static OSStatus smartbridge_gatt_notification_indication_handler( mxos_bt_gatt_operation_complete_t* operation_complete )
+static merr_t smartbridge_gatt_notification_indication_handler( mxos_bt_gatt_operation_complete_t* operation_complete )
 {
     mxos_bt_smartbridge_socket_t* socket;
     uint16_t connection_handle  = operation_complete->conn_id;
@@ -718,9 +718,9 @@ mxos_bt_gatt_status_t smartbridge_gatt_callback( mxos_bt_gatt_evt_t event, mxos_
     return status;
 }
 
-OSStatus mxos_bt_smartbridge_init( uint8_t count )
+merr_t mxos_bt_smartbridge_init( uint8_t count )
 {
-    OSStatus result;
+    merr_t result;
 
     if ( initialised == MXOS_TRUE )
     {
@@ -733,11 +733,10 @@ OSStatus mxos_bt_smartbridge_init( uint8_t count )
     memset((void *)g_auto_conn_dev_table, 0, sizeof(g_auto_conn_dev_table));
     smartbridge_auto_conn_list_init();
 
-    result = mxos_rtos_init_semaphore(&g_auto_conn_sem, 1);
-    if (result != kNoErr)
+    if ((g_auto_conn_sem = mos_semphr_new(1)) == NULL)
     {
         bt_smartbridge_log( "Error initialising a semaphore used to Auto connection" );
-        return result;
+        return kGeneralErr;
     }
 
     /* Initialise SmartBridge Socket Manager */
@@ -758,7 +757,7 @@ OSStatus mxos_bt_smartbridge_init( uint8_t count )
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smartbridge_deinit( void )
+merr_t mxos_bt_smartbridge_deinit( void )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -774,7 +773,7 @@ OSStatus mxos_bt_smartbridge_deinit( void )
     smartbridge_bt_interface_deinitialize();
 
     /* Delete semaphore */
-    mxos_rtos_deinit_semaphore(&g_auto_conn_sem);
+    mos_semphr_delete(g_auto_conn_sem);
     g_auto_conn_sem = NULL;
 
     /* Delete Auto-connection list. */
@@ -795,7 +794,7 @@ mxos_bool_t mxos_bt_smartbridge_is_ready_to_connect( void )
     return ( initialised == MXOS_FALSE || connecting_socket != NULL ) ? MXOS_FALSE : MXOS_TRUE;
 }
 
-OSStatus mxos_bt_smartbridge_start_scan( const mxos_bt_smart_scan_settings_t* settings, mxos_bt_smart_scan_complete_callback_t complete_callback, mxos_bt_smart_advertising_report_callback_t advertising_report_callback )
+merr_t mxos_bt_smartbridge_start_scan( const mxos_bt_smart_scan_settings_t* settings, mxos_bt_smart_scan_complete_callback_t complete_callback, mxos_bt_smart_advertising_report_callback_t advertising_report_callback )
 {
 
     if ( initialised == MXOS_FALSE )
@@ -806,7 +805,7 @@ OSStatus mxos_bt_smartbridge_start_scan( const mxos_bt_smart_scan_settings_t* se
     return smartbridge_bt_interface_start_scan( settings, complete_callback, advertising_report_callback );
 }
 
-OSStatus mxos_bt_smartbridge_stop_scan( void )
+merr_t mxos_bt_smartbridge_stop_scan( void )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -815,7 +814,7 @@ OSStatus mxos_bt_smartbridge_stop_scan( void )
     return smartbridge_bt_interface_stop_scan();
 }
 
-OSStatus mxos_bt_smartbridge_get_scan_result_list( mxos_bt_smart_scan_result_t** result_list, uint32_t* count )
+merr_t mxos_bt_smartbridge_get_scan_result_list( mxos_bt_smart_scan_result_t** result_list, uint32_t* count )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -824,7 +823,7 @@ OSStatus mxos_bt_smartbridge_get_scan_result_list( mxos_bt_smart_scan_result_t**
     return smartbridge_helper_get_scan_results( result_list, count );
 }
 
-OSStatus mxos_bt_smartbridge_get_background_connection_devices_size( uint8_t *size )
+merr_t mxos_bt_smartbridge_get_background_connection_devices_size( uint8_t *size )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -837,9 +836,9 @@ OSStatus mxos_bt_smartbridge_get_background_connection_devices_size( uint8_t *si
     return smartbridge_bt_interface_get_background_connection_device_size( size );
 }
 
-OSStatus mxos_bt_smartbridge_set_auto_connection_action( mxos_bool_t start_stop, const mxos_bt_smart_scan_settings_t *scan_settings, mxos_bt_smartbridge_auto_connection_parms_cback_t p_auto_conn_cback )
+merr_t mxos_bt_smartbridge_set_auto_connection_action( mxos_bool_t start_stop, const mxos_bt_smart_scan_settings_t *scan_settings, mxos_bt_smartbridge_auto_connection_parms_cback_t p_auto_conn_cback )
 {
-    OSStatus                            err = kNoErr;
+    merr_t                            err = kNoErr;
     uint32_t                            duration;
     
     if (start_stop && !scan_settings) 
@@ -898,7 +897,7 @@ OSStatus mxos_bt_smartbridge_set_auto_connection_action( mxos_bool_t start_stop,
     return err;
 }
 
-OSStatus mxos_bt_smartbridge_create_socket( mxos_bt_smartbridge_socket_t* socket )
+merr_t mxos_bt_smartbridge_create_socket( mxos_bt_smartbridge_socket_t* socket )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -913,18 +912,19 @@ OSStatus mxos_bt_smartbridge_create_socket( mxos_bt_smartbridge_socket_t* socket
     socket->node.data = (void*)socket;
 
     /* Initialise socket semaphore */
-    return mxos_rtos_init_semaphore( &socket->semaphore, 1 );
+    socket->semaphore = mos_semphr_new( 1 );
+    return socket->semaphore == NULL ? kGeneralErr : kNoErr;
 }
 
-OSStatus mxos_bt_smartbridge_delete_socket( mxos_bt_smartbridge_socket_t* socket )
+merr_t mxos_bt_smartbridge_delete_socket( mxos_bt_smartbridge_socket_t* socket )
 {
-    OSStatus result;
+    merr_t result;
     if ( initialised == MXOS_FALSE )
     {
         return MXOS_BT_SMART_APPL_UNINITIALISED;
     }
 
-    result = mxos_rtos_deinit_semaphore( &socket->semaphore );
+    result = mos_semphr_delete(socket->semaphore );
     if ( result != MXOS_BT_SUCCESS )
     {
         return result;
@@ -935,7 +935,7 @@ OSStatus mxos_bt_smartbridge_delete_socket( mxos_bt_smartbridge_socket_t* socket
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smartbridge_get_socket_status( mxos_bt_smartbridge_socket_t* socket, mxos_bt_smartbridge_socket_status_t* status )
+merr_t mxos_bt_smartbridge_get_socket_status( mxos_bt_smartbridge_socket_t* socket, mxos_bt_smartbridge_socket_status_t* status )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -970,10 +970,10 @@ OSStatus mxos_bt_smartbridge_get_socket_status( mxos_bt_smartbridge_socket_t* so
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_device_t* remote_device, const mxos_bt_smart_connection_settings_t* settings, mxos_bt_smartbridge_disconnection_callback_t disconnection_callback, mxos_bt_smartbridge_notification_callback_t notification_callback )
+merr_t mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_device_t* remote_device, const mxos_bt_smart_connection_settings_t* settings, mxos_bt_smartbridge_disconnection_callback_t disconnection_callback, mxos_bt_smartbridge_notification_callback_t notification_callback )
 {
     mxos_bt_smartbridge_socket_t* found_socket;
-    OSStatus result = MXOS_BT_SUCCESS;
+    merr_t result = MXOS_BT_SUCCESS;
 
     if ( initialised == MXOS_FALSE )
     {
@@ -1000,7 +1000,7 @@ OSStatus mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, cons
     bt_smartbridge_log( "connect()...socket things are okay" );
 
     /* Clean-up accidentally set semaphores */
-    while( mxos_rtos_get_semaphore( &socket->semaphore, MXOS_NO_WAIT ) == MXOS_BT_SUCCESS )
+    while( mos_semphr_acquire(socket->semaphore, MXOS_NO_WAIT ) == MXOS_BT_SUCCESS )
     {
     }
 
@@ -1045,7 +1045,7 @@ OSStatus mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, cons
     smartbridge_bt_interface_connect( remote_device, settings, disconnection_callback, notification_callback );
 
     /* Wait for connection */
-    mxos_rtos_get_semaphore( &socket->semaphore, socket->connection_settings.timeout_second * 1000 );
+    mos_semphr_acquire(socket->semaphore, socket->connection_settings.timeout_second * 1000 );
 
     /* Check if link is connected. Otherwise, return error */
     if ( socket->state == SOCKET_STATE_LINK_CONNECTED )
@@ -1054,7 +1054,7 @@ OSStatus mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, cons
         if ( smartbridge_helper_socket_check_actions_enabled( socket, SOCKET_ACTION_INITIATE_PAIRING ) == MXOS_TRUE )
         {
             /* Wait until pairing is complete */
-            mxos_rtos_get_semaphore( &socket->semaphore, MXOS_NEVER_TIMEOUT );
+            mos_semphr_acquire(socket->semaphore, MXOS_NEVER_TIMEOUT );
         }
 
         /* Check if encryption is required */
@@ -1064,7 +1064,7 @@ OSStatus mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, cons
             mxos_bt_start_encryption( &socket->remote_device.address );
 
             /* Wait until link is encrypted */
-            mxos_rtos_get_semaphore( &socket->semaphore, MXOS_NEVER_TIMEOUT );
+            mos_semphr_acquire(socket->semaphore, MXOS_NEVER_TIMEOUT );
 
             if ( socket->state != SOCKET_STATE_LINK_ENCRYPTED )
             {
@@ -1138,7 +1138,7 @@ OSStatus mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, cons
     error:
     /* Link is not connected nor encrypted. Issue disconnection attempt to clean-up */
     smartbridge_helper_socket_clear_actions( socket, SOCKET_ACTION_INITIATE_PAIRING|SOCKET_ACTION_ENCRYPT_USING_BOND_INFO );
-    mxos_rtos_delay_milliseconds(200);  //A quick disconnection from an established connection may cause a duplicated gatt connected callback, by william
+    mos_thread_delay(200);  //A quick disconnection from an established connection may cause a duplicated gatt connected callback, by william
     mxos_bt_smartbridge_disconnect( socket, TRUE );
 
     /* Clear connect action as it's no longer needed */
@@ -1152,7 +1152,7 @@ OSStatus mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, cons
 #endif
 }
 
-OSStatus mxos_bt_smartbridge_disconnect( mxos_bt_smartbridge_socket_t* socket, mxos_bool_t remove_it_from_whitelist )
+merr_t mxos_bt_smartbridge_disconnect( mxos_bt_smartbridge_socket_t* socket, mxos_bool_t remove_it_from_whitelist )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1163,7 +1163,7 @@ OSStatus mxos_bt_smartbridge_disconnect( mxos_bt_smartbridge_socket_t* socket, m
     smartbridge_helper_socket_set_actions( socket, SOCKET_ACTION_HOST_DISCONNECT );
 
     /* Clean-up accidentally set semaphores */
-    while( mxos_rtos_get_semaphore( &socket->semaphore, MXOS_NO_WAIT ) == MXOS_BT_SUCCESS )
+    while( mos_semphr_acquire(socket->semaphore, MXOS_NO_WAIT ) == MXOS_BT_SUCCESS )
     {
     }
 
@@ -1172,7 +1172,7 @@ OSStatus mxos_bt_smartbridge_disconnect( mxos_bt_smartbridge_socket_t* socket, m
     {
         smartbridge_bt_interface_disconnect( socket->connection_handle );
         /* Wait for disconnection */
-        mxos_rtos_get_semaphore( &socket->semaphore, socket->connection_settings.timeout_second * 1000 );
+        mos_semphr_acquire(socket->semaphore, socket->connection_settings.timeout_second * 1000 );
     }
     else
     {
@@ -1210,7 +1210,7 @@ OSStatus mxos_bt_smartbridge_disconnect( mxos_bt_smartbridge_socket_t* socket, m
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smartbridge_set_transmit_power( mxos_bt_smartbridge_socket_t* socket, int8_t transmit_power_dbm )
+merr_t mxos_bt_smartbridge_set_transmit_power( mxos_bt_smartbridge_socket_t* socket, int8_t transmit_power_dbm )
 {
     if ( initialised == MXOS_FALSE || socket->state == SOCKET_STATE_DISCONNECTED )
     {
@@ -1220,7 +1220,7 @@ OSStatus mxos_bt_smartbridge_set_transmit_power( mxos_bt_smartbridge_socket_t* s
     return smartbridge_bt_interface_set_connection_tx_power( socket->connection_handle, transmit_power_dbm );
 }
 
-OSStatus mxos_bt_smartbridge_set_bond_info( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_security_settings_t* settings, const mxos_bt_smart_bond_info_t* bond_info )
+merr_t mxos_bt_smartbridge_set_bond_info( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_security_settings_t* settings, const mxos_bt_smart_bond_info_t* bond_info )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1240,7 +1240,7 @@ OSStatus mxos_bt_smartbridge_set_bond_info( mxos_bt_smartbridge_socket_t* socket
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smartbridge_clear_bond_info( mxos_bt_smartbridge_socket_t* socket )
+merr_t mxos_bt_smartbridge_clear_bond_info( mxos_bt_smartbridge_socket_t* socket )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1256,7 +1256,7 @@ OSStatus mxos_bt_smartbridge_clear_bond_info( mxos_bt_smartbridge_socket_t* sock
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smartbridge_enable_pairing( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_security_settings_t* settings, mxos_bt_smart_bonding_callback_t bonding_callback )
+merr_t mxos_bt_smartbridge_enable_pairing( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_security_settings_t* settings, mxos_bt_smart_bonding_callback_t bonding_callback )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1281,7 +1281,7 @@ OSStatus mxos_bt_smartbridge_enable_pairing( mxos_bt_smartbridge_socket_t* socke
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smartbridge_disable_pairing( mxos_bt_smartbridge_socket_t* socket )
+merr_t mxos_bt_smartbridge_disable_pairing( mxos_bt_smartbridge_socket_t* socket )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1294,7 +1294,7 @@ OSStatus mxos_bt_smartbridge_disable_pairing( mxos_bt_smartbridge_socket_t* sock
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus mxos_bt_smartbridge_enable_attribute_cache( uint32_t cache_count, mxos_bt_uuid_t cache_services[], uint32_t service_count )
+merr_t mxos_bt_smartbridge_enable_attribute_cache( uint32_t cache_count, mxos_bt_uuid_t cache_services[], uint32_t service_count )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1305,7 +1305,7 @@ OSStatus mxos_bt_smartbridge_enable_attribute_cache( uint32_t cache_count, mxos_
     return bt_smartbridge_att_cache_enable( cache_count, cache_services, service_count );
 }
 
-OSStatus mxos_bt_smartbridge_disable_attribute_cache( void )
+merr_t mxos_bt_smartbridge_disable_attribute_cache( void )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1316,7 +1316,7 @@ OSStatus mxos_bt_smartbridge_disable_attribute_cache( void )
     return bt_smartbridge_att_cache_disable();
 }
 
-OSStatus mxos_bt_smartbridge_remove_attribute_cache( mxos_bt_smartbridge_socket_t* socket )
+merr_t mxos_bt_smartbridge_remove_attribute_cache( mxos_bt_smartbridge_socket_t* socket )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1327,12 +1327,12 @@ OSStatus mxos_bt_smartbridge_remove_attribute_cache( mxos_bt_smartbridge_socket_
     return bt_smartbridge_att_cache_release( socket->att_cache );
 }
 
-OSStatus mxos_bt_smartbridge_enable_attribute_cache_notification( mxos_bt_smartbridge_socket_t* socket, mxos_bool_t is_notification_or_indication )
+merr_t mxos_bt_smartbridge_enable_attribute_cache_notification( mxos_bt_smartbridge_socket_t* socket, mxos_bool_t is_notification_or_indication )
 {
     mxos_bt_smart_attribute_list_t* list;
     mxos_bt_smart_attribute_t*      iterator;
     bt_smartbridge_att_cache_t*      cache;
-    OSStatus                         result;
+    merr_t                         result;
 
     if ( initialised == MXOS_FALSE )
     {
@@ -1390,12 +1390,12 @@ OSStatus mxos_bt_smartbridge_enable_attribute_cache_notification( mxos_bt_smartb
     return result;
 }
 
-OSStatus mxos_bt_smartbridge_disable_attribute_cache_notification( mxos_bt_smartbridge_socket_t* socket )
+merr_t mxos_bt_smartbridge_disable_attribute_cache_notification( mxos_bt_smartbridge_socket_t* socket )
 {
     mxos_bt_smart_attribute_list_t* list;
     mxos_bt_smart_attribute_t*      iterator;
     bt_smartbridge_att_cache_t*      cache;
-    OSStatus                         result;
+    merr_t                         result;
 
     if ( initialised == MXOS_FALSE )
     {
@@ -1451,7 +1451,7 @@ OSStatus mxos_bt_smartbridge_disable_attribute_cache_notification( mxos_bt_smart
     return result;
 }
 
-OSStatus mxos_bt_smartbridge_get_attribute_cache_list( mxos_bt_smartbridge_socket_t* socket, mxos_bt_smart_attribute_list_t** att_cache_list )
+merr_t mxos_bt_smartbridge_get_attribute_cache_list( mxos_bt_smartbridge_socket_t* socket, mxos_bt_smart_attribute_list_t** att_cache_list )
 {
     if ( initialised == MXOS_FALSE )
     {
@@ -1477,12 +1477,12 @@ OSStatus mxos_bt_smartbridge_get_attribute_cache_list( mxos_bt_smartbridge_socke
     return bt_smartbridge_att_cache_get_list( (bt_smartbridge_att_cache_t*)socket->att_cache, att_cache_list );
 }
 
-OSStatus mxos_bt_smartbridge_get_attribute_cache_by_handle( mxos_bt_smartbridge_socket_t* socket, uint16_t handle, mxos_bt_smart_attribute_t* attribute, uint16_t size )
+merr_t mxos_bt_smartbridge_get_attribute_cache_by_handle( mxos_bt_smartbridge_socket_t* socket, uint16_t handle, mxos_bt_smart_attribute_t* attribute, uint16_t size )
 {
     bt_smartbridge_att_cache_t*      cache          = NULL;
     mxos_bt_smart_attribute_list_t* att_cache_list = NULL;
     mxos_bt_smart_attribute_t*      att            = NULL;
-    OSStatus                         result;
+    merr_t                         result;
 
     if ( initialised == MXOS_FALSE )
     {
@@ -1528,12 +1528,12 @@ OSStatus mxos_bt_smartbridge_get_attribute_cache_by_handle( mxos_bt_smartbridge_
     return result;
 }
 
-OSStatus mxos_bt_smartbridge_get_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size )
+merr_t mxos_bt_smartbridge_get_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size )
 {
     bt_smartbridge_att_cache_t*      cache          = NULL;
     mxos_bt_smart_attribute_list_t* att_cache_list = NULL;
     mxos_bt_smart_attribute_t*      att            = NULL;
-    OSStatus                         result;
+    merr_t                         result;
 
     if ( initialised == MXOS_FALSE )
     {
@@ -1578,9 +1578,9 @@ OSStatus mxos_bt_smartbridge_get_attribute_cache_by_uuid( mxos_bt_smartbridge_so
     return result;
 }
 
-OSStatus mxos_bt_smartbridge_get_service_from_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size )
+merr_t mxos_bt_smartbridge_get_service_from_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size )
 {
-    OSStatus result;
+    merr_t result;
     uint16_t _starting_handle = starting_handle;
     uint16_t _ending_handle = ending_handle;
     mxos_bt_uuid_t service_uuid = { .len = LEN_UUID_16, .uu.uuid16 = GATT_UUID_PRI_SERVICE };
@@ -1606,9 +1606,9 @@ OSStatus mxos_bt_smartbridge_get_service_from_attribute_cache_by_uuid( mxos_bt_s
     return result;
 }
 
-OSStatus mxos_bt_smartbridge_get_characteritics_from_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size )
+merr_t mxos_bt_smartbridge_get_characteritics_from_attribute_cache_by_uuid( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_uuid_t* uuid, uint16_t starting_handle, uint16_t ending_handle, mxos_bt_smart_attribute_t* attribute, uint32_t size )
 {
-    OSStatus result;
+    merr_t result;
     uint16_t _starting_handle = starting_handle;
     uint16_t _ending_handle = ending_handle;
     mxos_bt_uuid_t characteristic_uuid = { .len = LEN_UUID_16, .uu.uuid16 = GATT_UUID_CHAR_DECLARE };
@@ -1627,13 +1627,13 @@ OSStatus mxos_bt_smartbridge_get_characteritics_from_attribute_cache_by_uuid( mx
 
 
 
-OSStatus mxos_bt_smartbridge_refresh_attribute_cache_characteristic_value( mxos_bt_smartbridge_socket_t* socket, uint16_t handle )
+merr_t mxos_bt_smartbridge_refresh_attribute_cache_characteristic_value( mxos_bt_smartbridge_socket_t* socket, uint16_t handle )
 {
     bt_smartbridge_att_cache_t*      cache          = NULL;
     mxos_bt_smart_attribute_list_t* att_cache_list = NULL;
     mxos_bt_smart_attribute_t*      current_att    = NULL;
     mxos_bt_smart_attribute_t*      refreshed_att  = NULL;
-    OSStatus                         result;
+    merr_t                         result;
 
     if ( initialised == MXOS_FALSE )
     {
@@ -1693,12 +1693,12 @@ OSStatus mxos_bt_smartbridge_refresh_attribute_cache_characteristic_value( mxos_
     return result;
 }
 
-OSStatus mxos_bt_smartbridge_write_attribute_cache_characteristic_value( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_attribute_t* char_value )
+merr_t mxos_bt_smartbridge_write_attribute_cache_characteristic_value( mxos_bt_smartbridge_socket_t* socket, const mxos_bt_smart_attribute_t* char_value )
 {
     bt_smartbridge_att_cache_t*      cache          = NULL;
     mxos_bt_smart_attribute_list_t* att_cache_list = NULL;
     mxos_bt_smart_attribute_t*      att            = NULL;
-    OSStatus                         result;
+    merr_t                         result;
 
     if ( initialised == MXOS_FALSE )
     {
@@ -1817,7 +1817,7 @@ OSStatus mxos_bt_smartbridge_write_attribute_cache_characteristic_value( mxos_bt
  *               Callback Definitions
  ******************************************************/
 
-static OSStatus smartbridge_app_notification_handler( void* arg )
+static merr_t smartbridge_app_notification_handler( void* arg )
 {
     mxos_bt_smartbridge_socket_t* socket = (mxos_bt_smartbridge_socket_t*)arg;
 
@@ -1830,7 +1830,7 @@ static OSStatus smartbridge_app_notification_handler( void* arg )
     return MXOS_BT_ERROR;
 }
 
-static OSStatus smartbridge_app_disconnection_handler( void* arg )
+static merr_t smartbridge_app_disconnection_handler( void* arg )
 {
     mxos_bt_smartbridge_socket_t* socket = (mxos_bt_smartbridge_socket_t*)arg;
 
@@ -1843,13 +1843,13 @@ static OSStatus smartbridge_app_disconnection_handler( void* arg )
     return MXOS_BT_ERROR;
 }
 
-// OSStatus mxos_bt_smartbridge_bond_info_update( mxos_bt_device_link_keys_t paired_device_keys )
+// merr_t mxos_bt_smartbridge_bond_info_update( mxos_bt_device_link_keys_t paired_device_keys )
 // {
 //     mxos_bt_smart_bond_info_t          bond_info;
 //     mxos_bt_ble_keys_t                  *le_security_keys;
 //     mxos_bt_device_sec_keys_t           *security_keys;
 
-//     OSStatus result = MXOS_BT_ERROR;
+//     merr_t result = MXOS_BT_ERROR;
 
 //     memcpy(bond_info.peer_address, paired_device_keys.bd_addr, BD_ADDR_LEN );
 
@@ -1886,7 +1886,7 @@ static OSStatus smartbridge_app_disconnection_handler( void* arg )
 //     return result;
 // }
 
-// static OSStatus smartbridge_gap_bonding_handler( uint16_t connection_handle, const mxos_bt_smart_bond_info_t* bond_info )
+// static merr_t smartbridge_gap_bonding_handler( uint16_t connection_handle, const mxos_bt_smart_bond_info_t* bond_info )
 // {
 //     mxos_bt_smartbridge_socket_t* socket;
 
@@ -1906,7 +1906,7 @@ static OSStatus smartbridge_app_disconnection_handler( void* arg )
 //     return MXOS_BT_ERROR;
 // }
 
-// static OSStatus smartbridge_app_pairing_handler( void* arg )
+// static merr_t smartbridge_app_pairing_handler( void* arg )
 // {
 //     mxos_bt_smartbridge_socket_t* socket = (mxos_bt_smartbridge_socket_t*)arg;
 
@@ -1920,9 +1920,9 @@ static OSStatus smartbridge_app_disconnection_handler( void* arg )
 // }
 
 /* Auto-Connection Connecting Event Handler */
-static OSStatus smartbridge_gap_auto_conn_asyn_event_handler(void *arg)
+static merr_t smartbridge_gap_auto_conn_asyn_event_handler(void *arg)
 {
-    OSStatus                             err = kNoErr;
+    merr_t                             err = kNoErr;
     mxos_bt_gatt_status_t                gatt_status;
     mxos_bt_smart_advertising_report_t  *report = NULL;
 
@@ -1945,7 +1945,7 @@ static OSStatus smartbridge_gap_auto_conn_asyn_event_handler(void *arg)
             mxos_bt_smartbridge_socket_t *p_socket = g_auto_conn_dev_table[idx].socket;
             
             /* Clear semaphore */
-            while (mxos_rtos_get_semaphore(&g_auto_conn_sem, MXOS_NO_WAIT) == kNoErr);
+            while (mos_semphr_acquire(g_auto_conn_sem, MXOS_NO_WAIT) == kNoErr);
 
             /* Update current state */
             smartbridge_auto_conn_list_set_state(report->remote_device.address, 
@@ -1969,7 +1969,7 @@ static OSStatus smartbridge_gap_auto_conn_asyn_event_handler(void *arg)
             }
             
             /* Wait for completion */
-            err = mxos_rtos_get_semaphore(&g_auto_conn_sem, 5000);
+            err = mos_semphr_acquire(g_auto_conn_sem, 5000);
             if (err != kNoErr) 
             {
                 bt_smartbridge_log("%s: Create LE Connection failed: %s", 
@@ -2014,9 +2014,9 @@ err_exit:
 }
 
 /* Auto-Connection Scanning Procedure Report Handler */
-static OSStatus smartbridge_gap_auto_conn_scan_report_handler(const mxos_bt_smart_advertising_report_t *report)
+static merr_t smartbridge_gap_auto_conn_scan_report_handler(const mxos_bt_smart_advertising_report_t *report)
 {
-    OSStatus                                err = kNoErr;
+    merr_t                                err = kNoErr;
     mxos_bt_smart_advertising_report_t     *match_report = NULL;
     
     bt_smartbridge_log("%s: scan result: %s[%02x:%02x:%02x:%02x:%02x:%02x]",
@@ -2060,9 +2060,9 @@ exit:
 } 
 
 /* Auto-Connection Scanning Procedure Completion Handler */
-static OSStatus smartbridge_gap_auto_conn_scan_cmpl_handler(void *arg)
+static merr_t smartbridge_gap_auto_conn_scan_cmpl_handler(void *arg)
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
 
     UNUSED_PARAMETER(arg);
 
@@ -2092,9 +2092,9 @@ static OSStatus smartbridge_gap_auto_conn_scan_cmpl_handler(void *arg)
     return err;
 }
 
-static OSStatus smartbridge_gap_auto_conn_cryption( void *arg )
+static merr_t smartbridge_gap_auto_conn_cryption( void *arg )
 {
-    OSStatus result = kNoErr;
+    merr_t result = kNoErr;
     mxos_bt_smartbridge_socket_t *socket = (mxos_bt_smartbridge_socket_t *)arg;
 
     if (socket != NULL && socket->auto_connection_callback != NULL)
@@ -2104,7 +2104,7 @@ static OSStatus smartbridge_gap_auto_conn_cryption( void *arg )
             /* Encryption */
             bt_smartbridge_log("Encryption started.");
             mxos_bt_start_encryption( &socket->remote_device.address );
-            mxos_rtos_get_semaphore(&g_auto_conn_sem, MXOS_NEVER_TIMEOUT);
+            mos_semphr_acquire(g_auto_conn_sem, MXOS_NEVER_TIMEOUT);
             socket->state = SOCKET_STATE_LINK_ENCRYPTED;
             bt_smartbridge_log("Encryption completed.");
         }
@@ -2186,9 +2186,9 @@ exit:
 }
 
 
-static OSStatus smartbridge_auto_conn_user_parms( void *arg )
+static merr_t smartbridge_auto_conn_user_parms( void *arg )
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     mxos_bt_smartbridge_auto_conn_cback_parms_t     parm;
     smartbridge_auto_conn_dev_info_t          *p_dev_info = (smartbridge_auto_conn_dev_info_t *) arg;
     smartbridge_auto_conn_entity_t          *p_entity;
@@ -2285,19 +2285,20 @@ void smartbridge_auto_connection_encryption_check(const mxos_bt_dev_pairing_cplt
     if (idx >= 0) {
         if (g_auto_conn_dev_table[idx].socket->security_settings.authentication_requirements 
                 != BT_SMART_AUTH_REQ_NONE)
-        mxos_rtos_set_semaphore(&g_auto_conn_sem);
+        mos_semphr_release(g_auto_conn_sem);
     }
 }
 
-static OSStatus smartbridge_auto_conn_list_init(void)
+static merr_t smartbridge_auto_conn_list_init(void)
 {
     linked_list_init(&g_auto_conn_list.list);
-    return mxos_rtos_init_mutex(&g_auto_conn_list.mutex); 
+    g_auto_conn_list.mutex = mos_mutex_new(); 
+    return g_auto_conn_list.mutex == NULL ? kGeneralErr : kNoErr;
 }
 
-static OSStatus smartbridge_auto_conn_list_deinit(void)
+static merr_t smartbridge_auto_conn_list_deinit(void)
 {
-    return mxos_rtos_deinit_mutex(&g_auto_conn_list.mutex);
+    return mos_mutex_delete(g_auto_conn_list.mutex);
 }
 
 static mxos_bool_t smartbridge_auto_conn_compare_bdaddr(linked_list_node_t* node_to_compare, void* user_data)
@@ -2324,9 +2325,9 @@ static mxos_bool_t smartbridge_auto_conn_compare_state(linked_list_node_t *node_
     }
 }
 
-static OSStatus smartbridge_auto_conn_list_add(const mxos_bt_smart_advertising_report_t *report)
+static merr_t smartbridge_auto_conn_list_add(const mxos_bt_smart_advertising_report_t *report)
 {
-    OSStatus                        err = kNoErr;
+    merr_t                        err = kNoErr;
     smartbridge_auto_conn_report_t *report_found = NULL, *new_report = NULL;
 
     uint32_t                        count = 0;
@@ -2335,7 +2336,7 @@ static OSStatus smartbridge_auto_conn_list_add(const mxos_bt_smart_advertising_r
     require_action(report != NULL, exit, err = kParamErr);
 
     /* Check if this report is existed. */
-    mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_lock(g_auto_conn_list.mutex);
     err = linked_list_find_node(&g_auto_conn_list.list,
                                  (linked_list_compare_callback_t)smartbridge_auto_conn_compare_bdaddr,
                                  (void *)report->remote_device.address,
@@ -2370,7 +2371,7 @@ static OSStatus smartbridge_auto_conn_list_add(const mxos_bt_smart_advertising_r
              */
             err = kAlreadyInUseErr;
         }
-        mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+        mos_mutex_unlock(g_auto_conn_list.mutex);
         return err;  
     }
     else 
@@ -2393,7 +2394,7 @@ static OSStatus smartbridge_auto_conn_list_add(const mxos_bt_smart_advertising_r
             }
         }
     }
-    mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_unlock(g_auto_conn_list.mutex);
 
     /* Not existed. */
     if (new_report == NULL) 
@@ -2411,42 +2412,42 @@ static OSStatus smartbridge_auto_conn_list_add(const mxos_bt_smart_advertising_r
     new_report->this_node.data = new_report;
     memcpy(&new_report->report, report, sizeof(mxos_bt_smart_advertising_report_t));
 
-    mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_lock(g_auto_conn_list.mutex);
     err = linked_list_insert_node_at_rear(&g_auto_conn_list.list, &new_report->this_node);
-    mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_unlock(g_auto_conn_list.mutex);
 
  exit:
     return err;
 }
 
-static OSStatus smartbridge_auto_conn_list_get_by_state(mxos_bt_smart_advertising_report_t **report, smartbridge_auto_conn_state_t state)
+static merr_t smartbridge_auto_conn_list_get_by_state(mxos_bt_smart_advertising_report_t **report, smartbridge_auto_conn_state_t state)
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     smartbridge_auto_conn_report_t *current_report;
 
     require_action(report != NULL, exit, err = kParamErr);
 
-    mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_lock(g_auto_conn_list.mutex);
     err = linked_list_find_node(&g_auto_conn_list.list,
                                 (linked_list_compare_callback_t)smartbridge_auto_conn_compare_state,
                                 (void *)&state,
                                 (linked_list_node_t**)&current_report);
     
     *report = &current_report->report;
-    mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_unlock(g_auto_conn_list.mutex);
     
 exit:
     return err;
 }
 
-static OSStatus smartbridge_auto_conn_list_set_state(const mxos_bt_device_address_t bdaddr, smartbridge_auto_conn_state_t state)
+static merr_t smartbridge_auto_conn_list_set_state(const mxos_bt_device_address_t bdaddr, smartbridge_auto_conn_state_t state)
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     smartbridge_auto_conn_report_t *report_found;
 
     require_action(bdaddr != NULL, exit, err = kParamErr);
 
-    mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_lock(g_auto_conn_list.mutex);
     err = linked_list_find_node(&g_auto_conn_list.list,
                                 (linked_list_compare_callback_t)smartbridge_auto_conn_compare_bdaddr,
                                 (void *)bdaddr,
@@ -2454,18 +2455,18 @@ static OSStatus smartbridge_auto_conn_list_set_state(const mxos_bt_device_addres
     if (err == kNoErr) {
         report_found->state = state;
     }
-    mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_unlock(g_auto_conn_list.mutex);
 
 exit:
     return err;
 }
 
-static OSStatus smartbridge_auto_conn_list_remove(mxos_bt_device_address_t bdaddr)
+static merr_t smartbridge_auto_conn_list_remove(mxos_bt_device_address_t bdaddr)
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     smartbridge_auto_conn_report_t* current_report;
 
-    mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_lock(g_auto_conn_list.mutex);
     err = linked_list_find_node(&g_auto_conn_list.list,
                                  (linked_list_compare_callback_t)smartbridge_auto_conn_compare_bdaddr,
                                  bdaddr,
@@ -2473,16 +2474,16 @@ static OSStatus smartbridge_auto_conn_list_remove(mxos_bt_device_address_t bdadd
     if (err != kNoErr) goto exit;
     current_report->state = SMARTBRIDGE_AUTO_CONN_STATE_FREE;
 exit:
-    mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_unlock(g_auto_conn_list.mutex);
     return err;
 }
 
-static OSStatus smartbridge_auto_conn_list_remove_by_state(smartbridge_auto_conn_state_t state)
+static merr_t smartbridge_auto_conn_list_remove_by_state(smartbridge_auto_conn_state_t state)
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     smartbridge_auto_conn_report_t* current_report;
 
-    mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_lock(g_auto_conn_list.mutex);
     do {
         err = linked_list_find_node(&g_auto_conn_list.list,
                                      (linked_list_compare_callback_t)smartbridge_auto_conn_compare_state,
@@ -2491,17 +2492,17 @@ static OSStatus smartbridge_auto_conn_list_remove_by_state(smartbridge_auto_conn
         if (err != kNoErr) break;
         current_report->state = SMARTBRIDGE_AUTO_CONN_STATE_FREE;
     } while (1);
-    mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_unlock(g_auto_conn_list.mutex);
     
     return kNoErr;
 }
 
-static OSStatus smartbridge_auto_conn_list_clear(void)
+static merr_t smartbridge_auto_conn_list_clear(void)
 {
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     smartbridge_auto_conn_report_t* current_report = NULL;
 
-    mxos_rtos_lock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_lock(g_auto_conn_list.mutex);
     do {
         err = linked_list_get_front_node(&g_auto_conn_list.list, (linked_list_node_t **)&current_report);
         if (err != kNoErr) break;
@@ -2509,7 +2510,7 @@ static OSStatus smartbridge_auto_conn_list_clear(void)
 
         free(current_report);
     } while (1);
-    mxos_rtos_unlock_mutex(&g_auto_conn_list.mutex);
+    mos_mutex_unlock(g_auto_conn_list.mutex);
 
     return kNoErr;
 }

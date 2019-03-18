@@ -49,7 +49,7 @@
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus bme280_sensor_init(void);
+merr_t bme280_sensor_init(void);
 
 /**
  * @brief Read data from BME280sensor device.
@@ -61,7 +61,7 @@ OSStatus bme280_sensor_init(void);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus bme280_data_readout(s32 *v_actual_temp_s32, u32 *v_actual_press_u32, u32 *v_actual_humity_u32);
+merr_t bme280_data_readout(s32 *v_actual_temp_s32, u32 *v_actual_press_u32, u32 *v_actual_humity_u32);
 
 /**
  * @brief Read temperature data from BME280sensor device.
@@ -71,7 +71,7 @@ OSStatus bme280_data_readout(s32 *v_actual_temp_s32, u32 *v_actual_press_u32, u3
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus bme280_read_temperature(s32 *v_actual_temp_s32);
+merr_t bme280_read_temperature(s32 *v_actual_temp_s32);
 
 
 /**
@@ -82,7 +82,7 @@ OSStatus bme280_read_temperature(s32 *v_actual_temp_s32);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus bme280_read_humidity(u32 *v_actual_humity_u32);
+merr_t bme280_read_humidity(u32 *v_actual_humity_u32);
 
 
 /**
@@ -93,7 +93,7 @@ OSStatus bme280_read_humidity(u32 *v_actual_humity_u32);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus bme280_data_pressure(u32 *v_actual_press_u32);
+merr_t bme280_data_pressure(u32 *v_actual_press_u32);
 
 
 /**
@@ -102,7 +102,7 @@ OSStatus bme280_data_pressure(u32 *v_actual_press_u32);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus bme280_sensor_deinit(void);
+merr_t bme280_sensor_deinit(void);
 
 /**
   * @}

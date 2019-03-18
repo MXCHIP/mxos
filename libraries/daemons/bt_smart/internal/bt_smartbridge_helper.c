@@ -62,7 +62,7 @@ static uint32_t                                     scan_result_count       = 0;
  *               Function Definitions
  ******************************************************/
 
-OSStatus smartbridge_helper_get_scan_results( mxos_bt_smart_scan_result_t** result_list, uint32_t* count )
+merr_t smartbridge_helper_get_scan_results( mxos_bt_smart_scan_result_t** result_list, uint32_t* count )
 {
     if ( smartbridge_bt_interface_is_scanning() == MXOS_TRUE )
     {
@@ -75,7 +75,7 @@ OSStatus smartbridge_helper_get_scan_results( mxos_bt_smart_scan_result_t** resu
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus smartbridge_helper_delete_scan_result_list( void )
+merr_t smartbridge_helper_delete_scan_result_list( void )
 {
     mxos_bt_smart_scan_result_t* curr;
 
@@ -106,7 +106,7 @@ OSStatus smartbridge_helper_delete_scan_result_list( void )
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus smartbridge_helper_add_scan_result_to_list( mxos_bt_smart_scan_result_t* result )
+merr_t smartbridge_helper_add_scan_result_to_list( mxos_bt_smart_scan_result_t* result )
 {
     if ( scan_result_count == 0 )
     {
@@ -126,7 +126,7 @@ OSStatus smartbridge_helper_add_scan_result_to_list( mxos_bt_smart_scan_result_t
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus smartbridge_helper_find_device_in_scan_result_list( mxos_bt_device_address_t* address, mxos_bt_smart_address_type_t type,  mxos_bt_smart_scan_result_t** result )
+merr_t smartbridge_helper_find_device_in_scan_result_list( mxos_bt_device_address_t* address, mxos_bt_smart_address_type_t type,  mxos_bt_smart_scan_result_t** result )
 {
     mxos_bt_smart_scan_result_t* iterator = scan_result_head;
 
@@ -194,17 +194,17 @@ void peripheral_helper_socket_clear_actions( mxos_bt_peripheral_socket_t* socket
 
 #define GATT_MAX_PROCEDURE_TIMEOUT (10000)
 
-OSStatus subprocedure_lock( gatt_subprocedure_t* subprocedure )
+merr_t subprocedure_lock( gatt_subprocedure_t* subprocedure )
 {
-    return mxos_rtos_lock_mutex( &subprocedure->mutex );
+    return mos_mutex_lock(subprocedure->mutex );
 }
 
-OSStatus subprocedure_unlock( gatt_subprocedure_t* subprocedure )
+merr_t subprocedure_unlock( gatt_subprocedure_t* subprocedure )
 {
-    return mxos_rtos_unlock_mutex( &subprocedure->mutex );
+    return mos_mutex_unlock(subprocedure->mutex );
 }
 
-OSStatus subprocedure_reset( gatt_subprocedure_t* subprocedure )
+merr_t subprocedure_reset( gatt_subprocedure_t* subprocedure )
 {
     subprocedure->subprocedure      = GATT_SUBPROCEDURE_NONE;
     subprocedure->attr_head         = NULL;
@@ -222,26 +222,26 @@ OSStatus subprocedure_reset( gatt_subprocedure_t* subprocedure )
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus subprocedure_wait_for_completion( gatt_subprocedure_t* subprocedure )
+merr_t subprocedure_wait_for_completion( gatt_subprocedure_t* subprocedure )
 {
-    if( kNoErr != mxos_rtos_get_semaphore( &subprocedure->done_semaphore, GATT_MAX_PROCEDURE_TIMEOUT ) )
+    if( kNoErr != mos_semphr_acquire(subprocedure->done_semaphore, GATT_MAX_PROCEDURE_TIMEOUT ) )
     {
         subprocedure->result = MXOS_BT_TIMEOUT;
     }
     return subprocedure->result;
 }
 
-OSStatus subprocedure_wait_clear_semaphore( gatt_subprocedure_t* subprocedure )
+merr_t subprocedure_wait_clear_semaphore( gatt_subprocedure_t* subprocedure )
 {
-    while ( mxos_rtos_get_semaphore( &subprocedure->done_semaphore, MXOS_NO_WAIT ) == kNoErr )
+    while ( mos_semphr_acquire(subprocedure->done_semaphore, MXOS_NO_WAIT ) == kNoErr )
     {
     }
     return MXOS_BT_SUCCESS;
 }
 
-OSStatus subprocedure_notify_complete( gatt_subprocedure_t* subprocedure )
+merr_t subprocedure_notify_complete( gatt_subprocedure_t* subprocedure )
 {
-    return mxos_rtos_set_semaphore( &subprocedure->done_semaphore );
+    return mos_semphr_release(subprocedure->done_semaphore );
 }
 
 /******************************************************
@@ -277,10 +277,10 @@ mxos_bool_t smartbridge_helper_timer_stop(smartbridge_helper_timer_t *timer)
     if (!timer->is_started) 
         return MXOS_FALSE;
 
-    if (mxos_rtos_is_timer_running(&timer->timer)) 
-        mxos_rtos_stop_timer(&timer->timer);
+    if (mos_timer_is_runing(&timer->timer)) 
+        mos_timer_stop(&timer->timer);
     
-    mxos_rtos_deinit_timer(&timer->timer);
+    mos_timer_delete(&timer->timer);
     
     timer->is_started = MXOS_FALSE;
     timer->one_shot = MXOS_FALSE;
@@ -299,12 +299,12 @@ mxos_bool_t smartbridge_helper_timer_start(smartbridge_helper_timer_t *timer, mx
     if (timer->is_started) 
         smartbridge_helper_timer_stop(timer);
 
-    if (mxos_rtos_init_timer(&timer->timer, ms, smartbridge_helper_timer_handler, (void *)timer) != kNoErr)
+    if (mos_timer_new(&timer->timer, ms, smartbridge_helper_timer_handler, (void *)timer) != kNoErr)
         return MXOS_FALSE;
 
-    if (mxos_rtos_start_timer(&timer->timer) != kNoErr)
+    if (mos_timer_start(&timer->timer) != kNoErr)
     {
-        mxos_rtos_deinit_timer(&timer->timer);
+        mos_timer_delete(&timer->timer);
         return MXOS_FALSE;
     }
 

@@ -93,7 +93,7 @@ extern unsigned int _stext, _etext, _estack;
 /******************************************************
  *               Function Definitions
  ******************************************************/
-OSStatus stdio_hardfault( char* data, uint32_t size );
+merr_t stdio_hardfault( char* data, uint32_t size );
 unsigned int * pTaskGetCurrentTaskEndOfStack( void );
 
 #ifdef DEBUG_HARDFAULT

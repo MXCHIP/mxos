@@ -66,12 +66,12 @@ typedef struct mxos_bt_peripheral_socket mxos_bt_peripheral_socket_t;
 /**
  * Socket connection callback
  */
-typedef OSStatus (* mxos_bt_peripheral_connection_callback_t) ( mxos_bt_peripheral_socket_t* socket );
+typedef merr_t (* mxos_bt_peripheral_connection_callback_t) ( mxos_bt_peripheral_socket_t* socket );
 
 /**
  * Socket disconnection callback
  */
-typedef OSStatus (* mxos_bt_peripheral_disconnection_callback_t) ( mxos_bt_peripheral_socket_t* socket );
+typedef merr_t (* mxos_bt_peripheral_disconnection_callback_t) ( mxos_bt_peripheral_socket_t* socket );
 
 /**
  * Attrubute request callback
@@ -118,7 +118,7 @@ struct mxos_bt_peripheral_socket
     mxos_bt_smart_bonding_callback_t                bonding_callback;               /**< Callback for handling bonding evnet by remote device          */
     mxos_bt_smart_security_settings_t               security_settings;              /**< Security settings                                             */
     mxos_bt_smart_bond_request_t                    bond_req;                       /**< Bond Request Structure                                        */
-    mxos_semaphore_t                                semaphore;                      /**< Semaphore                                                     */
+    mos_semphr_id_t                                semaphore;                      /**< Semaphore                                                     */
     linked_list_t                                   attribute_database;             /**< Attribute database                                            */
     uint16_t                                        mtu;
 };
@@ -161,9 +161,9 @@ struct mxos_bt_peripheral_socket
  *     a Bluetooth Smart Central
  *
  *
- * @return MXOS_BT_SUCCESS: success , else @ref OSStatus
+ * @return MXOS_BT_SUCCESS: success , else @ref merr_t
  */
-OSStatus mxos_bt_peripheral_init(   mxos_bt_peripheral_socket_t*                   socket, 
+merr_t mxos_bt_peripheral_init(   mxos_bt_peripheral_socket_t*                   socket, 
                                     const mxos_bt_smart_security_settings_t*       settings,
                                     mxos_bt_peripheral_connection_callback_t       connection_callback,
                                     mxos_bt_peripheral_disconnection_callback_t    disconnection_callback,
@@ -180,7 +180,7 @@ OSStatus mxos_bt_peripheral_init(   mxos_bt_peripheral_socket_t*                
  *
  * @return MXOS_BT_SUCCESS: success
  */
-OSStatus mxos_bt_peripheral_deinit( void );
+merr_t mxos_bt_peripheral_deinit( void );
 
 
 /** @} */
@@ -206,7 +206,7 @@ OSStatus mxos_bt_peripheral_deinit( void );
  * @return MXOS_BT_SUCCESS: success
  *         MXOS_BT_SMART_APPL_UNINITIALISED: Smart peripheral framework is uninitialized
  */
-OSStatus mxos_bt_peripheral_get_socket_status( mxos_bt_peripheral_socket_t* socket, mxos_bt_peripheral_socket_status_t* status );
+merr_t mxos_bt_peripheral_get_socket_status( mxos_bt_peripheral_socket_t* socket, mxos_bt_peripheral_socket_status_t* status );
 
 /** Disconnect BT peripheral connection
  *
@@ -216,7 +216,7 @@ OSStatus mxos_bt_peripheral_get_socket_status( mxos_bt_peripheral_socket_t* sock
  * @return MXOS_BT_SUCCESS: success
  *         MXOS_BT_SMART_APPL_UNINITIALISED: Smart peripheral framework is uninitialized
  */
-OSStatus mxos_bt_peripheral_disconnect( void );
+merr_t mxos_bt_peripheral_disconnect( void );
 
 
 /** @} */
@@ -245,9 +245,9 @@ OSStatus mxos_bt_peripheral_disconnect( void );
  * @param[in]  complete_callback            : callback function which is called when advertising is
  *                                            complete，running under MXOS_BT_EVT_WORKER_THREAD
  *
- * @return MXOS_BG_SUCCESS, else @ref OSStatus
+ * @return MXOS_BG_SUCCESS, else @ref merr_t
  */
-OSStatus mxos_bt_peripheral_start_advertisements( mxos_bt_smart_advertising_settings_t* settings, 
+merr_t mxos_bt_peripheral_start_advertisements( mxos_bt_smart_advertising_settings_t* settings, 
                                                      mxos_bt_smart_advertising_complete_callback_t complete_callback);
 
 /** Stop the ongoing advertising process
@@ -255,9 +255,9 @@ OSStatus mxos_bt_peripheral_start_advertisements( mxos_bt_smart_advertising_sett
  * This function instructs the Bluetooth controller to advertising local 
  * Bluetooth Smart devices.
  *
- * @return MXOS_BG_SUCCESS, else @ref OSStatus
+ * @return MXOS_BG_SUCCESS, else @ref merr_t
  */
-OSStatus mxos_bt_peripheral_stop_advertisements( void );
+merr_t mxos_bt_peripheral_stop_advertisements( void );
 
 /** @} */
 
@@ -277,25 +277,25 @@ OSStatus mxos_bt_peripheral_stop_advertisements( void );
  * @param[in] add            : Add or remove this device specified by device_address.
  * @param[in] device_address : Bluetooth address of the device to add to the whitelist 
  *
- * @return @ref OSStatus
+ * @return @ref merr_t
  */
-OSStatus mxos_bt_peripheral_update_advertisements_white_list( mxos_bool_t add, mxos_bt_device_address_t device_address );
+merr_t mxos_bt_peripheral_update_advertisements_white_list( mxos_bool_t add, mxos_bt_device_address_t device_address );
 
 /** Get the number of devices in white list 
  *
  * @param[out] size : The number of devices in white list.
  *
- * @return @ref OSStatus
+ * @return @ref merr_t
  */
-OSStatus mxos_bt_peripheral_get_advertisements_white_list_size( uint8_t *size );
+merr_t mxos_bt_peripheral_get_advertisements_white_list_size( uint8_t *size );
 
 /** Set Advertisements Filter Policy 
  *
  * @param[in] policy : Advertisements filter policy
  *
- * @return @ref OSStatus
+ * @return @ref merr_t
  */
-OSStatus mxos_bt_peripheral_set_advertisements_filter_policy( mxos_bt_peripheral_adv_filter_policy_t policy );
+merr_t mxos_bt_peripheral_set_advertisements_filter_policy( mxos_bt_peripheral_adv_filter_policy_t policy );
 
 /** @} */
 
@@ -328,18 +328,18 @@ mxos_bt_ext_attribute_value_t* mxos_bt_peripheral_ext_attribute_add( uint16_t ha
  *
  * @param attribute[in]   : The address of the external attrbute value object
  *
- * @return @ref OSStatus
+ * @return @ref merr_t
  */
-OSStatus mxos_bt_peripheral_ext_attribute_remove( mxos_bt_ext_attribute_value_t* attribute );
+merr_t mxos_bt_peripheral_ext_attribute_remove( mxos_bt_ext_attribute_value_t* attribute );
 
 /** Find an external attribute value from BT peripheral using handle
  *
  * @param handle[in]                : Handle of an attribute
  * @param attribute_found[in,out]   : Pointer to the external attribute address find by handle
  *
- * @return @ref OSStatus
+ * @return @ref merr_t
  */
-OSStatus mxos_bt_peripheral_ext_attribute_find_by_handle( uint16_t handle, mxos_bt_ext_attribute_value_t** attribute_found );
+merr_t mxos_bt_peripheral_ext_attribute_find_by_handle( uint16_t handle, mxos_bt_ext_attribute_value_t** attribute_found );
 
 
 /** Write or update data to the external attribute value object
@@ -352,16 +352,16 @@ OSStatus mxos_bt_peripheral_ext_attribute_find_by_handle( uint16_t handle, mxos_
  * @param length[in]       : Attrubute value offset where data is written to 
  * @param value[in]        : Point to the data
  *
- * @return @ref OSStatus
+ * @return @ref merr_t
  */
-OSStatus mxos_bt_peripheral_ext_attribute_value_write( mxos_bt_ext_attribute_value_t* attribute, uint16_t length, uint16_t value_offset, const uint8_t* value );
+merr_t mxos_bt_peripheral_ext_attribute_value_write( mxos_bt_ext_attribute_value_t* attribute, uint16_t length, uint16_t value_offset, const uint8_t* value );
 
 
 /** Remove all external attribute vale from BT peripheral
  *
- * @return @ref OSStatus
+ * @return @ref merr_t
  */
-OSStatus mxos_bt_peripheral_ext_attribute_remove_all( void );
+merr_t mxos_bt_peripheral_ext_attribute_remove_all( void );
 
 
 /** Send external attribute value to BT client using indicate
@@ -370,9 +370,9 @@ OSStatus mxos_bt_peripheral_ext_attribute_remove_all( void );
  * @param socket[in]       : Pointer to the socket to send attribute value
  * @param attribute[in]    : Pointer to the external attribute that hold the value to be sent
  *
- * @return @ref OSStatus
+ * @return @ref merr_t
  */
-OSStatus mxos_bt_peripheral_gatt_indicate_attribute_value ( mxos_bt_peripheral_socket_t* socket, const mxos_bt_ext_attribute_value_t* attribute );
+merr_t mxos_bt_peripheral_gatt_indicate_attribute_value ( mxos_bt_peripheral_socket_t* socket, const mxos_bt_ext_attribute_value_t* attribute );
 
 
 /** Send external attribute value to BT client using notify
@@ -381,9 +381,9 @@ OSStatus mxos_bt_peripheral_gatt_indicate_attribute_value ( mxos_bt_peripheral_s
  * @param socket[in]       : Pointer to the socket to send attribute value
  * @param attribute[in]    : Pointer to the external attribute that hold the value to be sent
  *
- * @return @ref OSStatus
+ * @return @ref merr_t
  */
-OSStatus mxos_bt_peripheral_gatt_notify_attribute_value( mxos_bt_peripheral_socket_t* socket, const mxos_bt_ext_attribute_value_t* attribute );
+merr_t mxos_bt_peripheral_gatt_notify_attribute_value( mxos_bt_peripheral_socket_t* socket, const mxos_bt_ext_attribute_value_t* attribute );
 
 
 /** @} */

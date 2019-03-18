@@ -52,28 +52,28 @@ extern "C" {
 
 struct mxos_filesystem_driver_struct
 {
-    OSStatus (*init)             ( void );
-    OSStatus (*mount)            ( mxos_block_device_t* device, mxos_filesystem_t* fs_handle_out );
-    OSStatus (*unmount)          ( mxos_filesystem_t* fs_handle );
-    OSStatus (*file_get_details) ( mxos_filesystem_t* fs_handle, const char* filename, mxos_dir_entry_details_t* details_out );
-    OSStatus (*file_open)        ( mxos_filesystem_t* fs_handle, mxos_file_t* file_handle_out, const char* filename, mxos_filesystem_open_mode_t mode );
-    OSStatus (*file_seek)        ( mxos_file_t* file_handle, int64_t offset, mxos_filesystem_seek_type_t whence );
-    OSStatus (*file_tell)        ( mxos_file_t* file_handle, uint64_t* location );
-    OSStatus (*file_read)        ( mxos_file_t* file_handle, void* data, uint64_t bytes_to_read, uint64_t* returned_bytes_count );
-    OSStatus (*file_write)       ( mxos_file_t* file_handle, const void* data, uint64_t bytes_to_write, uint64_t* written_bytes_count );
-    OSStatus (*file_flush)       ( mxos_file_t* file_handle );
+    merr_t (*init)             ( void );
+    merr_t (*mount)            ( mxos_block_device_t* device, mxos_filesystem_t* fs_handle_out );
+    merr_t (*unmount)          ( mxos_filesystem_t* fs_handle );
+    merr_t (*file_get_details) ( mxos_filesystem_t* fs_handle, const char* filename, mxos_dir_entry_details_t* details_out );
+    merr_t (*file_open)        ( mxos_filesystem_t* fs_handle, mxos_file_t* file_handle_out, const char* filename, mxos_filesystem_open_mode_t mode );
+    merr_t (*file_seek)        ( mxos_file_t* file_handle, int64_t offset, mxos_filesystem_seek_type_t whence );
+    merr_t (*file_tell)        ( mxos_file_t* file_handle, uint64_t* location );
+    merr_t (*file_read)        ( mxos_file_t* file_handle, void* data, uint64_t bytes_to_read, uint64_t* returned_bytes_count );
+    merr_t (*file_write)       ( mxos_file_t* file_handle, const void* data, uint64_t bytes_to_write, uint64_t* written_bytes_count );
+    merr_t (*file_flush)       ( mxos_file_t* file_handle );
     int      (*file_end_reached) ( mxos_file_t* file_handle );
-    OSStatus (*file_close)       ( mxos_file_t* file_handle );
-    OSStatus (*file_delete)      ( mxos_filesystem_t* fs_handle, const char* filename );
-    OSStatus (*dir_open)         ( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_handle, const char* dir_name );
-    OSStatus (*dir_read)         ( mxos_dir_t* dir_handle, char* name_buffer, unsigned int name_buffer_length, mxos_dir_entry_type_t* type, mxos_dir_entry_details_t* details );
+    merr_t (*file_close)       ( mxos_file_t* file_handle );
+    merr_t (*file_delete)      ( mxos_filesystem_t* fs_handle, const char* filename );
+    merr_t (*dir_open)         ( mxos_filesystem_t* fs_handle, mxos_dir_t* dir_handle, const char* dir_name );
+    merr_t (*dir_read)         ( mxos_dir_t* dir_handle, char* name_buffer, unsigned int name_buffer_length, mxos_dir_entry_type_t* type, mxos_dir_entry_details_t* details );
     int      (*dir_end_reached)  ( mxos_dir_t* dir_handle );
-    OSStatus (*dir_rewind)       ( mxos_dir_t* dir_handle );
-    OSStatus (*dir_close)        ( mxos_dir_t* dir_handle );
-    OSStatus (*dir_create)       ( mxos_filesystem_t* fs_handle, const char* directory_name );
-    OSStatus (*format)           ( mxos_block_device_t* device );
-    OSStatus (*get_info)         ( mxos_filesystem_info* info,char* mounted_name );
-    OSStatus (*scan_files)       ( char* mounted_name, mxos_scan_file_handle arg );
+    merr_t (*dir_rewind)       ( mxos_dir_t* dir_handle );
+    merr_t (*dir_close)        ( mxos_dir_t* dir_handle );
+    merr_t (*dir_create)       ( mxos_filesystem_t* fs_handle, const char* directory_name );
+    merr_t (*format)           ( mxos_block_device_t* device );
+    merr_t (*get_info)         ( mxos_filesystem_info* info,char* mounted_name );
+    merr_t (*scan_files)       ( char* mounted_name, mxos_scan_file_handle arg );
 };
 
 

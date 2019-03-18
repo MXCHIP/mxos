@@ -34,40 +34,40 @@ static int gpio_result = 0;
 *               Function Definitions
 ******************************************************/
 
-static OSStatus _gpio_test_one( const qc_test_gpio_pair_t* gpio_test_pair )
+static merr_t _gpio_test_one( const qc_test_gpio_pair_t* gpio_test_pair )
 {
     mxos_gpio_t in, out;
-    OSStatus err = kGeneralErr;
+    merr_t err = kGeneralErr;
 
     in  = gpio_test_pair->input_pin;
     out = gpio_test_pair->output_pin;
 
-    mxos_gpio_init(out, OUTPUT_PUSH_PULL);
+    mhal_gpio_open(out, OUTPUT_PUSH_PULL);
 
-    mxos_gpio_init(in, INPUT_PULL_DOWN);
-    mxos_gpio_output_high(out);
+    mhal_gpio_open(in, INPUT_PULL_DOWN);
+    mhal_gpio_high(out);
     mxos_rtos_thread_msleep(1);
-    if (mxos_gpio_input_get(in) != true)
+    if (mhal_gpio_value(in) != true)
         goto EXIT;
 
-    mxos_gpio_init(in, INPUT_PULL_UP);
-    mxos_gpio_output_low(out);
+    mhal_gpio_open(in, INPUT_PULL_UP);
+    mhal_gpio_low(out);
     mxos_rtos_thread_msleep(1);
-    if (mxos_gpio_input_get(in) != false)
+    if (mhal_gpio_value(in) != false)
         goto EXIT;
 
     err = kNoErr;
 
 EXIT:
-    mxos_gpio_init(in, INPUT_HIGH_IMPEDANCE);
-    mxos_gpio_init(out, INPUT_HIGH_IMPEDANCE);
+    mhal_gpio_open(in, INPUT_HIGH_IMPEDANCE);
+    mhal_gpio_open(out, INPUT_HIGH_IMPEDANCE);
     return err;
 }
 
-static OSStatus _gpio_test( const qc_test_gpio_pair_t* gpio_test_pair, int num )
+static merr_t _gpio_test( const qc_test_gpio_pair_t* gpio_test_pair, int num )
 {
     int i;
-    OSStatus err = kNoErr;
+    merr_t err = kNoErr;
     mxos_gpio_t in, out;
     qc_test_gpio_pair_t * gpio_test = (qc_test_gpio_pair_t *)gpio_test_pair;
     
@@ -76,8 +76,8 @@ static OSStatus _gpio_test( const qc_test_gpio_pair_t* gpio_test_pair, int num )
     {
         in  = gpio_test->input_pin;
         out = gpio_test->output_pin;
-        mxos_gpio_init(in,OUTPUT_OPEN_DRAIN_NO_PULL);
-        mxos_gpio_init(out,OUTPUT_OPEN_DRAIN_NO_PULL);
+        mhal_gpio_open(in,OUTPUT_OPEN_DRAIN_NO_PULL);
+        mhal_gpio_open(out,OUTPUT_OPEN_DRAIN_NO_PULL);
         gpio_test++;
     }
     

@@ -37,10 +37,10 @@
 #include "platform_peripheral.h"
 
 /* Legacy definitions */
-#define MxosFlashGetInfo mxos_flash_get_info
-#define MxosFlashErase mxos_flash_erase
-#define MxosFlashWrite mxos_flash_write
-#define MxosFlashRead mxos_flash_read
+#define MxosFlashGetInfo mhal_flash_get_info
+#define MxosFlashErase mhal_flash_erase
+#define MxosFlashWrite mhal_flash_write
+#define MxosFlashRead mhal_flash_read
 #define MxosFlashEnableSecurity mxos_flash_enable_security
 #define MxosFlashDisableSecurity mxos_flash_disable_security
 
@@ -97,7 +97,7 @@ extern const char*  flash_name[];  /**< A name string of a Flash drive */
  *
  * @return  mxos_logi_partition struct
  */
-mxos_logic_partition_t* mxos_flash_get_info( mxos_partition_t inPartition );
+mxos_logic_partition_t* mhal_flash_get_info( mxos_partition_t inPartition );
 
 
 /**@brief   Erase an area on a Flash logical partition
@@ -114,7 +114,7 @@ mxos_logic_partition_t* mxos_flash_get_info( mxos_partition_t inPartition );
  * @return  kNoErr        : On success.
  * @return  kGeneralErr   : If an error occurred with any step
  */
-OSStatus mxos_flash_erase(mxos_partition_t inPartition, uint32_t off_set, uint32_t size);
+merr_t mhal_flash_erase(mxos_partition_t inPartition, uint32_t off_set, uint32_t size);
 
 /**@brief  Write data to an area on a Flash logical partition
  *
@@ -129,7 +129,7 @@ OSStatus mxos_flash_erase(mxos_partition_t inPartition, uint32_t off_set, uint32
  * @return  kNoErr        : On success.
  * @return  kGeneralErr   : If an error occurred with any step
  */
-OSStatus mxos_flash_write( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength);
+merr_t mhal_flash_write( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* inBuffer ,uint32_t inBufferLength);
 
 /**@brief    Read data from an area on a Flash to data buffer in RAM
  *
@@ -144,7 +144,7 @@ OSStatus mxos_flash_write( mxos_partition_t inPartition, volatile uint32_t* off_
  * @return    kNoErr        : On success.
  * @return    kGeneralErr   : If an error occurred with any step
  */
-OSStatus mxos_flash_read( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* outBuffer, uint32_t inBufferLength);
+merr_t mhal_flash_read( mxos_partition_t inPartition, volatile uint32_t* off_set, uint8_t* outBuffer, uint32_t inBufferLength);
 
 
 
@@ -160,7 +160,7 @@ OSStatus mxos_flash_read( mxos_partition_t inPartition, volatile uint32_t* off_s
  * @return    kNoErr        : On success.
  * @return    kGeneralErr   : If an error occurred with any step
  */
-OSStatus mxos_flash_enable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size );
+merr_t mxos_flash_enable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size );
 
 
 
@@ -177,7 +177,7 @@ OSStatus mxos_flash_enable_security( mxos_partition_t partition, uint32_t off_se
  * @return   kNoErr        : On success.
  * @return   kGeneralErr   : If an error occurred with any step
  */
-OSStatus mxos_flash_disable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size );
+merr_t mxos_flash_disable_security( mxos_partition_t partition, uint32_t off_set, uint32_t size );
 #endif
 
 

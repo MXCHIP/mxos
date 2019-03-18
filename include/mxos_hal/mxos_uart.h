@@ -39,11 +39,11 @@
 #include "platform_peripheral.h"
 
 /* Legacy definitions */
-#define MxosUartInitialize          mxos_uart_init
-#define MxosUartFinalize            mxos_uart_deinit
-#define MxosUartSend                mxos_uart_send
-#define MxosUartRecv                mxos_uart_recv
-#define MxosUartGetLengthInBuffer   mxos_uart_recvd_data_len
+#define MxosUartInitialize          mhal_uart_open
+#define MxosUartFinalize            mhal_uart_close
+#define MxosUartSend                mhal_uart_write
+#define MxosUartRecv                mhal_uart_read
+#define MxosUartGetLengthInBuffer   mhal_uart_readd_data_len
 #define MxosStdioUartInitialize     mxos_stdio_uart_init
 
 /** @addtogroup MXOS_PLATFORM
@@ -88,7 +88,7 @@ typedef platform_uart_config_t mxos_uart_config_t;
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus mxos_uart_init( mxos_uart_t uart, const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer );
+merr_t mhal_uart_open( mxos_uart_t uart, const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer );
 
 
 /**@brief Initialises STDIO UART interface
@@ -101,7 +101,7 @@ OSStatus mxos_uart_init( mxos_uart_t uart, const mxos_uart_config_t* config, rin
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus mxos_stdio_uart_init( const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer );
+merr_t mxos_stdio_uart_init( const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer );
 
 
 
@@ -115,7 +115,7 @@ OSStatus mxos_stdio_uart_init( const mxos_uart_config_t* config, ring_buffer_t* 
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus mxos_stdio_uart_init( const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer );
+merr_t mxos_stdio_uart_init( const mxos_uart_config_t* config, ring_buffer_t* optional_rx_buffer );
 
 
 /**@brief Deinitialises a UART interface
@@ -125,7 +125,7 @@ OSStatus mxos_stdio_uart_init( const mxos_uart_config_t* config, ring_buffer_t* 
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus mxos_uart_deinit( mxos_uart_t uart );
+merr_t mhal_uart_close( mxos_uart_t uart );
 
 
 /**@brief Transmit data on a UART interface
@@ -137,7 +137,7 @@ OSStatus mxos_uart_deinit( mxos_uart_t uart );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus mxos_uart_send( mxos_uart_t uart, const void* data, uint32_t size );
+merr_t mhal_uart_write( mxos_uart_t uart, const void* data, uint32_t size );
 
 
 /**@brief Receive data on a UART interface
@@ -150,7 +150,7 @@ OSStatus mxos_uart_send( mxos_uart_t uart, const void* data, uint32_t size );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus mxos_uart_recv( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout );
+merr_t mhal_uart_read( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout );
 
 /**@brief Read the length of the data that is already recived by uart driver and stored in buffer
  *
@@ -158,7 +158,7 @@ OSStatus mxos_uart_recv( mxos_uart_t uart, void* data, uint32_t size, uint32_t t
  *
  * @return    Data length
  */
-uint32_t mxos_uart_recvd_data_len( mxos_uart_t uart );
+uint32_t mhal_uart_readd_data_len( mxos_uart_t uart );
 
 /** @} */
 /** @} */

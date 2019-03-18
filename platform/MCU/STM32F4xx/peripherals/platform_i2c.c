@@ -51,24 +51,24 @@
 *               Function Declarations
 ******************************************************/
 
-static OSStatus i2c_address_device( const platform_i2c_t* i2c, const platform_i2c_config_t* config, int retries, uint8_t direction );
-static OSStatus i2c_wait_for_event( I2C_TypeDef* i2c, uint32_t event_id, uint32_t number_of_waits );
-static OSStatus i2c_transfer_message_no_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message );
+static merr_t i2c_address_device( const platform_i2c_t* i2c, const platform_i2c_config_t* config, int retries, uint8_t direction );
+static merr_t i2c_wait_for_event( I2C_TypeDef* i2c, uint32_t event_id, uint32_t number_of_waits );
+static merr_t i2c_transfer_message_no_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message );
 #ifdef I2C_USE_DMA
-static OSStatus i2c_rx_with_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message );
-static OSStatus i2c_tx_with_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message );
+static merr_t i2c_rx_with_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message );
+static merr_t i2c_tx_with_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message );
 #else
-static OSStatus i2c_tx_no_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message );
-static OSStatus i2c_rx_no_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message );
+static merr_t i2c_tx_no_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message );
+static merr_t i2c_rx_no_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message );
 #endif
 
 /******************************************************
 *               Function Definitions
 ******************************************************/
 
-OSStatus platform_i2c_init( const platform_i2c_t* i2c, const platform_i2c_config_t* config )
+merr_t platform_i2c_init( const platform_i2c_t* i2c, const platform_i2c_config_t* config )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   I2C_InitTypeDef  I2C_InitStructure;
 
   platform_mcu_powersave_disable( );
@@ -181,7 +181,7 @@ static uint32_t dma_flag_tc( int stream_id )
 
 bool platform_i2c_probe_device( const platform_i2c_t* i2c, const platform_i2c_config_t* config, int retries )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
 
   platform_mcu_powersave_disable();
 
@@ -197,7 +197,7 @@ exit:
 }
 
 #ifdef I2C_USE_DMA
-static OSStatus i2c_dma_config_and_execute( mxos_i2c_device_t* device, mxos_i2c_message_t* message, bool tx_dma  )
+static merr_t i2c_dma_config_and_execute( mxos_i2c_device_t* device, mxos_i2c_message_t* message, bool tx_dma  )
 {
   uint32_t counter;
   
@@ -271,9 +271,9 @@ static OSStatus i2c_dma_config_and_execute( mxos_i2c_device_t* device, mxos_i2c_
   return kNoErr;
 }
 
-static OSStatus i2c_dma_transfer( mxos_i2c_device_t* device, mxos_i2c_message_t* message )
+static merr_t i2c_dma_transfer( mxos_i2c_device_t* device, mxos_i2c_message_t* message )
 {
-  OSStatus       result;
+  merr_t       result;
   uint32_t       counter;
   int            i = 0;
   
@@ -488,9 +488,9 @@ static OSStatus i2c_dma_transfer( mxos_i2c_device_t* device, mxos_i2c_message_t*
 }
 #else
 
-static OSStatus i2c_transfer_message_no_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message )
+static merr_t i2c_transfer_message_no_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message )
 {
-    OSStatus err;
+    merr_t err;
 
     if ( message->tx_buffer != NULL )
     {
@@ -518,9 +518,9 @@ exit:
 
 #endif
 
-OSStatus platform_i2c_init_tx_message( platform_i2c_message_t* message, const void* tx_buffer, uint16_t tx_buffer_length, uint16_t retries )
+merr_t platform_i2c_init_tx_message( platform_i2c_message_t* message, const void* tx_buffer, uint16_t tx_buffer_length, uint16_t retries )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
 
   require_action_quiet( ( message != NULL ) && ( tx_buffer != NULL ) && ( tx_buffer_length != 0 ), exit, err = kParamErr);
 
@@ -533,9 +533,9 @@ exit:
   return err;
 }
 
-OSStatus platform_i2c_init_rx_message( platform_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length, uint16_t retries )
+merr_t platform_i2c_init_rx_message( platform_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length, uint16_t retries )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
 
   require_action_quiet( ( message != NULL ) && ( rx_buffer != NULL ) && ( rx_buffer_length != 0 ), exit, err = kParamErr);
 
@@ -548,9 +548,9 @@ exit:
   return err;
 }
 
-OSStatus platform_i2c_init_combined_message( platform_i2c_message_t* message, const void* tx_buffer, void* rx_buffer, uint16_t tx_buffer_length, uint16_t rx_buffer_length, uint16_t retries )
+merr_t platform_i2c_init_combined_message( platform_i2c_message_t* message, const void* tx_buffer, void* rx_buffer, uint16_t tx_buffer_length, uint16_t rx_buffer_length, uint16_t retries )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
 
   require_action_quiet( ( message != NULL ) && ( tx_buffer != NULL ) && ( tx_buffer_length != 0 ) && ( rx_buffer != NULL ) && ( rx_buffer_length != 0 ), exit, err = kParamErr);
 
@@ -565,9 +565,9 @@ exit:
   return err;
 }
 
-OSStatus platform_i2c_transfer( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* messages, uint16_t number_of_messages )
+merr_t platform_i2c_transfer( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* messages, uint16_t number_of_messages )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   int      i   = 0;
 
   platform_mcu_powersave_disable();
@@ -590,10 +590,10 @@ OSStatus platform_i2c_transfer( const platform_i2c_t* i2c, const platform_i2c_co
   return err;
 }
 
-OSStatus platform_i2c_deinit( const platform_i2c_t* i2c, const platform_i2c_config_t* config )
+merr_t platform_i2c_deinit( const platform_i2c_t* i2c, const platform_i2c_config_t* config )
 {
   UNUSED_PARAMETER( config );
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   
   platform_mcu_powersave_disable();
 
@@ -615,7 +615,7 @@ exit:
 }
 
 
-static OSStatus i2c_wait_for_event( I2C_TypeDef* i2c, uint32_t event_id, uint32_t number_of_waits )
+static merr_t i2c_wait_for_event( I2C_TypeDef* i2c, uint32_t event_id, uint32_t number_of_waits )
 {
   while ( I2C_CheckEvent( i2c, event_id ) != SUCCESS )
   {
@@ -628,9 +628,9 @@ static OSStatus i2c_wait_for_event( I2C_TypeDef* i2c, uint32_t event_id, uint32_
   return kNoErr;
 }
 
-static OSStatus i2c_address_device( const platform_i2c_t* i2c, const platform_i2c_config_t* config, int retries, uint8_t direction )
+static merr_t i2c_address_device( const platform_i2c_t* i2c, const platform_i2c_config_t* config, int retries, uint8_t direction )
 {
-  OSStatus err = kTimeoutErr;
+  merr_t err = kTimeoutErr;
   retries = 1000;
 
   /* Some chips( authentication and security related chips ) has to be addressed several times before they acknowledge their address */
@@ -661,9 +661,9 @@ exit:
     return err;
 }
 
-static OSStatus i2c_tx_no_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message )
+static merr_t i2c_tx_no_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message )
 {
-    OSStatus          err = kNoErr;
+    merr_t          err = kNoErr;
     int               i;
 
     /* Send data */
@@ -683,9 +683,9 @@ exit:
     return err;
 }
 
-static OSStatus i2c_rx_no_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message )
+static merr_t i2c_rx_no_dma( const platform_i2c_t* i2c, const platform_i2c_config_t* config, platform_i2c_message_t* message )
 {
-    OSStatus          err = kNoErr;
+    merr_t          err = kNoErr;
     int               i;
 
     err = i2c_address_device( i2c, config, message->retries, I2C_Direction_Receiver );

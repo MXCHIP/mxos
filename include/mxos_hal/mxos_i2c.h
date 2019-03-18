@@ -101,7 +101,7 @@ typedef struct
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred during initialisation
  */
-OSStatus mxos_i2c_init( mxos_i2c_device_t* device );
+merr_t mxos_i2c_init( mxos_i2c_device_t* device );
 
 
 /**@brief Checks whether the device is available on a bus or not
@@ -125,7 +125,7 @@ bool mxos_i2c_probe_dev( mxos_i2c_device_t* device, int retries );
  * @return    kNoErr    : message structure was initialised properly.
  * @return    kParamErr : one of the arguments is given incorrectly
  */
-OSStatus mxos_i2c_build_tx_msg(mxos_i2c_message_t* message, const void* tx_buffer, uint16_t  tx_buffer_length, uint16_t retries);
+merr_t mxos_i2c_build_tx_msg(mxos_i2c_message_t* message, const void* tx_buffer, uint16_t  tx_buffer_length, uint16_t retries);
 
 /**@brief Initialize the mxos_i2c_message_t structure for i2c rx transaction
  *
@@ -137,7 +137,7 @@ OSStatus mxos_i2c_build_tx_msg(mxos_i2c_message_t* message, const void* tx_buffe
  * @return    kNoErr    : message structure was initialised properly.
  * @return    kParamErr : one of the arguments is given incorrectly
  */
-OSStatus mxos_i2c_build_rx_msg(mxos_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length, uint16_t retries);
+merr_t mxos_i2c_build_rx_msg(mxos_i2c_message_t* message, void* rx_buffer, uint16_t rx_buffer_length, uint16_t retries);
 
 
 /**@brief Initialize the mxos_i2c_message_t structure for i2c combined transaction
@@ -152,7 +152,7 @@ OSStatus mxos_i2c_build_rx_msg(mxos_i2c_message_t* message, void* rx_buffer, uin
  * @return    kNoErr    : message structure was initialised properly.
  * @return    kParamErr : one of the arguments is given incorrectly
  */
-OSStatus mxos_i2c_build_comb_msg(mxos_i2c_message_t* message, const void* tx_buffer, void* rx_buffer, uint16_t tx_buffer_length, uint16_t rx_buffer_length, uint16_t retries);
+merr_t mxos_i2c_build_comb_msg(mxos_i2c_message_t* message, const void* tx_buffer, void* rx_buffer, uint16_t tx_buffer_length, uint16_t rx_buffer_length, uint16_t retries);
 
 
 /**@brief Transmits and/or receives data over an I2C interface
@@ -164,7 +164,7 @@ OSStatus mxos_i2c_build_comb_msg(mxos_i2c_message_t* message, const void* tx_buf
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred during message transfer
  */
-OSStatus mxos_i2c_transfer( mxos_i2c_device_t* device, mxos_i2c_message_t* message, uint16_t number_of_messages );
+merr_t mxos_i2c_transfer( mxos_i2c_device_t* device, mxos_i2c_message_t* message, uint16_t number_of_messages );
 
 
 /**@brief Deinitialises an I2C device
@@ -174,7 +174,7 @@ OSStatus mxos_i2c_transfer( mxos_i2c_device_t* device, mxos_i2c_message_t* messa
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred during deinitialisation
  */
-OSStatus mxos_i2c_deinit( mxos_i2c_device_t* device );
+merr_t mxos_i2c_deinit( mxos_i2c_device_t* device );
 
 
 /** @} */

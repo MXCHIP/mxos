@@ -65,7 +65,7 @@ extern int bt_bus_receive( uint8_t* data_in, uint32_t size, uint32_t timeout_ms 
 extern int bt_bus_uart_reset( void );
 extern int bt_bus_uart_reconifig_baud(uint32_t baud);
 extern bool bt_bus_is_ready( void );
-extern OSStatus platform_uart_reconfig( platform_uart_driver_t* driver, const platform_uart_config_t* config );
+extern merr_t platform_uart_reconfig( platform_uart_driver_t* driver, const platform_uart_config_t* config );
 
 
 /******************************************************

@@ -52,7 +52,7 @@
 *               Function Declarations
 ******************************************************/
 
-extern OSStatus host_platform_init( void );
+extern merr_t host_platform_init( void );
 
 /******************************************************
 *               Variables Definitions
@@ -168,7 +168,7 @@ void init_architecture( void )
   platform_mcu_powersave_disable( );
 }
 
-OSStatus stdio_hardfault( char* data, uint32_t size )
+merr_t stdio_hardfault( char* data, uint32_t size )
 {
 #ifndef MXOS_DISABLE_STDIO
   uint32_t idx;

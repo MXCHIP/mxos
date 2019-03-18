@@ -68,11 +68,11 @@ typedef enum
 /******************************************************
  *               Static Function Declarations
  ******************************************************/
-static OSStatus stm32f2_rtc_change_clock                   ( rtc_clock_state_t* current, rtc_clock_state_t target );
+static merr_t stm32f2_rtc_change_clock                   ( rtc_clock_state_t* current, rtc_clock_state_t target );
 static uint32_t convert_rtc_calendar_values_to_units_passed( void );
 static void     reset_rtc_values                           ( void );
 #if ( defined( MXOS_ENABLE_MCU_RTC ) && !defined( MXOS_DISABLE_MCU_POWERSAVE ) )
-static OSStatus compensate_time_error                      ( uint32_t sec, bool subtract );
+static merr_t compensate_time_error                      ( uint32_t sec, bool subtract );
 static int      add_1p25ms_contribution                    ( uint32_t ms, uint32_t* seconds_contribution );
 #endif /* #ifndef MXOS_DISABLE_MCU_POWERSAVE */
 
@@ -114,7 +114,7 @@ static rtc_clock_state_t   current_clock_state  = CLOCKING_EVERY_SEC;
 *               Function Definitions
 ******************************************************/
 
-OSStatus platform_rtc_init(void)
+merr_t platform_rtc_init(void)
 {
 #ifdef MXOS_ENABLE_MCU_RTC
     RTC_InitTypeDef RTC_InitStruct;
@@ -202,7 +202,7 @@ return t;
 *
 * @return    kNoErr : on success.
 */
-OSStatus platform_rtc_get_time( time_t *t )
+merr_t platform_rtc_get_time( time_t *t )
 {
 #ifdef MXOS_ENABLE_MCU_RTC
     RTC_DateTypeDef dateStruct;
@@ -243,7 +243,7 @@ OSStatus platform_rtc_get_time( time_t *t )
 *
 * @return    kNoErr : on success.
 */
-OSStatus platform_rtc_set_time( time_t t )
+merr_t platform_rtc_set_time( time_t t )
 {
 #ifdef MXOS_ENABLE_MCU_RTC
   RTC_TimeTypeDef timeStruct;
@@ -283,7 +283,7 @@ OSStatus platform_rtc_set_time( time_t t )
 #endif /* #ifdef MXOS_ENABLE_MCU_RTC */
 }
 
-OSStatus platform_rtc_enter_powersave ( void )
+merr_t platform_rtc_enter_powersave ( void )
 {
 
 //#ifdef RTC_ENABLED /* !!If we dont read the time and store it. get an error while trying to enter STM RTC initialisation mode */
@@ -300,7 +300,7 @@ OSStatus platform_rtc_enter_powersave ( void )
     return kNoErr;
 }
 
-OSStatus platform_rtc_abort_powersave( void )
+merr_t platform_rtc_abort_powersave( void )
 {
     /* Change the clocking state of the RTC, so its tick is back to normal */
     stm32f2_rtc_change_clock( &current_clock_state, CLOCKING_EVERY_SEC );
@@ -313,7 +313,7 @@ OSStatus platform_rtc_abort_powersave( void )
     return kNoErr;
 }
 
-OSStatus platform_rtc_exit_powersave( uint32_t requested_sleep_time, uint32_t *cpu_sleep_time )
+merr_t platform_rtc_exit_powersave( uint32_t requested_sleep_time, uint32_t *cpu_sleep_time )
 {
     uint32_t    time_units_passed_since_powersave_enter; /* time unit is 1.25ms when we are sleeping */
 #ifdef MXOS_ENABLE_MCU_RTC
@@ -365,7 +365,7 @@ OSStatus platform_rtc_exit_powersave( uint32_t requested_sleep_time, uint32_t *c
     return kNoErr;
 }
 
-static OSStatus stm32f2_rtc_change_clock( rtc_clock_state_t* current, rtc_clock_state_t target )
+static merr_t stm32f2_rtc_change_clock( rtc_clock_state_t* current, rtc_clock_state_t target )
 {
     uint8_t sync_div;
     uint8_t async_div;
@@ -532,7 +532,7 @@ static uint32_t convert_rtc_calendar_values_to_units_passed( void )
 
 #if ( defined( MXOS_ENABLE_MCU_RTC ) && !defined( MXOS_DISABLE_MCU_POWERSAVE ) )
 
-static OSStatus compensate_time_error( uint32_t sec, bool subtract )
+static merr_t compensate_time_error( uint32_t sec, bool subtract )
 {
     if( subtract == false )
     {

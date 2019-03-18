@@ -66,7 +66,7 @@
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus mxoskit_STmems_init(void);   
+merr_t mxoskit_STmems_init(void);   
 
 /**
   * @}

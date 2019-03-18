@@ -377,16 +377,16 @@ typedef struct {
 typedef void (*ble_access_event_callback_t)(uint8_t event, const ble_access_evt_parms_t *params);
 
 /* Initialize Bluetooth Interface */
-extern OSStatus ble_access_bluetooth_init(void);
+extern merr_t ble_access_bluetooth_init(void);
 
 /* Start BLE Auto Connection Procedure */
-extern OSStatus ble_access_bluetooth_start(ble_access_event_callback_t callback);
+extern merr_t ble_access_bluetooth_start(ble_access_event_callback_t callback);
 
 /* Stop BLE Auto Connection Procedure */
-extern OSStatus ble_access_bluetooth_stop(void);
+extern merr_t ble_access_bluetooth_stop(void);
 
 /* Send a command to Bluetooth Interface. */
-extern OSStatus ble_access_bluetooth_request(uint8_t request, 
+extern merr_t ble_access_bluetooth_request(uint8_t request, 
                                              const ble_access_cmd_parms_t *parms);
 
 /* 
@@ -397,7 +397,7 @@ extern OSStatus ble_access_bluetooth_request(uint8_t request,
  * @param uuid[in]      The Characteristic UUID.
  * @param attr[inout]    This function calling result in attr->characteristic.
  */
-extern OSStatus ble_access_get_characteritic_by_uuid(uint32_t dev_id, 
+extern merr_t ble_access_get_characteritic_by_uuid(uint32_t dev_id, 
                                                       const ble_access_serv_t *serv, 
                                                       const ble_access_uuid_t *uuid,
                                                       ble_access_attribute_t *attr);
@@ -409,7 +409,7 @@ extern OSStatus ble_access_get_characteritic_by_uuid(uint32_t dev_id,
  * @param dev_id[in]    The Peer Device ID.
  * @param serv[in]      The GATT Service Handle Structure. (used start_handle & end_handle)
  */
-extern OSStatus ble_access_get_characteristics(uint32_t dev_id, 
+extern merr_t ble_access_get_characteristics(uint32_t dev_id, 
                                                 const ble_access_serv_t *serv);
 
 /* 
@@ -420,7 +420,7 @@ extern OSStatus ble_access_get_characteristics(uint32_t dev_id,
  * @param attr[out]     This function calling result. And user should make sure its is a valid pointer. 
  * @param size[in]      The 'attr' buffer size in bytes.  
  */
-extern OSStatus ble_access_get_attribute_by_handle(uint32_t dev_id, 
+extern merr_t ble_access_get_attribute_by_handle(uint32_t dev_id, 
                                                    uint16_t handle, 
                                                    ble_access_attribute_t *attr);
 
@@ -432,7 +432,7 @@ extern OSStatus ble_access_get_attribute_by_handle(uint32_t dev_id,
  * @param length[in]    The lenght of Data to update characteristic value.
  * @param data[in]      Point to the data to update characteristic value.
  */
-extern OSStatus ble_access_update_characteristic_value(uint32_t dev_id, uint16_t handle, uint8_t length, uint8_t *data);
+extern merr_t ble_access_update_characteristic_value(uint32_t dev_id, uint16_t handle, uint8_t length, uint8_t *data);
 
 /* 
  * Enable Characteristic Client Configuration Indication or Notification with the 
@@ -442,7 +442,7 @@ extern OSStatus ble_access_update_characteristic_value(uint32_t dev_id, uint16_t
  * @param attr[int]     This function calling result. And user should make sure its is a valid pointer. 
  * @param notify[in]    Notification(YES) or Indication(FALSE)
  */
-extern OSStatus ble_access_enable_notification(uint32_t dev_id, 
+extern merr_t ble_access_enable_notification(uint32_t dev_id, 
                                                 const ble_access_attribute_t *attr, 
                                                 mxos_bool_t notify);
 
@@ -473,7 +473,7 @@ extern uint32_t ble_access_calculate_device_id(const mxos_bt_device_address_t ad
  *
  * @return kNoErr if successful.
  */
-extern OSStatus ble_access_generate_device_address(mxos_bt_device_address_t addr, uint32_t device_id);
+extern merr_t ble_access_generate_device_address(mxos_bt_device_address_t addr, uint32_t device_id);
 
 #ifdef __cplusplus
 }

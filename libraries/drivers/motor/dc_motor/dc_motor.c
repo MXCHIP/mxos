@@ -26,16 +26,16 @@
 
 int dc_motor_init(void)
 {
-  return mxos_gpio_init( DC_MOTOR, OUTPUT_PUSH_PULL );
+  return mhal_gpio_open( DC_MOTOR, OUTPUT_PUSH_PULL );
 }
 
 int dc_motor_set(int value)
 {
   if (0 == value) {
-    mxos_gpio_output_low( DC_MOTOR );
+    mhal_gpio_low( DC_MOTOR );
   } 
   else {
-    mxos_gpio_output_high( DC_MOTOR );
+    mhal_gpio_high( DC_MOTOR );
   }
   
   return 0;

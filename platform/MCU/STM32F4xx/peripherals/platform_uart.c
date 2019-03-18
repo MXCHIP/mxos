@@ -109,7 +109,7 @@ static const IRQn_Type uart_irq_vectors[NUMBER_OF_UART_PORTS] =
 /******************************************************
 *        Static Function Declarations
 ******************************************************/
-static OSStatus receive_bytes       ( platform_uart_driver_t* driver, void* data, uint32_t size, uint32_t timeout );
+static merr_t receive_bytes       ( platform_uart_driver_t* driver, void* data, uint32_t size, uint32_t timeout );
 static uint32_t get_dma_irq_status  ( DMA_Stream_TypeDef* stream );
 static void     clear_dma_interrupts( DMA_Stream_TypeDef* stream, uint32_t flags );
 
@@ -117,12 +117,12 @@ static void     clear_dma_interrupts( DMA_Stream_TypeDef* stream, uint32_t flags
 *               Function Definitions
 ******************************************************/
 
-OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart_t* peripheral, const platform_uart_config_t* config, ring_buffer_t* optional_ring_buffer )
+merr_t platform_uart_init( platform_uart_driver_t* driver, const platform_uart_t* peripheral, const platform_uart_config_t* config, ring_buffer_t* optional_ring_buffer )
 {
   DMA_InitTypeDef   dma_init_structure;
   USART_InitTypeDef uart_init_structure;
   uint32_t          uart_number;
-  OSStatus          err = kNoErr;
+  merr_t          err = kNoErr;
 
   platform_mcu_powersave_disable();
 
@@ -139,9 +139,9 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
 
   if( driver->initialized == false )  
   {
-    mxos_rtos_init_semaphore( &driver->tx_complete, 1 );
-    mxos_rtos_init_semaphore( &driver->rx_complete, 1 );
-    mxos_rtos_init_mutex    ( &driver->tx_mutex );
+    driver->tx_complete = mos_semphr_new( 1 );
+    driver->rx_complete = mos_semphr_new( 1 );
+    driver->tx_mutex = mos_mutex_new( );
 
     /* Configure TX and RX pin_mapping */
     platform_gpio_set_alternate_function( peripheral->pin_tx->port, peripheral->pin_tx->pin_number, GPIO_OType_PP, GPIO_PuPd_UP, uart_alternate_functions[ uart_number ] );
@@ -319,10 +319,10 @@ exit:
   return err;
 }
 
-OSStatus platform_uart_deinit( platform_uart_driver_t* driver )
+merr_t platform_uart_deinit( platform_uart_driver_t* driver )
 {
   uint8_t          uart_number;
-  OSStatus          err = kNoErr;
+  merr_t          err = kNoErr;
 
   platform_mcu_powersave_disable();
 
@@ -363,9 +363,9 @@ OSStatus platform_uart_deinit( platform_uart_driver_t* driver )
   /* Disable registers clocks */
   uart_peripheral_clock_functions[uart_number]( uart_peripheral_clocks[uart_number], DISABLE );
 
-  mxos_rtos_deinit_semaphore( &driver->rx_complete );
-  mxos_rtos_deinit_semaphore( &driver->tx_complete );
-  mxos_rtos_deinit_mutex( &driver->tx_mutex );
+  mos_semphr_delete(driver->rx_complete );
+  mos_semphr_delete(driver->tx_complete );
+  mos_mutex_delete( driver->tx_mutex );
   driver->rx_size              = 0;
   driver->tx_size              = 0;
   driver->last_transmit_result = kNoErr;
@@ -377,13 +377,13 @@ exit:
     return err;
 }
 
-OSStatus platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8_t* data_out, uint32_t size )
+merr_t platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8_t* data_out, uint32_t size )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
 
   platform_mcu_powersave_disable();
   
-  mxos_rtos_lock_mutex( &driver->tx_mutex );
+  mos_mutex_lock(driver->tx_mutex );
 
   require_action_quiet( ( driver != NULL ) && ( data_out != NULL ) && ( size != 0 ), exit, err = kParamErr);
 
@@ -402,7 +402,7 @@ OSStatus platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uin
   driver->peripheral->tx_dma_config.stream->CR   |= DMA_SxCR_EN;
   
 /* Wait for transmission complete */
-  mxos_rtos_get_semaphore( &driver->tx_complete, MXOS_NEVER_TIMEOUT );
+  mos_semphr_acquire(driver->tx_complete, MXOS_NEVER_TIMEOUT );
 
   while ( ( driver->peripheral->port->SR & USART_SR_TC ) == 0 )
   {
@@ -414,20 +414,20 @@ OSStatus platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uin
   err = driver->last_transmit_result;
 
 exit:  
-  mxos_rtos_unlock_mutex( &driver->tx_mutex );
+  mos_mutex_unlock(driver->tx_mutex );
   platform_mcu_powersave_enable();
   return err;
 }
 
-OSStatus platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* data_in, uint32_t expected_data_size, uint32_t timeout_ms )
+merr_t platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* data_in, uint32_t expected_data_size, uint32_t timeout_ms )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
 
   //platform_mcu_powersave_disable();
 
   require_action_quiet( ( driver != NULL ) && ( data_in != NULL ) && ( expected_data_size != 0 ), exit, err = kParamErr);
 
-  mxos_rtos_get_semaphore( &driver->rx_complete, 0 );
+  mos_semphr_acquire(driver->rx_complete, 0 );
 
   if ( driver->rx_buffer != NULL)
   {
@@ -448,7 +448,7 @@ OSStatus platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* d
       /* Check if ring buffer already contains the required amount of data. */
       if ( transfer_size > ring_buffer_used_space( driver->rx_buffer ) )
       {
-        err = mxos_rtos_get_semaphore( &driver->rx_complete, timeout_ms );
+        err = mos_semphr_acquire(driver->rx_complete, timeout_ms );
 
         /* Reset rx_size to prevent semaphore being set while nothing waits for the data */
         driver->rx_size = 0;
@@ -485,9 +485,9 @@ exit:
   return err;
 }
 
-static OSStatus receive_bytes( platform_uart_driver_t* driver, void* data, uint32_t size, uint32_t timeout )
+static merr_t receive_bytes( platform_uart_driver_t* driver, void* data, uint32_t size, uint32_t timeout )
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
 
   if ( driver->rx_buffer != NULL )
   {
@@ -512,7 +512,7 @@ static OSStatus receive_bytes( platform_uart_driver_t* driver, void* data, uint3
   
   if ( timeout > 0 )
   {
-    err = mxos_rtos_get_semaphore( &driver->rx_complete, timeout );
+    err = mos_semphr_acquire(driver->rx_complete, timeout );
   }
   return err;
 }
@@ -614,7 +614,7 @@ void platform_uart_irq( platform_uart_driver_t* driver )
               ring_buffer_write( driver->rx_buffer, &recv_byte, 1 );
               if ( ( driver->rx_size > 0 ) && ( ring_buffer_used_space( driver->rx_buffer ) >= driver->rx_size ) )
               {
-                   mxos_rtos_set_semaphore( &driver->rx_complete );
+                   mos_semphr_release(driver->rx_complete );
                    driver->rx_size = 0;
               }
           } else
@@ -646,7 +646,7 @@ void platform_uart_tx_dma_irq( platform_uart_driver_t* driver )
     if ( driver->tx_size > 0 )
     {
         /* Set semaphore regardless of result to prevent waiting thread from locking up */
-        mxos_rtos_set_semaphore( &driver->tx_complete );
+        mos_semphr_release(driver->tx_complete );
     }
 }
 
@@ -667,7 +667,7 @@ void platform_uart_rx_dma_irq( platform_uart_driver_t* driver )
     if ( driver->rx_size > 0 )
     {
         /* Set semaphore regardless of result to prevent waiting thread from locking up */
-        mxos_rtos_set_semaphore( &driver->rx_complete );
+        mos_semphr_release(driver->rx_complete );
     }
 }
 

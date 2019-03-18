@@ -54,7 +54,7 @@
 
 
 /*** Mutex ***/
-typedef mxos_mutex_t os_mutex_t;
+typedef mos_mutex_id_t os_mutex_t;
 
 /** Priority Inheritance Enabled */
 #define OS_MUTEX_INHERIT     1
@@ -80,7 +80,8 @@ static inline int os_mutex_create(os_mutex_t *mhandle,
  */
 static inline int os_mutex_create(os_mutex_t *mhandle, const char *name, int flags)
 {
-    return  mxos_rtos_init_mutex( mhandle );
+    *mhandle = mos_mutex_new( );
+    return *mhandle == NULL ? WM_FAIL : WM_SUCCESS;
 }
 
 /** Acquire mutex
@@ -102,7 +103,7 @@ static inline int os_mutex_create(os_mutex_t *mhandle, const char *name, int fla
  */
 static inline int os_mutex_get(os_mutex_t *mhandle, unsigned long wait)
 {
-    return mxos_rtos_lock_mutex( mhandle );
+    return mos_mutex_lock( mhandle );
 }
 
 /** Release mutex
@@ -121,7 +122,7 @@ static inline int os_mutex_get(os_mutex_t *mhandle, unsigned long wait)
  */
 static inline int os_mutex_put(os_mutex_t *mhandle)
 {
-    return mxos_rtos_unlock_mutex( mhandle );
+    return mos_mutex_unlock( mhandle );
 }
 
 /** Delete mutex
@@ -136,7 +137,7 @@ static inline int os_mutex_put(os_mutex_t *mhandle)
  */
 static inline int os_mutex_delete(os_mutex_t *mhandle)
 {
-    return mxos_rtos_deinit_mutex( mhandle );
+    return mos_mutex_delete( mhandle );
 }
 
 /* Critical Sections */

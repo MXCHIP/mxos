@@ -40,23 +40,23 @@ typedef struct _configContext_t{
   CRC16_Context crc16_contex;
 } configContext_t;
 
-extern OSStatus     ConfigIncommingJsonMessage( int fd, const char *input, bool *need_reboot, mxos_Context_t * const inContext );
+extern merr_t     ConfigIncommingJsonMessage( int fd, const char *input, bool *need_reboot, mxos_Context_t * const inContext );
 extern json_object* ConfigCreateReportJsonMessage( mxos_Context_t * const inContext );
 
 static void localConfiglistener_thread(uint32_t inContext);
 static void localConfig_thread(uint32_t inFd);
-static OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system_context_t * const inContext);
-static OSStatus onReceivedData(struct _HTTPHeader_t * httpHeader, uint32_t pos, uint8_t * data, size_t len, void * userContext );
+static merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system_context_t * const inContext);
+static merr_t onReceivedData(struct _HTTPHeader_t * httpHeader, uint32_t pos, uint8_t * data, size_t len, void * userContext );
 static void onClearHTTPHeader(struct _HTTPHeader_t * httpHeader, void * userContext );
 static config_server_uap_configured_cb _uap_configured_cb = NULL;
 
 bool is_config_server_established = false;
 
 /* Defined in uAP config mode */
-extern OSStatus ConfigIncommingJsonMessageUAP( int fd, const uint8_t *input, size_t size, system_context_t * const inContext );
+extern merr_t ConfigIncommingJsonMessageUAP( int fd, const uint8_t *input, size_t size, system_context_t * const inContext );
 extern system_context_t* sys_context;
 
-static mxos_semaphore_t close_listener_sem = NULL, close_client_sem[ MAX_TCP_CLIENT_PER_SERVER ] = { NULL };
+static mos_semphr_id_t close_listener_sem = NULL, close_client_sem[ MAX_TCP_CLIENT_PER_SERVER ] = { NULL };
 
 WEAK void config_server_delegate_report( json_object *app_menu, mxos_Context_t *in_context )
 {
@@ -79,10 +79,10 @@ void config_server_set_uap_cb( config_server_uap_configured_cb callback )
     _uap_configured_cb = callback;
 }
 
-OSStatus config_server_start ( void )
+merr_t config_server_start ( void )
 {
   int i = 0;
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   
   require( sys_context, exit );
   
@@ -94,8 +94,8 @@ OSStatus config_server_start ( void )
   close_listener_sem = NULL;
   for (; i < MAX_TCP_CLIENT_PER_SERVER; i++)
     close_client_sem[ i ] = NULL;
-  err = mxos_rtos_create_thread( NULL, MXOS_APPLICATION_PRIORITY, "Config Server", localConfiglistener_thread, STACK_SIZE_LOCAL_CONFIG_SERVER_THREAD, 0 );
-  require_noerr(err, exit);
+  require_action(mos_thread_new( MXOS_APPLICATION_PRIORITY, "Config Server", localConfiglistener_thread, 
+  STACK_SIZE_LOCAL_CONFIG_SERVER_THREAD, NULL ) != NULL, exit, err = kGeneralErr);
   
   mxos_thread_msleep(200);
 
@@ -103,22 +103,22 @@ exit:
   return err;
 }
 
-OSStatus config_server_stop( void )
+merr_t config_server_stop( void )
 {
   int i = 0;
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
 
   if( !is_config_server_established )
     return kNoErr;
 
   for (; i < MAX_TCP_CLIENT_PER_SERVER; i++){
     if( close_client_sem[ i ] != NULL )
-      mxos_rtos_set_semaphore( &close_client_sem[ i ] );
+      mos_semphr_release(close_client_sem[ i ] );
   }
   mxos_thread_msleep(50);
 
   if( close_listener_sem != NULL )
-    mxos_rtos_set_semaphore( &close_listener_sem );
+    mos_semphr_release(close_listener_sem );
 
   mxos_thread_msleep(500);
   is_config_server_established = false;
@@ -126,9 +126,9 @@ OSStatus config_server_stop( void )
   return err;
 }
 
-void localConfiglistener_thread( mxos_thread_arg_t arg)
+void localConfiglistener_thread( void * arg)
 {
-  OSStatus err = kUnknownErr;
+  merr_t err = kUnknownErr;
   int j;
   struct sockaddr_in addr;
   int sockaddr_t_size;
@@ -138,7 +138,7 @@ void localConfiglistener_thread( mxos_thread_arg_t arg)
   int localConfiglistener_fd = -1;
   int close_listener_fd = -1;
 
-  mxos_rtos_init_semaphore( &close_listener_sem, 1);
+  close_listener_sem = mos_semphr_new(1);
   close_listener_fd = mxos_create_event_fd( close_listener_sem );
 
   /*Establish a TCP server fd that accept the tcp clients connections*/ 
@@ -163,7 +163,7 @@ void localConfiglistener_thread( mxos_thread_arg_t arg)
 
     /* Check close requests */
     if(FD_ISSET(close_listener_fd, &readfds)){
-      mxos_rtos_get_semaphore( &close_listener_sem, 0 );
+      mos_semphr_acquire(close_listener_sem, 0 );
       goto exit;
     }
 
@@ -174,7 +174,7 @@ void localConfiglistener_thread( mxos_thread_arg_t arg)
       if ( IsValidSocket( j ) ) {
         strcpy(ip_address,inet_ntoa( addr.sin_addr ));
         system_log("Config Client %s:%d connected, fd: %d", ip_address, addr.sin_port, j);
-        if(kNoErr !=  mxos_rtos_create_thread(NULL, MXOS_APPLICATION_PRIORITY, "Config Clients", localConfig_thread, STACK_SIZE_LOCAL_CONFIG_CLIENT_THREAD, (mxos_thread_arg_t)j) )
+        if(NULL ==  mos_thread_new( MXOS_APPLICATION_PRIORITY, "Config Clients", localConfig_thread, STACK_SIZE_LOCAL_CONFIG_CLIENT_THREAD, (void *)j) )
           SocketClose(&j);
       }
     }
@@ -183,19 +183,19 @@ void localConfiglistener_thread( mxos_thread_arg_t arg)
 exit:
     if( close_listener_sem != NULL ){
       mxos_delete_event_fd( close_listener_fd );
-      mxos_rtos_deinit_semaphore( &close_listener_sem );
+      mos_semphr_delete(close_listener_sem );
       close_listener_sem = NULL;
     };
     system_log("Exit: Config listener exit with err = %d", err);
     SocketClose( &localConfiglistener_fd );
     is_config_server_established = false;
-    mxos_rtos_delete_thread(NULL);
+    mos_thread_delete(NULL);
     return;
 }
 
 void localConfig_thread(uint32_t inFd)
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   int clientFd = (int)inFd;
   int clientFdIsSet;
   int close_sem_index;
@@ -211,11 +211,11 @@ void localConfig_thread(uint32_t inFd)
   }
 
   if( close_sem_index == MAX_TCP_CLIENT_PER_SERVER){
-    mxos_rtos_delete_thread(NULL);
+    mos_thread_delete(NULL);
     return;
   }
 
-  mxos_rtos_init_semaphore( &close_client_sem[close_sem_index], 1);
+  close_client_sem[close_sem_index] = mos_semphr_new(1);
   close_client_fd = mxos_create_event_fd( close_client_sem[close_sem_index] );
 
   httpHeader = HTTPHeaderCreateWithCallback( 512, onReceivedData, onClearHTTPHeader, &httpContext );
@@ -239,7 +239,7 @@ void localConfig_thread(uint32_t inFd)
 
     /* Check close requests */
     if(FD_ISSET(close_client_fd, &readfds)){
-      mxos_rtos_get_semaphore( &close_client_sem[close_sem_index], 0 );
+      mos_semphr_acquire(close_client_sem[close_sem_index], 0 );
       err = kConnectionErr;
       goto exit;
     }    
@@ -295,22 +295,22 @@ exit:
   if( close_client_sem[close_sem_index] != NULL )
   {
     mxos_delete_event_fd( close_client_fd );
-    mxos_rtos_deinit_semaphore( &close_client_sem[close_sem_index] );
+    mos_semphr_delete(close_client_sem[close_sem_index] );
     close_client_sem[close_sem_index] = NULL;
   };
 
   HTTPHeaderDestory( &httpHeader );
-  mxos_rtos_delete_thread(NULL);
+  mos_thread_delete(NULL);
   return;
 }
 
-static OSStatus onReceivedData(struct _HTTPHeader_t * inHeader, uint32_t inPos, uint8_t * inData, size_t inLen, void * inUserContext )
+static merr_t onReceivedData(struct _HTTPHeader_t * inHeader, uint32_t inPos, uint8_t * inData, size_t inLen, void * inUserContext )
 {
-  OSStatus err = kUnknownErr;
+  merr_t err = kUnknownErr;
   const char *    value;
   size_t          valueSize;
   configContext_t *context = (configContext_t *)inUserContext;
-  mxos_logic_partition_t* ota_partition = mxos_flash_get_info( MXOS_PARTITION_OTA_TEMP );
+  mxos_logic_partition_t* ota_partition = mhal_flash_get_info( MXOS_PARTITION_OTA_TEMP );
 
   err = HTTPGetHeaderField( inHeader->buf, inHeader->len, "Content-Type", NULL, NULL, &value, &valueSize, NULL );
   if(err == kNoErr && strnicmpx( value, valueSize, kMIMEType_MXCHIP_OTA ) == 0){
@@ -326,15 +326,15 @@ static OSStatus onReceivedData(struct _HTTPHeader_t * inHeader, uint32_t inPos, 
      if(inPos == 0){
        context->offset = 0x0;
        CRC16_Init( &context->crc16_contex );
-       mxos_rtos_lock_mutex(&sys_context->flashContentInRam_mutex); //We are write the Flash content, no other write is possible
+       mos_mutex_lock(sys_context->flashContentInRam_mutex); //We are write the Flash content, no other write is possible
        context->isFlashLocked = true;
-       err = mxos_flash_erase( MXOS_PARTITION_OTA_TEMP, 0x0, ota_partition->partition_length);
+       err = mhal_flash_erase( MXOS_PARTITION_OTA_TEMP, 0x0, ota_partition->partition_length);
        require_noerr(err, flashErrExit);
-       err = mxos_flash_write( MXOS_PARTITION_OTA_TEMP, &context->offset, (uint8_t *)inData, inLen);
+       err = mhal_flash_write( MXOS_PARTITION_OTA_TEMP, &context->offset, (uint8_t *)inData, inLen);
        require_noerr(err, flashErrExit);
        CRC16_Update( &context->crc16_contex, inData, inLen);
      }else{
-       err = mxos_flash_write( MXOS_PARTITION_OTA_TEMP, &context->offset, (uint8_t *)inData, inLen);
+       err = mhal_flash_write( MXOS_PARTITION_OTA_TEMP, &context->offset, (uint8_t *)inData, inLen);
        require_noerr(err, flashErrExit);
        CRC16_Update( &context->crc16_contex, inData, inLen);
      }
@@ -347,7 +347,7 @@ static OSStatus onReceivedData(struct _HTTPHeader_t * inHeader, uint32_t inPos, 
   return err;
 
 flashErrExit:
-  mxos_rtos_unlock_mutex(&sys_context->flashContentInRam_mutex);
+  mos_mutex_unlock(sys_context->flashContentInRam_mutex);
   return err;
 }
 
@@ -357,14 +357,14 @@ static void onClearHTTPHeader(struct _HTTPHeader_t * inHeader, void * inUserCont
   configContext_t *context = (configContext_t *)inUserContext;
 
   if(context->isFlashLocked == true){
-    mxos_rtos_unlock_mutex(&sys_context->flashContentInRam_mutex);
+    mos_mutex_unlock(sys_context->flashContentInRam_mutex);
     context->isFlashLocked = false;
   }
  }
 
-OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system_context_t * const inContext)
+merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system_context_t * const inContext)
 {
-  OSStatus err = kUnknownErr;
+  merr_t err = kUnknownErr;
   const char *  json_str;
   uint8_t *httpResponse = NULL;
   size_t httpResponseLen = 0;
@@ -372,17 +372,17 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
   bool need_reboot = false;
   uint16_t crc;
   configContext_t *http_context = (configContext_t *)inHeader->userContext;
-  mxos_logic_partition_t* ota_partition = mxos_flash_get_info( MXOS_PARTITION_OTA_TEMP );
+  mxos_logic_partition_t* ota_partition = mhal_flash_get_info( MXOS_PARTITION_OTA_TEMP );
   char name[50];
   IPStatusTypedef ip;
-  mxosWlanGetIPStatus(&ip, INTERFACE_STA);
+  mwifi_get_ip(&ip, INTERFACE_STA);
 
   json_object *sectors, *sector = NULL;
 
   if(HTTPHeaderMatchURL( inHeader, kCONFIGURLRead ) == kNoErr){    
     //report = ConfigCreateReportJsonMessage( inContext );
 
-    mxos_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+    mos_mutex_lock(inContext->flashContentInRam_mutex);
     snprintf(name, 50, "%s(%c%c%c%c%c%c)",MODEL, 
                                           inContext->mxosStatus.mac[9],  inContext->mxosStatus.mac[10], 
                                           inContext->mxosStatus.mac[12], inContext->mxosStatus.mac[13],
@@ -452,7 +452,7 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
 
     config_server_delegate_report( sector, &inContext->flashContentInRam );
 
-    mxos_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+    mos_mutex_unlock(inContext->flashContentInRam_mutex);
 
     json_str = json_object_to_json_string(report);
     require_action( json_str, exit, err = kNoMemoryErr );
@@ -480,7 +480,7 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
       config = json_tokener_parse(inHeader->extraDataPtr);
       require_action(config, exit, err = kUnknownErr);
       system_log("Recv config object=%s", json_object_to_json_string(config));
-      mxos_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+      mos_mutex_lock(inContext->flashContentInRam_mutex);
       json_object_object_foreach(config, key, val) {
         if(!strcmp(key, "Device Name")){
           strncpy(inContext->flashContentInRam.mxosSystemConfig.name, json_object_get_string(val), maxNameLen);
@@ -525,7 +525,7 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
           config_server_delegate_recv( key, val, &need_reboot, &inContext->flashContentInRam );
         }
       }
-      mxos_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+      mos_mutex_unlock(inContext->flashContentInRam_mutex);
 
       json_object_put(config);
 
@@ -550,7 +550,7 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
       config = json_tokener_parse(inHeader->extraDataPtr);
       require_action(config, exit, err = kUnknownErr);
       system_log("Recv config object from uap =%s", json_object_to_json_string(config));
-      mxos_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+      mos_mutex_lock(inContext->flashContentInRam_mutex);
 
       json_object_object_foreach( config, key, val ) {
           if ( !strcmp( key, "SSID" ) ) {
@@ -591,7 +591,7 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
               strncpy( inContext->flashContentInRam.mxosSystemConfig.dnsServer, json_object_get_string( val ), maxIpLen );
           }
       }
-      mxos_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+      mos_mutex_unlock(inContext->flashContentInRam_mutex);
       json_object_put( config );
 
       err = CreateSimpleHTTPOKMessage( &httpResponse, &httpResponseLen );
@@ -601,7 +601,7 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
       require_noerr( err, exit );
 
       if ( _uap_configured_cb ) {
-          mxos_rtos_delay_milliseconds( 1000 );
+          mos_thread_delay( 1000 );
           _uap_configured_cb( easylinkIndentifier );
       }
   }

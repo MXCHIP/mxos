@@ -47,7 +47,7 @@ typedef struct _mxos_Context_t
 {
   /*Flash content*/
   system_config_t           flashContentInRam;
-  mxos_mutex_t              flashContentInRam_mutex;
+  mos_mutex_id_t              flashContentInRam_mutex;
 
   void *                    user_config_data;
   uint32_t                  user_config_data_size;
@@ -58,11 +58,11 @@ typedef struct _mxos_Context_t
 
 typedef void (*config_server_uap_configured_cb) (uint32_t id);
 
-OSStatus system_notification_init( system_context_t * const inContext);
+merr_t system_notification_init( system_context_t * const inContext);
 
-OSStatus system_network_daemen_start( system_context_t * const inContext );
+merr_t system_network_daemen_start( system_context_t * const inContext );
 
-OSStatus system_discovery_init( system_context_t * const inContext );
+merr_t system_discovery_init( system_context_t * const inContext );
 
 void system_connect_wifi_normal( system_context_t * const inContext );
 
@@ -70,9 +70,9 @@ void system_connect_wifi_fast( system_context_t * const inContext);
 
 void system_easylink_btn_init( int8_t btn, uint32_t long_pressed_timeout );
 
-OSStatus MXOSRestoreMFG                 ( void );
+merr_t MXOSRestoreMFG                 ( void );
 
-OSStatus MXOSReadConfiguration          ( system_context_t * const inContext );
+merr_t MXOSReadConfiguration          ( system_context_t * const inContext );
 
 system_context_t *system_context( void );
 void config_server_set_uap_cb( config_server_uap_configured_cb callback );

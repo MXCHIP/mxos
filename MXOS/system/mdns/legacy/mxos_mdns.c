@@ -82,12 +82,12 @@ static uint16_t dns_read_uint16( dns_message_iterator_t* iter );
 static void dns_skip_name( dns_message_iterator_t* iter );
 static void dns_write_name( dns_message_iterator_t* iter, const char* src );
 
-static OSStatus start_bonjour_service(void);
+static merr_t start_bonjour_service(void);
 
-static mxos_mutex_t bonjour_mutex = NULL;
-static mxos_semaphore_t update_state_sem = NULL;
+static mos_mutex_id_t bonjour_mutex = NULL;
+static mos_semphr_id_t update_state_sem = NULL;
 static int update_state_fd = 0;
-static mxos_thread_t mfi_bonjour_thread_handler;
+static mos_thread_id_t mfi_bonjour_thread_handler;
 static void _bonjour_thread(uint32_t arg);
 
 
@@ -97,7 +97,7 @@ static uint32_t dns_write_record_A( dns_message_iterator_t* iter, dns_sd_service
     IPStatusTypedef para;
     uint32_t ttl = ( service->state == RECORD_NORMAL || service->state == RECORD_UPDATE )? service->ttl:0;
 
-    mxosWlanGetIPStatus(&para, service->interface);
+    mwifi_get_ip(&para, service->interface);
     ipv4_addr = inet_addr(para.ip);
 
     if( ipv4_addr == 0 || ipv4_addr == 0xFFFFFFFF) return 0;
@@ -550,7 +550,7 @@ static int find_empty_record ( void )
   return insert_index;
 }
 
-static mxos_thread_t _bonjour_announce_handler = NULL;
+static mos_thread_id_t _bonjour_announce_handler = NULL;
 
 void _bonjour_send_anounce_thread(uint32_t arg)
 {
@@ -570,13 +570,13 @@ void _bonjour_send_anounce_thread(uint32_t arg)
       goto exit;
     
     mdns_utils_log( "sem trigger" );
-    mxos_rtos_set_semaphore( &update_state_sem );
+    mos_semphr_release(update_state_sem );
     mxos_thread_msleep(200);
   }
   
 exit:
   _bonjour_announce_handler = NULL;
-  mxos_rtos_delete_thread( NULL );
+  mos_thread_delete( NULL );
   return;
 }
 
@@ -602,10 +602,10 @@ static void _clean_record_resource( dns_sd_service_record_t *record )
 }
 
 
-OSStatus mdns_add_record( mdns_init_t init, WiFi_Interface interface, uint32_t time_to_live )
+merr_t mdns_add_record( mdns_init_t init, WiFi_Interface interface, uint32_t time_to_live )
 {
   int len;
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   uint32_t insert_index = 0xFF;
 
   if( bonjour_instance == false ){
@@ -619,7 +619,7 @@ OSStatus mdns_add_record( mdns_init_t init, WiFi_Interface interface, uint32_t t
 
   require_action( insert_index < MAX_RECORD_COUNT, exit, err = kNoResourcesErr);
   
-  mxos_rtos_lock_mutex( &bonjour_mutex );
+  mos_mutex_lock(bonjour_mutex );
 
   _clean_record_resource( &available_services[insert_index] );
 
@@ -647,9 +647,9 @@ OSStatus mdns_add_record( mdns_init_t init, WiFi_Interface interface, uint32_t t
   available_services[insert_index].ttl = time_to_live;
   
   if( _bonjour_announce_handler == NULL)
-    mxos_rtos_create_thread( &_bonjour_announce_handler, MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, 0 );
+    _bonjour_announce_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, NULL );
 
-  mxos_rtos_unlock_mutex( &bonjour_mutex );
+  mos_mutex_unlock(bonjour_mutex );
 
 exit:
   return err;
@@ -665,7 +665,7 @@ void mdns_update_txt_record( char *service_name, WiFi_Interface interface, char 
   insert_index = find_record_by_service ( service_name, interface );
   if( insert_index == 0xFF ) return;
 
-  mxos_rtos_lock_mutex( &bonjour_mutex );
+  mos_mutex_lock(bonjour_mutex );
 
   if(available_services[insert_index].txt_att)  free(available_services[insert_index].txt_att);
   available_services[insert_index].txt_att = (char*)__strdup(txt_record);
@@ -673,9 +673,9 @@ void mdns_update_txt_record( char *service_name, WiFi_Interface interface, char 
   available_services[insert_index].count_down = available_services[insert_index].count_down_max;
 
   if( _bonjour_announce_handler == NULL)
-    mxos_rtos_create_thread( &_bonjour_announce_handler, MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, 0 );
+    _bonjour_announce_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, NULL );
 
-  mxos_rtos_unlock_mutex( &bonjour_mutex );
+  mos_mutex_unlock(bonjour_mutex );
 }
   
 
@@ -688,7 +688,7 @@ void mdns_suspend_record( char *service_name, WiFi_Interface interface, bool wil
 
   if( bonjour_instance == false ) return;
 
-  mxos_rtos_lock_mutex( &bonjour_mutex );
+  mos_mutex_lock(bonjour_mutex );
 
   for ( i = 0; i < MAX_RECORD_COUNT; i++ ){
     if( is_service_match ( &available_services[i], service_name, interface ) == false) 
@@ -710,10 +710,10 @@ void mdns_suspend_record( char *service_name, WiFi_Interface interface, bool wil
     goto exit;
 
   if( _bonjour_announce_handler == NULL)
-    mxos_rtos_create_thread( &_bonjour_announce_handler, MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, 0 );
+    _bonjour_announce_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, NULL );
 
 exit:
-  mxos_rtos_unlock_mutex( &bonjour_mutex );
+  mos_mutex_unlock(bonjour_mutex );
   return;
 }
 
@@ -724,7 +724,7 @@ void mdns_resume_record( char *service_name, WiFi_Interface interface )
 
   if( bonjour_instance == false ) return;
 
-  mxos_rtos_lock_mutex( &bonjour_mutex );
+  mos_mutex_lock(bonjour_mutex );
 
   for ( i = 0; i < MAX_RECORD_COUNT && is_service_match( &available_services[i], service_name, interface ); i++ ){
     available_services[i].state = RECORD_UPDATE;
@@ -736,10 +736,10 @@ void mdns_resume_record( char *service_name, WiFi_Interface interface )
     goto exit;
 
   if( _bonjour_announce_handler == NULL)
-    mxos_rtos_create_thread( &_bonjour_announce_handler, MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, 0 );
+    _bonjour_announce_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, NULL );
 
 exit:
-  mxos_rtos_unlock_mutex( &bonjour_mutex );
+  mos_mutex_unlock(bonjour_mutex );
   return;
 }
 
@@ -840,9 +840,9 @@ void BonjourNotify_SYSWillPoerOffHandler( void *arg )
 
 uint8_t *buf = NULL;
 
-static OSStatus start_bonjour_service(void)
+static merr_t start_bonjour_service(void)
 {
-  OSStatus err = kNoErr;
+  merr_t err = kNoErr;
   ip_mreq mreq_opt;
 
 #if MXOS_CONFIG_IPV6
@@ -853,10 +853,10 @@ static OSStatus start_bonjour_service(void)
 #endif
 
   if(bonjour_mutex == NULL)
-    mxos_rtos_init_mutex( &bonjour_mutex );
+    bonjour_mutex = mos_mutex_new( );
 
   if(update_state_sem == NULL)
-    mxos_rtos_init_semaphore( &update_state_sem, 1 );
+    update_state_sem = mos_semphr_new( 1 );
 
   update_state_fd = mxos_create_event_fd( update_state_sem );
 
@@ -899,8 +899,8 @@ static OSStatus start_bonjour_service(void)
   err = mxos_system_notify_register( mxos_notify_SYS_WILL_POWER_OFF, (void *)BonjourNotify_SYSWillPoerOffHandler, NULL );
   require_noerr( err, exit );
 
-  err = mxos_rtos_create_thread(&mfi_bonjour_thread_handler, MXOS_APPLICATION_PRIORITY, "Bonjour", _bonjour_thread, 0x500, 0 );
-  require_noerr(err, exit);
+  mfi_bonjour_thread_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "Bonjour", _bonjour_thread, 0x500, NULL );
+  require_action(mfi_bonjour_thread_handler != NULL, exit, err = kGeneralErr);
 
   bonjour_instance = true;
 
@@ -929,8 +929,8 @@ void _bonjour_thread(uint32_t arg)
 
     if ( FD_ISSET( update_state_fd, &readfds ) ){ 
       mdns_utils_log( "sem recved" );
-      mxos_rtos_get_semaphore( &update_state_sem, 0 );
-      mxos_rtos_lock_mutex( &bonjour_mutex );
+      mos_semphr_acquire(update_state_sem, 0 );
+      mos_mutex_lock(bonjour_mutex );
       for ( i = 0; i < MAX_RECORD_COUNT; i++ ){
         switch ( available_services[i].state ){
           case RECORD_REMOVE: 
@@ -961,7 +961,7 @@ void _bonjour_thread(uint32_t arg)
             break;
         }
       }
-      mxos_rtos_unlock_mutex( &bonjour_mutex );
+      mos_mutex_unlock(bonjour_mutex );
     }
     
     /*Read data from udp and send data back */ 
@@ -996,9 +996,9 @@ void _bonjour_thread(uint32_t arg)
       }
 #endif
 
-      mxos_rtos_lock_mutex( &bonjour_mutex );
+      mos_mutex_lock(bonjour_mutex );
       mdns_handler(mDNS_fd, (uint8_t *)buf, con);
-      mxos_rtos_unlock_mutex( &bonjour_mutex );
+      mos_mutex_unlock(bonjour_mutex );
     }
   }
 }

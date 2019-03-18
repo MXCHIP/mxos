@@ -157,12 +157,12 @@ typedef struct
     
 }   AES_CTR_Context;
 
-OSStatus
+merr_t
     AES_CTR_Init( 
         AES_CTR_Context *   inContext, 
         const uint8_t       inKey[ kAES_CTR_Size ], 
         const uint8_t       inNonce[ kAES_CTR_Size ] );
-OSStatus    AES_CTR_Update( AES_CTR_Context *inContext, const void *inSrc, size_t inSrcLen, void *inDst );
+merr_t    AES_CTR_Update( AES_CTR_Context *inContext, const void *inSrc, size_t inSrcLen, void *inDst );
 void        AES_CTR_Final( AES_CTR_Context *inContext );
 
 #if 0
@@ -211,14 +211,14 @@ typedef struct
     
 }   AES_CBCFrame_Context;
 
-OSStatus
+merr_t
     AES_CBCFrame_Init( 
         AES_CBCFrame_Context *  inContext, 
         const uint8_t           inKey[ kAES_CBCFrame_Size ], 
         const uint8_t           inIV[ kAES_CBCFrame_Size ], 
         Boolean                 inEncrypt );
-OSStatus    AES_CBCFrame_Update( AES_CBCFrame_Context *inContext, const void *inSrc, size_t inSrcLen, void *inDst );
-OSStatus
+merr_t    AES_CBCFrame_Update( AES_CBCFrame_Context *inContext, const void *inSrc, size_t inSrcLen, void *inDst );
+merr_t
     AES_CBCFrame_Update2( 
         AES_CBCFrame_Context *  inContext, 
         const void *            inSrc1, 
@@ -290,8 +290,8 @@ typedef struct
     
 }   AES_ECB_Context;
 
-OSStatus    AES_ECB_Init( AES_ECB_Context *inContext, uint32_t inMode, const uint8_t inKey[ kAES_ECB_Size ] );
-OSStatus    AES_ECB_Update( AES_ECB_Context *inContext, const void *inSrc, size_t inLen, void *inDst );
+merr_t    AES_ECB_Init( AES_ECB_Context *inContext, uint32_t inMode, const uint8_t inKey[ kAES_ECB_Size ] );
+merr_t    AES_ECB_Update( AES_ECB_Context *inContext, const void *inSrc, size_t inLen, void *inDst );
 void        AES_ECB_Final( AES_ECB_Context *inContext );
 
 #if 0
@@ -343,7 +343,7 @@ typedef struct
     
 }   AES_GCM_Context;
 
-OSStatus
+merr_t
     AES_GCM_Init( 
         AES_GCM_Context *   inContext, 
         const uint8_t       inKey[ kAES_CGM_Size ], 
@@ -351,13 +351,13 @@ OSStatus
 
 void    AES_GCM_Final( AES_GCM_Context *inContext );
 
-OSStatus    AES_GCM_InitMessage( AES_GCM_Context *inContext, const uint8_t *inNonce );
-OSStatus    AES_GCM_FinalizeMessage( AES_GCM_Context *inContext, uint8_t outAuthTag[ kAES_CGM_Size ] );
-OSStatus    AES_GCM_VerifyMessage( AES_GCM_Context *inContext, const uint8_t inAuthTag[ kAES_CGM_Size ] );
+merr_t    AES_GCM_InitMessage( AES_GCM_Context *inContext, const uint8_t *inNonce );
+merr_t    AES_GCM_FinalizeMessage( AES_GCM_Context *inContext, uint8_t outAuthTag[ kAES_CGM_Size ] );
+merr_t    AES_GCM_VerifyMessage( AES_GCM_Context *inContext, const uint8_t inAuthTag[ kAES_CGM_Size ] );
 
-OSStatus    AES_GCM_AddAAD( AES_GCM_Context *inContext, const void *inPtr, size_t inLen );
-OSStatus    AES_GCM_Encrypt( AES_GCM_Context *inContext, const void *inSrc, size_t inLen, void *inDst );
-OSStatus    AES_GCM_Decrypt( AES_GCM_Context *inContext, const void *inSrc, size_t inLen, void *inDst );
+merr_t    AES_GCM_AddAAD( AES_GCM_Context *inContext, const void *inPtr, size_t inLen );
+merr_t    AES_GCM_Encrypt( AES_GCM_Context *inContext, const void *inSrc, size_t inLen, void *inDst );
+merr_t    AES_GCM_Decrypt( AES_GCM_Context *inContext, const void *inSrc, size_t inLen, void *inDst );
 
 #endif // AES_UTILS_HAS_GCM
 

@@ -64,7 +64,7 @@ typedef struct _motion_data_t {
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus motion_sensor_init(void);
+merr_t motion_sensor_init(void);
 
 
 /**
@@ -73,7 +73,7 @@ OSStatus motion_sensor_init(void);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus motion_sensor_readout(motion_data_t *motion_data);
+merr_t motion_sensor_readout(motion_data_t *motion_data);
 
 
 /**
@@ -82,7 +82,7 @@ OSStatus motion_sensor_readout(motion_data_t *motion_data);
  * @return   kNoErr        : on success.
  * @return   kGeneralErr   : if an error occurred
  */
-OSStatus motion_sensor_deinit(void);
+merr_t motion_sensor_deinit(void);
 /**
   * @}
   */

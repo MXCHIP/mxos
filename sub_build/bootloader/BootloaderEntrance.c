@@ -38,7 +38,7 @@
 #include "bootloader.h"
 
 extern void Main_Menu(void);
-extern OSStatus update(void);
+extern merr_t update(void);
 
 #ifdef SIZE_OPTIMIZE
 char menu[] =
@@ -106,11 +106,11 @@ int main(void)
 #endif
 
     if ( mxos_should_enter_bootloader() == false )
-        bootloader_start_app((mxos_flash_get_info(MXOS_PARTITION_APPLICATION))->partition_start_addr);
+        bootloader_start_app((mhal_flash_get_info(MXOS_PARTITION_APPLICATION))->partition_start_addr);
     else if ( mxos_should_enter_mfg_mode() == true )
-        bootloader_start_app((mxos_flash_get_info(MXOS_PARTITION_APPLICATION))->partition_start_addr);
+        bootloader_start_app((mhal_flash_get_info(MXOS_PARTITION_APPLICATION))->partition_start_addr);
     else if ( mxos_should_enter_ate_mode() ) {
-        partition = mxos_flash_get_info(MXOS_PARTITION_ATE);
+        partition = mhal_flash_get_info(MXOS_PARTITION_ATE);
         if ( partition->partition_owner != MXOS_FLASH_NONE ) {
             bootloader_start_app(partition->partition_start_addr);
         }
