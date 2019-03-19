@@ -1,7 +1,6 @@
 EXTRA_POST_BUILD_TARGETS += postbuild
 
 NM_OUTPUT_FILE := $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.nm)
-KM4_ASDK_PATH := mxos/platform/MCU/RTL8721D/sdk/project/realtek_amebaD_cm4_gcc_verification/asdk/
 
 postbuild: build_done
 	$(NM) $(LINK_OUTPUT_FILE) | sort > $(NM_OUTPUT_FILE)
@@ -11,7 +10,7 @@ postbuild: build_done
 	$(PYTHON) mxos/platform/MCU/RTL8721D/scripts/prepend_header.py $(OUTPUT_DIR)/binary/xip_image2.bin __flash_text_start__ $(NM_OUTPUT_FILE)
 	$(CAT) $(OUTPUT_DIR)/binary/xip_image2_prepend.bin $(OUTPUT_DIR)/binary/ram_2_prepend.bin > $(BIN_OUTPUT_FILE)
 	$(PYTHON) mxos/platform/MCU/RTL8721D/scripts/pad.py $(BIN_OUTPUT_FILE)
-	$(CAT) $(KM4_ASDK_PATH)../../realtek_amebaD_cm0_gcc_verification/asdk/image/km0_image2_all.bin $(BIN_OUTPUT_FILE) > $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all.bin)
+	$(CAT) $(SOURCE_ROOT)/mxos/platform/MCU/RTL8721D/image/km0_image2_all.bin $(BIN_OUTPUT_FILE) > $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all.bin)
 
 download: postbuild
 	@echo Downloading ...

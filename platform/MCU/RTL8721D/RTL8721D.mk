@@ -3,16 +3,11 @@ NAME := RTL8721D
 # Host architecture is Cortex-M4
 HOST_ARCH := Cortex-M33
 
-KM4_ASDK_PATH := sdk/project/realtek_amebaD_cm4_gcc_verification/asdk/
 $(NAME)_PREBUILT_LIBRARY := \
-$(KM4_ASDK_PATH)image/objs.a \
-$(KM4_ASDK_PATH)lib/application/lib_httpc.a \
-$(KM4_ASDK_PATH)lib/application/lib_httpd.a \
-$(KM4_ASDK_PATH)lib/application/lib_websocket.a \
-$(KM4_ASDK_PATH)lib/application/lib_tftp.a \
-$(KM4_ASDK_PATH)lib/application/lib_wlan.a \
-$(KM4_ASDK_PATH)lib/application/lib_wps.a \
-$(KM4_ASDK_PATH)image/cmse_implib.lib
+image/objs.a \
+image/lib_wlan.a \
+image/lib_wps.a \
+image/cmse_implib.lib
 
 DEFAULT_LINK_SCRIPT := rlx8721d_img2_ns.ld
 
