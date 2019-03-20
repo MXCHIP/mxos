@@ -211,7 +211,7 @@ merr_t mxos_system_wlan_get_status( mxos_system_status_wlan_t** status );
 
 /**
   * @brief  Start wlan configuration mode, EasyLink, SoftAP, Airkiss...
-  *         according to macro: MXOS_WLAN_CONFIG_MODE
+  *         according to macro: WIFI_CONFIG_MODE
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
 merr_t mxos_system_wlan_start_autoconf( void );

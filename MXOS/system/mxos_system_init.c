@@ -43,23 +43,15 @@ static merr_t system_config_mode_worker( void *arg )
     require( in_context, exit );
 
     mwifi_on();
-#if (MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK)
-    err = mxos_easylink( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_SOFTAP)
+#if ( WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_SOFTAP)
     err = mxos_easylink_softap( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_MONITOR)
+#elif ( WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_MONITOR)
     err = mxos_easylink_monitor( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_MONITOR_EASYLINK)
-    err = mxos_easylink_monitor_with_easylink( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_USER)
-    err = mxos_easylink_usr( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_WAC)
+#elif ( WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_WAC)
     err = mxos_easylink_wac( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_WPS)
-    err = mxos_easylink_wps( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_AWS)
+#elif ( WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_AWS)
     err = mxos_easylink_aws( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_NONE)
+#elif ( WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_NONE)
 #else
     #error "Wi-Fi configuration mode is not defined"
 #endif

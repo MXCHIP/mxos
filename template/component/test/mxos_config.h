@@ -48,7 +48,7 @@
  * Enable wlan connection, start easylink configuration if no wlan settings are existed */
 //#define MXOS_WLAN_CONNECTION_ENABLE
 
-#define MXOS_WLAN_CONFIG_MODE CONFIG_MODE_AWS
+#define WIFI_CONFIG_MODE WIFI_CONFIG_MODE_AWS
 
 #define EasyLink_TimeOut                60000 /**< EasyLink timeout 60 seconds. */
 

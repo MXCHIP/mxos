@@ -134,10 +134,8 @@ void tftp_ota(void)
     
     memset(&conf, 0, sizeof(mwifi_softap_attr_t));
     
-    conf.wifi_mode = Station;
     strcpy(conf.wifi_ssid, DEFAULT_OTA_AP);
     
-    conf.dhcpMode = DHCP_Disable;
     strcpy(conf.net_mask, DEFAULT_OTA_NETMASK);
     strcpy(conf.local_ip_addr, (char *)sta_ip_addr);
     

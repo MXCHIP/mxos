@@ -47,7 +47,7 @@ typedef enum
 } system_state_t;
 
 enum  config_state_type_e{
-  /*All settings are in default state, module will enter easylink mode if CONFIG_MODE_TRIGGER_AUTO is selected.
+  /*All settings are in default state, module will enter easylink mode if WIFI_CONFIG_MODE_TRIGGER_AUTO is selected.
   Press down Easyink button for 3 seconds (defined by RestoreDefault_TimeOut) to enter this mode */
   unConfigured,
 #ifdef EasyLink_Needs_Reboot

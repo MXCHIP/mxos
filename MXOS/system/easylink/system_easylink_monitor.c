@@ -24,14 +24,14 @@
 
 #include "StringUtils.h"
 
-//#if (MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK) || (MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK_WITH_SOFTAP)
+//#if (WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_EASYLINK) || (WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_EASYLINK_WITH_SOFTAP)
 
 /******************************************************
  *               Function Declarations
  ******************************************************/
 /* EasyLink event callback functions*/
 static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const inContext );
-static void easylink_complete_cb( mwifi_softap_attr_t *nwkpara, system_context_t * const inContext );
+static void easylink_complete_cb( char *ssid, char *key, int mode, system_context_t * const inContext );
 static void easylink_extra_data_cb( int datalen, char* data, system_context_t * const inContext );
 
 /* Thread perform easylink and connect to wlan */
@@ -80,25 +80,25 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
 }
 
 /* MXOS callback when EasyLink is finished step 1, return SSID and KEY */
-static void easylink_complete_cb( mwifi_softap_attr_t *nwkpara, system_context_t * const inContext )
+static void easylink_complete_cb( char *ssid, char *key, int mode, system_context_t * const inContext )
 {
     merr_t err = kNoErr;
 
-    require_action_string( nwkpara, exit, err = kTimeoutErr, "EasyLink Timeout or terminated" );
+    require_action_string( ssid, exit, err = kTimeoutErr, "EasyLink Timeout or terminated" );
 
     /* Store SSID and KEY*/
     mos_mutex_lock(inContext->flashContentInRam_mutex );
-    memcpy( inContext->flashContentInRam.mxosSystemConfig.ssid, nwkpara->wifi_ssid, maxSsidLen );
+    memcpy( inContext->flashContentInRam.mxosSystemConfig.ssid, ssid, maxSsidLen );
     memset( inContext->flashContentInRam.mxosSystemConfig.bssid, 0x0, 6 );
-    memcpy( inContext->flashContentInRam.mxosSystemConfig.user_key, nwkpara->wifi_key, maxKeyLen );
-    inContext->flashContentInRam.mxosSystemConfig.user_keyLength = strlen( nwkpara->wifi_key );
-    memcpy( inContext->flashContentInRam.mxosSystemConfig.key, nwkpara->wifi_key, maxKeyLen );
-    inContext->flashContentInRam.mxosSystemConfig.keyLength = strlen( nwkpara->wifi_key );
+    memcpy( inContext->flashContentInRam.mxosSystemConfig.user_key, key, maxKeyLen );
+    inContext->flashContentInRam.mxosSystemConfig.user_keyLength = strlen( key );
+    memcpy( inContext->flashContentInRam.mxosSystemConfig.key, key, maxKeyLen );
+    inContext->flashContentInRam.mxosSystemConfig.keyLength = strlen( key );
     inContext->flashContentInRam.mxosSystemConfig.dhcpEnable = true;
     mos_mutex_unlock(inContext->flashContentInRam_mutex );
     system_log("Get SSID: %s, Key: %s", inContext->flashContentInRam.mxosSystemConfig.ssid, inContext->flashContentInRam.mxosSystemConfig.user_key);
 
-    source = (mxos_config_source_t) nwkpara->wifi_retry_interval;
+    source = mode;
     exit:
     if ( err != kNoErr )
     {

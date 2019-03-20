@@ -290,7 +290,6 @@ typedef struct
   char net_mask[16];            /**< Static IP configuration, Netmask. */
   char gateway_ip_addr[16];     /**< Static IP configuration, Router IP address. */
   char dnsServer_ip_addr[16];   /**< Static IP configuration, DNS server IP address. */
-  char dhcpMode;                /**< DHCP mode, @ref DHCP_Disable, @ref DHCP_Client and @ref DHCP_Server. */
 } mwifi_softap_attr_t; 
 
 typedef struct _network_Enterprise_st 
