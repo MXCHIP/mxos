@@ -199,7 +199,7 @@ mos_semphr_id_t mos_semphr_new( uint32_t count )
     UNUSED_PARAMETER( count );
     semaphore_pool_alloc(&noos_semaphore);
     noos_semaphore->count = 0;
-    return noos_semaphore;
+    return (mos_semphr_id_t)noos_semaphore;
 }
 
 merr_t mos_semphr_acquire( mos_semphr_id_t id, uint32_t timeout )
@@ -212,7 +212,7 @@ merr_t mos_semphr_acquire( mos_semphr_id_t id, uint32_t timeout )
 
     delay_start = mos_time();
     while( noos_semaphore->count == 0){
-      if(mos_time() >= delay_start + timeout_ms && timeout_ms != MXOS_NEVER_TIMEOUT){
+      if(mos_time() >= delay_start + timeout && timeout != MXOS_NEVER_TIMEOUT){
         return kTimeoutErr;
       }
     }
@@ -256,7 +256,7 @@ mos_mutex_id_t mos_mutex_new( void )
     noos_mutex_t *noos_mutex;
     mutex_pool_alloc(&noos_mutex);
     noos_mutex->reversed = 0;
-    return noos_mutex;
+    return (mos_mutex_id_t)noos_mutex;
 }
 
 
