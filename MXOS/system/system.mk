@@ -44,7 +44,8 @@ $(NAME)_INCLUDES += tftp_ota
                    
 $(NAME)_COMPONENTS := protocols/mdns \
                       system/qc_test \
-                      system/easylink/MFi_WAC
+                      system/easylink/MFi_WAC \
+                      system/kv
 
 ifneq ($(DISABLE_MXOS_AWS),1)
 $(NAME)_COMPONENTS += system/easylink/aws

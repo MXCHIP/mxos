@@ -20,6 +20,7 @@
 
 #include "mxos.h"
 
+#include "mkv.h"
 #include "system_internal.h"
 
 #if MXOS_WLAN_FORCE_OTA_ENABLE
@@ -91,6 +92,8 @@ merr_t mxos_system_init( mxos_Context_t* in_context )
 #if MXOS_CONFIG_EASYLINK_BTN_ENABLE
   system_easylink_btn_init( EasyLink_BUTTON, MXOS_CONFIG_EASYLINK_BTN_LONG_PRESS_TIMEOUT );
 #endif
+
+  mkv_init();
 
 #if MXOS_CLI_ENABLE
   /* MXOS command line interface */
