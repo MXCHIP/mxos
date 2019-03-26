@@ -93,8 +93,6 @@ merr_t mxos_system_init( mxos_Context_t* in_context )
   system_easylink_btn_init( EasyLink_BUTTON, MXOS_CONFIG_EASYLINK_BTN_LONG_PRESS_TIMEOUT );
 #endif
 
-  mkv_init();
-
 #if MXOS_CLI_ENABLE
   /* MXOS command line interface */
   cli_init();
