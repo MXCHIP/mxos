@@ -69,7 +69,7 @@ extern "C" void mbed_main( void )
 #endif
 }
 
-mxos_time_t mxos_rtos_get_time(void)
+mxos_time_t mos_time(void)
 {
     return noos_timer.read_ms();
 }

@@ -30,7 +30,7 @@ int gettimeofday( struct timeval *__restrict __p, void *__restrict __tz )
     return _gettimeofday( __p, __tz );
 }
 
-
+#ifndef __MBED__
 time_t time(time_t *tloc)
 {
     mxos_utc_time_ms_t current_utc_time_ms = 0;
@@ -45,3 +45,4 @@ time_t time(time_t *tloc)
 
     return t;
 }
+#endif

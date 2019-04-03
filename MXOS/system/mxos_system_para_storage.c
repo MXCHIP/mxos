@@ -86,6 +86,15 @@ mxos_Context_t* mxos_system_context_init( uint32_t user_config_data_size )
   para_flash_mutex = mos_mutex_new( );
   MXOSReadConfiguration( sys_context );
 
+  if(sys_context->flashContentInRam.mxosSystemConfig.magic_number != SYS_MAGIC_NUMBR){
+    para_log("Magic number error, restore to default");
+#ifdef MFG_MODE_AUTO
+    MICORestoreMFG( );
+#else
+    mxos_system_context_restore( (mxos_Context_t *)sys_context );
+#endif
+  }
+
 exit:
   return &sys_context->flashContentInRam;
 }

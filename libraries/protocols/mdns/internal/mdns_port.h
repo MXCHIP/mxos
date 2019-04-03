@@ -200,7 +200,7 @@ int mdns_socket_mcast(void);
  * Returns the socket descriptor that bonded to message queue. the socket descriptor
  * suitable for use with FD_SET, select.
  */
-int mdns_socket_queue(uint8_t id, mos_queue_id_t **queue, int msg_size);
+int mdns_socket_queue(uint8_t id, mos_queue_id_t *queue, int msg_size);
 
 /* mdns_socket_close: close a socket
  *

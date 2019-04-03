@@ -574,7 +574,7 @@ int dns_send_msg(struct mdns_message *m, int sock, unsigned short port,
 int mdns_send_ctrl_msg_uint32(uint16_t port, int msg)
 {
     int ret;
-    mos_queue_id_t *ctrl_queue;
+    mos_queue_id_t ctrl_queue;
 
     ret = mdns_socket_queue(port, &ctrl_queue, 0);
     if (ret == -1) {
@@ -587,7 +587,7 @@ int mdns_send_ctrl_msg_uint32(uint16_t port, int msg)
 int mdns_send_ctrl_msg(uint16_t port, void *msg)
 {
     int ret;
-    mos_queue_id_t *ctrl_queue;
+    mos_queue_id_t ctrl_queue;
 
     ret = mdns_socket_queue(port, &ctrl_queue, 0);
     if (ret == -1) {

@@ -871,17 +871,17 @@ void rtos_suppress_and_sleep( unsigned long sleep_ms )
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void *mxos_malloc( size_t xWantedSize )
+void *mico_malloc( size_t xWantedSize )
 {
 	return pvPortMalloc(xWantedSize);
 }
 
-void mxos_free( void *pv )
+void mico_free( void *pv )
 {
 	vPortFree(pv);
 }
 
-void *mxos_realloc( void *pv, size_t xWantedSize )
+void *mico_realloc( void *pv, size_t xWantedSize )
 {
 	return pvPortRealloc(pv, xWantedSize);
 }

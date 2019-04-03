@@ -22,7 +22,7 @@
 #include "mxos_board_conf.h"
 #include "stdio.h"
 
-#ifdef USE_MXOS_SPI_FLASH
+#ifdef USE_SPI_FLASH
 #include "spi_flash.h"
 #endif
 
@@ -53,7 +53,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-#ifdef USE_MXOS_SPI_FLASH
+#ifdef USE_SPI_FLASH
 static sflash_handle_t sflash_handle = {0x0, 0x0, SFLASH_WRITE_NOT_ALLOWED};
 #endif
 #ifdef USE_QUAD_SPI_FLASH
@@ -77,7 +77,7 @@ static merr_t internalFlashByteWrite( volatile uint32_t* FlashAddress, uint8_t* 
 static uint32_t _GetWRPSector(uint32_t Address);
 static merr_t internalFlashProtect(uint32_t StartAddress, uint32_t EndAddress, bool enable);
 #endif
-#ifdef USE_MXOS_SPI_FLASH
+#ifdef USE_SPI_FLASH
 static merr_t spiFlashErase(uint32_t StartAddress, uint32_t EndAddress);
 #endif
 #ifdef USE_QUAD_SPI_FLASH
@@ -106,7 +106,7 @@ merr_t platform_flash_init( const platform_flash_t *peripheral )
     err = internalFlashInitialize();
     require_noerr(err, exit);
   }
-#ifdef USE_MXOS_SPI_FLASH
+#ifdef USE_SPI_FLASH
   else if( peripheral->flash_type == FLASH_TYPE_SPI ){
     err = init_sflash( &sflash_handle, 0, SFLASH_WRITE_ALLOWED );
     require_noerr(err, exit);
@@ -139,7 +139,7 @@ merr_t platform_flash_erase( const platform_flash_t *peripheral, uint32_t start_
     err = internalFlashErase( start_address, end_address );    
     require_noerr(err, exit);
   }
-#ifdef USE_MXOS_SPI_FLASH
+#ifdef USE_SPI_FLASH
   else if( peripheral->flash_type == FLASH_TYPE_SPI ){
     err = spiFlashErase( start_address, end_address );
     require_noerr(err, exit);
@@ -173,7 +173,7 @@ merr_t platform_flash_write( const platform_flash_t *peripheral, volatile uint32
     err = internalFlashWrite( start_address, (uint32_t *)data, length); 
     require_noerr(err, exit);
   }
-#ifdef USE_MXOS_SPI_FLASH
+#ifdef USE_SPI_FLASH
   else if( peripheral->flash_type == FLASH_TYPE_SPI ){
     err = sflash_write( &sflash_handle, *start_address, data, length );
     require_noerr(err, exit);
@@ -209,7 +209,7 @@ merr_t platform_flash_read( const platform_flash_t *peripheral, volatile uint32_
     memcpy(data, (void *)(*start_address), length);
     *start_address += length;
   }
-#ifdef USE_MXOS_SPI_FLASH
+#ifdef USE_SPI_FLASH
   else if( peripheral->flash_type == FLASH_TYPE_SPI ){
     err = sflash_read( &sflash_handle, *start_address, data, length );
     require_noerr(err, exit);
@@ -247,7 +247,7 @@ merr_t platform_flash_enable_protect( const platform_flash_t *peripheral, uint32
 #endif  
     require_noerr(err, exit);
   }
-#ifdef USE_MXOS_SPI_FLASH
+#ifdef USE_SPI_FLASH
   else if( peripheral->flash_type == FLASH_TYPE_SPI ){
     err = kNoErr;
     goto exit;
@@ -283,7 +283,7 @@ merr_t platform_flash_disable_protect( const platform_flash_t *peripheral, uint3
 #endif 
     require_noerr(err, exit);
   }
-#ifdef USE_MXOS_SPI_FLASH
+#ifdef USE_SPI_FLASH
   else if( peripheral->flash_type == FLASH_TYPE_SPI ){
     err = kNoErr;
     goto exit;
@@ -382,7 +382,7 @@ merr_t internalFlashProtect(uint32_t StartAddress, uint32_t EndAddress, bool ena
 }
 #endif
 
-#ifdef USE_MXOS_SPI_FLASH
+#ifdef USE_SPI_FLASH
 merr_t spiFlashErase(uint32_t StartAddress, uint32_t EndAddress)
 {
   platform_log_trace();
