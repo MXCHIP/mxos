@@ -161,6 +161,22 @@ const mxos_logic_partition_t mxos_partitions[] =
     .partition_length          =    0x74000,   //464k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
   },
+  [MXOS_PARTITION_PARAMETER_1] =
+  {
+    .partition_owner           = MXOS_FLASH_SPI,
+    .partition_description     = "PARAMETER1",
+    .partition_start_addr      = 0x0,
+    .partition_length          = 0x1000, // 4k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
+  [MXOS_PARTITION_PARAMETER_2] =
+  {
+    .partition_owner           = MXOS_FLASH_SPI,
+    .partition_description     = "PARAMETER1",
+    .partition_start_addr      = 0x1000,
+    .partition_length          = 0x1000, //4k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
   [MXOS_PARTITION_RF_FIRMWARE] =
   {
     .partition_owner           = MXOS_FLASH_SPI,
@@ -177,21 +193,13 @@ const mxos_logic_partition_t mxos_partitions[] =
     .partition_length          = 0x70000, //448k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
   },
-  [MXOS_PARTITION_PARAMETER_1] =
+  [MXOS_PARTITION_KV] =
   {
-    .partition_owner           = MXOS_FLASH_SPI,
-    .partition_description     = "PARAMETER1",
-    .partition_start_addr      = 0x0,
-    .partition_length          = 0x1000, // 4k bytes
-    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-  },
-  [MXOS_PARTITION_PARAMETER_2] =
-  {
-    .partition_owner           = MXOS_FLASH_SPI,
-    .partition_description     = "PARAMETER1",
-    .partition_start_addr      = 0x1000,
-    .partition_length          = 0x1000, //4k bytes
-    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+      .partition_owner           = MXOS_FLASH_SPI,
+      .partition_description     = "KV",
+      .partition_start_addr      = 0xE0000,
+      .partition_length          = 0x20000,//64k bytes
+      .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
   },
   [MXOS_PARTITION_FILESYS] =
   {

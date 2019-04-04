@@ -325,7 +325,7 @@ char* aws_notify_msg_create(system_context_t *context)
 
     sprintf(aws_notify_msg, "%s,\"wlan unconfigured\":\"F\"", aws_notify_msg);
 
-#ifdef MXOS_CONFIG_SERVER_ENABLE
+#if MXOS_CONFIG_SERVER_ENABLE
     sprintf(aws_notify_msg, "%s,\"FTC\":\"T\",\"PORT\":%d", aws_notify_msg,MXOS_CONFIG_SERVER_PORT);
 #else
     sprintf(aws_notify_msg, "%s,\"FTC\":\"F\"", aws_notify_msg);
