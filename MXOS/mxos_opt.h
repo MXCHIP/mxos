@@ -270,16 +270,16 @@ extern "C" {
 #define CONFIG_SYSTEM_DEBUG                    MXOS_DEBUG_OFF
 #endif
 
-#if !defined CONFIG_MDNS_DEBUG
+#if !defined CONFIG_NET_DEBUG
+#define CONFIG_NET_DEBUG                       MXOS_DEBUG_OFF
+#endif
+
+#if !defined CONFIG_MDNS_DEBUGs
 #define CONFIG_MDNS_DEBUG                      MXOS_DEBUG_OFF
 #endif
 
 #if !defined CONFIG_LWS_DEBUG
 #define CONFIG_LWS_DEBUG                       MXOS_DEBUG_OFF
-#endif
-
-#if !defined CONFIG_ETH_DEBUG
-#define CONFIG_ETH_DEBUG                       MXOS_DEBUG_OFF
 #endif
 
 #if !defined CONFIG_FORCTOTA_DEBUG

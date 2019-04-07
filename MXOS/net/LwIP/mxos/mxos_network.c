@@ -31,7 +31,7 @@
  *                      Macros
  ******************************************************/
 
-#define net_log(M, ...) MXOS_LOG(MXOS_DEBUG_ON, "ETH", M, ##__VA_ARGS__)
+#define net_log(M, ...) MXOS_LOG(CONFIG_NET_DEBUG, "NET", M, ##__VA_ARGS__)
 
 /******************************************************
  *                    Constants
