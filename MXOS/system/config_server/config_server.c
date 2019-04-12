@@ -43,8 +43,8 @@ typedef struct _configContext_t{
 extern merr_t     ConfigIncommingJsonMessage( int fd, const char *input, bool *need_reboot, mxos_Context_t * const inContext );
 extern json_object* ConfigCreateReportJsonMessage( mxos_Context_t * const inContext );
 
-static void localConfiglistener_thread(uint32_t inContext);
-static void localConfig_thread(uint32_t inFd);
+static void localConfiglistener_thread(void* arg);
+static void localConfig_thread(void* arg);
 static merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system_context_t * const inContext);
 static merr_t onReceivedData(struct _HTTPHeader_t * httpHeader, uint32_t pos, uint8_t * data, size_t len, void * userContext );
 static void onClearHTTPHeader(struct _HTTPHeader_t * httpHeader, void * userContext );
@@ -126,7 +126,7 @@ merr_t config_server_stop( void )
   return err;
 }
 
-void localConfiglistener_thread( void * arg)
+void localConfiglistener_thread(void * arg)
 {
   merr_t err = kUnknownErr;
   int j;
@@ -193,10 +193,10 @@ exit:
     return;
 }
 
-void localConfig_thread(uint32_t inFd)
+void localConfig_thread(void* arg)
 {
   merr_t err = kNoErr;
-  int clientFd = (int)inFd;
+  int clientFd = (int)arg;
   int clientFdIsSet;
   int close_sem_index;
   fd_set readfds;

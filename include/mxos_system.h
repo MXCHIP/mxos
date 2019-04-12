@@ -100,6 +100,19 @@ typedef enum
     PARA_END_SECTION
 } para_section_t;
 
+#define CONTEXT_SAVE(kv_err, context, name) \
+do \
+{ \
+  kv_err = mkv_item_set(#name, &context->name, sizeof(context->name)); \
+} while (0)
+
+#define CONTEXT_READ(kv_err, context, name) \
+do \
+{ \
+  n = sizeof(context->name); \
+  kv_err = mkv_item_get(#name, &context->name, &n); \
+} while (0)
+
 /**
   * @brief  Initialize core data used by MXOS system framework. System and 
   *         application's configuration are read from non-volatile storage: 
@@ -107,7 +120,7 @@ typedef enum
   * @param  size_of_user_data: The length of config data used by application
   * @retval Address of core data.
   */
-mxos_Context_t* mxos_system_context_init( uint32_t size_of_user_data );
+mxos_Context_t* mxos_system_context_init( void );
 
 /**
   * @brief  Get the address of the core data.
@@ -116,12 +129,12 @@ mxos_Context_t* mxos_system_context_init( uint32_t size_of_user_data );
   */
 mxos_Context_t* mxos_system_context_get( void );
 
-/**
-  * @brief  Get the address of the application's config data.
-  * @param  in_context: The address of the core data.
-  * @retval Address of the application's config data.
-  */
-void* mxos_system_context_get_user_data( mxos_Context_t* const in_context );
+// /**
+//   * @brief  Get the address of the application's config data.
+//   * @param  in_context: The address of the core data.
+//   * @retval Address of the application's config data.
+//   */
+// void* mxos_system_context_get_user_data( mxos_Context_t* const in_context );
 
 /**
   * @brief  Restore configurations to default settings, it will cause a delegate

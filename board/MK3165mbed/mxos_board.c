@@ -319,15 +319,15 @@ void mxos_board_init( void )
    }
  }
 
-bool MicoShouldEnterMFGMode( void )
+bool mxos_should_enter_mfg_mode(void)
 {
-    if ( mhal_gpio_value( (mxos_gpio_t) BOOT_SEL ) == false && mhal_gpio_value( (mxos_gpio_t) MFG_SEL ) == false )
-        return true;
-    else
-        return false;
+  if(mhal_gpio_value((mxos_gpio_t)BOOT_SEL)==false && mhal_gpio_value((mxos_gpio_t)MFG_SEL)==false)
+    return true;
+  else
+    return false;
 }
 
-bool MicoShouldEnterBootloader( void )
+bool mxos_should_enter_bootloader( void )
 {
     if ( mhal_gpio_value( (mxos_gpio_t) BOOT_SEL ) == false && mhal_gpio_value( (mxos_gpio_t) MFG_SEL ) == true )
         return true;

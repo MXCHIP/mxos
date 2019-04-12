@@ -2,6 +2,7 @@
 
 merr_t mxos_platform_init(void);
 int mico_create_event_fd(mxos_event_t event_handle);
+int mico_delete_event_fd(int fd);
 merr_t mxchipInit(void);
 char *system_lib_version(void);
 int wlan_driver_version(char *outVersion, uint8_t inLength);
@@ -141,6 +142,12 @@ int mxos_create_event_fd(mxos_event_t event_handle)
 {
 	return mico_create_event_fd(event_handle);
 }
+
+int mxos_delete_event_fd(int fd)
+{
+	return mico_delete_event_fd(fd);
+}
+
 
 merr_t mxos_network_init(void)
 {

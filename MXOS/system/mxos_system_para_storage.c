@@ -55,7 +55,7 @@ static const uint32_t mxos_context_section_offsets[ ] =
     [PARA_APP_DATA_SECTION]              = sizeof( system_config_t ),
 };
 
-mxos_Context_t* mxos_system_context_init( uint32_t user_config_data_size )
+mxos_Context_t* mxos_system_context_init( void )
 {
   void *user_config_data = NULL;
 
@@ -63,22 +63,12 @@ mxos_Context_t* mxos_system_context_init( uint32_t user_config_data_size )
     return NULL;
 
   if( sys_context !=  NULL) {
-    if( sys_context->user_config_data != NULL )
-      free( sys_context->user_config_data );
     free( sys_context );
     sys_context = NULL;
   }
 
-  if( user_config_data_size ){
-    user_config_data = calloc( 1, user_config_data_size );
-    require( user_config_data, exit );
-  }
-
   sys_context = calloc( 1, sizeof(system_context_t) );
   require( sys_context, exit );
-
-  sys_context->user_config_data = user_config_data;
-  sys_context->user_config_data_size = user_config_data_size;
 
   para_log( "Init context: len=%d", sizeof(system_context_t));
 
@@ -102,14 +92,6 @@ exit:
 mxos_Context_t* mxos_system_context_get( void )
 {
   return &sys_context->flashContentInRam;
-}
-
-void* mxos_system_context_get_user_data( mxos_Context_t* const in_context )
-{
-    if( sys_context )
-        return sys_context->user_config_data;
-    else
-        return NULL;
 }
 
 #define MKV_ITEM_SET(name) \
@@ -174,8 +156,6 @@ merr_t mxos_system_context_restore( mxos_Context_t * const inContext )
 #ifdef MXOS_BLUETOOTH_ENABLE
   memset(&sys_context->flashContentInRam.bt_config, 0xFF, sizeof(mxos_bt_config_t));
 #endif
-  /*Application's default configuration*/
-  appRestoreDefault_callback(sys_context->user_config_data, sys_context->user_config_data_size);
 
   para_log("Restore to default");
 
@@ -195,7 +175,7 @@ merr_t MXOSRestoreMFG( void )
   sys_context->flashContentInRam.mxosSystemConfig.magic_number = SYS_MAGIC_NUMBR;
 
   /*Application's default configuration*/
-  appRestoreDefault_callback(sys_context->user_config_data, sys_context->user_config_data_size);
+  appRestoreDefault_callback();
 
   err = internal_update_config( sys_context );
   require_noerr(err, exit);
@@ -270,62 +250,6 @@ exit:
 /******************************************************
  *               Function Definitions
  ******************************************************/
-static uint32_t system_context_get_para_data( para_section_t section )
-{
-    uint32_t data_ptr = 0;
-    require( sys_context, exit );
-    require( section <= PARA_END_SECTION, exit );
-
-    /* para_data stored in RAM, PARA_APP_DATA_SECTION is a seperate section */
-    if ( section == PARA_APP_DATA_SECTION )
-        data_ptr = (uint32_t) sys_context->user_config_data;
-    else if ( section == PARA_END_SECTION )
-        data_ptr = (uint32_t) sys_context->user_config_data + sys_context->user_config_data_size + 1;
-    else
-        data_ptr = (uint32_t) sys_context + mxos_context_section_offsets[section];
-
-exit:
-    return data_ptr;
-}
-
-
-merr_t mxos_system_para_read(void** info_ptr, int section, uint32_t offset, uint32_t size)
-{
-  merr_t err = kNoErr;
-  uint32_t addr_sec = system_context_get_para_data( (para_section_t)section );
-  mxos_Context_t *mxos_context = mxos_system_context_get();
-
-  require_action( mxos_context, exit, err = kNotPreparedErr );
-  require_action( (addr_sec + offset + size) < system_context_get_para_data( (para_section_t)(section + 1) ), exit, err = kSizeErr);
-
-  *info_ptr = (void *)(addr_sec + offset);
-
-exit:
-  return err;
-}
-
-merr_t mxos_system_para_read_release( void* info_ptr )
-{
-  UNUSED_PARAMETER( info_ptr );
-  return true;
-}
-
-merr_t mxos_system_para_write(const void* info_ptr, int section, uint32_t offset, uint32_t size)
-{
-  merr_t err = kNoErr;
-  uint32_t addr_sec = system_context_get_para_data( (para_section_t)section );
-  mxos_Context_t *mxos_context = mxos_system_context_get();
-
-  require_action( mxos_context, exit, err = kNotPreparedErr );
-  require_action( (addr_sec + offset + size) < system_context_get_para_data( (para_section_t)(section + 1) ), exit, err = kSizeErr );
-
-  memcpy( (void *)(addr_sec + offset), info_ptr, size);
-  mxos_system_context_update(mxos_context);
-  
-exit:
-  return err;
-}
-
 
 merr_t mxos_ota_switch_to_new_fw( int ota_data_len, uint16_t ota_data_crc )
 {

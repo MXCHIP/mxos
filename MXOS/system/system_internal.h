@@ -49,9 +49,6 @@ typedef struct _mxos_Context_t
   system_config_t           flashContentInRam;
   mos_mutex_id_t              flashContentInRam_mutex;
 
-  void *                    user_config_data;
-  uint32_t                  user_config_data_size;
-
   /*Running status*/
   system_status_wlan_t      mxosStatus;
 } system_context_t;

@@ -19,6 +19,7 @@ typedef struct
 } mkv_msg_t;
 
 static void *mkv_msg_queue;
+static int mkv_inited = 0;
 
 static void mkv_daemon(void)
 {
@@ -50,13 +51,18 @@ static void mkv_daemon(void)
 int mkv_init(void)
 {
     int rc;
+
+    if ( mkv_inited ) return 0;
+
     if ((rc = kv_init()) != 0)
         return rc;
 
     if ((mkv_msg_queue = mkv_queue_new(10)) == NULL)
         return -1;
 
-    return mkv_thread_new(mkv_daemon);
+    rc = mkv_thread_new(mkv_daemon);
+    if ( rc == 0 ) mkv_inited = 1;
+    return rc;
 }
 
 int mkv_item_set(const char *key, const void *val, int len)
