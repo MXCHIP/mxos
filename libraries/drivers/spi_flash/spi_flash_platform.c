@@ -18,7 +18,7 @@
 #include "spi_flash_platform_interface.h"
 #include "mxos_platform.h"
 
-#if defined ( USE_MXOS_SPI_FLASH )
+#if defined ( USE_SPI_FLASH )
 
 extern const mxos_spi_device_t mxos_spi_flash;
 

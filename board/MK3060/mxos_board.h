@@ -159,7 +159,7 @@ enum
 #define MXOS_CLI_UART               (MXOS_UART_1)
 
 /* Components connected to external I/Os*/
-#define USE_MXOS_SPI_FLASH
+#define USE_SPI_FLASH
 
 /* Arduino extention connector */
 #define Arduino_RXD         (MXOS_GPIO_1)

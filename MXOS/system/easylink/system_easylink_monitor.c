@@ -24,14 +24,14 @@
 
 #include "StringUtils.h"
 
-//#if (MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK) || (MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK_WITH_SOFTAP)
+//#if (WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_EASYLINK) || (WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_EASYLINK_WITH_SOFTAP)
 
 /******************************************************
  *               Function Declarations
  ******************************************************/
 /* EasyLink event callback functions*/
 static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const inContext );
-static void easylink_complete_cb( mwifi_softap_attr_t *nwkpara, system_context_t * const inContext );
+static void easylink_complete_cb( char *ssid, char *key, int mode, system_context_t * const inContext );
 static void easylink_extra_data_cb( int datalen, char* data, system_context_t * const inContext );
 
 /* Thread perform easylink and connect to wlan */
@@ -69,7 +69,7 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
     switch ( event )
     {
         case NOTIFY_STATION_UP:
-            inContext->flashContentInRam.mxosSystemConfig.configured = allConfigured;
+            inContext->flashContentInRam.mxos_config.configured = allConfigured;
             mxos_system_context_update( &inContext->flashContentInRam ); //Update Flash content
             mos_semphr_release(easylink_connect_sem ); //Notify Easylink thread
             break;
@@ -80,25 +80,25 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
 }
 
 /* MXOS callback when EasyLink is finished step 1, return SSID and KEY */
-static void easylink_complete_cb( mwifi_softap_attr_t *nwkpara, system_context_t * const inContext )
+static void easylink_complete_cb( char *ssid, char *key, int mode, system_context_t * const inContext )
 {
     merr_t err = kNoErr;
 
-    require_action_string( nwkpara, exit, err = kTimeoutErr, "EasyLink Timeout or terminated" );
+    require_action_string( ssid, exit, err = kTimeoutErr, "EasyLink Timeout or terminated" );
 
     /* Store SSID and KEY*/
     mos_mutex_lock(inContext->flashContentInRam_mutex );
-    memcpy( inContext->flashContentInRam.mxosSystemConfig.ssid, nwkpara->wifi_ssid, maxSsidLen );
-    memset( inContext->flashContentInRam.mxosSystemConfig.bssid, 0x0, 6 );
-    memcpy( inContext->flashContentInRam.mxosSystemConfig.user_key, nwkpara->wifi_key, maxKeyLen );
-    inContext->flashContentInRam.mxosSystemConfig.user_keyLength = strlen( nwkpara->wifi_key );
-    memcpy( inContext->flashContentInRam.mxosSystemConfig.key, nwkpara->wifi_key, maxKeyLen );
-    inContext->flashContentInRam.mxosSystemConfig.keyLength = strlen( nwkpara->wifi_key );
-    inContext->flashContentInRam.mxosSystemConfig.dhcpEnable = true;
+    memcpy( inContext->flashContentInRam.mxos_config.ssid, ssid, maxSsidLen );
+    memset( inContext->flashContentInRam.mxos_config.bssid, 0x0, 6 );
+    memcpy( inContext->flashContentInRam.mxos_config.user_key, key, maxKeyLen );
+    inContext->flashContentInRam.mxos_config.user_keyLength = strlen( key );
+    memcpy( inContext->flashContentInRam.mxos_config.key, key, maxKeyLen );
+    inContext->flashContentInRam.mxos_config.keyLength = strlen( key );
+    inContext->flashContentInRam.mxos_config.dhcpEnable = true;
     mos_mutex_unlock(inContext->flashContentInRam_mutex );
-    system_log("Get SSID: %s, Key: %s", inContext->flashContentInRam.mxosSystemConfig.ssid, inContext->flashContentInRam.mxosSystemConfig.user_key);
+    system_log("Get SSID: %s, Key: %s", inContext->flashContentInRam.mxos_config.ssid, inContext->flashContentInRam.mxos_config.user_key);
 
-    source = (mxos_config_source_t) nwkpara->wifi_retry_interval;
+    source = mode;
     exit:
     if ( err != kNoErr )
     {
@@ -152,11 +152,11 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
 
     if ( ipInfoCount == 1 )
     { //Use DHCP to obtain local ip address
-        inContext->flashContentInRam.mxosSystemConfig.dhcpEnable = true;
+        inContext->flashContentInRam.mxos_config.dhcpEnable = true;
         system_log("Get auth info: %s, EasyLink identifier: %lx", data, easylink_id);
     } else
     { //Use static ip address
-        inContext->flashContentInRam.mxosSystemConfig.dhcpEnable = false;
+        inContext->flashContentInRam.mxos_config.dhcpEnable = false;
         ipv4_addr.s_addr = *(identifier+1);
         strcpy( (char *) inContext->mxosStatus.localIp, inet_ntoa( ipv4_addr ) );
         ipv4_addr.s_addr = *(identifier+2);
@@ -166,8 +166,8 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
         ipv4_addr.s_addr = *(identifier+4);
         strcpy( (char *) inContext->mxosStatus.dnsServer, inet_ntoa( ipv4_addr ) );
 
-        system_log("Get auth info: %s, EasyLink identifier: %lx, local IP info:%s %s %s %s ", data, easylink_id, inContext->flashContentInRam.mxosSystemConfig.localIp,
-            inContext->flashContentInRam.mxosSystemConfig.netMask, inContext->flashContentInRam.mxosSystemConfig.gateWay,inContext->flashContentInRam.mxosSystemConfig.dnsServer);
+        system_log("Get auth info: %s, EasyLink identifier: %lx, local IP info:%s %s %s %s ", data, easylink_id, inContext->flashContentInRam.mxos_config.localIp,
+            inContext->flashContentInRam.mxos_config.netMask, inContext->flashContentInRam.mxos_config.gateWay,inContext->flashContentInRam.mxos_config.dnsServer);
     }
     mos_mutex_unlock(inContext->flashContentInRam_mutex );
     source = CONFIG_BY_EASYLINK_V2;
@@ -272,8 +272,8 @@ restart:
     /* EasyLink Success */
     if ( easylink_success == true )
     {
-        mxos_system_delegate_config_recv_ssid( context->flashContentInRam.mxosSystemConfig.ssid,
-                                               context->flashContentInRam.mxosSystemConfig.user_key );
+        mxos_system_delegate_config_recv_ssid( context->flashContentInRam.mxos_config.ssid,
+                                               context->flashContentInRam.mxos_config.user_key );
         system_connect_wifi_normal( context );
 
         /* Wait for station connection */
@@ -349,13 +349,13 @@ merr_t mxos_easylink_monitor_save_result( mwifi_softap_attr_t *nwkpara )
 
     if( context == NULL ) return kNotPreparedErr;
 
-    memcpy( context->flashContentInRam.mxosSystemConfig.ssid, nwkpara->wifi_ssid, maxSsidLen );
-    memset( context->flashContentInRam.mxosSystemConfig.bssid, 0x0, 6 );
-    memcpy( context->flashContentInRam.mxosSystemConfig.user_key, nwkpara->wifi_key, maxKeyLen );
-    context->flashContentInRam.mxosSystemConfig.user_keyLength = strlen( nwkpara->wifi_key );
-    context->flashContentInRam.mxosSystemConfig.dhcpEnable = true;
+    memcpy( context->flashContentInRam.mxos_config.ssid, nwkpara->wifi_ssid, maxSsidLen );
+    memset( context->flashContentInRam.mxos_config.bssid, 0x0, 6 );
+    memcpy( context->flashContentInRam.mxos_config.user_key, nwkpara->wifi_key, maxKeyLen );
+    context->flashContentInRam.mxos_config.user_keyLength = strlen( nwkpara->wifi_key );
+    context->flashContentInRam.mxos_config.dhcpEnable = true;
 
-    system_log("Get SSID: %s, Key: %s", context->flashContentInRam.mxosSystemConfig.ssid, context->flashContentInRam.mxosSystemConfig.user_key);
+    system_log("Get SSID: %s, Key: %s", context->flashContentInRam.mxos_config.ssid, context->flashContentInRam.mxos_config.user_key);
 
     easylink_success = true;
     mos_semphr_release(easylink_sem );

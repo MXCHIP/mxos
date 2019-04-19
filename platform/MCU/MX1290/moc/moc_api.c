@@ -22,7 +22,7 @@ typedef struct _network_InitTypeDef_st
 merr_t StartNetwork(mwifi_softap_attr_t* attr)
 {
 	network_InitTypeDef_st wNetConfig;
-	memset(&wNetConfig, 0x00, sizoef(wNetConfig));
+	memset(&wNetConfig, 0x00, sizeof(wNetConfig));
 	memcpy(wNetConfig.wifi_ssid, attr, sizeof(mwifi_softap_attr_t));
     wNetConfig.wifi_mode = Soft_AP;
     wNetConfig.dhcpMode = DHCP_Server;

@@ -2478,7 +2478,7 @@ static void do_responder(void)
 	int event[MDNS_MAX_SERVICE_CONFIG];
 	uint32_t start_wait, stop_wait;
 	responder_enabled = 1;
-	mos_queue_id_t *ctrl_responder_queue;
+	mos_queue_id_t ctrl_responder_queue;
 
 	if ((mdns_mutex = mos_mutex_new()) == NULL)
 		return;

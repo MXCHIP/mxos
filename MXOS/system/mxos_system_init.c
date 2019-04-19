@@ -20,16 +20,18 @@
 
 #include "mxos.h"
 
+#include "mkv.h"
 #include "system_internal.h"
 
 #if MXOS_WLAN_FORCE_OTA_ENABLE
 #include "tftp_ota.h"
 #endif
 
-extern system_context_t* sys_context;
 #ifndef  EasyLink_Needs_Reboot
 static mos_worker_thread_id_t wlan_autoconf_worker_thread;
 #endif
+
+extern system_context_t* sys_context;
 
 
 /******************************************************
@@ -43,23 +45,15 @@ static merr_t system_config_mode_worker( void *arg )
     require( in_context, exit );
 
     mwifi_on();
-#if (MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK)
-    err = mxos_easylink( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_SOFTAP)
+#if ( WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_SOFTAP)
     err = mxos_easylink_softap( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_MONITOR)
+#elif ( WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_MONITOR)
     err = mxos_easylink_monitor( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_MONITOR_EASYLINK)
-    err = mxos_easylink_monitor_with_easylink( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_USER)
-    err = mxos_easylink_usr( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_WAC)
+#elif ( WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_WAC)
     err = mxos_easylink_wac( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_WPS)
-    err = mxos_easylink_wps( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_AWS)
+#elif ( WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_AWS)
     err = mxos_easylink_aws( in_context, MXOS_TRUE );
-#elif ( MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_NONE)
+#elif ( WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_NONE)
 #else
     #error "Wi-Fi configuration mode is not defined"
 #endif
@@ -79,11 +73,13 @@ merr_t mxos_system_wlan_start_autoconf( void )
 }
 
 
-merr_t mxos_system_init( mxos_Context_t* in_context )
+merr_t mxos_system_init( void )
 {
   merr_t err = kNoErr;
 
-  require_action( in_context, exit, err = kNotPreparedErr );
+  /* Create mxos system context */
+  system_config_t* mxos_context = system_context_init();
+  require_action( mxos_context, exit, err = kNoMemoryErr );
 
   /* Initialize mxos notify system */
   err = system_notification_init( sys_context );
@@ -123,7 +119,7 @@ merr_t mxos_system_init( mxos_Context_t* in_context )
   require_noerr_string( err, exit, "ERROR: Unable to start the autoconf worker thread." );
 #endif
 
-  if( sys_context->flashContentInRam.mxosSystemConfig.configured == unConfigured){
+  if( sys_context->flashContentInRam.mxos_config.configured == unConfigured){
 #if MXOS_WLAN_AUTO_CONFIG
     system_log("Empty configuration. Starting configuration mode...");
     err = mxos_system_wlan_start_autoconf( );
@@ -131,7 +127,7 @@ merr_t mxos_system_init( mxos_Context_t* in_context )
 #endif
   }
 #ifdef EasyLink_Needs_Reboot
-  else if( sys_context->flashContentInRam.mxosSystemConfig.configured == wLanUnConfigured ){
+  else if( sys_context->flashContentInRam.mxos_config.configured == wLanUnConfigured ){
       system_log("Re-config wlan configuration. Starting configuration mode...");
       err = mxos_system_wlan_start_autoconf( );
       require_noerr( err, exit );
@@ -139,7 +135,7 @@ merr_t mxos_system_init( mxos_Context_t* in_context )
 #endif
 
 #ifdef MFG_MODE_AUTO
-  else if( sys_context->flashContentInRam.mxosSystemConfig.configured == mfgConfigured ){
+  else if( sys_context->flashContentInRam.mxos_config.configured == mfgConfigured ){
     system_log( "Enter MFG mode automatically" );
     mxos_mfg_test( in_context );
     mxos_thread_sleep( MXOS_NEVER_TIMEOUT );

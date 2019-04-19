@@ -109,25 +109,20 @@ extern "C" {
  *                             Wlan Configuration
  ******************************************************************************/
 
-#define CONFIG_MODE_NONE                        (1)
-#define CONFIG_MODE_USER                        (2)
-#define CONFIG_MODE_WAC                         (3)
-#define CONFIG_MODE_EASYLINK                    (4)
-#define CONFIG_MODE_EASYLINK_WITH_SOFTAP        (4)  //Legacy definition, not supported any more
-#define CONFIG_MODE_SOFTAP                      (5)
-#define CONFIG_MODE_MONITOR                     (6)
-#define CONFIG_MODE_MONITOR_EASYLINK            (7)
-#define CONFIG_MODE_WPS                         (8)
-#define CONFIG_MODE_AWS                         (9)
+#define WIFI_CONFIG_MODE_NONE                        (0)
+#define WIFI_CONFIG_MODE_WAC                         (1)
+#define WIFI_CONFIG_MODE_SOFTAP                      (2)
+#define WIFI_CONFIG_MODE_MONITOR                     (3)
+#define WIFI_CONFIG_MODE_AWS                         (4)
 
 /**
- *  MXOS_WLAN_CONFIG_MODE: wlan configuration mode, Default: EasyLink
+ *  WIFI_CONFIG_MODE: wlan configuration mode, Default: EasyLink
  */
-#if !defined MXOS_WLAN_CONFIG_MODE
-#define MXOS_WLAN_CONFIG_MODE                   CONFIG_MODE_AWS
+#if !defined WIFI_CONFIG_MODE
+#define WIFI_CONFIG_MODE                   WIFI_CONFIG_MODE_AWS
 #endif
 
-#if MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_WAC
+#if WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_WAC
 #define EasyLink_Needs_Reboot
 #endif
 
@@ -272,19 +267,19 @@ extern "C" {
 #endif
 
 #if !defined CONFIG_SYSTEM_DEBUG
-#define CONFIG_SYSTEM_DEBUG                    MXOS_DEBUG_ON
+#define CONFIG_SYSTEM_DEBUG                    MXOS_DEBUG_OFF
 #endif
 
-#if !defined CONFIG_MDNS_DEBUG
+#if !defined CONFIG_NET_DEBUG
+#define CONFIG_NET_DEBUG                       MXOS_DEBUG_OFF
+#endif
+
+#if !defined CONFIG_MDNS_DEBUGs
 #define CONFIG_MDNS_DEBUG                      MXOS_DEBUG_OFF
 #endif
 
 #if !defined CONFIG_LWS_DEBUG
 #define CONFIG_LWS_DEBUG                       MXOS_DEBUG_OFF
-#endif
-
-#if !defined CONFIG_ETH_DEBUG
-#define CONFIG_ETH_DEBUG                       MXOS_DEBUG_OFF
 #endif
 
 #if !defined CONFIG_FORCTOTA_DEBUG

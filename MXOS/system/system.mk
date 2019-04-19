@@ -28,9 +28,6 @@ $(NAME)_SOURCES += config_server/config_server_menu.c \
                    
 $(NAME)_SOURCES += easylink/system_easylink_delegate.c \
                    easylink/system_easylink_wac.c \
-                   easylink/system_easylink_wps.c \
-                   easylink/system_easylink.c \
-                   easylink/system_easylink_usr.c \
                    easylink/system_easylink_monitor.c \
                    easylink/system_easylink_softap.c \
                    easylink/system_aws.c \
@@ -47,7 +44,8 @@ $(NAME)_INCLUDES += tftp_ota
                    
 $(NAME)_COMPONENTS := protocols/mdns \
                       system/qc_test \
-                      system/easylink/MFi_WAC
+                      system/easylink/MFi_WAC \
+                      system/kv
 
 ifneq ($(DISABLE_MXOS_AWS),1)
 $(NAME)_COMPONENTS += system/easylink/aws

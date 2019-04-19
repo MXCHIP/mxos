@@ -558,6 +558,8 @@ static void aws_handler(char *pcWriteBuffer, int xWriteBufferLen,int argc, char 
 }
 #endif
 
+void handle_kv_cmd(char *pwbuf, int blen, int argc, char **argv);
+
 static const struct cli_command built_ins[] = {
   {"help", NULL, help_command},
   {"version", NULL, get_version},
@@ -600,6 +602,7 @@ static const struct cli_command built_ins[] = {
   {"ota",      "system ota",                  ota_Command},
 #endif
   {"flash",    "Flash memory map",            partShow_Command},
+  {"kv", "kv [set key value | get key | del key | seti key int_val | geti key | list]", handle_kv_cmd}
 };
 
 /* Built-in "help" command: prints all registered commands and their help

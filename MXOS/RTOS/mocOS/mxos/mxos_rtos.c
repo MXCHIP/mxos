@@ -71,7 +71,7 @@ mos_thread_id_t mos_thread_new( uint8_t priority, const char* name, mos_thread_f
 
 merr_t mos_thread_delete( mos_thread_id_t thread )
 {
-    return lib_api_p->mos_thread_delete( &thread );
+    return lib_api_p->mos_thread_delete( thread == NULL ? NULL : &thread );
 }
 
 void mos_thread_suspend(mos_thread_id_t thread)

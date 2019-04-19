@@ -26,14 +26,14 @@
 
 #define AWS_NOTIFY_INTERVAL (20*1000)
 #define AWS_NOTIFY_TIMES    500
-//#if (MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK) || (MXOS_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK_WITH_SOFTAP)
+//#if (WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_EASYLINK) || (WIFI_CONFIG_MODE == WIFI_CONFIG_MODE_EASYLINK_WITH_SOFTAP)
 
 /******************************************************
  *               Function Declarations
  ******************************************************/
 /* EasyLink event callback functions*/
 static void aws_wifi_status_cb( WiFiEvent event, system_context_t * const inContext );
-static void aws_complete_cb( mwifi_softap_attr_t *nwkpara, system_context_t * const inContext );
+static void aws_complete_cb( char *ssid, char *key, int mode, system_context_t * const inContext );
 
 /* Thread perform easylink and connect to wlan */
 static void aws_thread( void *inContext ); /* Perform easylink and connect to wlan */
@@ -59,7 +59,7 @@ static void aws_wifi_status_cb( WiFiEvent event, system_context_t * const inCont
     switch ( event )
     {
         case NOTIFY_STATION_UP:
-            inContext->flashContentInRam.mxosSystemConfig.configured = allConfigured;
+            inContext->flashContentInRam.mxos_config.configured = allConfigured;
             mxos_system_context_update( &inContext->flashContentInRam ); //Update Flash content
             mos_semphr_release(aws_connect_sem ); //Notify Easylink thread
             break;
@@ -70,23 +70,23 @@ static void aws_wifi_status_cb( WiFiEvent event, system_context_t * const inCont
 }
 
 /* MXOS callback when EasyLink is finished step 1, return SSID and KEY */
-static void aws_complete_cb( mwifi_softap_attr_t *nwkpara, system_context_t * const inContext )
+static void aws_complete_cb( char *ssid, char *key, int mode, system_context_t * const inContext )
 {
     merr_t err = kNoErr;
 
-    require_action_string( nwkpara, exit, err = kTimeoutErr, "AWS Timeout or terminated" );
+    require_action_string( ssid, exit, err = kTimeoutErr, "AWS Timeout or terminated" );
 
     /* Store SSID and KEY*/
     mos_mutex_lock(inContext->flashContentInRam_mutex );
-    memcpy( inContext->flashContentInRam.mxosSystemConfig.ssid, nwkpara->wifi_ssid, maxSsidLen );
-    memset( inContext->flashContentInRam.mxosSystemConfig.bssid, 0x0, 6 );
-    memcpy( inContext->flashContentInRam.mxosSystemConfig.user_key, nwkpara->wifi_key, maxKeyLen );
-    inContext->flashContentInRam.mxosSystemConfig.user_keyLength = strlen( nwkpara->wifi_key );
-    memcpy( inContext->flashContentInRam.mxosSystemConfig.key, nwkpara->wifi_key, maxKeyLen );
-    inContext->flashContentInRam.mxosSystemConfig.keyLength = strlen( nwkpara->wifi_key );
-    inContext->flashContentInRam.mxosSystemConfig.dhcpEnable = true;
+    memcpy( inContext->flashContentInRam.mxos_config.ssid, ssid, maxSsidLen );
+    memset( inContext->flashContentInRam.mxos_config.bssid, 0x0, 6 );
+    memcpy( inContext->flashContentInRam.mxos_config.user_key, key, maxKeyLen );
+    inContext->flashContentInRam.mxos_config.user_keyLength = strlen( key );
+    memcpy( inContext->flashContentInRam.mxos_config.key, key, maxKeyLen );
+    inContext->flashContentInRam.mxos_config.keyLength = strlen( key );
+    inContext->flashContentInRam.mxos_config.dhcpEnable = true;
     mos_mutex_unlock(inContext->flashContentInRam_mutex );
-    system_log("Get SSID: %s, Key: %s", inContext->flashContentInRam.mxosSystemConfig.ssid, inContext->flashContentInRam.mxosSystemConfig.user_key);
+    system_log("Get SSID: %s, Key: %s", inContext->flashContentInRam.mxos_config.ssid, inContext->flashContentInRam.mxos_config.user_key);
     aws_success = true;
     exit:
     if ( err != kNoErr )
@@ -224,8 +224,8 @@ restart:
     /* AWS Success */
     if ( aws_success == true )
     {
-        mxos_system_delegate_config_recv_ssid( context->flashContentInRam.mxosSystemConfig.ssid,
-                                               context->flashContentInRam.mxosSystemConfig.user_key );
+        mxos_system_delegate_config_recv_ssid( context->flashContentInRam.mxos_config.ssid,
+                                               context->flashContentInRam.mxos_config.user_key );
         system_connect_wifi_normal( context );
 
         /* Wait for station connection */
@@ -325,7 +325,7 @@ char* aws_notify_msg_create(system_context_t *context)
 
     sprintf(aws_notify_msg, "%s,\"wlan unconfigured\":\"F\"", aws_notify_msg);
 
-#ifdef MXOS_CONFIG_SERVER_ENABLE
+#if MXOS_CONFIG_SERVER_ENABLE
     sprintf(aws_notify_msg, "%s,\"FTC\":\"T\",\"PORT\":%d", aws_notify_msg,MXOS_CONFIG_SERVER_PORT);
 #else
     sprintf(aws_notify_msg, "%s,\"FTC\":\"F\"", aws_notify_msg);

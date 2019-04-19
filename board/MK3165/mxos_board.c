@@ -270,6 +270,22 @@ const mxos_logic_partition_t mxos_partitions[] =
     .partition_length          =    0x74000,   //464k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
   },
+  [MXOS_PARTITION_PARAMETER_1] =
+  {
+    .partition_owner           = MXOS_FLASH_SPI,
+    .partition_description     = "PARAMETER1",
+    .partition_start_addr      = 0x0,
+    .partition_length          = 0x1000, // 4k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
+  [MXOS_PARTITION_PARAMETER_2] =
+  {
+    .partition_owner           = MXOS_FLASH_SPI,
+    .partition_description     = "PARAMETER2",
+    .partition_start_addr      = 0x1000,
+    .partition_length          = 0x1000, //4k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
   [MXOS_PARTITION_RF_FIRMWARE] =
   {
     .partition_owner           = MXOS_FLASH_SPI,
@@ -286,20 +302,12 @@ const mxos_logic_partition_t mxos_partitions[] =
     .partition_length          = 0x74000, //464k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
   },
-  [MXOS_PARTITION_PARAMETER_1] =
+  [MXOS_PARTITION_KV] =
   {
     .partition_owner           = MXOS_FLASH_SPI,
-    .partition_description     = "PARAMETER1",
-    .partition_start_addr      = 0x0,
-    .partition_length          = 0x1000, // 4k bytes
-    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-  },
-  [MXOS_PARTITION_PARAMETER_2] =
-  {
-    .partition_owner           = MXOS_FLASH_SPI,
-    .partition_description     = "PARAMETER1",
-    .partition_start_addr      = 0x1000,
-    .partition_length          = 0x1000, //4k bytes
+    .partition_description     = "KV",
+    .partition_start_addr      = 0xB4000,
+    .partition_length          = 0x4000,//16k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
   },
   [MXOS_PARTITION_FILESYS] =
@@ -313,7 +321,7 @@ const mxos_logic_partition_t mxos_partitions[] =
 };
 
 
-#if defined ( USE_MXOS_SPI_FLASH )
+#if defined ( USE_SPI_FLASH )
 const mxos_spi_device_t mxos_spi_flash =
 {
   .port        = MXOS_SPI_1,

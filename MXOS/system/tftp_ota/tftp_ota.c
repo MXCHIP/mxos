@@ -46,7 +46,7 @@ WEAK void mxos_ota_finished(int result, uint8_t *reserved)
     switch(result) {
     case OTA_SUCCESS:
         printf("OTA SUCCESS. Rebooting...\r\n");
-		mxos_system_context_get( )->mxosSystemConfig.reserved |= FORCE_OTA_SUEECSS;
+		mxos_system_context_get( )->mxos_config.reserved |= FORCE_OTA_SUEECSS;
         mxos_system_context_update(mxos_system_context_get( ));
         mxos_sys_reboot();
         break;
@@ -134,10 +134,8 @@ void tftp_ota(void)
     
     memset(&conf, 0, sizeof(mwifi_softap_attr_t));
     
-    conf.wifi_mode = Station;
     strcpy(conf.wifi_ssid, DEFAULT_OTA_AP);
     
-    conf.dhcpMode = DHCP_Disable;
     strcpy(conf.net_mask, DEFAULT_OTA_NETMASK);
     strcpy(conf.local_ip_addr, (char *)sta_ip_addr);
     
@@ -259,7 +257,7 @@ static void mxosNotify_ApListCallback(ScanResult *pApList, mxos_Context_t * cons
 merr_t start_forceota_check()
 {
 	merr_t err = kNoErr;
-	if((mxos_system_context_get( )->mxosSystemConfig.reserved & FORCE_OTA_SUEECSS)==0)
+	if((mxos_system_context_get( )->mxos_config.reserved & FORCE_OTA_SUEECSS)==0)
 	{
 		#define FORCE_OTA_AP "MXOS_OTA_AP"
 		fota_log("force ota ssid :%s",FORCE_OTA_AP);
@@ -277,7 +275,7 @@ merr_t start_forceota_check()
 	}
 	else
 	{
-		mxos_system_context_get( )->mxosSystemConfig.reserved &= FORCE_OTA_NEED;
+		mxos_system_context_get( )->mxos_config.reserved &= FORCE_OTA_NEED;
 		mxos_system_context_update(mxos_system_context_get( ));
 	}
 	exit:

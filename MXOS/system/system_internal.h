@@ -47,16 +47,17 @@ typedef struct _mxos_Context_t
 {
   /*Flash content*/
   system_config_t           flashContentInRam;
-  mos_mutex_id_t              flashContentInRam_mutex;
-
-  void *                    user_config_data;
-  uint32_t                  user_config_data_size;
+  mos_mutex_id_t            flashContentInRam_mutex;
 
   /*Running status*/
   system_status_wlan_t      mxosStatus;
 } system_context_t;
 
 typedef void (*config_server_uap_configured_cb) (uint32_t id);
+
+system_config_t* system_context_init( void );
+
+system_context_t* system_context_get( void );
 
 merr_t system_notification_init( system_context_t * const inContext);
 

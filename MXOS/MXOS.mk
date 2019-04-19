@@ -25,7 +25,7 @@ $(NAME)_COMPONENTS += MXOS/security \
 
 $(NAME)_COMPONENTS += utilities
 
-GLOBAL_DEFINES += 
+GLOBAL_DEFINES += __MXOS__=1
 
 # Add MCU component
 ifneq ($(MBED_SUPPORT),)

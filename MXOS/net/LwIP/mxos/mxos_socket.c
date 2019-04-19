@@ -215,12 +215,12 @@ int recvfrom (int socket, void *buffer, size_t size, int flags, struct sockaddr 
 
 ssize_t read (int filedes, void *buffer, size_t size)
 {
-    return recv(filedes, buffer, size, 0);
+    return lwip_recv(filedes, buffer, size, 0);
 }
 
 ssize_t write (int filedes, const void *buffer, size_t size)
 {
-    return send(filedes, buffer, size, 0);
+    return lwip_send(filedes, buffer, size, 0);
 }
 
 int close (int filedes)

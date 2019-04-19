@@ -32,7 +32,7 @@ merr_t system_discovery_init(system_context_t * const inContext)
     char *val;
 
     memset(&mxos_system_service, 0x0, sizeof(struct mdns_service));
-    mxos_system_service.servname = inContext->flashContentInRam.mxosSystemConfig.name;
+    mxos_system_service.servname = inContext->flashContentInRam.mxos_config.name;
     mxos_system_service.servtype = "easylink";
     mxos_system_service.port = MXOS_SYSTEM_DISCOVERY_PORT;
     mxos_system_service.proto = MDNS_PROTO_TCP;
@@ -65,7 +65,7 @@ merr_t system_discovery_init(system_context_t * const inContext)
     snprintf(keyvals, SYS_TXT_LEN, "%sManufacturer=%s.", keyvals, val);
     free(val);
 
-    snprintf(keyvals, SYS_TXT_LEN, "%sSeed=%lu.", keyvals, inContext->flashContentInRam.mxosSystemConfig.seed);
+    snprintf(keyvals, SYS_TXT_LEN, "%sSeed=%lu.", keyvals, inContext->flashContentInRam.mxos_config.seed);
 
     mdns_set_txt_rec(&mxos_system_service, keyvals, '.');
 
