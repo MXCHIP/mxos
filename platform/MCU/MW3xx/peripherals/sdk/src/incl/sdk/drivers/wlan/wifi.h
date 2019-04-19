@@ -296,7 +296,7 @@ int  wifi_wfd_ps_inactivity_sleep_enter(unsigned int ctrl_bitmap,
 				unsigned int min_awake, unsigned int max_awake);
 
 int  wifi_wfd_ps_inactivity_sleep_exit();
-int wifidirectapcmd_mxos_configig();
+int wifidirectapcmd_sys_configig();
 void wifidirectcmd_config();
 #endif
 

@@ -63,13 +63,13 @@ Change log:
 #define MAX_RATES               12
 
 #if 0
-/** APCMD buffer : mxos_configigure */
-typedef PACK_START struct _apcmdbuf_mxos_configigure {
+/** APCMD buffer : sys_configure */
+typedef PACK_START struct _apcmdbuf_sys_configure {
     /** Header */
 	APCMDHEADER;
     /** Action : GET or SET */
 	t_u16 action;
-} PACK_END apcmdbuf_mxos_configigure;
+} PACK_END apcmdbuf_sys_configure;
 
 /** TLV buffer : STA MAC address filtering control */
 typedef PACK_START struct _tlvbuf_sta_mac_addr_filter {
@@ -1257,13 +1257,13 @@ typedef PACK_START struct _apcmdbuf_sys_reset {
 	APCMDHEADER;
 } PACK_END apcmdbuf_sys_reset;
 
-/** APCMD buffer : mxos_configigure */
-typedef PACK_START struct _apcmdbuf_mxos_configigure {
+/** APCMD buffer : sys_configure */
+typedef PACK_START struct _apcmdbuf_sys_configure {
     /** Header */
 	APCMDHEADER;
     /** Action : GET or SET */
 	t_u16 action;
-} PACK_END apcmdbuf_mxos_configigure;
+} PACK_END apcmdbuf_sys_configure;
 
 /* Max transmit power for indoor operation */
 #define MAX_TX_PWR_INDOOR    17
@@ -1819,8 +1819,8 @@ typedef PACK_START struct _apcmdbuf_cfg_data {
 #define APCMD_SYS_INFO              0x00ae
 /** APCMD : sys_reset */
 #define APCMD_SYS_RESET             0x00af
-/** APCMD : mxos_configigure */
-#define APCMD_mxos_configIGURE         0x00b0
+/** APCMD : sys_configure */
+#define APCMD_SYS_CONFIGURE         0x00b0
 /** APCMD : bss_start */
 #define APCMD_BSS_START             0x00b1
 /** APCMD : bss_stop */
@@ -2077,7 +2077,7 @@ int is_tx_rate_valid(t_u8 rate);
 int is_mcbc_rate_valid(t_u8 rate);
 void hexdump_data(char *prompt, void *p, int len, char delim);
 unsigned char hexc2bin(char chr);
-int check_mxos_configig(t_u8 *buf, t_u16 len);
+int check_sys_config(t_u8 *buf, t_u16 len);
 int get_max_sta_num_supported(t_u16 *max_sta_num_supported);
 int get_sys_cfg_protocol(t_u16 *proto);
 int is_cipher_valid_with_11n(int pairwisecipher, int groupcipher,
