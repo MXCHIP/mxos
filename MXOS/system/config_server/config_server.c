@@ -410,25 +410,25 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
     require_noerr(err, exit);
 
       /*name cell*/
-      err = config_server_create_string_cell(sector, "Device Name",   inContext->flashContentInRam.mxosSystemConfig.name,               "RW", NULL);
+      err = config_server_create_string_cell(sector, "Device Name",   inContext->flashContentInRam.mxos_config.name,               "RW", NULL);
       require_noerr(err, exit);
 
       //RF power save switcher cell
-      err = config_server_create_bool_cell(sector, "RF power save",   inContext->flashContentInRam.mxosSystemConfig.rfPowerSaveEnable,  "RW");
+      err = config_server_create_bool_cell(sector, "RF power save",   inContext->flashContentInRam.mxos_config.rfPowerSaveEnable,  "RW");
       require_noerr(err, exit);
 
       //MCU power save switcher cell
-      err = config_server_create_bool_cell(sector, "MCU power save",  inContext->flashContentInRam.mxosSystemConfig.mcuPowerSaveEnable, "RW");
+      err = config_server_create_bool_cell(sector, "MCU power save",  inContext->flashContentInRam.mxos_config.mcuPowerSaveEnable, "RW");
       require_noerr(err, exit);
 
       /*SSID cell*/
-      err = config_server_create_string_cell(sector, "Wi-Fi",         inContext->flashContentInRam.mxosSystemConfig.ssid,     "RW", NULL);
+      err = config_server_create_string_cell(sector, "Wi-Fi",         inContext->flashContentInRam.mxos_config.ssid,     "RW", NULL);
       require_noerr(err, exit);
       /*PASSWORD cell*/
-      err = config_server_create_string_cell(sector, "Password",      inContext->flashContentInRam.mxosSystemConfig.user_key, "RW", NULL);
+      err = config_server_create_string_cell(sector, "Password",      inContext->flashContentInRam.mxos_config.user_key, "RW", NULL);
       require_noerr(err, exit);
       /*DHCP cell*/
-      err = config_server_create_bool_cell(sector, "DHCP",            inContext->flashContentInRam.mxosSystemConfig.dhcpEnable,   "RW");
+      err = config_server_create_bool_cell(sector, "DHCP",            inContext->flashContentInRam.mxos_config.dhcpEnable,   "RW");
       require_noerr(err, exit);
       /*Local cell*/
       err = config_server_create_string_cell(sector, "IP address",  ip.ip,   "RW", NULL);
@@ -483,43 +483,43 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
       mos_mutex_lock(inContext->flashContentInRam_mutex);
       json_object_object_foreach(config, key, val) {
         if(!strcmp(key, "Device Name")){
-          strncpy(inContext->flashContentInRam.mxosSystemConfig.name, json_object_get_string(val), maxNameLen);
+          strncpy(inContext->flashContentInRam.mxos_config.name, json_object_get_string(val), maxNameLen);
           need_reboot = true;
         }else if(!strcmp(key, "RF power save")){
-          inContext->flashContentInRam.mxosSystemConfig.rfPowerSaveEnable = json_object_get_boolean(val);
+          inContext->flashContentInRam.mxos_config.rfPowerSaveEnable = json_object_get_boolean(val);
           need_reboot = true;
         }else if(!strcmp(key, "MCU power save")){
-          inContext->flashContentInRam.mxosSystemConfig.mcuPowerSaveEnable = json_object_get_boolean(val);
+          inContext->flashContentInRam.mxos_config.mcuPowerSaveEnable = json_object_get_boolean(val);
           need_reboot = true;
         }else if(!strcmp(key, "Wi-Fi")){
-          strncpy(inContext->flashContentInRam.mxosSystemConfig.ssid, json_object_get_string(val), maxSsidLen);
-          inContext->flashContentInRam.mxosSystemConfig.channel = 0;
-          memset(inContext->flashContentInRam.mxosSystemConfig.bssid, 0x0, 6);
-          inContext->flashContentInRam.mxosSystemConfig.security = SECURITY_TYPE_AUTO;
-          memcpy(inContext->flashContentInRam.mxosSystemConfig.key, inContext->flashContentInRam.mxosSystemConfig.user_key, maxKeyLen);
-          inContext->flashContentInRam.mxosSystemConfig.keyLength = inContext->flashContentInRam.mxosSystemConfig.user_keyLength;
+          strncpy(inContext->flashContentInRam.mxos_config.ssid, json_object_get_string(val), maxSsidLen);
+          inContext->flashContentInRam.mxos_config.channel = 0;
+          memset(inContext->flashContentInRam.mxos_config.bssid, 0x0, 6);
+          inContext->flashContentInRam.mxos_config.security = SECURITY_TYPE_AUTO;
+          memcpy(inContext->flashContentInRam.mxos_config.key, inContext->flashContentInRam.mxos_config.user_key, maxKeyLen);
+          inContext->flashContentInRam.mxos_config.keyLength = inContext->flashContentInRam.mxos_config.user_keyLength;
           need_reboot = true;
         }else if(!strcmp(key, "Password")){
-          inContext->flashContentInRam.mxosSystemConfig.security = SECURITY_TYPE_AUTO;
-          strncpy(inContext->flashContentInRam.mxosSystemConfig.key, json_object_get_string(val), maxKeyLen);
-          strncpy(inContext->flashContentInRam.mxosSystemConfig.user_key, json_object_get_string(val), maxKeyLen);
-          inContext->flashContentInRam.mxosSystemConfig.keyLength = strlen(inContext->flashContentInRam.mxosSystemConfig.key);
-          inContext->flashContentInRam.mxosSystemConfig.user_keyLength = strlen(inContext->flashContentInRam.mxosSystemConfig.key);
+          inContext->flashContentInRam.mxos_config.security = SECURITY_TYPE_AUTO;
+          strncpy(inContext->flashContentInRam.mxos_config.key, json_object_get_string(val), maxKeyLen);
+          strncpy(inContext->flashContentInRam.mxos_config.user_key, json_object_get_string(val), maxKeyLen);
+          inContext->flashContentInRam.mxos_config.keyLength = strlen(inContext->flashContentInRam.mxos_config.key);
+          inContext->flashContentInRam.mxos_config.user_keyLength = strlen(inContext->flashContentInRam.mxos_config.key);
           need_reboot = true;
         }else if(!strcmp(key, "DHCP")){
-          inContext->flashContentInRam.mxosSystemConfig.dhcpEnable   = json_object_get_boolean(val);
+          inContext->flashContentInRam.mxos_config.dhcpEnable   = json_object_get_boolean(val);
           need_reboot = true;
         }else if(!strcmp(key, "IP address")){
-          strncpy(inContext->flashContentInRam.mxosSystemConfig.localIp, json_object_get_string(val), maxIpLen);
+          strncpy(inContext->flashContentInRam.mxos_config.localIp, json_object_get_string(val), maxIpLen);
           need_reboot = true;
         }else if(!strcmp(key, "Net Mask")){
-          strncpy(inContext->flashContentInRam.mxosSystemConfig.netMask, json_object_get_string(val), maxIpLen);
+          strncpy(inContext->flashContentInRam.mxos_config.netMask, json_object_get_string(val), maxIpLen);
           need_reboot = true;
         }else if(!strcmp(key, "Gateway")){
-          strncpy(inContext->flashContentInRam.mxosSystemConfig.gateWay, json_object_get_string(val), maxIpLen);
+          strncpy(inContext->flashContentInRam.mxos_config.gateWay, json_object_get_string(val), maxIpLen);
           need_reboot = true;
         }else if(!strcmp(key, "DNS Server")){
-          strncpy(inContext->flashContentInRam.mxosSystemConfig.dnsServer, json_object_get_string(val), maxIpLen);
+          strncpy(inContext->flashContentInRam.mxos_config.dnsServer, json_object_get_string(val), maxIpLen);
           need_reboot = true;
         }else{
           config_server_delegate_recv( key, val, &need_reboot, &inContext->flashContentInRam );
@@ -529,7 +529,7 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
 
       json_object_put(config);
 
-      inContext->flashContentInRam.mxosSystemConfig.configured = allConfigured;
+      inContext->flashContentInRam.mxos_config.configured = allConfigured;
       mxos_system_context_update( &inContext->flashContentInRam );
 
       if( need_reboot == true ){
@@ -545,8 +545,6 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
 
       system_log( "Recv new configuration from uAP, apply and connect to AP" );
 
-      inContext->flashContentInRam.mxosSystemConfig.easyLinkByPass = EASYLINK_BYPASS_NO;
-
       config = json_tokener_parse(inHeader->extraDataPtr);
       require_action(config, exit, err = kUnknownErr);
       system_log("Recv config object from uap =%s", json_object_to_json_string(config));
@@ -554,41 +552,41 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
 
       json_object_object_foreach( config, key, val ) {
           if ( !strcmp( key, "SSID" ) ) {
-              strncpy( inContext->flashContentInRam.mxosSystemConfig.ssid, json_object_get_string( val ), maxSsidLen );
-              inContext->flashContentInRam.mxosSystemConfig.channel = 0;
-              memset( inContext->flashContentInRam.mxosSystemConfig.bssid, 0x0, 6 );
-              inContext->flashContentInRam.mxosSystemConfig.security = SECURITY_TYPE_AUTO;
-              memcpy( inContext->flashContentInRam.mxosSystemConfig.key,
-                      inContext->flashContentInRam.mxosSystemConfig.user_key, maxKeyLen );
-              inContext->flashContentInRam.mxosSystemConfig.keyLength = inContext->flashContentInRam.mxosSystemConfig.user_keyLength;
+              strncpy( inContext->flashContentInRam.mxos_config.ssid, json_object_get_string( val ), maxSsidLen );
+              inContext->flashContentInRam.mxos_config.channel = 0;
+              memset( inContext->flashContentInRam.mxos_config.bssid, 0x0, 6 );
+              inContext->flashContentInRam.mxos_config.security = SECURITY_TYPE_AUTO;
+              memcpy( inContext->flashContentInRam.mxos_config.key,
+                      inContext->flashContentInRam.mxos_config.user_key, maxKeyLen );
+              inContext->flashContentInRam.mxos_config.keyLength = inContext->flashContentInRam.mxos_config.user_keyLength;
           }
           else if ( !strcmp( key, "PASSWORD" ) ) {
-              inContext->flashContentInRam.mxosSystemConfig.security = SECURITY_TYPE_AUTO;
-              strncpy( inContext->flashContentInRam.mxosSystemConfig.key, json_object_get_string( val ), maxKeyLen );
-              strncpy( inContext->flashContentInRam.mxosSystemConfig.user_key, json_object_get_string( val ), maxKeyLen );
-              inContext->flashContentInRam.mxosSystemConfig.keyLength = strlen( inContext->flashContentInRam.mxosSystemConfig.key );
-              inContext->flashContentInRam.mxosSystemConfig.user_keyLength = strlen( inContext->flashContentInRam.mxosSystemConfig.key );
-              memcpy( inContext->flashContentInRam.mxosSystemConfig.key,
-                      inContext->flashContentInRam.mxosSystemConfig.user_key, maxKeyLen );
-              inContext->flashContentInRam.mxosSystemConfig.keyLength = inContext->flashContentInRam.mxosSystemConfig.user_keyLength;
+              inContext->flashContentInRam.mxos_config.security = SECURITY_TYPE_AUTO;
+              strncpy( inContext->flashContentInRam.mxos_config.key, json_object_get_string( val ), maxKeyLen );
+              strncpy( inContext->flashContentInRam.mxos_config.user_key, json_object_get_string( val ), maxKeyLen );
+              inContext->flashContentInRam.mxos_config.keyLength = strlen( inContext->flashContentInRam.mxos_config.key );
+              inContext->flashContentInRam.mxos_config.user_keyLength = strlen( inContext->flashContentInRam.mxos_config.key );
+              memcpy( inContext->flashContentInRam.mxos_config.key,
+                      inContext->flashContentInRam.mxos_config.user_key, maxKeyLen );
+              inContext->flashContentInRam.mxos_config.keyLength = inContext->flashContentInRam.mxos_config.user_keyLength;
           }
           else if ( !strcmp( key, "DHCP" ) ) {
-              inContext->flashContentInRam.mxosSystemConfig.dhcpEnable = json_object_get_boolean( val );
+              inContext->flashContentInRam.mxos_config.dhcpEnable = json_object_get_boolean( val );
           }
           else if ( !strcmp( key, "IDENTIFIER" ) ) {
               easylinkIndentifier = (uint32_t) json_object_get_int( val );
           }
           else if ( !strcmp( key, "IP" ) ) {
-              strncpy( inContext->flashContentInRam.mxosSystemConfig.localIp, json_object_get_string( val ), maxIpLen );
+              strncpy( inContext->flashContentInRam.mxos_config.localIp, json_object_get_string( val ), maxIpLen );
           }
           else if ( !strcmp( key, "NETMASK" ) ) {
-              strncpy( inContext->flashContentInRam.mxosSystemConfig.netMask, json_object_get_string( val ), maxIpLen );
+              strncpy( inContext->flashContentInRam.mxos_config.netMask, json_object_get_string( val ), maxIpLen );
           }
           else if ( !strcmp( key, "GATEWAY" ) ) {
-              strncpy( inContext->flashContentInRam.mxosSystemConfig.gateWay, json_object_get_string( val ), maxIpLen );
+              strncpy( inContext->flashContentInRam.mxos_config.gateWay, json_object_get_string( val ), maxIpLen );
           }
           else if ( !strcmp( key, "DNS1" ) ) {
-              strncpy( inContext->flashContentInRam.mxosSystemConfig.dnsServer, json_object_get_string( val ), maxIpLen );
+              strncpy( inContext->flashContentInRam.mxos_config.dnsServer, json_object_get_string( val ), maxIpLen );
           }
       }
       mos_mutex_unlock(inContext->flashContentInRam_mutex);

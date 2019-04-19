@@ -46,7 +46,7 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
             /* Connected to AP, means that the wlan configuration is right, update configuration in flash and update
              bongjour txt record with new "easylinkIndentifier" */
             easylink_bonjour_update( Station, easylinkIndentifier, inContext );
-            inContext->flashContentInRam.mxosSystemConfig.configured = allConfigured;
+            inContext->flashContentInRam.mxos_config.configured = allConfigured;
             mxos_system_context_update( &inContext->flashContentInRam ); //Update Flash content
             mos_semphr_release(easylink_connect_sem ); //Notify Easylink thread
             break;
@@ -123,8 +123,8 @@ restart:
 
     /* EasyLink Success */
     if ( easylink_success == true ) {
-        mxos_system_delegate_config_recv_ssid( context->flashContentInRam.mxosSystemConfig.ssid,
-                                               context->flashContentInRam.mxosSystemConfig.user_key );
+        mxos_system_delegate_config_recv_ssid( context->flashContentInRam.mxos_config.ssid,
+                                               context->flashContentInRam.mxos_config.user_key );
 
         mxos_thread_sleep(1);
         system_connect_wifi_normal( context );
@@ -154,12 +154,12 @@ restart:
     else /* EasyLink failed */
     {
         /*so roll back to previous settings  (if it has) and connect*/
-        if(context->flashContentInRam.mxosSystemConfig.configured != unConfigured)
+        if(context->flashContentInRam.mxos_config.configured != unConfigured)
         {
             system_log("Roll back to previous settings");
             MXOSReadConfiguration( context );
 #ifdef EasyLink_Needs_Reboot
-            context->flashContentInRam.mxosSystemConfig.configured = allConfigured;
+            context->flashContentInRam.mxos_config.configured = allConfigured;
             mxos_system_context_update( &context->flashContentInRam );
 #endif
             system_connect_wifi_normal( context );

@@ -99,34 +99,34 @@ static void mxosNotify_WiFIParaChangedHandler(apinfo_adv_t *ap_info, char *key, 
   bool _needsUpdate = false;
   require(inContext, exit);
   mos_mutex_lock(inContext->flashContentInRam_mutex);
-  if(strncmp(inContext->flashContentInRam.mxosSystemConfig.ssid, ap_info->ssid, maxSsidLen)!=0){
-    strncpy(inContext->flashContentInRam.mxosSystemConfig.ssid, ap_info->ssid, maxSsidLen);
+  if(strncmp(inContext->flashContentInRam.mxos_config.ssid, ap_info->ssid, maxSsidLen)!=0){
+    strncpy(inContext->flashContentInRam.mxos_config.ssid, ap_info->ssid, maxSsidLen);
     _needsUpdate = true;
   }
 
-  if(memcmp(inContext->flashContentInRam.mxosSystemConfig.bssid, ap_info->bssid, 6)!=0){
-    memcpy(inContext->flashContentInRam.mxosSystemConfig.bssid, ap_info->bssid, 6);
+  if(memcmp(inContext->flashContentInRam.mxos_config.bssid, ap_info->bssid, 6)!=0){
+    memcpy(inContext->flashContentInRam.mxos_config.bssid, ap_info->bssid, 6);
     _needsUpdate = true;
   }
 
-  if(inContext->flashContentInRam.mxosSystemConfig.channel != ap_info->channel){
-    inContext->flashContentInRam.mxosSystemConfig.channel = ap_info->channel;
+  if(inContext->flashContentInRam.mxos_config.channel != ap_info->channel){
+    inContext->flashContentInRam.mxos_config.channel = ap_info->channel;
     _needsUpdate = true;
   }
   
-  if(inContext->flashContentInRam.mxosSystemConfig.security != ap_info->security){
-    inContext->flashContentInRam.mxosSystemConfig.security = ap_info->security;
+  if(inContext->flashContentInRam.mxos_config.security != ap_info->security){
+    inContext->flashContentInRam.mxos_config.security = ap_info->security;
     _needsUpdate = true;
   }
 
   if (key_len == maxKeyLen) {//  maxKeyLen is the PSK. using PSK replace passphrase. 
-    if(memcmp(inContext->flashContentInRam.mxosSystemConfig.key, key, maxKeyLen)!=0){
-      memcpy(inContext->flashContentInRam.mxosSystemConfig.key, key, maxKeyLen);
+    if(memcmp(inContext->flashContentInRam.mxos_config.key, key, maxKeyLen)!=0){
+      memcpy(inContext->flashContentInRam.mxos_config.key, key, maxKeyLen);
       _needsUpdate = true;
     }
   
-    if(inContext->flashContentInRam.mxosSystemConfig.keyLength != key_len){
-      inContext->flashContentInRam.mxosSystemConfig.keyLength = key_len;
+    if(inContext->flashContentInRam.mxos_config.keyLength != key_len){
+      inContext->flashContentInRam.mxos_config.keyLength = key_len;
       _needsUpdate = true;
     }
   }
@@ -171,15 +171,15 @@ void system_connect_wifi_normal( system_context_t * const inContext)
   memset(&wNetConfig, 0x0, sizeof(wifi_connect_attr_t));
   
   mos_mutex_lock(inContext->flashContentInRam_mutex);
-  strncpy((char*)wNetConfig.ap_info.ssid, inContext->flashContentInRam.mxosSystemConfig.ssid, maxSsidLen);
+  strncpy((char*)wNetConfig.ap_info.ssid, inContext->flashContentInRam.mxos_config.ssid, maxSsidLen);
   wNetConfig.ap_info.security = SECURITY_TYPE_AUTO;
-  memcpy(wNetConfig.key, inContext->flashContentInRam.mxosSystemConfig.user_key, maxKeyLen);
-  wNetConfig.key_len = inContext->flashContentInRam.mxosSystemConfig.user_keyLength;
-  wNetConfig.dhcpMode = inContext->flashContentInRam.mxosSystemConfig.dhcpEnable;
-  strncpy((char*)wNetConfig.local_ip_addr, inContext->flashContentInRam.mxosSystemConfig.localIp, maxIpLen);
-  strncpy((char*)wNetConfig.net_mask, inContext->flashContentInRam.mxosSystemConfig.netMask, maxIpLen);
-  strncpy((char*)wNetConfig.gateway_ip_addr, inContext->flashContentInRam.mxosSystemConfig.gateWay, maxIpLen);
-  strncpy((char*)wNetConfig.dnsServer_ip_addr, inContext->flashContentInRam.mxosSystemConfig.dnsServer, maxIpLen);
+  memcpy(wNetConfig.key, inContext->flashContentInRam.mxos_config.user_key, maxKeyLen);
+  wNetConfig.key_len = inContext->flashContentInRam.mxos_config.user_keyLength;
+  wNetConfig.dhcpMode = inContext->flashContentInRam.mxos_config.dhcpEnable;
+  strncpy((char*)wNetConfig.local_ip_addr, inContext->flashContentInRam.mxos_config.localIp, maxIpLen);
+  strncpy((char*)wNetConfig.net_mask, inContext->flashContentInRam.mxos_config.netMask, maxIpLen);
+  strncpy((char*)wNetConfig.gateway_ip_addr, inContext->flashContentInRam.mxos_config.gateWay, maxIpLen);
+  strncpy((char*)wNetConfig.dnsServer_ip_addr, inContext->flashContentInRam.mxos_config.dnsServer, maxIpLen);
   wNetConfig.wifi_retry_interval = 100;
   mos_mutex_unlock(inContext->flashContentInRam_mutex);
 
@@ -193,20 +193,20 @@ void system_connect_wifi_fast( system_context_t * const inContext)
   memset(&wNetConfig, 0x0, sizeof(wifi_connect_attr_t));
   
   mos_mutex_lock(inContext->flashContentInRam_mutex);
-  strncpy((char*)wNetConfig.ap_info.ssid, inContext->flashContentInRam.mxosSystemConfig.ssid, maxSsidLen);
-  memcpy(wNetConfig.ap_info.bssid, inContext->flashContentInRam.mxosSystemConfig.bssid, 6);
-  wNetConfig.ap_info.channel = inContext->flashContentInRam.mxosSystemConfig.channel;
-  wNetConfig.ap_info.security = inContext->flashContentInRam.mxosSystemConfig.security;
-  memcpy(wNetConfig.key, inContext->flashContentInRam.mxosSystemConfig.key, inContext->flashContentInRam.mxosSystemConfig.keyLength);
-  wNetConfig.key_len = inContext->flashContentInRam.mxosSystemConfig.keyLength;
-  if(inContext->flashContentInRam.mxosSystemConfig.dhcpEnable == true)
+  strncpy((char*)wNetConfig.ap_info.ssid, inContext->flashContentInRam.mxos_config.ssid, maxSsidLen);
+  memcpy(wNetConfig.ap_info.bssid, inContext->flashContentInRam.mxos_config.bssid, 6);
+  wNetConfig.ap_info.channel = inContext->flashContentInRam.mxos_config.channel;
+  wNetConfig.ap_info.security = inContext->flashContentInRam.mxos_config.security;
+  memcpy(wNetConfig.key, inContext->flashContentInRam.mxos_config.key, inContext->flashContentInRam.mxos_config.keyLength);
+  wNetConfig.key_len = inContext->flashContentInRam.mxos_config.keyLength;
+  if(inContext->flashContentInRam.mxos_config.dhcpEnable == true)
     wNetConfig.dhcpMode = DHCP_Client;
   else
     wNetConfig.dhcpMode = DHCP_Disable;
-  strncpy((char*)wNetConfig.local_ip_addr, inContext->flashContentInRam.mxosSystemConfig.localIp, maxIpLen);
-  strncpy((char*)wNetConfig.net_mask, inContext->flashContentInRam.mxosSystemConfig.netMask, maxIpLen);
-  strncpy((char*)wNetConfig.gateway_ip_addr, inContext->flashContentInRam.mxosSystemConfig.gateWay, maxIpLen);
-  strncpy((char*)wNetConfig.dnsServer_ip_addr, inContext->flashContentInRam.mxosSystemConfig.dnsServer, maxIpLen);
+  strncpy((char*)wNetConfig.local_ip_addr, inContext->flashContentInRam.mxos_config.localIp, maxIpLen);
+  strncpy((char*)wNetConfig.net_mask, inContext->flashContentInRam.mxos_config.netMask, maxIpLen);
+  strncpy((char*)wNetConfig.gateway_ip_addr, inContext->flashContentInRam.mxos_config.gateWay, maxIpLen);
+  strncpy((char*)wNetConfig.dnsServer_ip_addr, inContext->flashContentInRam.mxos_config.dnsServer, maxIpLen);
   mos_mutex_unlock(inContext->flashContentInRam_mutex);
 
   wNetConfig.wifi_retry_interval = 100;
@@ -242,11 +242,11 @@ merr_t system_network_daemen_start( system_context_t * const inContext )
   system_log("Ethernet mac address %s", mxos_eth_get_mac_address());
 #endif
 
-  if(inContext->flashContentInRam.mxosSystemConfig.rfPowerSaveEnable == true){
+  if(inContext->flashContentInRam.mxos_config.rfPowerSaveEnable == true){
     mwifi_ps_on();
   }
 
-  if(inContext->flashContentInRam.mxosSystemConfig.mcuPowerSaveEnable == true){
+  if(inContext->flashContentInRam.mxos_config.mcuPowerSaveEnable == true){
     mxos_mcu_powersave_config(true);
   }  
   return kNoErr;
@@ -262,14 +262,9 @@ static void PlatformEasyLinkButtonClickedCallback(void)
   require_quiet( sys_context, exit );
 
 #ifdef EasyLink_Needs_Reboot
-  if(sys_context->flashContentInRam.mxosSystemConfig.easyLinkByPass != EASYLINK_BYPASS_NO){
-      sys_context->flashContentInRam.mxosSystemConfig.easyLinkByPass = EASYLINK_BYPASS_NO;
-    needs_update = true;
-  }
-
   /* Enter easylink mode temporary in configed mode */
-  if(sys_context->flashContentInRam.mxosSystemConfig.configured == allConfigured){
-      sys_context->flashContentInRam.mxosSystemConfig.configured = wLanUnConfigured;
+  if(sys_context->flashContentInRam.mxos_config.configured == allConfigured){
+      sys_context->flashContentInRam.mxos_config.configured = wLanUnConfigured;
     needs_update = true;
   }
 

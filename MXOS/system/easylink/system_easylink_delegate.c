@@ -108,7 +108,7 @@ WEAK void mxos_system_delegate_config_success( mxos_config_source_t source )
 WEAK void mxos_system_delegate_easylink_timeout( system_context_t *context )
 {
     /* so roll back to previous settings  (if it has) and connect */
-    if ( context->flashContentInRam.mxosSystemConfig.configured != unConfigured ) {
+    if ( context->flashContentInRam.mxos_config.configured != unConfigured ) {
         MXOSReadConfiguration( context );
         system_connect_wifi_normal( context );
     }

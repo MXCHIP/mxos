@@ -114,15 +114,6 @@ do \
 } while (0)
 
 /**
-  * @brief  Initialize core data used by MXOS system framework. System and 
-  *         application's configuration are read from non-volatile storage: 
-  *         flash etc.
-  * @param  size_of_user_data: The length of config data used by application
-  * @retval Address of core data.
-  */
-mxos_Context_t* mxos_system_context_init( void );
-
-/**
   * @brief  Get the address of the core data.
   * @param  none
   * @retval Address of core data.
@@ -210,10 +201,9 @@ typedef enum{
 
 /**
   * @brief  Initialize MXOS system functions according to mxos_config.h
-  * @param  in_context: The address of the core data.
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-merr_t mxos_system_init( mxos_Context_t* const in_context );
+merr_t mxos_system_init( void );
 
 /**
   * @brief  Get IP, MAC, driver info for wlan interface
@@ -306,21 +296,21 @@ void mxos_easylink_aws_delegate_recv_notify_msg(char *aws_notify_msg);
 
 /**
   * @brief  Start wlan configuration mode: Apple MFi WAC protocol
-  * @param  inContext: MXOS system core data, initialized by @ref mxos_system_context_init
+  * @param  inContext: MXOS system core data, initialized by @ref system_context_init
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
 merr_t mxos_easylink_wac( mxos_Context_t * const inContext, mxos_bool_t enable );
 
 /**
   * @brief  Start wlan configuration mode: WPS, Wi-Fi protected setup
-  * @param  inContext: MXOS system core data, initialized by @ref mxos_system_context_init
+  * @param  inContext: MXOS system core data, initialized by @ref system_context_init
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
 merr_t mxos_easylink_wps( mxos_Context_t * const inContext, mxos_bool_t enable );
 
 /**
   * @brief  Start wlan configuration mode: EasyLink protocol
-  * @param  inContext: MXOS system core data, initialized by @ref mxos_system_context_init
+  * @param  inContext: MXOS system core data, initialized by @ref system_context_init
   * @param  enable: MXOS_TRUE to start and MXOS_FALSE to stop
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
@@ -328,7 +318,7 @@ merr_t mxos_easylink( mxos_Context_t * const in_context, mxos_bool_t enable );
 
 /**
   * @brief  Start wlan configuration mode: EasyLink AWS protocol
-  * @param  inContext: MXOS system core data, initialized by @ref mxos_system_context_init
+  * @param  inContext: MXOS system core data, initialized by @ref system_context_init
   * @param  enable: MXOS_TRUE to start and MXOS_FALSE to stop
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
@@ -339,7 +329,7 @@ merr_t mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enable 
   *         connection, once wlan is connected, save inContext content to flash. Developer
   *         only need to find a way to get ssid and password, and tell easylink user routine
   *         to handle the unfinished jobs.
-  * @param  inContext: MXOS system core data, initialized by @ref mxos_system_context_init
+  * @param  inContext: MXOS system core data, initialized by @ref system_context_init
   * @param  enable: MXOS_TRUE to start and MXOS_FALSE to stop
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
@@ -354,7 +344,7 @@ merr_t mxos_easylink_usr_save_result( mwifi_softap_attr_t *nwkpara );
 
 /**
   * @brief  Start wlan configuration mode: EasyLink softap protocol
-  * @param  inContext: MXOS system core data, initialized by @ref mxos_system_context_init
+  * @param  inContext: MXOS system core data, initialized by @ref system_context_init
   * @param  enable: MXOS_TRUE to start and MXOS_FALSE to stop
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
@@ -364,7 +354,7 @@ merr_t mxos_easylink_softap( mxos_Context_t * const in_context, mxos_bool_t enab
   * @brief  Start wlan configuration mode: EasyLink monitor protocol. Developer should
   *         complete mxos_easylink_monitor_delegate_xxx functions to fulfill whole wlan
   *         monitor protocols, link: airkiss, Hi-link, Ali AWS, smart-config...
-  * @param  inContext: MXOS system core data, initialized by @ref mxos_system_context_init
+  * @param  inContext: MXOS system core data, initialized by @ref system_context_init
   * @param  enable: MXOS_TRUE to start and MXOS_FALSE to stop
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
@@ -372,7 +362,7 @@ merr_t mxos_easylink_monitor( mxos_Context_t * const in_context, mxos_bool_t ena
 
 /**
   * @brief  Start wlan configuration mode: EasyLink monitor protocol with EasyLink compatible
-  * @param  inContext: MXOS system core data, initialized by @ref mxos_system_context_init
+  * @param  inContext: MXOS system core data, initialized by @ref system_context_init
   * @param  enable: MXOS_TRUE to start and MXOS_FALSE to stop
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */

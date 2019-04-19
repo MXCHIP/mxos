@@ -84,7 +84,7 @@ typedef struct  _boot_table_t {
 #endif
 }boot_table_t;
 
-typedef struct _mxos_sys_config_t
+typedef struct _mxos_config_t
 {
   /*Device identification*/
   char            name[maxNameLen];
@@ -112,7 +112,6 @@ typedef struct _mxos_sys_config_t
 
   /*EasyLink configuration*/
   config_state_type_t   configured;
-  uint8_t               easyLinkByPass;
   uint32_t              reserved;
 
   /*Services in MXOS system*/
@@ -120,7 +119,7 @@ typedef struct _mxos_sys_config_t
 
   /*Update seed number when configuration is changed*/
   int32_t         seed;
-} mxos_sys_config_t;
+} mxos_config_t;
 
 
 #ifdef MXOS_BLUETOOTH_ENABLE
@@ -161,7 +160,7 @@ typedef struct {
   boot_table_t             bootTable;
 
   /*MXOS system core configuration*/
-  mxos_sys_config_t        mxosSystemConfig;
+  mxos_config_t            mxos_config;
 
 #ifdef MXOS_BLUETOOTH_ENABLE
   mxos_bt_config_t         bt_config; 

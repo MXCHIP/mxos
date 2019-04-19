@@ -27,10 +27,11 @@
 #include "tftp_ota.h"
 #endif
 
-extern system_context_t* sys_context;
 #ifndef  EasyLink_Needs_Reboot
 static mos_worker_thread_id_t wlan_autoconf_worker_thread;
 #endif
+
+extern system_context_t* sys_context;
 
 
 /******************************************************
@@ -72,11 +73,13 @@ merr_t mxos_system_wlan_start_autoconf( void )
 }
 
 
-merr_t mxos_system_init( mxos_Context_t* in_context )
+merr_t mxos_system_init( void )
 {
   merr_t err = kNoErr;
 
-  require_action( in_context, exit, err = kNotPreparedErr );
+  /* Create mxos system context */
+  system_config_t* mxos_context = system_context_init();
+  require_action( mxos_context, exit, err = kNoMemoryErr );
 
   /* Initialize mxos notify system */
   err = system_notification_init( sys_context );
@@ -116,7 +119,7 @@ merr_t mxos_system_init( mxos_Context_t* in_context )
   require_noerr_string( err, exit, "ERROR: Unable to start the autoconf worker thread." );
 #endif
 
-  if( sys_context->flashContentInRam.mxosSystemConfig.configured == unConfigured){
+  if( sys_context->flashContentInRam.mxos_config.configured == unConfigured){
 #if MXOS_WLAN_AUTO_CONFIG
     system_log("Empty configuration. Starting configuration mode...");
     err = mxos_system_wlan_start_autoconf( );
@@ -124,7 +127,7 @@ merr_t mxos_system_init( mxos_Context_t* in_context )
 #endif
   }
 #ifdef EasyLink_Needs_Reboot
-  else if( sys_context->flashContentInRam.mxosSystemConfig.configured == wLanUnConfigured ){
+  else if( sys_context->flashContentInRam.mxos_config.configured == wLanUnConfigured ){
       system_log("Re-config wlan configuration. Starting configuration mode...");
       err = mxos_system_wlan_start_autoconf( );
       require_noerr( err, exit );
@@ -132,7 +135,7 @@ merr_t mxos_system_init( mxos_Context_t* in_context )
 #endif
 
 #ifdef MFG_MODE_AUTO
-  else if( sys_context->flashContentInRam.mxosSystemConfig.configured == mfgConfigured ){
+  else if( sys_context->flashContentInRam.mxos_config.configured == mfgConfigured ){
     system_log( "Enter MFG mode automatically" );
     mxos_mfg_test( in_context );
     mxos_thread_sleep( MXOS_NEVER_TIMEOUT );

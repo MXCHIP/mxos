@@ -58,7 +58,7 @@ merr_t mxos_easylink_wac( mxos_Context_t * const inContext, mxos_bool_t enable )
     WAC_Params->firmwareRevision =  FIRMWARE_REVISION;
     WAC_Params->hardwareRevision =  HARDWARE_REVISION;
     WAC_Params->serialNumber =      SERIAL_NUMBER;
-    WAC_Params->name =              inContext->mxosSystemConfig.name;
+    WAC_Params->name =              inContext->mxos_config.name;
     WAC_Params->model =             MODEL;
     WAC_Params->manufacturer =      MANUFACTURER;
 

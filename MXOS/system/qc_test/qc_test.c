@@ -281,7 +281,7 @@ void uartRecvMfg_thread( void * arg)
       continue; 
     else{
       /* if(......)   Should valid the UART input */
-      Context->mxosSystemConfig.configured = unConfigured;
+      Context->mxos_config.configured = unConfigured;
       mxos_system_context_update ( Context );
     }
   }

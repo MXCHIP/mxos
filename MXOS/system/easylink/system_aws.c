@@ -59,7 +59,7 @@ static void aws_wifi_status_cb( WiFiEvent event, system_context_t * const inCont
     switch ( event )
     {
         case NOTIFY_STATION_UP:
-            inContext->flashContentInRam.mxosSystemConfig.configured = allConfigured;
+            inContext->flashContentInRam.mxos_config.configured = allConfigured;
             mxos_system_context_update( &inContext->flashContentInRam ); //Update Flash content
             mos_semphr_release(aws_connect_sem ); //Notify Easylink thread
             break;
@@ -78,15 +78,15 @@ static void aws_complete_cb( char *ssid, char *key, int mode, system_context_t *
 
     /* Store SSID and KEY*/
     mos_mutex_lock(inContext->flashContentInRam_mutex );
-    memcpy( inContext->flashContentInRam.mxosSystemConfig.ssid, ssid, maxSsidLen );
-    memset( inContext->flashContentInRam.mxosSystemConfig.bssid, 0x0, 6 );
-    memcpy( inContext->flashContentInRam.mxosSystemConfig.user_key, key, maxKeyLen );
-    inContext->flashContentInRam.mxosSystemConfig.user_keyLength = strlen( key );
-    memcpy( inContext->flashContentInRam.mxosSystemConfig.key, key, maxKeyLen );
-    inContext->flashContentInRam.mxosSystemConfig.keyLength = strlen( key );
-    inContext->flashContentInRam.mxosSystemConfig.dhcpEnable = true;
+    memcpy( inContext->flashContentInRam.mxos_config.ssid, ssid, maxSsidLen );
+    memset( inContext->flashContentInRam.mxos_config.bssid, 0x0, 6 );
+    memcpy( inContext->flashContentInRam.mxos_config.user_key, key, maxKeyLen );
+    inContext->flashContentInRam.mxos_config.user_keyLength = strlen( key );
+    memcpy( inContext->flashContentInRam.mxos_config.key, key, maxKeyLen );
+    inContext->flashContentInRam.mxos_config.keyLength = strlen( key );
+    inContext->flashContentInRam.mxos_config.dhcpEnable = true;
     mos_mutex_unlock(inContext->flashContentInRam_mutex );
-    system_log("Get SSID: %s, Key: %s", inContext->flashContentInRam.mxosSystemConfig.ssid, inContext->flashContentInRam.mxosSystemConfig.user_key);
+    system_log("Get SSID: %s, Key: %s", inContext->flashContentInRam.mxos_config.ssid, inContext->flashContentInRam.mxos_config.user_key);
     aws_success = true;
     exit:
     if ( err != kNoErr )
@@ -224,8 +224,8 @@ restart:
     /* AWS Success */
     if ( aws_success == true )
     {
-        mxos_system_delegate_config_recv_ssid( context->flashContentInRam.mxosSystemConfig.ssid,
-                                               context->flashContentInRam.mxosSystemConfig.user_key );
+        mxos_system_delegate_config_recv_ssid( context->flashContentInRam.mxos_config.ssid,
+                                               context->flashContentInRam.mxos_config.user_key );
         system_connect_wifi_normal( context );
 
         /* Wait for station connection */

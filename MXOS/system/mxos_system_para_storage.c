@@ -26,7 +26,7 @@
 /* Update seed number every time*/
 static int32_t seedNum = 0;
 
-#define SYS_CONFIG_SIZE     ( sizeof(system_config_t) - sizeof( boot_table_t ) )
+#define mxos_configIG_SIZE     ( sizeof(system_config_t) - sizeof( boot_table_t ) )
 #define CRC_SIZE      ( 2 )
 
 system_context_t* sys_context = NULL;
@@ -47,7 +47,7 @@ WEAK void appRestoreDefault_callback(void *user_data, uint32_t size)
 static const uint32_t mxos_context_section_offsets[ ] =
 {
     [PARA_BOOT_TABLE_SECTION]            = OFFSETOF( system_config_t, bootTable ),
-    [PARA_MXOS_DATA_SECTION]             = OFFSETOF( system_config_t, mxosSystemConfig ),
+    [PARA_MXOS_DATA_SECTION]             = OFFSETOF( system_config_t, mxos_config ),
 #ifdef MXOS_BLUETOOTH_ENABLE
     [PARA_BT_DATA_SECTION]               = OFFSETOF( system_config_t, bt_config ),
 #endif
@@ -55,7 +55,7 @@ static const uint32_t mxos_context_section_offsets[ ] =
     [PARA_APP_DATA_SECTION]              = sizeof( system_config_t ),
 };
 
-mxos_Context_t* mxos_system_context_init( void )
+mxos_Context_t* system_context_init( void )
 {
   void *user_config_data = NULL;
 
@@ -76,7 +76,7 @@ mxos_Context_t* mxos_system_context_init( void )
   para_flash_mutex = mos_mutex_new( );
   MXOSReadConfiguration( sys_context );
 
-  if(sys_context->flashContentInRam.mxosSystemConfig.magic_number != SYS_MAGIC_NUMBR){
+  if(sys_context->flashContentInRam.mxos_config.magic_number != SYS_MAGIC_NUMBR){
     para_log("Magic number error, restore to default");
 #ifdef MFG_MODE_AUTO
     MICORestoreMFG( );
@@ -97,13 +97,13 @@ mxos_Context_t* mxos_system_context_get( void )
 #define MKV_ITEM_SET(name) \
 do \
 { \
-  require(mkv_item_set(#name, &sys_config->name, sizeof(sys_config->name)) == 0, exit); \
+  require(mkv_item_set(#name, &mxos_configig->name, sizeof(mxos_configig->name)) == 0, exit); \
 } while (0)
 
 static merr_t internal_update_config( system_context_t * const inContext )
 {
   merr_t err = kGeneralErr;
-  mxos_sys_config_t *sys_config = &inContext->flashContentInRam.mxosSystemConfig;
+  mxos_config_t *mxos_configig = &inContext->flashContentInRam.mxos_config;
 
   /*Device identification*/
   MKV_ITEM_SET(name);
@@ -127,7 +127,6 @@ static merr_t internal_update_config( system_context_t * const inContext )
   MKV_ITEM_SET(dnsServer);
   /*EasyLink configuration*/
   MKV_ITEM_SET(configured);
-  MKV_ITEM_SET(easyLinkByPass);
   /*Services in MXOS system*/
   MKV_ITEM_SET(magic_number);
   /*Update seed number when configuration is changed*/
@@ -146,13 +145,12 @@ merr_t mxos_system_context_restore( mxos_Context_t * const inContext )
 
   /*wlan configration is not need to change to a default state, use easylink to do that*/
   memset(&sys_context->flashContentInRam, 0x0, sizeof(system_config_t));
-  sprintf(sys_context->flashContentInRam.mxosSystemConfig.name, DEFAULT_NAME);
-  sys_context->flashContentInRam.mxosSystemConfig.configured = unConfigured;
-  sys_context->flashContentInRam.mxosSystemConfig.easyLinkByPass = EASYLINK_BYPASS_NO;
-  sys_context->flashContentInRam.mxosSystemConfig.rfPowerSaveEnable = false;
-  sys_context->flashContentInRam.mxosSystemConfig.mcuPowerSaveEnable = false;
-  sys_context->flashContentInRam.mxosSystemConfig.magic_number = SYS_MAGIC_NUMBR;
-  sys_context->flashContentInRam.mxosSystemConfig.seed = seedNum;
+  sprintf(sys_context->flashContentInRam.mxos_config.name, DEFAULT_NAME);
+  sys_context->flashContentInRam.mxos_config.configured = unConfigured;
+  sys_context->flashContentInRam.mxos_config.rfPowerSaveEnable = false;
+  sys_context->flashContentInRam.mxos_config.mcuPowerSaveEnable = false;
+  sys_context->flashContentInRam.mxos_config.magic_number = SYS_MAGIC_NUMBR;
+  sys_context->flashContentInRam.mxos_config.seed = seedNum;
 #ifdef MXOS_BLUETOOTH_ENABLE
   memset(&sys_context->flashContentInRam.bt_config, 0xFF, sizeof(mxos_bt_config_t));
 #endif
@@ -170,9 +168,9 @@ merr_t MXOSRestoreMFG( void )
   require_action( sys_context, exit, err = kNotPreparedErr );
 
   /*wlan configration is not need to change to a default state, use easylink to do that*/
-  sprintf(sys_context->flashContentInRam.mxosSystemConfig.name, DEFAULT_NAME);
-  sys_context->flashContentInRam.mxosSystemConfig.configured = mfgConfigured;
-  sys_context->flashContentInRam.mxosSystemConfig.magic_number = SYS_MAGIC_NUMBR;
+  sprintf(sys_context->flashContentInRam.mxos_config.name, DEFAULT_NAME);
+  sys_context->flashContentInRam.mxos_config.configured = mfgConfigured;
+  sys_context->flashContentInRam.mxos_config.magic_number = SYS_MAGIC_NUMBR;
 
   /*Application's default configuration*/
   appRestoreDefault_callback();
@@ -188,14 +186,14 @@ exit:
 #define MKV_ITEM_GET(name) \
 do \
 { \
-  n = sizeof(sys_config->name); \
-  mkv_item_get(#name, &sys_config->name, &n); \
+  n = sizeof(mxos_configig->name); \
+  mkv_item_get(#name, &mxos_configig->name, &n); \
 } while (0)
 
 merr_t MXOSReadConfiguration(system_context_t *inContext)
 {
   int n;
-  mxos_sys_config_t *sys_config = &inContext->flashContentInRam.mxosSystemConfig;
+  mxos_config_t *mxos_configig = &inContext->flashContentInRam.mxos_config;
 
   /*Device identification*/
   MKV_ITEM_GET(name);
@@ -219,7 +217,6 @@ merr_t MXOSReadConfiguration(system_context_t *inContext)
   MKV_ITEM_GET(dnsServer);
   /*EasyLink configuration*/
   MKV_ITEM_GET(configured);
-  MKV_ITEM_GET(easyLinkByPass);
   /*Services in MXOS system*/
   MKV_ITEM_GET(magic_number);
   /*Update seed number when configuration is changed*/
@@ -233,7 +230,7 @@ merr_t mxos_system_context_update( mxos_Context_t *in_context )
   merr_t err = kNoErr;
   require_action( in_context, exit, err = kNotPreparedErr );
 
-  sys_context->flashContentInRam.mxosSystemConfig.seed = ++seedNum;
+  sys_context->flashContentInRam.mxos_config.seed = ++seedNum;
 
   err = internal_update_config( sys_context );
   require_noerr(err, exit);
