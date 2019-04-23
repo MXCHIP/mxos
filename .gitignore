@@ -2,3 +2,5 @@ MiCoder/compiler
 Projects
 MiCoder
 tools_root
+platform/MCU/RTL8721D/flashloader/gnu_utility/gnu_script/rtl_flash_write.txt
+platform/MCU/RTL8721D/flashloader/image/image.bin

@@ -89,7 +89,7 @@ define flash_write
 		p /x FlashAddrForWrite
 		p /x $Loop
 
-		restore ./image/image.bin binary ($FLASHDATSRC-$FILESTARTADDR) $FILESTARTADDR ($FILESTARTADDR + $FLASHDATBUFSIZE)
+		restore $arg0 binary ($FLASHDATSRC-$FILESTARTADDR) $FILESTARTADDR ($FILESTARTADDR + $FLASHDATBUFSIZE)
 
 		c
 
@@ -104,7 +104,7 @@ define flash_write
 		p /x FlashAddrForWrite
 		p /x $Loop
 
-		restore ./image/image.bin binary ($FLASHDATSRC-$FILESTARTADDR) $FILESTARTADDR ($FILESTARTADDR + $TailSize)
+		restore $arg0 binary ($FLASHDATSRC-$FILESTARTADDR) $FILESTARTADDR ($FILESTARTADDR + $TailSize)
 
 		c
 	end
@@ -149,9 +149,17 @@ c
 
 #=============================================================================== 
 #flash write
-set $XIPBootSize =614400
+set $KM0_BOOT_ALL_SIZE =0
+set FlashAddrForWrite =0x0000
+flash_write ../image/km0_boot_all.bin $KM0_BOOT_ALL_SIZE
+
+set $KM4_BOOT_ALL_SIZE =0
+set FlashAddrForWrite =0x4000
+flash_write ../image/km4_boot_all.bin $KM4_BOOT_ALL_SIZE
+
+set $KM0_KM4_IMAGE2_SIZE =0
 set FlashAddrForWrite =0x6000
-flash_write $IMAGE_BOOT $XIPBootSize
+flash_write ./image/image.bin $KM0_KM4_IMAGE2_SIZE
 
 #Tell flashloader complete flag
 set FlashWriteComplete = 0x1
