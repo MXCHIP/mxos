@@ -134,7 +134,10 @@ int _write( int file, char *ptr, int len )
     UNUSED_PARAMETER( channel );
 #ifndef MXOS_DISABLE_STDIO
 
-    mhal_uart_write( MXOS_STDIO_UART, (const char*)ptr, len );
+    while(len--)
+    {
+        LOGUART_PutChar(*ptr++);
+    }
 
 #endif
     return len;
