@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "osal/merr.h"
+#include "merr.h"
 
 typedef void *mos_semphr_id_t;
 typedef void *mos_mutex_id_t;

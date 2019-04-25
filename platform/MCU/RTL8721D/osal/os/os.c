@@ -7,7 +7,7 @@
 #include "task.h"
 #include "timers.h"
 
-#include "osal/os/os.h"
+#include "mos.h"
 
 static bool _mos_in_isr(void);
 
