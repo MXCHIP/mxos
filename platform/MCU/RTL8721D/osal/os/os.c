@@ -261,7 +261,7 @@ uint32_t mos_time(void)
     }
 }
 
-size_t xPortGetTotalHeapSize( void );
+size_t xPortGetTotalHeapSize(void);
 int vPortGetBlocks(void);
 
 void mos_sleep(float seconds)

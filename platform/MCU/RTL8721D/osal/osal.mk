@@ -1,4 +1,4 @@
-NAME := OSAL
+NAME := osal
 
 $(NAME)_SOURCES := \
 os/os.c
