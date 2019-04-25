@@ -18,3 +18,11 @@ GLOBAL_LDFLAGS	+= -march=armv8-m.main+dsp -mthumb -mcmse -mfloat-abi=softfp -mfp
 GLOBAL_LDFLAGS	+= -L mxos/platform/MCU/RTL8721D
 
 EXTRA_TARGET_MAKEFILES +=  mxos/platform/MCU/RTL8721D/build_helper.mk
+
+$(NAME)_COMPONENTS := platform/mcu/RTL8721D/osal
+
+GLOBAL_LDFLAGS  += \
+-Wl,-wrap,_malloc_r \
+-Wl,-wrap,_free_r \
+-Wl,-wrap,_realloc_r \
+-Wl,-wrap,_calloc_r
