@@ -25,6 +25,7 @@ SECTIONS
 	.ram_image2.text :
 	{
 		*(.image2.ram.text*)
+		. = ALIGN(8);
 	} > BD_RAM_NS
 
 	.ram_image2.data : 
