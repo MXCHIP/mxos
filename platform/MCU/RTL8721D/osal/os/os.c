@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 
 #include "FreeRTOSConfig.h"
 #include "FreeRTOS.h"
@@ -53,6 +54,11 @@ void mos_thread_awake(mos_thread_id_t id)
 mos_thread_id_t mos_thread_get_id(void)
 {
     return xTaskGetCurrentTaskHandle();
+}
+
+char *mos_thread_get_name(mos_thread_id_t id)
+{
+    return pcTaskGetTaskName(id);
 }
 
 // NOTE: semaphore functions
@@ -285,7 +291,152 @@ mos_mallinfo_t *mos_mallinfo(void)
     return &info;
 }
 
-// NOTE:
+// NOTE: heap functions
+// -----------------------------------------------------------------------------------------------------------------------------
+#define RECORD_LIST_NUM 200
+
+#define HEAD_GUARD 0xDEADDEAD
+#define TAIL_GUARD 0xBEEFBEEF
+
+static mos_mallrecord_t record_list[RECORD_LIST_NUM];
+static int record_index;
+static mos_mutex_id_t record_mutex;
+
+void mos_mallrecord_show(void)
+{
+    uint32_t *pv;
+    uint32_t word_sz;
+    printf("#\tthread id\tthread name\tcaller address\tmemory address\tmemory size\thead guard\ttail guard\t\r\n");
+    printf("------------------------------------------------------------------------------------------------------------------\r\n");
+    for (int i = 0; i < record_index; i++)
+    {
+        pv = (uint32_t *)record_list[i].addr - 1;
+        word_sz = ((record_list[i].size + 3) >> 2) + 2;
+        printf("%d\t%p\t%-15s\t%p\t0x%lx\t0x%-8lx\t0x%lx\t0x%lx\r\n",
+               i,
+               record_list[i].thread,
+               mos_thread_get_name(record_list[i].thread),
+               record_list[i].caller,
+               record_list[i].addr,
+               record_list[i].size,
+               pv[0],
+               pv[word_sz - 1]);
+    }
+}
+
+/*
+-------------------------------------------------
+| 1 word     | N words             | 1 word     |
+|------------+---------------------+------------|
+| HEAD_GUARD | user memory | align | TAIL_GUARD |
+-------------------------------------------------
+*/
+
+void *__wrap__malloc_r(void *p, size_t size)
+{
+    uint32_t *pv;
+    size_t word_sz;
+
+    word_sz = ((size + 3) >> 2) + 2;
+    if ((pv = pvPortMalloc(word_sz * 4)) == NULL)
+    {
+        return NULL;
+    }
+
+    pv[0] = HEAD_GUARD;
+    pv[word_sz - 1] = TAIL_GUARD;
+
+    if (record_mutex == NULL)
+    {
+        record_mutex = mos_mutex_new();
+    }
+
+    mos_mutex_lock(record_mutex);
+    if (record_index < RECORD_LIST_NUM)
+    {
+        record_list[record_index].thread = mos_thread_get_id();
+        record_list[record_index].caller = __builtin_return_address(0);
+        record_list[record_index].size = size;
+        record_list[record_index].addr = (uint32_t)&pv[1];
+        record_index++;
+    }
+    mos_mutex_unlock(record_mutex);
+
+    return &pv[1];
+}
+
+void __wrap__free_r(void *p, void *x)
+{
+    size_t word_sz;
+    uint32_t *pv = (uint32_t *)x;
+
+    if (pv == NULL)
+        return;
+
+    pv--;
+
+    mos_mutex_lock(record_mutex);
+    for (int i = 0; i < record_index; i++)
+    {
+        if (record_list[i].addr == (uint32_t)x)
+        {
+            word_sz = ((record_list[i].size + 3) >> 2) + 2;
+            if (pv[0] != HEAD_GUARD || pv[word_sz - 1] != TAIL_GUARD)
+            {
+                printf("WARNING! MEMORY CORRUPTED!\r\n");
+                printf("#\tthread id\tthread name\tcaller address\tmemory address\tmemory size\thead guard\ttail guard\t\r\n");
+                printf("------------------------------------------------------------------------------------------------------------------\r\n");
+                printf("0\t%p\t%-15s\t%p\t0x%lx\t0x%-8lx\t0x%lx\t0x%lx\r\n",
+                       record_list[i].thread,
+                       mos_thread_get_name(record_list[i].thread),
+                       record_list[i].caller,
+                       record_list[i].addr,
+                       record_list[i].size,
+                       pv[0],
+                       pv[word_sz - 1]);
+
+                while (1)
+                    ;
+            }
+            record_index--;
+            memcpy(&record_list[i], &record_list[record_index], sizeof(mos_mallrecord_t));
+            break;
+        }
+    }
+    mos_mutex_unlock(record_mutex);
+
+    vPortFree(pv);
+}
+
+void *__wrap__calloc_r(void *p, size_t a, size_t b)
+{
+    void *pv;
+    size_t sz = a * b;
+
+    if ((pv = malloc(sz)) == NULL)
+    {
+        return NULL;
+    }
+    memset(pv, 0, sz);
+
+    return pv;
+}
+
+void *__wrap__realloc_r(void *p, void *x, size_t sz)
+{
+    void *pv;
+
+    if ((pv = malloc(sz)) == NULL)
+    {
+        return NULL;
+    }
+    memcpy(pv, x, sz);
+    free(x);
+
+    return p;
+}
+
+// NOTE: bsp functions
 // -----------------------------------------------------------------------------------------------------------------------------
 // TODO:
 // void vApplicationStackOverflowHook(xTaskHandle *pxTask, signed portCHAR *pcTaskName)
@@ -302,33 +453,4 @@ static bool _mos_in_isr(void)
     /* From the ARM Cortex-M3 Techinical Reference Manual
      * 0xE000ED04   ICSR    RW [a]  Privileged  0x00000000  Interrupt Control and State Register */
     return (*(volatile uint32_t *)0xE000ED04 & 0x1FF) != 0 ? true : false;
-}
-
-void *__wrap__malloc_r(void *p, size_t size)
-{
-    return pvPortMalloc(size);
-}
-
-void __wrap__free_r(void *p, void *x)
-{
-    vPortFree(x);
-}
-
-void *__wrap__calloc_r(void *p, size_t a, size_t b)
-{
-    void *pvReturn;
-
-    pvReturn = pvPortMalloc(a * b);
-    if (pvReturn)
-    {
-        memset(pvReturn, 0, a * b);
-    }
-
-    return pvReturn;
-}
-
-void *__wrap__realloc_r(void *p, void *x, size_t sz)
-{
-    // TODO:
-    return NULL;
 }

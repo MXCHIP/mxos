@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #include "merr.h"
 
@@ -22,6 +23,14 @@ typedef struct
     int min_free; /* maximum allocated space */
 } mos_mallinfo_t;
 
+typedef struct
+{
+    mos_thread_id_t thread; /* caller thread id */
+    void *caller;           /* caller function address */
+    uint32_t size;          /* allocate size */
+    uint32_t addr;          /* allocated space address */
+} mos_mallrecord_t;
+
 // thread
 mos_thread_id_t mos_thread_new(uint8_t priority, const char *name, mos_thread_func_t function, uint32_t stack_size, void *arg);
 void mos_thread_delete(mos_thread_id_t id);
@@ -31,6 +40,7 @@ void mos_thread_yield(void);
 void mos_thread_join(mos_thread_id_t id);
 void mos_thread_awake(mos_thread_id_t id);
 mos_thread_id_t mos_thread_get_id(void);
+char *mos_thread_get_name(mos_thread_id_t id);
 
 // semaphore
 mos_semphr_id_t mos_semphr_new(uint32_t count);
@@ -64,5 +74,6 @@ bool mos_timer_is_runing(mos_timer_id_t id);
 uint32_t mos_time(void);
 void mos_sleep(float seconds);
 mos_mallinfo_t *mos_mallinfo(void);
+void mos_mallrecord_show(void);
 
 #endif
