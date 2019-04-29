@@ -14,4 +14,4 @@ postbuild: build_done
 
 download: postbuild
 	@echo Downloading ...
-	echo yes|./mxos/platform/MCU/RTL8721D/flashloader/flashloader.sh $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all.bin) >$(OUTPUT_DIR)/flashloader.log 2>&1
+	echo yes|./mxos/platform/MCU/RTL8721D/flashloader/flashloader.sh $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all.bin) $(OPENOCD_FULL_NAME) >$(OUTPUT_DIR)/flashloader.log 2>&1
