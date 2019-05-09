@@ -34,12 +34,12 @@
 #define __MXOS_Debug_h__
 
 #ifndef MXOS_PREBUILT_LIBS
-#include "mxos_board.h"
-#include "mxos_board_conf.h"
+//#include "mxos_board.h"
+//#include "mxos_board_conf.h"
 #endif
 
-#include "mxos_rtos.h"
-#include "platform_assert.h"
+//#include "mxos_rtos.h"
+//#include "platform_assert.h"
 
 #ifdef __cplusplus
 extern "C" {

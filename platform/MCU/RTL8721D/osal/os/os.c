@@ -279,6 +279,15 @@ void mos_sleep(float seconds)
     vTaskDelay(ticks == 0 ? 1 : ticks);
 }
 
+void mos_msleep(int ms)
+{
+    uint32_t ticks;
+
+    ticks = ms / portTICK_PERIOD_MS;
+
+    vTaskDelay(ticks == 0 ? 1 : ticks);
+}
+
 mos_mallinfo_t *mos_mallinfo(void)
 {
     static mos_mallinfo_t info;
