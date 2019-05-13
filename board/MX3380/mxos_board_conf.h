@@ -53,6 +53,7 @@ extern "C"
 
 /* MXOS RTOS tick rate in Hz */
 #define MXOS_DEFAULT_TICK_RATE_HZ                   (1000) 
+#define MCU_CLOCK_HZ            (200000000)
 
   /************************************************************************
  * Uncomment to disable watchdog. For debugging only */

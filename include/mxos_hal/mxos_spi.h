@@ -28,18 +28,11 @@
  *  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************
  */
-
-#ifndef __MXOSDRIVERSPI_H__
-#define __MXOSDRIVERSPI_H__
-
 #pragma once
-#include "mxos_common.h"
-#include "platform_peripheral.h"
+     
+#include "stdint.h"
+#include "merr.h"
 
-/* Legacy definitions */
-#define MxosSpiInitialize mxos_spi_init
-#define MxosSpiTransfer mxos_spi_transfer
-#define MxosSpiFinalize mxos_spi_deinit
 
 /** @addtogroup MXOS_PLATFORM
 * @{
@@ -73,7 +66,16 @@
 
 typedef int8_t mxos_spi_t;   /**< MXOS SPI peripheral handle, MXOS_SPI_XX define by board/<board_name>/mxos_board.h. */
 
-typedef platform_spi_message_segment_t mxos_spi_message_segment_t;
+
+/**
+ * SPI message segment
+ */
+typedef struct
+{
+    const void* tx_buffer;
+    void*       rx_buffer;
+    uint32_t    length;
+} mxos_spi_message_segment_t;
 
 typedef struct
 {
@@ -132,4 +134,3 @@ merr_t mxos_spi_deinit( const mxos_spi_device_t* spi );
 /** @} */
 /** @} */
 
-#endif

@@ -26,7 +26,6 @@
 #include "mxos_filesystem.h"
 #include "mxos_filesystem_internal.h"
 #include "mxos_result.h"
-#include "platform_block_device.h"
 
 
 /******************************************************

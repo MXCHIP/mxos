@@ -28,12 +28,11 @@
  *  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************
  */
+#pragma once
+     
+#include "stdint.h"
+#include "merr.h"
 
-#ifndef __MXOSDRIVERRNG_H__
-#define __MXOSDRIVERRNG_H__
-
-#include "mxos_common.h"
-#include "platform_peripheral.h"
 
 /** @addtogroup MXOS_PLATFORM
 * @{
@@ -78,7 +77,4 @@ merr_t MxosRandomNumberRead( void *inBuffer, int inByteCount );
 
 /** @} */
 /** @} */
-
-#endif
-
 

@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include "mxos.h"
 #include "mxos_board_conf.h"
-#include "mxos_rtos_common.h"
+#include "RTOS/mxos_rtos_common.h"
 #if MXOS_QUALITY_CONTROL_ENABLE
 #include "qc_test.h"
 #endif

@@ -29,20 +29,10 @@
  ******************************************************************************
  */
 
-#ifndef __MXOSDRIVERFLASH_H__
-#define __MXOSDRIVERFLASH_H__
-
 #pragma once
-#include "mxos_common.h"
-#include "platform_peripheral.h"
 
-/* Legacy definitions */
-#define MxosFlashGetInfo mhal_flash_get_info
-#define MxosFlashErase mhal_flash_erase
-#define MxosFlashWrite mhal_flash_write
-#define MxosFlashRead mhal_flash_read
-#define MxosFlashEnableSecurity mxos_flash_enable_security
-#define MxosFlashDisableSecurity mxos_flash_disable_security
+#include "stdint.h"
+#include "merr.h"
 
 /** @addtogroup MXOS_PLATFORM
 * @{
@@ -79,7 +69,15 @@
 typedef int8_t mxos_flash_t;
 typedef int8_t mxos_partition_t;
 
-typedef platform_logic_partition_t mxos_logic_partition_t;
+
+typedef struct
+{
+    int32_t                    partition_owner;
+    const char*                partition_description;
+    uint32_t                   partition_start_addr;
+    uint32_t                   partition_length;
+    uint32_t                   partition_options;
+} mxos_logic_partition_t;
 
 /******************************************************
  *                 Global Variables
@@ -184,6 +182,5 @@ merr_t mxos_flash_disable_security( mxos_partition_t partition, uint32_t off_set
 /** @} */
 /** @} */
 
-#endif
 
 

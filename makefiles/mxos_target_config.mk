@@ -279,7 +279,7 @@ CC_VERSION := $(shell $(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)gcc$(EXECUTABLE_SUFFIX
 EXTRA_CFLAGS += -DCC_VERSION=\"$(CC_VERSION)\"
 
 # Process all the components + MXOS
-# COMPONENTS += MXOS
+COMPONENTS += MXOS
 $(info processing components: $(COMPONENTS))
 
 CURDIR :=

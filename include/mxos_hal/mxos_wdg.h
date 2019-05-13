@@ -28,14 +28,10 @@
  *  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************
  */
-
-
-#ifndef __MXOSDRIVERWDG_H__
-#define __MXOSDRIVERWDG_H__
-
 #pragma once
-#include "mxos_common.h"
-#include "platform_peripheral.h"
+     
+#include "stdint.h"
+#include "merr.h"
 
 /** @addtogroup MXOS_PLATFORM
 * @{
@@ -53,10 +49,6 @@
 /******************************************************
  *                   Macros
  ******************************************************/  
-
-#define MxosWdgInitialize   mxos_wdg_init       /**< For API compatiable with older version */
-#define MxosWdgReload       mxos_wdg_reload     /**< For API compatiable with older version */
-#define MxosWdgFinalize     mxos_wdg_deinit     /**< For API compatiable with older version */
 
 /******************************************************
  *                   Enumerations
@@ -109,7 +101,4 @@ merr_t mxos_wdg_deinit( void );
 
 /** @} */
 /** @} */
-
-#endif
-
 

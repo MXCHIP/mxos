@@ -66,22 +66,22 @@ extern merr_t mxos_platform_init      ( void );
 ******************************************************/
 
 /* Externed from platforms/<Platform>/platform.c */
-extern const platform_gpio_t            platform_gpio_pins[];
-extern const platform_adc_t             platform_adc_peripherals[];
-extern const platform_i2c_t             platform_i2c_peripherals[];
+extern const mxos_gpio_t            platform_gpio_pins[];
+extern const mxos_adc_t             platform_adc_peripherals[];
+extern const mxos_i2c_t             platform_i2c_peripherals[];
 extern platform_i2c_driver_t            platform_i2c_drivers[];
-extern const platform_pwm_t             platform_pwm_peripherals[];
-extern const platform_spi_t             platform_spi_peripherals[];
+extern const mxos_pwm_t             platform_pwm_peripherals[];
+extern const mxos_spi_t             platform_spi_peripherals[];
 extern platform_spi_driver_t            platform_spi_drivers[];
-extern const platform_uart_t            platform_uart_peripherals[];
+extern const mxos_uart_t            platform_uart_peripherals[];
 extern platform_uart_driver_t           platform_uart_drivers[];
 extern WEAK platform_spi_slave_driver_t platform_spi_slave_drivers[];
-extern const platform_flash_t           platform_flash_peripherals[];
+extern const mxos_flash_t           platform_flash_peripherals[];
 extern platform_flash_driver_t          platform_flash_drivers[];
 extern const mxos_logic_partition_t     mxos_partitions[];
 
 #ifdef MXOS_WIFI_SHARE_SPI_BUS
-extern const platform_spi_t wifi_spi;
+extern const mxos_spi_t wifi_spi;
 #endif
 
 /******************************************************
@@ -215,7 +215,7 @@ merr_t mhal_gpio_int_off( mxos_gpio_t gpio )
 
 merr_t mxos_i2c_init( mxos_i2c_device_t* device )
 {
-  platform_i2c_config_t config;
+  mxos_i2c_config_t config;
   merr_t result;
 
   if ( device->port >= MXOS_I2C_NONE )
@@ -238,7 +238,7 @@ merr_t mxos_i2c_init( mxos_i2c_device_t* device )
 
 merr_t mxos_i2c_deinit( mxos_i2c_device_t* device )
 {
-  platform_i2c_config_t config;
+  mxos_i2c_config_t config;
 
   if ( device->port >= MXOS_I2C_NONE )
     return kUnsupportedErr;
@@ -259,7 +259,7 @@ merr_t mxos_i2c_deinit( mxos_i2c_device_t* device )
 bool mxos_i2c_probe_dev( mxos_i2c_device_t* device, int retries )
 {
   bool ret;
-  platform_i2c_config_t config;
+  mxos_i2c_config_t config;
 
   if ( device->port >= MXOS_I2C_NONE )
     return kUnsupportedErr;
@@ -294,7 +294,7 @@ merr_t mxos_i2c_build_comb_msg( mxos_i2c_message_t* message, const void* tx_buff
 merr_t mxos_i2c_transfer( mxos_i2c_device_t* device, mxos_i2c_message_t* messages, uint16_t number_of_messages )
 {
   merr_t err = kNoErr;
-  platform_i2c_config_t config;
+  mxos_i2c_config_t config;
   
   if ( device->port >= MXOS_I2C_NONE )
     return kUnsupportedErr;
@@ -608,7 +608,7 @@ static merr_t MxosFlashInitialize( mxos_partition_t partition )
   mos_mutex_lock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   
   err = platform_flash_init( &platform_flash_peripherals[ partition_info->partition_owner ] );
-  platform_flash_drivers[ partition_info->partition_owner ].peripheral = (platform_flash_t *)&platform_flash_peripherals[ partition_info->partition_owner ];
+  platform_flash_drivers[ partition_info->partition_owner ].peripheral = (mxos_flash_t *)&platform_flash_peripherals[ partition_info->partition_owner ];
   platform_flash_drivers[ partition_info->partition_owner ].initialized = true;
   mos_mutex_unlock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   

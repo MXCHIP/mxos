@@ -54,28 +54,30 @@ extern "C"
 
 enum
 {
-    MXOS_GPIO_1,
-    MXOS_GPIO_2,
-    MXOS_GPIO_3,
+    //MXOS_GPIO_1, // VDD
+    //MXOS_GPIO_2, // GND
+    //MXOS_GPIO_3, // VBATM
     MXOS_GPIO_4,
     MXOS_GPIO_5,
     MXOS_GPIO_6,
     MXOS_GPIO_7,
     MXOS_GPIO_8,
     MXOS_GPIO_9,
+#if 0 // not used, for BR262
     MXOS_GPIO_10,
     MXOS_GPIO_11,
     MXOS_GPIO_12,
     MXOS_GPIO_13,
-    MXOS_GPIO_14,
+#endif    
+    //MXOS_GPIO_14, // VREG
     MXOS_GPIO_15,
     MXOS_GPIO_16,
-    MXOS_GPIO_17,
-    MXOS_GPIO_18,
+    //MXOS_GPIO_17, // GND
+    //MXOS_GPIO_18, // RESET
     MXOS_GPIO_19,
     MXOS_GPIO_20,
-    MXOS_GPIO_21,
-    MXOS_GPIO_22,
+    //MXOS_GPIO_21, // GND
+    //MXOS_GPIO_22, // GND
     MXOS_GPIO_23,
     MXOS_GPIO_24,
     MXOS_GPIO_25,
@@ -92,9 +94,19 @@ enum
     MXOS_GPIO_36,
     MXOS_GPIO_37,
     MXOS_GPIO_38,
+    MXOS_GPIO_39,
+    MXOS_GPIO_40,
+    MXOS_GPIO_41,
+    MXOS_GPIO_42,
     MXOS_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     MXOS_GPIO_NONE,
+    
+    BOOT_SEL = MXOS_GPIO_NONE, 
+    MFG_SEL = MXOS_GPIO_NONE, 
+    EasyLink_BUTTON = MXOS_GPIO_NONE,
+    MXOS_SYS_LED = MXOS_GPIO_NONE,
 };
+
 
 enum
 {

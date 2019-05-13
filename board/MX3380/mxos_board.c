@@ -67,8 +67,36 @@ extern WEAK void bootloader_start(void);
 
 platform_gpio_t platform_gpio_pins[] =
 {
-    [MXOS_GPIO_1 ] = {.pin = PA_14,},
-
+    [MXOS_GPIO_4 ]  = {.pin = PB_22,},
+    [MXOS_GPIO_5 ]  = {.pin = PB_23,},
+    [MXOS_GPIO_6 ]  = {.pin = PB_26,},
+    [MXOS_GPIO_7 ]  = {.pin = PA_0 ,},
+    [MXOS_GPIO_8 ]  = {.pin = PA_4,},
+    [MXOS_GPIO_9 ]  = {.pin = PA_2,},
+    [MXOS_GPIO_15 ] = {.pin = PB_29,},
+    [MXOS_GPIO_16 ] = {.pin = PB_31,},
+    [MXOS_GPIO_19 ] = {.pin = PA_7,},
+    [MXOS_GPIO_20 ] = {.pin = PA_8,},
+    [MXOS_GPIO_23 ] = {.pin = PA_12,},
+    [MXOS_GPIO_24 ] = {.pin = PA_13,},
+    [MXOS_GPIO_25 ] = {.pin = PA_14,},
+    [MXOS_GPIO_26 ] = {.pin = PA_15,},
+    [MXOS_GPIO_27 ] = {.pin = PA_16,},
+    [MXOS_GPIO_28 ] = {.pin = PA_17,},
+    [MXOS_GPIO_29 ] = {.pin = PA_18,},
+    [MXOS_GPIO_30 ] = {.pin = PA_19,},
+    [MXOS_GPIO_31 ] = {.pin = PA_27,}, // SWD_DATA
+    [MXOS_GPIO_32 ] = {.pin = PB_3,},  // SWD_CLK
+    [MXOS_GPIO_33 ] = {.pin = PA_30,},
+    [MXOS_GPIO_34 ] = {.pin = PA_28,},
+    [MXOS_GPIO_35 ] = {.pin = PA_26,},
+    [MXOS_GPIO_36 ] = {.pin = PA_25,},
+    [MXOS_GPIO_37 ] = {.pin = PB_1,},
+    [MXOS_GPIO_38 ] = {.pin = PB_7,},
+    [MXOS_GPIO_39 ] = {.pin = PB_6,},
+    [MXOS_GPIO_40 ] = {.pin = PB_5,},
+    [MXOS_GPIO_41 ] = {.pin = PB_4,},
+    [MXOS_GPIO_42 ] = {.pin = PB_2,},
 };
 
 /*

@@ -26,7 +26,7 @@ void lh_abort(const char *msg, ...)
 	va_start(ap, msg);
 	vprintf(msg, ap);
 	va_end(ap);
-	exit(1);
+	//exit(1);
 }
 
 unsigned long lh_ptr_hash(const void *k)

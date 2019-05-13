@@ -29,17 +29,11 @@
  ******************************************************************************
  */
 
-#ifndef __MXOSDRIVERTIMER_H__
-#define __MXOSDRIVERTIMER_H__
-
 #pragma once
-#include "mxos_common.h"
-#include "platform_peripheral.h"
 
-/* Legacy definitions */
-#define MxosGtimerInitialize mxos_gtimer_init
-#define MxosGtimerStart mxos_gtimer_start
-#define MxosGtimerStop mxos_gtimer_stop
+#include "stdint.h"
+#include "merr.h"
+
 
 /** @addtogroup MXOS_PLATFORM
   * @{
@@ -60,9 +54,21 @@
 
 typedef int8_t mxos_gtimer_t;
 
- typedef platform_gtimer_mode_t                  mxos_gtimer_mode_t;
+ 
+/**
+* GTimer mode
+*/
+typedef enum
+{
+ ONE_SHOT,
+ PERIOIC,
+} mxos_gtimer_mode_t;
 
- typedef platform_gtimer_irq_callback_t          mxos_gtimer_irq_callback_t;
+
+/**
+* Gtimer interrupt callback handler
+*/
+typedef void (*mxos_gtimer_irq_callback_t)( void* arg );
 
  /******************************************************
  *                 Function Declarations
@@ -77,4 +83,3 @@ merr_t mxos_gtimer_stop(mxos_gtimer_t timer);
 /** @} */
 /** @} */
 
-#endif

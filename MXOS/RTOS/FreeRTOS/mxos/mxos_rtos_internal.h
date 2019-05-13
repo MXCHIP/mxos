@@ -18,27 +18,11 @@
 
 
 #pragma once
-
-#include "FreeRTOS.h"
-#include "task.h"
-#include "semphr.h"
-#include "timers.h"
-
+#include "merr.h"
 
 /******************************************************
  *                      Macros
  ******************************************************/
-
-#define MXOS_PRIORITY_TO_NATIVE_PRIORITY(priority) (uint8_t)(RTOS_HIGHEST_PRIORITY - priority)
-
-#define MXOS_GET_THREAD_HANDLE( thread )           (thread)
-#define MXOSD_GET_QUEUE_HANDLE( queue )             (queue)
-
-#define RTOS_HIGHER_PRIORTIY_THAN(x)     (x < RTOS_HIGHEST_PRIORITY ? x+1 : RTOS_HIGHEST_PRIORITY)
-#define RTOS_LOWER_PRIORTIY_THAN(x)      (x > RTOS_LOWEST_PRIORITY ? x-1 : RTOS_LOWEST_PRIORITY)
-#define RTOS_LOWEST_PRIORITY             (0)
-#define RTOS_HIGHEST_PRIORITY            (configMAX_PRIORITIES-1)
-#define RTOS_DEFAULT_THREAD_PRIORITY     (1)
 
 /******************************************************
  *                    Constants

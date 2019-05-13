@@ -28,18 +28,10 @@
  *  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************
  */
-
-#ifndef __MXOSDRIVERPWM_H__
-#define __MXOSDRIVERPWM_H__
-
 #pragma once
-#include "mxos_common.h"
-#include "platform_peripheral.h"
-
-/* Legacy definitions */
-#define MxosPwmInitialize mxos_pwm_init
-#define MxosPwmStart mxos_pwm_start
-#define MxosPwmStop mxos_pwm_stop
+     
+#include "stdint.h"
+#include "merr.h"
 
 
 /** @addtogroup MXOS_PLATFORM
@@ -108,4 +100,3 @@ merr_t mxos_pwm_stop(mxos_pwm_t pwm);
 /** @} */
 /** @} */
 
-#endif
