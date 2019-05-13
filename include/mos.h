@@ -15,6 +15,10 @@ typedef void *mos_timer_id_t;
 typedef void (*mos_thread_func_t)(void *arg);
 typedef void (*mos_timer_handler_t)(void *arg);
 
+#define MOS_NEVER_TIMEOUT   (0xFFFFFFFF)
+#define MOS_WAIT_FOREVER    (0xFFFFFFFF)
+#define MOS_NO_WAIT         (0)
+
 typedef struct
 {
     int total;    /* total space */

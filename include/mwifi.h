@@ -40,9 +40,6 @@ typedef struct
   uint8_t bssid[6]; 
   uint8_t channel; 
   mwifi_security_t security; 
-  uint32_t timeout; /* 0 - no block mode */
-  uint32_t retry_intv; /* 0 - no auto reconnect */
-  mwifi_ip_attr_t *ip_attr; /* NULL - use DHCP */
 } mwifi_connect_attr_t;
 
 typedef struct 
@@ -79,8 +76,11 @@ enum custom_ie_delete_op_e
 typedef uint8_t mwifi_custom_ie_remove_type_t;
 
 enum {
-    STATION_UP,
-    STATION_DOWN,
+    NOTIFY_STATION_UP = 1,
+    NOTIFY_STATION_DOWN,
+
+    NOTIFY_AP_UP,
+    NOTIFY_AP_DOWN,
 };
 
 /* callback function of mwifi_scan*/
@@ -90,11 +90,14 @@ void    mwifi_status_cb(uint8_t status);
 /* callback function, notify the connected AP's psk and wifi info */
 void    mwifi_connected_ap_info_cb(mwifi_link_info_t *info, char *key, int key_len);
 
-merr_t	mwifi_connect(const char *ssid,	char *key, int key_len, mwifi_connect_attr_t *attr);
+/* 0xFFFFFFFF=don't reconnect */
+void    mwifi_set_reconnect_interval(uint32_t ms);
+
+merr_t	mwifi_connect(const char *ssid,	char *key, int key_len, mwifi_connect_attr_t *attr, mwifi_ip_attr_t *ip);
 merr_t	mwifi_ap_add(const char *ssid,	char *key, int key_len, mwifi_ip_attr_t *attr);
 merr_t	mwifi_disconnect(void);
 
-merr_t	mwifi_softap_start(const char *ssid, char *key, mwifi_softap_attr_t *attr);	
+merr_t	mwifi_softap_start(const char *ssid, char *key, int channel, mwifi_ip_attr_t *attr);	
 merr_t	mwifi_softap_stop(void);
 void	mwifi_scan(const char *ssid);
 void	mwifi_get_mac(uint8_t mac[6]);

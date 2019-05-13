@@ -3,7 +3,7 @@
 #===============================================================================
 #set GDB connection 
 set remotetimeout 5000
-target remote localhost:3333
+target remote localhost:2331
 
 #===============================================================================
 
@@ -47,7 +47,9 @@ set $REG_BOOT_CFG = 0x03F8
 #set $CUT_VERSION = {char}($PERI_ON_BASE+$REG_BOOT_CFG)
 set $CUT_VERSION = 1
 
-monitor reset halt
+monitor reset 1
+monitor sleep 20
+#monitor reset halt
 
 file gnu_utility/gnu_script/target_FPGA.axf
 restore gnu_utility/gnu_script/flash_loader_ram_1.bin binary 0x00082000
