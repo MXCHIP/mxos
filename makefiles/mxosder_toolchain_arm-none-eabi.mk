@@ -187,6 +187,13 @@ CPU_ASMFLAGS := -mcpu=cortex-m0plus -mthumb
 CPU_LDFLAGS  := -mthumb -mcpu=cortex-m0plus -Wl,-A,thumb
 endif
 
+ifeq ($(HOST_ARCH),Cortex-M33)
+CPU_CFLAGS   := -march=armv8-m.main+dsp -mthumb -mcmse -mfloat-abi=softfp -mfpu=fpv5-sp-d16
+CPU_CXXFLAGS := -march=armv8-m.main+dsp -mthumb -mcmse -mfloat-abi=softfp -mfpu=fpv5-sp-d16
+CPU_ASMFLAGS := -march=armv8-m.main+dsp -mthumb -mcmse -mfloat-abi=softfp -mfpu=fpv5-sp-d16
+CPU_LDFLAGS  := -march=armv8-m.main+dsp -mthumb -mcmse -mfloat-abi=softfp -mfpu=fpv5-sp-d16 
+endif
+
 ifeq ($(HOST_ARCH),Cortex-R4)
 CPU_BASE_FLAGS     := -mcpu=cortex-r4 -mthumb-interwork
 CPU_COMPILER_FLAGS := $(CPU_BASE_FLAGS) -mthumb -fno-builtin-memcpy
