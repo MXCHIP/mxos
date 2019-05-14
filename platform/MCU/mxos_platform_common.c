@@ -66,22 +66,22 @@ extern merr_t mxos_platform_init      ( void );
 ******************************************************/
 
 /* Externed from platforms/<Platform>/platform.c */
-extern const mxos_gpio_t            platform_gpio_pins[];
-extern const mxos_adc_t             platform_adc_peripherals[];
-extern const mxos_i2c_t             platform_i2c_peripherals[];
+extern const platform_gpio_t            platform_gpio_pins[];
+extern const platform_adc_t             platform_adc_peripherals[];
+extern const platform_i2c_t             platform_i2c_peripherals[];
 extern platform_i2c_driver_t            platform_i2c_drivers[];
-extern const mxos_pwm_t             platform_pwm_peripherals[];
-extern const mxos_spi_t             platform_spi_peripherals[];
+extern const platform_pwm_t             platform_pwm_peripherals[];
+extern const platform_spi_t             platform_spi_peripherals[];
 extern platform_spi_driver_t            platform_spi_drivers[];
-extern const mxos_uart_t            platform_uart_peripherals[];
+extern const platform_uart_t            platform_uart_peripherals[];
 extern platform_uart_driver_t           platform_uart_drivers[];
 extern WEAK platform_spi_slave_driver_t platform_spi_slave_drivers[];
-extern const mxos_flash_t           platform_flash_peripherals[];
+extern const platform_flash_t           platform_flash_peripherals[];
 extern platform_flash_driver_t          platform_flash_drivers[];
 extern const mxos_logic_partition_t     mxos_partitions[];
 
 #ifdef MXOS_WIFI_SHARE_SPI_BUS
-extern const mxos_spi_t wifi_spi;
+extern const platform_spi_t wifi_spi;
 #endif
 
 /******************************************************
