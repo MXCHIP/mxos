@@ -75,6 +75,8 @@ extern "C"
  * Restore default and start easylink after press down EasyLink button for 3 seconds. */
 #define RestoreDefault_TimeOut                      (3000)
 
+#define MXOS_ENABLE_SECONDARY_APPLICATION
+
 
 #ifdef __cplusplus
 } /*extern "C" */

@@ -578,7 +578,7 @@ mxos_logic_partition_t* mhal_flash_get_info( mxos_partition_t inPartition )
     require( inPartition >= 0 && inPartition < MXOS_PARTITION_MAX, exit );
 
 #ifdef MXOS_ENABLE_SECONDARY_APPLICATION
-extern platform_logic_partition_t* paltform_flash_get_info(int inPartition);
+extern mxos_logic_partition_t* paltform_flash_get_info(int inPartition);
     logic_partition = paltform_flash_get_info( inPartition );
 #else
     logic_partition = (mxos_logic_partition_t *)&mxos_partitions[ inPartition ];
@@ -648,6 +648,7 @@ merr_t mhal_flash_erase(mxos_partition_t partition, uint32_t off_set, uint32_t s
   mos_mutex_unlock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
 
 exit:
+    printf("%s return %d\r\n", __FUNCTION__, err);
   return err;
 }
 
@@ -683,6 +684,7 @@ merr_t mhal_flash_write( mxos_partition_t partition, volatile uint32_t* off_set,
   mos_mutex_unlock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   
 exit:
+    printf("%s return %d\r\n", __FUNCTION__, err);
   return err;
 }
 
@@ -717,6 +719,7 @@ merr_t mhal_flash_read( mxos_partition_t partition, volatile uint32_t* off_set, 
   mos_mutex_unlock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
 
 exit:
+  printf("%s return %d\r\n", __FUNCTION__, err);
   return err;
 }
 
