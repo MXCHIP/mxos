@@ -158,22 +158,18 @@ platform_spi_driver_t platform_spi_drivers[MXOS_SPI_MAX];
 
 platform_uart_t platform_uart_peripherals[] =
 {
-  [MXOS_UART_1] =
+  [MXOS_UART_1] = // MXOS_UART_1 is log uart, only support 115200.
   {
     .tx = PA_7,
     .rx = PA_8,
-    .dma_enabled = 1,
-#if (defined EMW3080B) || (defined EMW3080C) || (defined EMW5080)
-    .rts = PA_22,
-    .cts = PA_19, 
-#endif
+    .dma_enabled = 0,
     .wake_lock = PMU_UART0_DEVICE,
   },
   [MXOS_UART_2] =
   {
     .tx = PB_1,
     .rx = PB_2,
-    .dma_enabled = 1,
+    .dma_enabled = 0,
     .wake_lock = PMU_UART1_DEVICE,
   },
   [MXOS_UART_3] =

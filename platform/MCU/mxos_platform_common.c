@@ -505,7 +505,7 @@ merr_t mhal_uart_open( mxos_uart_t uart, const mxos_uart_config_t* config, ring_
   /* Interface is used by STDIO. Uncomment MXOS_DISABLE_STDIO to overcome this */
   if ( uart == MXOS_STDIO_UART )
   {
-    return kGeneralErr;
+    //return kGeneralErr;
   }
 #endif
   
@@ -648,7 +648,6 @@ merr_t mhal_flash_erase(mxos_partition_t partition, uint32_t off_set, uint32_t s
   mos_mutex_unlock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
 
 exit:
-    printf("%s return %d\r\n", __FUNCTION__, err);
   return err;
 }
 
@@ -684,7 +683,6 @@ merr_t mhal_flash_write( mxos_partition_t partition, volatile uint32_t* off_set,
   mos_mutex_unlock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   
 exit:
-    printf("%s return %d\r\n", __FUNCTION__, err);
   return err;
 }
 
@@ -719,7 +717,6 @@ merr_t mhal_flash_read( mxos_partition_t partition, volatile uint32_t* off_set, 
   mos_mutex_unlock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
 
 exit:
-  printf("%s return %d\r\n", __FUNCTION__, err);
   return err;
 }
 
