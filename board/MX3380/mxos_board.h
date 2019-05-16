@@ -125,6 +125,16 @@ enum
 enum
 {
     MXOS_PWM_1,
+    MXOS_PWM_2,
+    MXOS_PWM_3,
+    MXOS_PWM_4,
+    MXOS_PWM_5,
+    MXOS_PWM_6,
+    MXOS_PWM_7,
+    MXOS_PWM_8,
+    MXOS_PWM_9,
+    MXOS_PWM_10,
+    MXOS_PWM_11,
     MXOS_PWM_MAX, /* Denotes the total number of PWM port aliases. Not a valid PWM alias */
     MXOS_PWM_NONE,
 };
@@ -141,6 +151,7 @@ enum
 {
     MXOS_UART_1,
     MXOS_UART_2,
+    MXOS_UART_3,
     MXOS_UART_MAX, /* Denotes the total number of UART port aliases. Not a valid UART alias */
     MXOS_UART_NONE,
 };

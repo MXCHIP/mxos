@@ -112,7 +112,17 @@ platform_adc_t platform_adc_peripherals[] =
 /* PWM mappings */
 platform_pwm_t platform_pwm_peripherals[] =
 {  
-  [MXOS_PWM_1] = {.pin = PA_23, .init=false,},
+  [MXOS_PWM_1] = {.pin = PA_12, .init=false,},
+  [MXOS_PWM_2] = {.pin = PA_13, .init=false,},
+  [MXOS_PWM_3] = {.pin = PA_25, .init=false,},
+  [MXOS_PWM_4] = {.pin = PA_26, .init=false,},
+  [MXOS_PWM_5] = {.pin = PA_28, .init=false,},
+  [MXOS_PWM_6] = {.pin = PA_30, .init=false,},
+  [MXOS_PWM_7] = {.pin = PB_4, .init=false,},
+  [MXOS_PWM_8] = {.pin = PB_5, .init=false,},
+  [MXOS_PWM_9] = {.pin = PB_7, .init=false,},
+  [MXOS_PWM_10] = {.pin = PB_22, .init=false,},
+  [MXOS_PWM_11] = {.pin = PB_23, .init=false,},
 };
 
 #if (defined EMW3080B) || (defined EMW3080C) || (defined EMW5080)
@@ -130,12 +140,26 @@ platform_spi_t platform_spi_peripherals[] =
 platform_spi_driver_t platform_spi_drivers[MXOS_SPI_MAX];
 #endif
 
+platform_spi_t platform_spi_peripherals[] =
+{ 
+  [MXOS_SPI_1]  =
+  {
+    .spi_obj.spi_idx = MBED_SPI1,
+    .mosi = PA_16,
+    .miso = PA_17,
+    .sclk = PA_18,
+    .ssel = PA_19,
+  },	
+};
+platform_spi_driver_t platform_spi_drivers[MXOS_SPI_MAX];
+
+
 platform_uart_t platform_uart_peripherals[] =
 {
   [MXOS_UART_1] =
   {
-    .tx = PA_23,
-    .rx = PA_18,
+    .tx = PA_7,
+    .rx = PA_8,
     .dma_enabled = 1,
 #if (defined EMW3080B) || (defined EMW3080C) || (defined EMW5080)
     .rts = PA_22,
@@ -145,9 +169,16 @@ platform_uart_t platform_uart_peripherals[] =
   },
   [MXOS_UART_2] =
   {
-    .tx = PA_30,
-    .rx = PA_29,
-    .dma_enabled = 0,
+    .tx = PB_1,
+    .rx = PB_2,
+    .dma_enabled = 1,
+    .wake_lock = PMU_UART1_DEVICE,
+  },
+  [MXOS_UART_3] =
+  {
+    .tx = PA_18,
+    .rx = PA_19,
+    .dma_enabled = 1,
     .wake_lock = PMU_UART1_DEVICE,
   },
 };
