@@ -32,6 +32,8 @@
 #include "mxos_board.h"
 #include "mxos_platform.h"
 #include "platform_peripheral.h"
+#include "rtl8721d_boot.h"
+
 /******************************************************
 *                      Macros
 ******************************************************/
@@ -201,7 +203,7 @@ platform_flash_t platform_flash_peripherals[] =
   {
     .flash_type                   = FLASH_TYPE_SPI,
     .flash_start_addr             = 0x00000000,
-    .flash_length                 = 0x200000,
+    .flash_length                 = 0x400000,
   },
 };
 
@@ -209,82 +211,57 @@ platform_flash_driver_t platform_flash_drivers[MXOS_FLASH_MAX];
 
 
 /* Logic partition on flash devices */
-const mxos_logic_partition_t mico_partitions[] =
+const mxos_logic_partition_t mxos_partitions[] =
 {
-  [MXOS_PARTITION_BOOTLOADER] =
+  [PHY_PARTITION_BOOTLOADER] =
   {
     .partition_owner           = MXOS_FLASH_SPI,
     .partition_description     = "Bootloader",
-    .partition_start_addr      = 0x0000B000,
-    .partition_length          =     0x8000,    //16k bytes
+    .partition_start_addr      = 0x00000000,
+    .partition_length          = 0x6000,    //24k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
   },
-  [MXOS_PARTITION_APPLICATION] =
+  [PHY_PARTITION_APPLICATION1] =
   {
     .partition_owner           = MXOS_FLASH_SPI,
-    .partition_description     = "Application",
-    .partition_start_addr      = 0x00013000,
-    .partition_length          =    0x75000,   //468k bytes
+    .partition_description     = "Application1",
+    .partition_start_addr      = 0x00006000,
+    .partition_length          = 0x178000,   //1504k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
   },
   
-  [MXOS_PARTITION_PARAMETER_1] =
+  [PHY_PARTITION_APPLICATION2] =
   {
     .partition_owner           = MXOS_FLASH_SPI,
-    .partition_description     = "PARAMETER1",
-    .partition_start_addr      = 0x000C8000,
-    .partition_length          = 0x4000, // 16k bytes
+    .partition_description     = "Application2",
+    .partition_start_addr      = 0x00188000,
+    .partition_length          = 0x178000, // 1504k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
   },
-  [MXOS_PARTITION_PARAMETER_2] =
+  [PHY_PARTITION_KV] =
   {
     .partition_owner           = MXOS_FLASH_SPI,
-    .partition_description     = "PARAMETER2",
-    .partition_start_addr      = 0x000CC000,
-    .partition_length          = 0x4000, //16k bytes
+    .partition_description     = "KV",
+    .partition_start_addr      = 0x0017E000,
+    .partition_length          = 0xA000, //16k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
   },
-  [MXOS_PARTITION_ATE] =
+  [PHY_PARTITION_USER] =
   {
     .partition_owner           = MXOS_FLASH_SPI,
-    .partition_description     = "ATE",
-    .partition_start_addr      = 0x000D0000,
-    .partition_length          = 0x40000, //256k bytes
+    .partition_description     = "USER",
+    .partition_start_addr      = 0x00300000,
+    .partition_length          = 0x100000, //1024K bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
   },
-  /*
-  [MXOS_PARTITION_RDP] =
+
+  [PHY_PARTITION_NONE] =
   {
-    .partition_owner           = MXOS_FLASH_SPI,
-    .partition_description     = "RDP code",
-    .partition_start_addr      = 0x0087000,
-    .partition_length          = 0x1000, //4k bytes
-    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-  },
-  */
-  [MXOS_PARTITION_OTA_TEMP] =
-  {
-    .partition_owner           = MXOS_FLASH_SPI,
-    .partition_description     = "OTA Storage",
-    .partition_start_addr      = 0x00110000,
-    .partition_length          = 0xB5000, //724k bytes
-    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-  },
-  [MXOS_PARTITION_USER] =
-  {
-    .partition_owner           = MXOS_FLASH_SPI,
-    .partition_description     = "USER Storage",
-    .partition_start_addr      = 0x001C5000,
-    .partition_length          = 0x3A000, //236k bytes
-    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-  },
-  [MXOS_PARTITION_SDS] =
-  {
-    .partition_owner           = MXOS_FLASH_SPI,
-    .partition_description     = "SDS Storage",
-    .partition_start_addr      = 0x001FF000,
-    .partition_length          = 0x1000, //1k bytes
-    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN ,
+    .partition_owner           = MXOS_FLASH_NONE,
+    .partition_description     = "NONE",
+    .partition_start_addr      = 0,
+    .partition_length          = 0, //1024K bytes
+    .partition_options         = 0,
   },
 };
 
@@ -328,3 +305,38 @@ void platform_jtag_off(void)
     jtag_on = 0;
   }
 }
+
+
+mxos_logic_partition_t* paltform_flash_get_info(int inPartition)
+{
+    switch(inPartition) {
+    case MXOS_PARTITION_BOOTLOADER:
+        return &mxos_partitions[PHY_PARTITION_BOOTLOADER];
+    case MXOS_PARTITION_KV:
+        return &mxos_partitions[PHY_PARTITION_KV];
+    case MXOS_PARTITION_USER:
+        return &mxos_partitions[PHY_PARTITION_USER];
+        
+    case MXOS_PARTITION_APPLICATION:
+        if (ota_get_cur_index() == OTA_INDEX_1)
+            return &mxos_partitions[PHY_PARTITION_APPLICATION1];
+        else
+            return &mxos_partitions[PHY_PARTITION_APPLICATION2];
+    case MXOS_PARTITION_OTA_TEMP:
+        printf("cur index %d\r\n", ota_get_cur_index());
+        if (ota_get_cur_index() == OTA_INDEX_1)
+            return &mxos_partitions[PHY_PARTITION_APPLICATION2];
+        else
+            return &mxos_partitions[PHY_PARTITION_APPLICATION1];
+    default: 
+        return &mxos_partitions[PHY_PARTITION_NONE];
+    }
+}
+
+int switch_active_firmware(void)
+{
+    sys_clear_ota_signature();
+
+    return 0;
+}
+
