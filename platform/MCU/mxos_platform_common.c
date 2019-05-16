@@ -378,7 +378,7 @@ merr_t mxos_spi_init( const mxos_spi_device_t* spi )
 
   if( platform_spi_drivers[spi->port].spi_mutex == NULL)
     platform_spi_drivers[spi->port].spi_mutex = mos_mutex_new( );
-  
+
   config.chip_select = spi->chip_select == MXOS_GPIO_NONE ? NULL : &platform_gpio_pins[spi->chip_select];
   config.speed       = spi->speed;
   config.mode        = spi->mode;

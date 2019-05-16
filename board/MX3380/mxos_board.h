@@ -111,6 +111,7 @@ enum
 enum
 {
   MXOS_SPI_1,
+  MXOS_SPI_2,
   MXOS_SPI_MAX, /* Denotes the total number of SPI port aliases. Not a valid SPI alias */
   MXOS_SPI_NONE,
 };

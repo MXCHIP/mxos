@@ -146,11 +146,17 @@ platform_spi_t platform_spi_peripherals[] =
 { 
   [MXOS_SPI_1]  =
   {
-    .spi_obj.spi_idx = MBED_SPI1,
+    .spi_obj.spi_idx = MBED_SPI0,
     .mosi = PA_16,
-    .miso = PA_17,
+    .miso = PA_17,       
     .sclk = PA_18,
-    .ssel = PA_19,
+  },	
+  [MXOS_SPI_2]  =          
+  {
+    .spi_obj.spi_idx = MBED_SPI1,
+    .mosi = PB_4,
+    .miso = PB_5,
+    .sclk = PB_6,
   },	
 };
 platform_spi_driver_t platform_spi_drivers[MXOS_SPI_MAX];
