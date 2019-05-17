@@ -59,23 +59,20 @@ static void station_monitro_func( void * arg )
                 softap_up = 0;
             }
         } else if (softap_up == 0) {
-            mwifi_softap_attr_t wNetConfig;
+            mwifi_ip_attr_t attr;
 
             mos_semphr_acquire(sem, softap_wait_seconds*1000);
             if (station_up == 1)
                 continue;
             
             /* Setup Soft AP*/
-            memset( &wNetConfig, 0x0, sizeof(mwifi_softap_attr_t) );
-            strcpy( (char*) wNetConfig.wifi_ssid, softap_ssid );
-            strcpy( (char*) wNetConfig.wifi_key, softap_key );
-            strcpy( (char*) wNetConfig.local_ip_addr, "10.10.0.1" );
-            strcpy( (char*) wNetConfig.net_mask, "255.255.255.0" );
-            strcpy( (char*) wNetConfig.dnsServer_ip_addr, "10.10.0.1" );
+            memset( &attr, 0x0, sizeof(attr) );
+            strcpy( (char*) attr.localip, "10.10.0.1" );
+            strcpy( (char*) attr.netmask, "255.255.255.0" );
 
-            station_m_log("Establish SofAP, SSID:%s and KEY:%s", wNetConfig.wifi_ssid, wNetConfig.wifi_key);
+            station_m_log("Establish SofAP, SSID:%s and KEY:%s", softap_ssid, softap_key);
 
-            mwifi_softap_start( &wNetConfig );
+            mwifi_softap_start( softap_ssid, softap_key, 6, &attr );
             softap_up = 1;
         }
     }

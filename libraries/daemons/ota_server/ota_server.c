@@ -380,7 +380,7 @@ static merr_t onReceivedData( struct _HTTPHeader_t * inHeader, uint32_t inPos, u
         while( 1 ){
             if( ota_server_context->ota_control != OTA_CONTROL_PAUSE )
                 break;
-            mxos_thread_msleep(100);
+            mos_msleep(100);
         }
     }
 

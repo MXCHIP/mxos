@@ -31,7 +31,7 @@ static char keyvals[EASYLINK_BONJOUR_TXT_LEN];
 static char srv_name[sizeof(MODEL)+9];
 
 static void _bonjour_generate_txt_record( char *txt_record, uint16_t txt_record_len, uint32_t easyLink_id,
-                                          WiFi_Interface interface, system_context_t * const inContext )
+                                          uint8_t interface, system_context_t * const inContext )
 {
     char *val = NULL;
 
@@ -87,7 +87,7 @@ static void _bonjour_generate_txt_record( char *txt_record, uint16_t txt_record_
 
 
 
-merr_t easylink_bonjour_start( WiFi_Interface interface, uint32_t easyLink_id, system_context_t * const inContext )
+merr_t easylink_bonjour_start( uint8_t interface, uint32_t easyLink_id, system_context_t * const inContext )
 {
     uint8_t mac[6];
 
@@ -109,7 +109,7 @@ merr_t easylink_bonjour_start( WiFi_Interface interface, uint32_t easyLink_id, s
     return kNoErr;
 }
 
-merr_t easylink_bonjour_update( WiFi_Interface interface, uint32_t easyLink_id, system_context_t * const inContext )
+merr_t easylink_bonjour_update( uint8_t interface, uint32_t easyLink_id, system_context_t * const inContext )
 {
     merr_t err = kNoErr;
 
@@ -123,7 +123,7 @@ merr_t easylink_bonjour_update( WiFi_Interface interface, uint32_t easyLink_id, 
     return err;
 }
 
-void easylink_remove_bonjour( WiFi_Interface interface )
+void easylink_remove_bonjour( uint8_t interface )
 {
     mdns_deannounce_service(&easylink_service, interface);
 }

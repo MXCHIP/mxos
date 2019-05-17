@@ -169,15 +169,8 @@ merr_t mos_worker_thread_new( mos_worker_thread_id_t* worker_thread, uint8_t pri
 
 merr_t mos_worker_thread_delete( mos_worker_thread_id_t* worker_thread )
 {
-    if ( mos_thread_delete( worker_thread->thread ) != kNoErr )
-    {
-        return kGeneralErr;
-    }
-
-    if ( mos_queue_delete(worker_thread->event_queue ) != kNoErr )
-    {
-        return kGeneralErr;
-    }
+    mos_thread_delete( worker_thread->thread );
+    mos_queue_delete(worker_thread->event_queue );
 
     return kNoErr;
 }
@@ -207,11 +200,7 @@ merr_t mxos_rtos_register_timed_event( mxos_timed_event_t* event_object, mos_wor
 
 merr_t mxos_rtos_deregister_timed_event( mxos_timed_event_t* event_object )
 {
-    if ( mos_timer_delete( &event_object->timer ) != kNoErr )
-    {
-        return kGeneralErr;
-    }
-
+    mos_timer_delete( &event_object->timer );
 
     return kNoErr;
 }
@@ -242,22 +231,22 @@ static void timed_event_handler( void* arg )
 
 void mxos_rtos_thread_sleep(uint32_t seconds)
 {
-    mos_thread_delay(seconds*1000);
+    mos_sleep(seconds);
 
 }
 void mxos_rtos_thread_msleep(uint32_t mseconds)
 {
-    mos_thread_delay(mseconds);
+    mos_msleep(mseconds);
 }
 
 void sleep(uint32_t seconds)
 {
-    mos_thread_delay(seconds*1000);
+    mos_sleep(seconds);
 }
 
 void msleep(uint32_t mseconds)
 {
-    mos_thread_delay(mseconds);
+    mos_msleep(mseconds);
 }
 
 

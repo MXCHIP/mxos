@@ -262,7 +262,7 @@ static void smartbridge_helper_timer_handler(void *arg)
     if (timer->is_started && !timer->one_shot) 
     {
         bt_smartbridge_log("smartbridge timer reload");
-        mxos_rtos_reload_timer(&timer->timer);
+        mxos_timer_reset(timer->timer);
     }
 }
 
@@ -277,10 +277,10 @@ mxos_bool_t smartbridge_helper_timer_stop(smartbridge_helper_timer_t *timer)
     if (!timer->is_started) 
         return MXOS_FALSE;
 
-    if (mos_timer_is_runing(&timer->timer)) 
-        mos_timer_stop(&timer->timer);
+    if (mos_timer_is_runing(timer->timer)) 
+        mos_timer_stop(timer->timer);
     
-    mos_timer_delete(&timer->timer);
+    mos_timer_delete(timer->timer);
     
     timer->is_started = MXOS_FALSE;
     timer->one_shot = MXOS_FALSE;
@@ -299,14 +299,9 @@ mxos_bool_t smartbridge_helper_timer_start(smartbridge_helper_timer_t *timer, mx
     if (timer->is_started) 
         smartbridge_helper_timer_stop(timer);
 
-    if (mos_timer_new(&timer->timer, ms, smartbridge_helper_timer_handler, (void *)timer) != kNoErr)
-        return MXOS_FALSE;
+    timer->timer = mos_timer_new(ms, smartbridge_helper_timer_handler, true, (void *)timer) ;
 
-    if (mos_timer_start(&timer->timer) != kNoErr)
-    {
-        mos_timer_delete(&timer->timer);
-        return MXOS_FALSE;
-    }
+    mos_timer_start(timer->timer);
 
     timer->is_started = MXOS_TRUE;
     timer->one_shot = one_shot;

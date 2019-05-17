@@ -76,21 +76,6 @@ extern netif_status_t netif_status[INTERFACE_MAX];
 #define IS_INTERFACE_UP(netif)   ((netif_status[netif] == INTERFACE_STATUS_UP)? 1:0)
 #define IS_INTERFACE_DOWN(netif)   ((netif_status[netif] == INTERFACE_STATUS_DOWN)? 1:0)
 
-/**
- *  @brief  Interface status change notification.
- */
-enum {
-    NOTIFY_STATION_UP = 1,
-    NOTIFY_STATION_DOWN,
-
-    NOTIFY_AP_UP,
-    NOTIFY_AP_DOWN,
-    NOTIFY_ETH_UP = 5,
-    NOTIFY_ETH_DOWN,
-
-    NOTIFY_GPRS_UP,
-    NOTIFY_GPRS_DOWN,
-};
 
 typedef uint8_t notify_wlan_t;
 typedef uint8_t notify_netif_status_t;

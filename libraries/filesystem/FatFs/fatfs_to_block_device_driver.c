@@ -252,8 +252,7 @@ DRESULT disk_ioctl(
 #if !_FS_READONLY && !_FS_NORTC
 FATFS_DWORD get_fattime( void )
 {
-    mxos_time_t time = 0;
-    mxos_time_get_time( &time );
+    mxos_time_t time = mos_time();
     return time;
 }
 #endif /* if !_FS_READONLY && !_FS_NORTC */

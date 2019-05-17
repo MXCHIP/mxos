@@ -71,7 +71,7 @@ void mxos_system_monitor_thread_main( void *arg )
     }
     
     mxos_wdg_reload();
-    mxos_thread_msleep(DEFAULT_SYSTEM_MONITOR_PERIOD);
+    mos_msleep(DEFAULT_SYSTEM_MONITOR_PERIOD);
   }
 }
 
@@ -107,7 +107,7 @@ merr_t mxos_system_monitor_update(mxos_system_monitor_t* system_monitor, uint32_
   return kNoErr;
 }
 
-static mxos_timer_t _watchdog_reload_timer;
+static mos_timer_id_t _watchdog_reload_timer;
 
 static mxos_system_monitor_t mxos_monitor;
 
@@ -128,8 +128,8 @@ merr_t mxos_system_monitor_daemen_start( void )
   /* Register first monitor */
   err = mxos_system_monitor_register(&mxos_monitor, APPLICATION_WATCHDOG_TIMEOUT_SECONDS*1000);
   require_noerr( err, exit );
-  mos_timer_new(&_watchdog_reload_timer,APPLICATION_WATCHDOG_TIMEOUT_SECONDS*1000/2, _watchdog_reload_timer_handler, NULL);
-  mos_timer_start(&_watchdog_reload_timer);
+  _watchdog_reload_timer = mos_timer_new(APPLICATION_WATCHDOG_TIMEOUT_SECONDS*1000/2, _watchdog_reload_timer_handler, TRUE, NULL);
+  mos_timer_start(_watchdog_reload_timer);
 exit:
   return err;
 }

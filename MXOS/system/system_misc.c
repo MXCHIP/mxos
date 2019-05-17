@@ -29,19 +29,6 @@ system_context_t *system_context( void )
     return sys_context;
 }
 
-static void mxosNotify_DHCPCompleteHandler(IPStatusTypedef *pnet, system_context_t * const inContext)
-{
-  require(inContext, exit);
-  mos_mutex_lock(inContext->flashContentInRam_mutex);
-  strcpy((char *)inContext->mxosStatus.localIp, pnet->ip);
-  strcpy((char *)inContext->mxosStatus.netMask, pnet->mask);
-  strcpy((char *)inContext->mxosStatus.gateWay, pnet->gate);
-  strcpy((char *)inContext->mxosStatus.dnsServer, pnet->dns);
-  mos_mutex_unlock(inContext->flashContentInRam_mutex);
-exit:
-  return;
-}
-
 static void mxosNotify_ConnectFailedHandler(merr_t err, system_context_t * const inContext)
 {
   (void)inContext;
@@ -64,11 +51,20 @@ static void mxosNotify_StackOverflowErrHandler(char *taskname, system_context_t 
 
 static void mxosNotify_WifiStatusHandler(WiFiEvent event, system_context_t * const inContext)
 {
+  mwifi_ip_attr_t attr;
+  
   (void)inContext;
   switch (event) {
   case NOTIFY_STATION_UP:
     system_log("Station up");
     mxos_rf_led(true);
+    mwifi_get_ip(&attr, STATION_INTERFACE);
+    mos_mutex_lock(inContext->flashContentInRam_mutex);
+    strcpy((char *)inContext->mxosStatus.localIp, attr.localip);
+    strcpy((char *)inContext->mxosStatus.netMask, attr.netmask);
+    strcpy((char *)inContext->mxosStatus.gateWay, attr.gateway);
+    strcpy((char *)inContext->mxosStatus.dnsServer, attr.dnserver);
+    mos_mutex_unlock(inContext->flashContentInRam_mutex);
     break;
   case NOTIFY_STATION_DOWN:
     system_log("Station down");
@@ -94,7 +90,7 @@ static void mxosNotify_WifiStatusHandler(WiFiEvent event, system_context_t * con
   return;
 }
 
-static void mxosNotify_WiFIParaChangedHandler(apinfo_adv_t *ap_info, char *key, int key_len, system_context_t * const inContext)
+static void mxosNotify_WiFIParaChangedHandler(mwifi_link_info_t *ap_info, char *key, int key_len, system_context_t * const inContext)
 {
   bool _needsUpdate = false;
   require(inContext, exit);
@@ -152,9 +148,6 @@ merr_t system_notification_init( system_context_t * const inContext )
   err = mxos_system_notify_register( mxos_notify_Stack_Overflow_ERROR, (void *)mxosNotify_StackOverflowErrHandler, inContext );
   require_noerr( err, exit );
 
-  err = mxos_system_notify_register( mxos_notify_DHCP_COMPLETED, (void *)mxosNotify_DHCPCompleteHandler, inContext );
-  require_noerr( err, exit ); 
-
   err = mxos_system_notify_register( mxos_notify_WIFI_STATUS_CHANGED, (void *)mxosNotify_WifiStatusHandler, inContext );
   require_noerr( err, exit );
 
@@ -167,62 +160,47 @@ exit:
 
 void system_connect_wifi_normal( system_context_t * const inContext)
 {
-  wifi_connect_attr_t wNetConfig;
-  memset(&wNetConfig, 0x0, sizeof(wifi_connect_attr_t));
-  
-  mos_mutex_lock(inContext->flashContentInRam_mutex);
-  strncpy((char*)wNetConfig.ap_info.ssid, inContext->flashContentInRam.mxos_config.ssid, maxSsidLen);
-  wNetConfig.ap_info.security = SECURITY_TYPE_AUTO;
-  memcpy(wNetConfig.key, inContext->flashContentInRam.mxos_config.user_key, maxKeyLen);
-  wNetConfig.key_len = inContext->flashContentInRam.mxos_config.user_keyLength;
-  wNetConfig.dhcpMode = inContext->flashContentInRam.mxos_config.dhcpEnable;
-  strncpy((char*)wNetConfig.local_ip_addr, inContext->flashContentInRam.mxos_config.localIp, maxIpLen);
-  strncpy((char*)wNetConfig.net_mask, inContext->flashContentInRam.mxos_config.netMask, maxIpLen);
-  strncpy((char*)wNetConfig.gateway_ip_addr, inContext->flashContentInRam.mxos_config.gateWay, maxIpLen);
-  strncpy((char*)wNetConfig.dnsServer_ip_addr, inContext->flashContentInRam.mxos_config.dnsServer, maxIpLen);
-  wNetConfig.wifi_retry_interval = 100;
-  mos_mutex_unlock(inContext->flashContentInRam_mutex);
-
-  system_log("connect to %s.....", wNetConfig.ap_info.ssid);
-  mwifi_connect(&wNetConfig);
+  system_log("connect to %s.....", inContext->flashContentInRam.mxos_config.ssid);
+  mwifi_connect(inContext->flashContentInRam.mxos_config.ssid, inContext->flashContentInRam.mxos_config.user_key,
+    inContext->flashContentInRam.mxos_config.user_keyLength, NULL, NULL);
 }
 
 void system_connect_wifi_fast( system_context_t * const inContext)
 {
-  wifi_connect_attr_t wNetConfig;
-  memset(&wNetConfig, 0x0, sizeof(wifi_connect_attr_t));
+  char *ssid, *key;
+  int security, key_len;
+  mwifi_ip_attr_t attr, *pip_attr=NULL;
+  mwifi_connect_attr_t ap_attr;
   
   mos_mutex_lock(inContext->flashContentInRam_mutex);
-  strncpy((char*)wNetConfig.ap_info.ssid, inContext->flashContentInRam.mxos_config.ssid, maxSsidLen);
-  memcpy(wNetConfig.ap_info.bssid, inContext->flashContentInRam.mxos_config.bssid, 6);
-  wNetConfig.ap_info.channel = inContext->flashContentInRam.mxos_config.channel;
-  wNetConfig.ap_info.security = inContext->flashContentInRam.mxos_config.security;
-  memcpy(wNetConfig.key, inContext->flashContentInRam.mxos_config.key, inContext->flashContentInRam.mxos_config.keyLength);
-  wNetConfig.key_len = inContext->flashContentInRam.mxos_config.keyLength;
-  if(inContext->flashContentInRam.mxos_config.dhcpEnable == true)
-    wNetConfig.dhcpMode = DHCP_Client;
-  else
-    wNetConfig.dhcpMode = DHCP_Disable;
-  strncpy((char*)wNetConfig.local_ip_addr, inContext->flashContentInRam.mxos_config.localIp, maxIpLen);
-  strncpy((char*)wNetConfig.net_mask, inContext->flashContentInRam.mxos_config.netMask, maxIpLen);
-  strncpy((char*)wNetConfig.gateway_ip_addr, inContext->flashContentInRam.mxos_config.gateWay, maxIpLen);
-  strncpy((char*)wNetConfig.dnsServer_ip_addr, inContext->flashContentInRam.mxos_config.dnsServer, maxIpLen);
+  ssid = inContext->flashContentInRam.mxos_config.ssid;
+  memcpy(ap_attr.bssid, inContext->flashContentInRam.mxos_config.bssid, 6);
+  ap_attr.channel = inContext->flashContentInRam.mxos_config.channel;
+  ap_attr.security = inContext->flashContentInRam.mxos_config.security;
+  key = inContext->flashContentInRam.mxos_config.key;
+  key_len = inContext->flashContentInRam.mxos_config.keyLength;
+  if(inContext->flashContentInRam.mxos_config.dhcpEnable != true){
+      strncpy(attr.localip, inContext->flashContentInRam.mxos_config.localIp, maxIpLen);
+      strncpy(attr.netmask, inContext->flashContentInRam.mxos_config.netMask, maxIpLen);
+      strncpy(attr.gateway, inContext->flashContentInRam.mxos_config.gateWay, maxIpLen);
+      strncpy(attr.dnserver, inContext->flashContentInRam.mxos_config.dnsServer, maxIpLen);
+      pip_attr = &attr;
+  }
   mos_mutex_unlock(inContext->flashContentInRam_mutex);
 
-  wNetConfig.wifi_retry_interval = 100;
-  system_log("Connect to %s.....", wNetConfig.ap_info.ssid);
-  mwifi_connect(&wNetConfig);
+  system_log("Connect to %s.....", ssid);
+  mwifi_connect(ssid, key, key_len, &ap_attr, pip_attr);
 }
 
 merr_t system_network_daemen_start( system_context_t * const inContext )
 {
-  IPStatusTypedef para;
   uint8_t major, minor, revision;
+  uint8_t mac[6];
 
   mxos_network_init();
   mxos_sys_led(true);
-  mwifi_get_ip(&para, Station);
-  formatMACAddr(inContext->mxosStatus.mac, (char *)&para.mac);
+  mwifi_get_mac(&mac);
+  formatMACAddr(inContext->mxosStatus.mac, (char *)mac);
   mxos_wlan_driver_version(inContext->mxosStatus.rf_version, sizeof(inContext->mxosStatus.rf_version));
   inContext->mxosStatus.rf_version[49] = 0x0;
 
@@ -235,7 +213,7 @@ merr_t system_network_daemen_start( system_context_t * const inContext )
   system_log("Wi-Fi driver version %s", inContext->mxosStatus.rf_version);
   system_log("Wi-Fi mac address: %s", inContext->mxosStatus.mac);
 
-  system_log("Free memory %d bytes", mxos_get_mem_info()->free_memory); 
+  system_log("Free memory %d bytes", mos_mallinfo()->free); 
 
 #if PLATFORM_ETH_ENABLE
   mxos_eth_bringup(true, NULL, NULL, NULL);
@@ -284,12 +262,6 @@ static void PlatformEasyLinkButtonLongPressedCallback(void)
 
   context = mxos_system_context_get( );
   require( context, exit );
-
-  partition = mhal_flash_get_info( MXOS_PARTITION_PARAMETER_1 );
-  mhal_flash_erase( MXOS_PARTITION_PARAMETER_1 ,0x0, partition->partition_length );
-
-  partition = mhal_flash_get_info( MXOS_PARTITION_PARAMETER_2 );
-  mhal_flash_erase( MXOS_PARTITION_PARAMETER_2 ,0x0, partition->partition_length );
 
   partition = mhal_flash_get_info( MXOS_PARTITION_KV );
   mhal_flash_erase( MXOS_PARTITION_KV ,0x0, partition->partition_length );

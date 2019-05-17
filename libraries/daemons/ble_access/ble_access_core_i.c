@@ -148,11 +148,10 @@ merr_t ble_access_start_timer(ble_access_device_t *dev, event_handler_t timer_ev
 
     require_action(dev != NULL && timer_event_handle != NULL, exit, err = kParamErr);
 
-    err = mos_timer_new(&dev->timer, 10000, ble_access_timer_callback, arg);
-    require_noerr_string(err, exit, "Initialize a timer failed");
+    dev->timer = mos_timer_new(10000, ble_access_timer_callback, TRUE, arg);
 
-    err = mos_timer_start(&dev->timer);
-    require_noerr_action_string(err, exit, mos_timer_delete(&dev->timer), "Start a timer failed");
+    err = mos_timer_start(dev->timer);
+    require_noerr_action_string(err, exit, mos_timer_delete(dev->timer), "Start a timer failed");
 
     ble_access_timer_evt = timer_event_handle;
 
@@ -166,10 +165,10 @@ merr_t ble_access_stop_timer(ble_access_device_t *dev)
 
     require_action(dev != NULL, exit, err = kParamErr);
 
-    if (mos_timer_is_runing(&dev->timer)) {
-        mos_timer_stop(&dev->timer);
+    if (mos_timer_is_runing(dev->timer)) {
+        mos_timer_stop(dev->timer);
     }
-    err = mos_timer_delete(&dev->timer);
+    err = mos_timer_delete(dev->timer);
 
 exit:
     return err;

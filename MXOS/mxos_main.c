@@ -91,20 +91,12 @@ extern int mxos_debug_enabled;
 void mxos_main( void )
 {
 #if MXOS_APPLICATION
-
-#ifdef DEBUG
-    mxos_debug_enabled = 1;
-#else
-    mxos_debug_enabled = 0;
-#endif
-
     /* Customized board configuration. */
     mxos_board_init( );
 
 #ifndef MXOS_DISABLE_STDIO
     if( stdio_tx_mutex == NULL )
         stdio_tx_mutex = mos_mutex_new( );
-
     ring_buffer_init( (ring_buffer_t*) &stdio_rx_buffer, (uint8_t*) stdio_rx_data, STDIO_BUFFER_SIZE );
     mxos_stdio_uart_init( &stdio_uart_config, (ring_buffer_t*) &stdio_rx_buffer );
 #endif

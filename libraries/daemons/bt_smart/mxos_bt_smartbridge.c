@@ -1138,7 +1138,7 @@ merr_t mxos_bt_smartbridge_connect( mxos_bt_smartbridge_socket_t* socket, const 
     error:
     /* Link is not connected nor encrypted. Issue disconnection attempt to clean-up */
     smartbridge_helper_socket_clear_actions( socket, SOCKET_ACTION_INITIATE_PAIRING|SOCKET_ACTION_ENCRYPT_USING_BOND_INFO );
-    mos_thread_delay(200);  //A quick disconnection from an established connection may cause a duplicated gatt connected callback, by william
+    mos_msleep(200);  //A quick disconnection from an established connection may cause a duplicated gatt connected callback, by william
     mxos_bt_smartbridge_disconnect( socket, TRUE );
 
     /* Clear connect action as it's no longer needed */

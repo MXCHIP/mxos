@@ -90,7 +90,7 @@ static void FOTA_WifiStatusHandler(WiFiEvent event, void * arg)
   */
 void tftp_ota(void)
 {
-    mwifi_softap_attr_t conf;
+    mwifi_ip_attr_t conf;
     tftp_file_info_t fileinfo;
     uint32_t ipaddr = inet_addr(DEFAULT_OTA_SERVER), flashaddr;
     int filelen, maxretry = 5, len, left, i = 0;
@@ -110,13 +110,11 @@ void tftp_ota(void)
     mxos_system_notify_remove_all(mxos_notify_WiFI_PARA_CHANGED);
     mxos_system_notify_remove_all(mxos_notify_DHCP_COMPLETED);
     mxos_system_notify_remove_all(mxos_notify_WIFI_CONNECT_FAILED);
-	  mxos_system_notify_remove_all(mxos_notify_EASYLINK_WPS_COMPLETED);
+	mxos_system_notify_remove_all(mxos_notify_EASYLINK_WPS_COMPLETED);
     mxos_system_notify_register( mxos_notify_WIFI_STATUS_CHANGED, (void *)FOTA_WifiStatusHandler, NULL );
-    mxosWlanStopEasyLink();
-	  mxosWlanStopEasyLinkPlus();
-    mwifi_airkiss_stop();
+
     mwifi_disconnect();
-	mxos_rtos_thread_msleep(10);
+	mos_msleep(10);
 		
     tmpbuf = (uint8_t*)malloc(TMP_BUF_LEN);
     if (tmpbuf == NULL) {
@@ -132,19 +130,17 @@ void tftp_ota(void)
         
     fota_log("Staic IP = %s", sta_ip_addr);  
     
-    memset(&conf, 0, sizeof(mwifi_softap_attr_t));
-    
-    strcpy(conf.wifi_ssid, DEFAULT_OTA_AP);
-    
-    strcpy(conf.net_mask, DEFAULT_OTA_NETMASK);
-    strcpy(conf.local_ip_addr, (char *)sta_ip_addr);
+    memset(&conf, 0, sizeof(mwifi_ip_attr_t));
+        
+    strcpy(conf.netmask, DEFAULT_OTA_NETMASK);
+    strcpy(conf.localip, (char *)sta_ip_addr);
     
     wifi_up = 0;
     fota_log("Connect to AP %s...", DEFAULT_OTA_AP);
-    mwifi_softap_start(&conf);
+    mwifi_softap_start(DEFAULT_OTA_AP, NULL, 6, &conf);
 
     while(wifi_up == 0) {
-        mxos_rtos_thread_msleep(100);
+        mos_msleep(100);
         i++;
         if (i > 100) {
             fota_log("ERROR!! Can't find the OTA AP");
@@ -236,19 +232,19 @@ merr_t start_force_ota()
            return err;
 
 }
-static void mxosNotify_ApListCallback(ScanResult *pApList, mxos_Context_t * const inContext)
+static void mxosNotify_ApListCallback(int num, mwifi_ap_info_t *ap_list, mxos_Context_t * const inContext)
 {
 	fota_log("ota notify");
     (void)inContext;
 
-    if(pApList->ApNum == 0){
+    if(num == 0){
         if(NULL != force_ota_sem)
         {
         	fota_log("set force_ota_sem");
             mos_semphr_release(force_ota_sem);
         }
     }else{
-    	fota_log("num = %d,ssid = %s",pApList->ApNum,pApList->ApList->ssid);
+    	fota_log("num = %d,ssid = %s",num,ap_list->ssid);
     	fota_log("start_force_ota");
         start_force_ota();
     }
@@ -266,7 +262,7 @@ merr_t start_forceota_check()
 		require_noerr( err, exit );
 		fota_log("Start scan");
 		force_ota_sem = mos_semphr_new(1);
-		mxchip_active_scan(FORCE_OTA_AP,0);
+		mwifi_scan(FORCE_OTA_AP);
 		err = mos_semphr_acquire(force_ota_sem,MXOS_WAIT_FOREVER);
 		if(NULL != force_ota_sem)
 		mos_semphr_delete(force_ota_sem);

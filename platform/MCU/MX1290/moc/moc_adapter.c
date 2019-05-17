@@ -52,7 +52,7 @@ void init_debug_uart(void)
 
 static void _mos_thread_yield(void)
 {
-   mos_thread_delay( 0 );
+   mos_msleep( 0 );
 }
 
 

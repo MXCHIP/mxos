@@ -112,7 +112,7 @@ typedef struct
 
 typedef struct 
 {
-    mxos_timer_t        timer;      // MXOS timer object
+    mos_timer_id_t      timer;      // MXOS timer object
     mxos_bool_t         is_started; // is it started?
     mxos_bool_t         one_shot;   // one-shot?
     timer_handler_t     handler;    // timer expired handler

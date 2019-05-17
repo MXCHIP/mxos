@@ -49,7 +49,7 @@ const uint32_t  mxos_timer_queue_len = 5;
 
 const uint32_t mxos_nmode_enable = true;
 
-#ifdef DEBUG
+#ifdef _MXOS_DEBUG_
 int  MXOS_WEAK mxos_debug_enabled = 1;
 #else
 int  MXOS_WEAK mxos_debug_enabled = 0;

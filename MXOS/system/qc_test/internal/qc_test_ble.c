@@ -114,7 +114,7 @@ void ble_scan( void )
     /* Start scan */
     mxos_bt_smartbridge_start_scan( &scan_settings, scan_complete_handler, ble_scan_handler );
 
-    mos_thread_delay( 2 * 1000 );
+    mos_msleep( 2 * 1000 );
 
     mxos_bt_smartbridge_stop_scan( );
 

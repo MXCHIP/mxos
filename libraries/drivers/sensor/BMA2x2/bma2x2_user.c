@@ -440,7 +440,7 @@ s8 BMA2x2_SPI_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 void BMA2x2_delay_msek(u32 msek)
 {
 	/*Here you can write your own delay routine*/
-  mxos_thread_msleep(msek);
+  mos_msleep(msek);
 }
 #endif
 

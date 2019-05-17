@@ -131,7 +131,7 @@ merr_t sntp_start_auto_time_sync( uint32_t interval_ms, time_synced_fun call_bac
     /* Synchronize time with NTP server and schedule for re-sync every one day */
     MxosRandomNumberRead( &random_initial, 1 );
     /* prevent thundering herd scenarios by randomizing per RFC4330 */
-    //mos_thread_delay(300 * (unsigned int)random_initial);
+    //mos_msleep(300 * (unsigned int)random_initial);
     mxos_rtos_send_asynchronous_event( MXOS_NETWORKING_WORKER_THREAD, sync_ntp_time, 0 );
     if ( interval_ms < MIN_POLL_INTERVAL )
         interval_ms = MIN_POLL_INTERVAL;
@@ -289,7 +289,7 @@ static merr_t sync_ntp_time( void* arg )
         }
         else
         {
-            mos_thread_delay( TIME_BTW_ATTEMPTS );
+            mos_msleep( TIME_BTW_ATTEMPTS );
             ntp_log( "failed, trying again..." );
         }
     }

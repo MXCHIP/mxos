@@ -97,7 +97,7 @@ typedef struct _mxos_config_t
   int             keyLength;
   char            bssid[6];
   int             channel;
-  wlan_sec_type_t security;
+  uint8_t         security;
 
   /*Power save configuration*/
   bool            rfPowerSaveEnable;

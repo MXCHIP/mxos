@@ -141,7 +141,7 @@ static int aws_broadcast_notification(char *msg, int msg_num)
         if (ret > 0) {
             i++; // sendto fail don't i++, max sending times is 10, min sending times is 5.
         }
-        mxos_rtos_thread_msleep(20);
+        mos_msleep(20);
     }
     
     //send notification
@@ -281,7 +281,7 @@ merr_t mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enable 
     if ( aws_thread_handler ) {
         system_log("EasyLink processing, force stop..");
         aws_thread_force_exit = true;
-        mxos_rtos_thread_force_awake( &aws_thread_handler );
+        mos_thread_awake( aws_thread_handler );
         mos_thread_join( aws_thread_handler );
     }
 
@@ -293,7 +293,7 @@ merr_t mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enable 
         err = kNoErr;
 
         /* Make sure easylink is already running, and waiting for sem trigger */
-        mos_thread_delay( 1000 );
+        mos_msleep( 1000 );
     }
 
     exit:

@@ -369,15 +369,6 @@ merr_t mxos_easylink_monitor( mxos_Context_t * const in_context, mxos_bool_t ena
 merr_t mxos_easylink_monitor_with_easylink( mxos_Context_t * const in_context, mxos_bool_t enable );
 
 /**
-  * @brief  Tell EasyLink monitor routine that wlan configuration is received.
-  * @note   Only useful in EasyLink user mode and EasyLink monitor mode, where analyzing is
-  *         outside the EasyLink routine
-  * @param  nwkpara: Wlan configurations
-  * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
-  */
-merr_t mxos_easylink_monitor_save_result( mwifi_softap_attr_t *nwkpara );
-
-/**
   * @brief  Tell EasyLink monitor routine that change wlan channel periodically
   * @param  enable: MXOS_TRUE to enable channel walker and MXOS_FALSE to stop
   * @param  interval: Time internal channel is changed, unit: milliseconds
@@ -514,7 +505,7 @@ merr_t mxos_system_power_perform( mxos_Context_t* const in_context, mxos_system_
   */
 /*****************************************************************************/
 
-typedef notify_wlan_t WiFiEvent;
+typedef uint8_t WiFiEvent;
 
 /** @brief MXOS system defined notifications */ 
 typedef enum{
@@ -529,7 +520,6 @@ typedef enum{
   mxos_notify_DNS_RESOLVE_COMPLETED,      /**< A DNS host address has resolved, type: void (*function)(uint8_t *hostname, uint32_t ip,  void* arg)*/
   mxos_notify_SYS_WILL_POWER_OFF,         /**< System power will be turned off, type: void (*function)(void* arg)*/
   mxos_notify_WIFI_CONNECT_FAILED,        /**< A wlan connection attemption is failed, type: void join_fail(merr_t err, void* arg)*/
-  mxos_notify_WIFI_SCAN_ADV_COMPLETED,    /**< A anvanced wlan scan is completed, type: void (*function)(ScanResult_adv *pApList, void* arg)*/
   mxos_notify_WIFI_Fatal_ERROR,           /**< A fatal error occured when communicating with wlan sub-system, type: void (*function)(void* arg)*/
   mxos_notify_Stack_Overflow_ERROR,       /**< A MXOS RTOS thread's stack is over-flowed, type: void (*function)(char *taskname, void* arg)*/
   mxos_notify_GPRS_STATUS_CHANGED,

@@ -27,7 +27,7 @@ void Delay_us(uint32_t nus)
 
 void Delay_ms(uint16_t nms)
 {	  	  
-  mxos_thread_msleep(nms);	  	    
+  mos_msleep(nms);	  	    
 }
 
 /*--------------------------------- DHT11 Operations -------------------------*/

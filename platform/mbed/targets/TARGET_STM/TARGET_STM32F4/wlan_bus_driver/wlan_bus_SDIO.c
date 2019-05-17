@@ -424,7 +424,7 @@ merr_t host_platform_sdio_enumerate( void )
         {
             return kTimeoutErr;
         }
-    } while ( ( result != kNoErr ) && ( mxos_thread_msleep( (uint32_t) 1 ), ( 1 == 1 ) ) );
+    } while ( ( result != kNoErr ) && ( mos_msleep( (uint32_t) 1 ), ( 1 == 1 ) ) );
     /* If you're stuck here, check the platform matches your hardware */
 
     /* Send CMD7 with the returned RCA to select the card */

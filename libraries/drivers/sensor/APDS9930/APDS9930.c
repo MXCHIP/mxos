@@ -99,7 +99,7 @@ void apds9930_enable()
   //Enable APDS9930
   APDS9930_Write_RegData(ENABLE_ADDR, WEN|PEN|AEN|PON);
   //must delay > 12ms
-  mxos_thread_msleep(12);
+  mos_msleep(12);
 }
  
 merr_t apds9930_data_readout(uint16_t *Prox_data, uint16_t *Lux_data)

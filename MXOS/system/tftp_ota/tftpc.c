@@ -169,7 +169,7 @@ int tsend (tftp_file_info_t *fileinfo, uint32_t ipaddr)
 	  {
 	    n = recvfrom (sock, recvbuf, sizeof (recvbuf), MSG_DONTWAIT,
 			(struct sockaddr *) &ack, (socklen_t *) & server_len);
-	    mos_thread_delay(1);
+	    mos_msleep(1);
 	  }
 
 
@@ -275,7 +275,7 @@ int tsend (tftp_file_info_t *fileinfo, uint32_t ipaddr)
 		    recvfrom (sock, recvbuf, sizeof (recvbuf), MSG_DONTWAIT,
 			      (struct sockaddr *) &ack,
 			      (socklen_t *) & server_len);
-		  mos_thread_delay(1);
+		  mos_msleep(1);
 		}
 
           if (n < 0) {
@@ -417,7 +417,7 @@ tget (tftp_file_info_t *fileinfo, uint32_t ipaddr)
 		recvfrom (sock, filebuf, sizeof (filebuf) - 1,
 			  MSG_DONTWAIT, (struct sockaddr *) &data,
 			  (socklen_t *) & server_len);
-	      mos_thread_delay(1);
+	      mos_msleep(1);
 	    }
 	  if (!tid)
 	    {

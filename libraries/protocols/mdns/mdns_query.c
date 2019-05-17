@@ -1826,7 +1826,7 @@ static int signal_and_wait_for_query_halt()
 	}
 
 	while (query_enabled && num_iterations--)
-	    mos_thread_delay(check_interval);
+	    mos_msleep(check_interval);
 
 	if (!num_iterations)
 		MDNS_LOG("Error: timed out waiting for mdns querier to stop\r\n");

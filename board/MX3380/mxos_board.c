@@ -347,3 +347,22 @@ int switch_active_firmware(void)
     return 0;
 }
 
+void mxos_sys_led(bool onoff)
+{
+  
+}
+
+void mxos_rf_led(bool onoff)
+{
+  
+}
+
+void mxos_board_init(void)
+{
+}
+
+bool mxos_should_enter_mfg_mode(void)
+{
+    return false;
+}
+

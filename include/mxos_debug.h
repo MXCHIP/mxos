@@ -32,7 +32,7 @@
 
 #ifndef __MXOS_Debug_h__
 #define __MXOS_Debug_h__
-
+#include "mos.h"
 
 #ifdef __cplusplus
 extern "C" {

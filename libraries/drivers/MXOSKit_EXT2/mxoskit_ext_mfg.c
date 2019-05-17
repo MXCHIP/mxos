@@ -146,7 +146,7 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
                     // OLED display test info
                     sprintf( str, "%s OUTPUT\r\nOLED\r\nRGB_LED\r\nDC_MOTOR", OLED_MFG_TEST_PREFIX );
                     mf_printf( str );
-                    mxos_thread_msleep( 500 );
+                    mos_msleep( 500 );
 
                     // RGB_LED
                     hsb2rgb_led_open( rgb_led_hue, 100, 50 );
@@ -162,7 +162,7 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
 
                     // OLED
                     mf_printf( mfg_test_oled_test_string );
-                    mxos_thread_msleep( 500 );
+                    mos_msleep( 500 );
                 }
                 
                 // exit, close modules
@@ -232,7 +232,7 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
                         dht11_test_cnt = 0;
                     }
 
-                    mxos_thread_msleep( 500 );
+                    mos_msleep( 500 );
                 }
                 break;
             }
@@ -243,7 +243,7 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
                          mac[0],
                          mac[1], mac[2], mac[3], mac[4], mac[5] );
                 mf_printf( str );
-                //mxos_thread_msleep(500);
+                //mos_msleep(500);
 
                 scanap_done = false;
                 mwifi_softap_startScan( );

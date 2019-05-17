@@ -10,6 +10,8 @@ image/lib_wps.a \
 image/cmse_implib.lib
 
 DEFAULT_LINK_SCRIPT := rlx8721d_img2_ns.ld
+$(NAME)_SOURCES := ../../../MXOS/net/LwIP/mxos/mxos_network.c ../../../MXOS/RTOS/mxos_rtos_common.c
+$(NAME)_INCLUDES := ../../../MXOS/RTOS/FreeRTOS/mxos
 
 GLOBAL_CFLAGS	+= -ffunction-sections -march=armv8-m.main+dsp -mthumb -mcmse -mfloat-abi=softfp -mfpu=fpv5-sp-d16 -g -gdwarf-3 -nostartfiles -nodefaultlibs -nostdlib -O2 -D__FPU_PRESENT -gdwarf-3 -fstack-usage -fdata-sections -nostartfiles -nostdlib -Wall -Wpointer-arith -Wstrict-prototypes -Wundef -Wno-write-strings -Wno-maybe-uninitialized -Wextra
 GLOBAL_CXXFLAGS	+= $(CPU_CFLAGS)

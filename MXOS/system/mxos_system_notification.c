@@ -32,11 +32,9 @@ typedef struct _Notify_list{
 _Notify_list_t* Notify_list[mxos_notify_MAX] = {NULL};
 
 /* MXOS system defined notifications */
-typedef void (*mxos_notify_WIFI_SCAN_COMPLETE_function)           ( ScanResult *pApList, void * inContext );
-typedef void (*mxos_notify_WIFI_SCAN_ADV_COMPLETE_function)       ( ScanResult_adv *pApAdvList, void * inContext );
+typedef void (*mxos_notify_WIFI_SCAN_COMPLETE_function)           ( int num, mwifi_ap_info_t *ap_list, void * inContext );
 typedef void (*mxos_notify_WIFI_STATUS_CHANGED_function)          ( WiFiEvent status, void * inContext );
-typedef void (*mxos_notify_WiFI_PARA_CHANGED_function)            ( apinfo_adv_t *ap_info, char *key, int key_len, void * inContext );
-typedef void (*mxos_notify_DHCP_COMPLETE_function)                ( IPStatusTypedef *pnet, void * inContext );
+typedef void (*mxos_notify_WiFI_PARA_CHANGED_function)            ( mwifi_link_info_t *ap_info, char *key, int key_len, void * inContext );
 typedef void (*mxos_notify_EASYLINK_COMPLETE_function)            ( char *ssid, char *key, int mode, void * inContext );
 typedef void (*mxos_notify_EASYLINK_GET_EXTRA_DATA_function)      ( int datalen, char*data, void * inContext );
 typedef void (*mxos_notify_TCP_CLIENT_CONNECTED_function)         ( int fd, void * inContext );
@@ -51,33 +49,22 @@ typedef void (*mxos_notify_GPRS_STATUS_CHANGED_function)          ( notify_netif
 netif_status_t netif_status[INTERFACE_MAX] = {INTERFACE_STATUS_DOWN, INTERFACE_STATUS_DOWN, INTERFACE_STATUS_DOWN};
 
 /* User defined notifications */
-void ApListCallback(ScanResult *pApList)
+
+void mwifi_scan_results_cb(int num, mwifi_ap_info_t *ap_list)
 {
-  _Notify_list_t *temp =  Notify_list[mxos_notify_WIFI_SCAN_COMPLETED];
+    _Notify_list_t *temp =  Notify_list[mxos_notify_WIFI_SCAN_COMPLETED];
+    
   if(temp == NULL)
     return;
   else{
     do{
-      ((mxos_notify_WIFI_SCAN_COMPLETE_function)(temp->function))(pApList, temp->arg);
+      ((mxos_notify_WIFI_SCAN_COMPLETE_function)(temp->function))(num, ap_list, temp->arg);
       temp = temp->next;
     }while(temp!=NULL);
   }
 }
 
-void ApListAdvCallback(ScanResult_adv *pApAdvList)
-{
-  _Notify_list_t *temp =  Notify_list[mxos_notify_WIFI_SCAN_ADV_COMPLETED];
-  if(temp == NULL)
-    return;
-  else{
-    do{
-      ((mxos_notify_WIFI_SCAN_ADV_COMPLETE_function)(temp->function))(pApAdvList, temp->arg);
-      temp = temp->next;
-    }while(temp!=NULL);
-  }
-}
-
-void WifiStatusHandler(WiFiEvent status)
+void mwifi_status_cb(uint8_t status)
 {
     switch ( status )
     {
@@ -116,7 +103,7 @@ void WifiStatusHandler(WiFiEvent status)
   }
 }
 
-void connected_ap_info(apinfo_adv_t *ap_info, char *key, int key_len)
+void mwifi_connected_ap_info_cb(mwifi_link_info_t *ap_info, char *key, int key_len)
 {
   _Notify_list_t *temp =  Notify_list[mxos_notify_WiFI_PARA_CHANGED];
   if(temp == NULL)
@@ -124,19 +111,6 @@ void connected_ap_info(apinfo_adv_t *ap_info, char *key, int key_len)
   else{
     do{
       ((mxos_notify_WiFI_PARA_CHANGED_function)(temp->function))(ap_info, key, key_len, temp->arg);
-      temp = temp->next;
-    }while(temp!=NULL);
-  }
-}
-
-void NetCallback(IPStatusTypedef *pnet)
-{
-  _Notify_list_t *temp =  Notify_list[mxos_notify_DHCP_COMPLETED];
-  if(temp == NULL)
-    return;
-  else{
-    do{
-      ((mxos_notify_DHCP_COMPLETE_function)(temp->function))(pnet, temp->arg);
       temp = temp->next;
     }while(temp!=NULL);
   }

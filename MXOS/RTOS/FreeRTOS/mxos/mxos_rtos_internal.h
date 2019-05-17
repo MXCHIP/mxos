@@ -47,7 +47,7 @@
 #define NETWORKING_WORKER_THREAD_QUEUE_SIZE                                     (15)
 
 #define RTOS_NAME                     "FreeRTOS"
-#define RTOS_VERSION                  FreeRTOS_VERSION
+#define RTOS_VERSION                  "V8.1.2"
 
 /******************************************************
  *                   Enumerations

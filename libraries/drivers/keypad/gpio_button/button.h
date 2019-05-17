@@ -63,7 +63,7 @@ typedef struct _button_context_t {
   button_pressed_cb pressed_func;
   button_long_pressed_cb long_pressed_func;
   /* Use by driver, do not initialze */
-  mxos_timer_t _user_button_timer;
+  mos_timer_id_t _user_button_timer;
   uint32_t start_time;
 #ifdef CONFIG_MX108
   uint32_t ignore;

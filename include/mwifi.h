@@ -81,7 +81,13 @@ enum {
 
     NOTIFY_AP_UP,
     NOTIFY_AP_DOWN,
+
+    NOTIFY_ETH_UP,
+    NOTIFY_ETH_DOWN,
 };
+
+typedef void (*asso_event_handler_t)(char *buf, int buf_len, int flags, void* handler_user_data );
+
 
 /* callback function of mwifi_scan*/
 void    mwifi_scan_results_cb(int num, mwifi_ap_info_t *ap_list);
@@ -101,7 +107,7 @@ merr_t	mwifi_softap_start(const char *ssid, char *key, int channel, mwifi_ip_att
 merr_t	mwifi_softap_stop(void);
 void	mwifi_scan(const char *ssid);
 void	mwifi_get_mac(uint8_t mac[6]);
-merr_t	mwifi_get_ip(mwifi_ip_attr_t *attr);
+merr_t	mwifi_get_ip(mwifi_ip_attr_t *attr, int iface);
 merr_t	mwifi_get_link_info(mwifi_link_info_t *info	);
 
 merr_t	mwifi_on(void);	
@@ -120,4 +126,5 @@ merr_t	mwifi_reg_mgnt_cb(mwifi_monitor_cb_t func);
 merr_t	mwifi_custom_ie_add(int iface, uint8_t *data, uint32_t size);
 merr_t	mwifi_custom_ie_remove(int iface);
 
+merr_t mwifi_monitor_start_with_softap(char *ssid, char *key,int channel, mwifi_ip_attr_t *attr,asso_event_handler_t fn);
 

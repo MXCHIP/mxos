@@ -167,7 +167,7 @@ static void _qc_test_thread( void * arg )
 
 exit:
     free( rx_data );
-    mxos_thread_sleep( MXOS_NEVER_TIMEOUT );
+    mos_msleep( MXOS_NEVER_TIMEOUT );
     mos_thread_delete( NULL );
 }
 
