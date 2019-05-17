@@ -233,7 +233,11 @@ DIR_TO_BUILD_STRING = $(subst /,.,$(1))
 CLEANED_BUILD_STRING := $(BUILD_STRING)
 BUILD_DIR    :=  $(SOURCE_ROOT)build
 
+BUILD_DIR_WIN    :=  .\build
+
 OUTPUT_DIR   := $(BUILD_DIR)/$(CLEANED_BUILD_STRING)
+
+OUTPUT_DIR_WIN   := $(BUILD_DIR_WIN)\$(CLEANED_BUILD_STRING)
 
 # Newline Macro
 define newline
