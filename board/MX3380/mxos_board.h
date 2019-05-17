@@ -144,6 +144,10 @@ enum
 {
     MXOS_ADC_1,
     MXOS_ADC_2,
+    MXOS_ADC_3,
+    MXOS_ADC_4,
+    MXOS_ADC_5,
+    MXOS_ADC_6,
     MXOS_ADC_MAX, /* Denotes the total number of ADC port aliases. Not a valid ADC alias */
     MXOS_ADC_NONE,
 };

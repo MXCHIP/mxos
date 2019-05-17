@@ -108,7 +108,12 @@ platform_gpio_t platform_gpio_pins[] =
 /* TODO : These need fixing */
 platform_adc_t platform_adc_peripherals[] =
 {
-  [MXOS_ADC_1] = {.pin = AD_1,},
+    [MXOS_ADC_1] = {.pin = PB_4,},
+    [MXOS_ADC_2] = {.pin = PB_5,},
+    [MXOS_ADC_3] = {.pin = PB_6,},
+    [MXOS_ADC_4] = {.pin = PB_7,},
+    [MXOS_ADC_5] = {.pin = PB_1,},
+    [MXOS_ADC_6] = {.pin = PB_2,},
 };
 
 /* PWM mappings */
@@ -192,11 +197,11 @@ platform_i2c_t platform_i2c_peripherals[] =
 {
   [MXOS_I2C_1] =
   {
-    .sda = PA_19,
-    .scl = PA_22,
+    .sda = PB_6,
+    .scl = PB_5,
   },
 };
-
+platform_i2c_driver_t platform_i2c_drivers[MXOS_I2C_MAX];
 
 /* Flash memory devices */
 platform_flash_t platform_flash_peripherals[] =
