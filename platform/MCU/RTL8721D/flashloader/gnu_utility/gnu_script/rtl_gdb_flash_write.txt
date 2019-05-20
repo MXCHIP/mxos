@@ -162,6 +162,11 @@ set $KM0_KM4_IMAGE2_SIZE =0
 set FlashAddrForWrite =0x6000
 flash_write ./image/image.bin $KM0_KM4_IMAGE2_SIZE
 
+#remove ota2
+set $KM0_BOOT_ALL_SIZE =0
+set FlashAddrForWrite =0x188000
+flash_write ../image/km0_boot_all.bin $KM0_BOOT_ALL_SIZE
+
 #Tell flashloader complete flag
 set FlashWriteComplete = 0x1
 #=============================================================================== 

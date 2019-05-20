@@ -103,7 +103,7 @@ enum
     
     BOOT_SEL = MXOS_GPIO_NONE, 
     MFG_SEL = MXOS_GPIO_NONE, 
-    EasyLink_BUTTON = MXOS_GPIO_NONE,
+    EasyLink_BUTTON = MXOS_GPIO_4,
     MXOS_SYS_LED = MXOS_GPIO_NONE,
 };
 
