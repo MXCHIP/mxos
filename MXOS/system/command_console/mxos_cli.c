@@ -599,7 +599,7 @@ static const struct cli_command built_ins[] = {
 #ifndef PPP_IF
   {"tftp",     "tftp",                        tftp_Command},
   {"time",     "system time",                 uptime_Command},
-  //{"ota",      "system ota",                  ota_Command},
+  {"ota",      "system ota",                  ota_Command},
 #endif
   {"flash",    "Flash memory map",            partShow_Command},
   {"kv", "kv [set key value | get key | del key | seti key int_val | geti key | list]", handle_kv_cmd}

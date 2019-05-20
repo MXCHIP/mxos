@@ -1,5 +1,7 @@
 EXTRA_POST_BUILD_TARGETS += postbuild
 
+ADD_MD5_SCRIPT := $(SOURCE_ROOT)/mxos/platform/MCU/RTL8721D/scripts/add_md5.py
+
 NM_OUTPUT_FILE := $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.nm)
 
 postbuild: build_done
@@ -11,7 +13,9 @@ postbuild: build_done
 	$(CAT) $(OUTPUT_DIR)/binary/xip_image2_prepend.bin $(OUTPUT_DIR)/binary/ram_2_prepend.bin > $(BIN_OUTPUT_FILE)
 	$(PYTHON) mxos/platform/MCU/RTL8721D/scripts/pad.py $(BIN_OUTPUT_FILE)
 	$(CAT) $(SOURCE_ROOT)/mxos/platform/MCU/RTL8721D/image/km0_image2_all.bin $(BIN_OUTPUT_FILE) > $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all.bin)
-
+	$(CP) $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all.bin) $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.ota.bin)
+	$(PYTHON) $(ADD_MD5_SCRIPT) $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.ota.bin)
+	
 download: postbuild
 	@echo Downloading ...
 	echo yes|./mxos/platform/MCU/RTL8721D/flashloader/flashloader.sh $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all.bin) $(OPENOCD_FULL_NAME) >$(OUTPUT_DIR)/flashloader.log 2>&1

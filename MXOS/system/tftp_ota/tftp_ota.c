@@ -137,7 +137,7 @@ void tftp_ota(void)
     
     wifi_up = 0;
     fota_log("Connect to AP %s...", DEFAULT_OTA_AP);
-    mwifi_softap_start(DEFAULT_OTA_AP, NULL, 6, &conf);
+    mwifi_connect(DEFAULT_OTA_AP, NULL, 0, NULL, &conf);
 
     while(wifi_up == 0) {
         mos_msleep(100);
@@ -169,6 +169,7 @@ void tftp_ota(void)
     filelen -= 16; // remove md5.
     fota_log("tftp download image finished, OTA bin len %d", filelen);
     flashaddr = filelen;
+#if 0    
     mhal_flash_read(MXOS_PARTITION_OTA_TEMP, &flashaddr, (uint8_t *)md5_recv, 16);
     InitMd5( &ctx );
     CRC16_Init( &contex );
@@ -203,7 +204,7 @@ void tftp_ota(void)
         mxos_ota_finished(OTA_MD5_FAIL, NULL);
         return;
     }
-
+#endif
     fota_log("OTA bin md5 check success, CRC %x. upgrading...", crc);
     mxos_ota_switch_to_new_fw( filelen, crc );
     mxos_ota_finished(OTA_SUCCESS, NULL);
