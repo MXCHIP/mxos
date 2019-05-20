@@ -422,7 +422,7 @@ void *__wrap__calloc_r(void *p, size_t a, size_t b)
     void *pv;
     size_t sz = a * b;
 
-    if ((pv = malloc(sz)) == NULL)
+    if ((pv = __wrap__malloc_r(p, sz)) == NULL)
     {
         return NULL;
     }
@@ -435,14 +435,14 @@ void *__wrap__realloc_r(void *p, void *x, size_t sz)
 {
     void *pv;
 
-    if ((pv = malloc(sz)) == NULL)
+    if ((pv = __wrap__malloc_r(p, sz)) == NULL)
     {
         return NULL;
     }
     memcpy(pv, x, sz);
-    free(x);
+    __wrap__free_r(p, x);
 
-    return p;
+    return pv;
 }
 
 // NOTE: bsp functions

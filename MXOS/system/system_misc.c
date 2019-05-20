@@ -199,8 +199,9 @@ merr_t system_network_daemen_start( system_context_t * const inContext )
 
   mxos_network_init();
   mxos_sys_led(true);
-  mwifi_get_mac(&mac);
-  formatMACAddr(inContext->mxosStatus.mac, (char *)mac);
+  mwifi_get_mac(mac);
+  sprintf(inContext->mxosStatus.mac, "%02X:%02X:%02X:%02X:%02X:%02X", 
+    mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
   mxos_wlan_driver_version(inContext->mxosStatus.rf_version, sizeof(inContext->mxosStatus.rf_version));
   inContext->mxosStatus.rf_version[49] = 0x0;
 
@@ -260,6 +261,7 @@ static void PlatformEasyLinkButtonLongPressedCallback(void)
   mxos_Context_t* context = NULL;
   mxos_logic_partition_t *partition = NULL;
 
+  return;
   context = mxos_system_context_get( );
   require( context, exit );
 

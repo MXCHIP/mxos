@@ -35,10 +35,12 @@
 
 #include "mxos_opt.h"
 #include "mxos_common.h"
+#include "mwifi.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 /** Maximum size of MAC address representation
  */
@@ -48,8 +50,8 @@ extern "C" {
  *  @brief  wlan network interface enumeration definition.
  */
 typedef enum {
-    Soft_AP,  /**< Act as an access point, and other station can connect, 4 stations Max*/
-    Station,   /**< Act as a station which can connect to an access point*/
+    Soft_AP = SOFTAP_INTERFACE,  /**< Act as an access point, and other station can connect, 4 stations Max*/
+    Station = STATION_INTERFACE,   /**< Act as a station which can connect to an access point*/
     INTERFACE_UAP = Soft_AP,
     INTERFACE_STA = Station,
     INTERFACE_ETH,
