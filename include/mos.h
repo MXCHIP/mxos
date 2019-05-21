@@ -1,5 +1,5 @@
-#ifndef __OS_H__
-#define __OS_H__
+#ifndef __MOS_H__
+#define __MOS_H__
 
 #include <stdint.h>
 #include <stdbool.h>
