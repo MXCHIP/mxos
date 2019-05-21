@@ -132,21 +132,6 @@ platform_pwm_t platform_pwm_peripherals[] =
   [MXOS_PWM_11] = {.pin = PB_23, .init=false,},
 };
 
-#if (defined EMW3080B) || (defined EMW3080C) || (defined EMW5080)
-platform_spi_t platform_spi_peripherals[] =
-{ 
-  [MXOS_SPI_1]  =
-  {
-    .spi_obj.spi_idx = MBED_SPI1,
-    .mosi = PA_23,
-    .miso = PA_22,
-    .sclk = PA_18,
-    .ssel = PA_19,
-  },	
-};
-platform_spi_driver_t platform_spi_drivers[MXOS_SPI_MAX];
-#endif
-
 platform_spi_t platform_spi_peripherals[] =
 { 
   [MXOS_SPI_1]  =
@@ -162,7 +147,14 @@ platform_spi_t platform_spi_peripherals[] =
     .mosi = PB_4,
     .miso = PB_5,
     .sclk = PB_6,
-  },	
+  },
+  [MXOS_SPI_3]  =          
+  {
+    .spi_obj.spi_idx = MBED_SPI1,
+    .mosi = PA_12,
+    .miso = PA_13,
+    .sclk = PA_14,
+  },
 };
 platform_spi_driver_t platform_spi_drivers[MXOS_SPI_MAX];
 
@@ -330,7 +322,6 @@ mxos_logic_partition_t* paltform_flash_get_info(int inPartition)
         else
             return &mxos_partitions[PHY_PARTITION_APPLICATION2];
     case MXOS_PARTITION_OTA_TEMP:
-        printf("cur index %d\r\n", ota_get_cur_index());
         if (ota_get_cur_index() == OTA_INDEX_1)
             return &mxos_partitions[PHY_PARTITION_APPLICATION2];
         else
