@@ -16,7 +16,6 @@ GLOBAL_INCLUDES += Curve25519
 # SHA
 $(NAME)_SOURCES  += SHAUtils/hkdf.c \
                     SHAUtils/hmac.c \
-                    SHAUtils/sha1.c \
                     SHAUtils/sha224-256.c \
                     SHAUtils/sha384-512.c \
                     SHAUtils/usha.c

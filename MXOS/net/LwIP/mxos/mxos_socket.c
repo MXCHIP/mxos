@@ -268,11 +268,11 @@ uint32_t inet_addr (const char *name)
 char *inet_ntoa (struct in_addr addr)
 {
 #if LwIP_VERSION_MAJOR == 1 && LwIP_VERSION_MINOR < 5
-    return ipaddr_ntoa( (ip_addr_t*) &(addr) );
+    return ip4addr_ntoa( (ip_addr_t*) &(addr) );
 #elif LwIP_VERSION_MAJOR == 1 && LwIP_VERSION_MINOR >= 5
-    return ipaddr_ntoa( (ip_addr_t*) &(addr) );
+    return ip4addr_ntoa( (ip_addr_t*) &(addr) );
 #elif LwIP_VERSION_MAJOR == 2
-    return ipaddr_ntoa( (ip_addr_t*) &(addr) );
+    return ip4addr_ntoa( (ip_addr_t*) &(addr) );
 #else
 #error LwIP version not supported
 #endif

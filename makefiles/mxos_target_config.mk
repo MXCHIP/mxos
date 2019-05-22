@@ -292,16 +292,9 @@ MXOS_SDK_DEFINES += $(EXTERNAL_MXOS_GLOBAL_DEFINES)
 ALL_RESOURCES := $(sort $(foreach comp,$(PROCESSED_COMPONENTS),$($(comp)_RESOURCES_EXPANDED)))
 
 # Make sure the user has specified a component from each category
-$(if $(RTOS),,$(error No RTOS specified. Options are: $(notdir $(wildcard MXOS/RTOS/*))))
+# $(if $(RTOS),,$(error No RTOS specified. Options are: $(notdir $(wildcard MXOS/RTOS/*))))
 $(if $(PLATFORM),,$(error No platform specified. Options are: $(notdir $(wildcard board/*))))
 $(if $(APP),,$(error No application specified.))
-$(if $(BUS),,$(error No bus specified. Options are: SDIO SPI))
-
-# Make sure a WLAN_CHIP, WLAN_CHIP_REVISION, WLAN_CHIP_FAMILY and HOST_OPENOCD have been defined
-$(if $(WLAN_CHIP),,$(error No WLAN_CHIP has been defined))
-$(if $(WLAN_CHIP_REVISION),,$(error No WLAN_CHIP_REVISION has been defined))
-$(if $(WLAN_CHIP_FAMILY),,$(error No WLAN_CHIP_FAMILY has been defined))
-$(if $(HOST_OPENOCD),,$(error No HOST_OPENOCD has been defined))
 
 $(eval VALID_PLATFORMS := $(call EXPAND_WILDCARD_PLATFORMS,$(VALID_PLATFORMS)))
 $(eval INVALID_PLATFORMS := $(call EXPAND_WILDCARD_PLATFORMS,$(INVALID_PLATFORMS)))

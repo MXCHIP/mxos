@@ -11,7 +11,6 @@ NAME := MXOS_FreeRTOS_Interface
 
 GLOBAL_INCLUDES := . 
 
-$(NAME)_SOURCES := mxos_rtos.c \
-                   ../../mxos_rtos_common.c
+$(NAME)_SOURCES := ../../mxos_rtos_common.c
 
 #$(NAME)_CFLAGS  = $(COMPILER_SPECIFIC_PEDANTIC_CFLAGS)
