@@ -39,7 +39,7 @@ WEAK void mxos_system_delegate_config_will_start( void )
   if(_Led_EL_timer_initialized == true)
   {
     mos_timer_stop(&_Led_EL_timer);
-    mxos_deinit_timer( &_Led_EL_timer );
+    mos_timer_delete( &_Led_EL_timer );
     _Led_EL_timer_initialized = false;
   }
 
@@ -59,7 +59,7 @@ WEAK void mxos_system_delegate_config_will_stop( void )
   if(_Led_EL_timer_initialized == true)
   {
     mos_timer_stop(&_Led_EL_timer);
-    mxos_deinit_timer( &_Led_EL_timer );
+    mos_timer_delete( &_Led_EL_timer );
     _Led_EL_timer_initialized = false;
   }
   mxos_sys_led(true);
@@ -74,7 +74,7 @@ WEAK void mxos_system_delegate_config_recv_ssid ( char *ssid, char *key )
   if(_Led_EL_timer_initialized == true)
   {
     mos_timer_stop(&_Led_EL_timer);
-    mxos_deinit_timer( &_Led_EL_timer );
+    mos_timer_delete( &_Led_EL_timer );
     _Led_EL_timer_initialized = false;
   }
 

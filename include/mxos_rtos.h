@@ -110,9 +110,6 @@ extern mos_worker_thread_id_t mxos_worker_thread;
 /* Legacy definitions */
 #define mxos_thread_sleep                 mxos_rtos_thread_sleep
 #define mxos_thread_msleep                mxos_rtos_thread_msleep
-#define mxos_rtos_reload_timer            mxos_reload_timer
-#define mos_timer_delete            mxos_deinit_timer
-#define mos_timer_is_runing        mxos_is_timer_running
 #define mos_event_fd_new           mxos_create_event_fd
 #define mos_event_fd_delete         mxos_delete_event_fd
 

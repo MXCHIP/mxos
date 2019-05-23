@@ -190,7 +190,7 @@ merr_t mxos_rtos_reload_timer( mxos_timer_t* timer )
 }
 merr_t mos_timer_delete( mxos_timer_t* timer )
 {
-    return lib_api_p->mxos_deinit_timer( timer );
+    return lib_api_p->mos_timer_delete( timer );
 }
 bool mxos_is_timer_running( mxos_timer_t* timer )
 {

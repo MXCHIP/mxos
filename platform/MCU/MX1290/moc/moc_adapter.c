@@ -99,7 +99,7 @@ mxos_api_t *moc_adapter(new_mxos_api_t *new_mxos_api)
   mxos_api.mxos_start_timer = _kernel_api.os_apis->mxos_start_timer;
   mxos_api.mxos_stop_timer = _kernel_api.os_apis->mxos_stop_timer;
   mxos_api.mxos_reload_timer = _kernel_api.os_apis->mxos_reload_timer;
-  mxos_api.mxos_deinit_timer = _kernel_api.os_apis->mxos_deinit_timer;
+  mxos_api.mos_timer_delete = _kernel_api.os_apis->mos_timer_delete;
   mxos_api.mxos_is_timer_running = _kernel_api.os_apis->mxos_is_timer_running;
   mxos_api.mxos_create_event_fd = _kernel_api.os_apis->mxos_create_event_fd;
   mxos_api.mxos_delete_event_fd = _kernel_api.os_apis->mxos_delete_event_fd;
