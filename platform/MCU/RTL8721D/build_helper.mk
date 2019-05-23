@@ -58,5 +58,8 @@ ifeq ($(HOST_OS),Win32)
 # echo yes|./mxos/platform/MCU/RTL8721D/flashloader/flashloader.sh $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all.bin) $(OPENOCD_FULL_NAME) >$(OUTPUT_DIR)/flashloader.log 2>&1
 else	
 	@echo Downloading
+	# download total
+	#echo yes|./mxos/platform/MCU/RTL8721D/flashloader/flashloader_all.sh $(OTA_BIN_OUTPUT_FILE) $(OPENOCD_FULL_NAME) >$(OUTPUT_DIR)/flashloader.log 2>&1
+	# download application only 
 	echo yes|./mxos/platform/MCU/RTL8721D/flashloader/flashloader.sh $(OTA_BIN_OUTPUT_FILE) $(OPENOCD_FULL_NAME) >$(OUTPUT_DIR)/flashloader.log 2>&1
 endif
