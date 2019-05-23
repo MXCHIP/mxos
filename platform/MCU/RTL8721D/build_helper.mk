@@ -30,6 +30,8 @@ endif
 
 	$(CP) $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all.bin) $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.ota.bin)
 	$(PYTHON) $(ADD_MD5_SCRIPT) $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.ota.bin)
+	$(QUIET)$(call MKDIR, $(BUILD_DIR)/eclipse_debug/)
+	$(QUIET)$(CP) $(LINK_OUTPUT_FILE) $(BUILD_DIR)/eclipse_debug/last_built.elf
 	
 ifeq ($(HOST_OS),Win32)
 
