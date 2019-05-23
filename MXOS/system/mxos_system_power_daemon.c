@@ -20,7 +20,6 @@
 #include "mxos.h"
 #include "system_internal.h"
 
-static bool                     needs_update          = false;
 static mxos_timed_event_t _timed_sys_power_state_change;
 
 extern system_context_t* sys_context;
@@ -69,10 +68,9 @@ static merr_t _sys_will_power_off_handler(void *arg)
   
   require_action( sys_context, exit, err = kNotPreparedErr );
 
-  if(needs_update == true)
+  if(sys_context->mxosStatus.current_sys_state == eState_Software_Reset)
   {
     mxos_system_context_update( &sys_context->flashContentInRam );
-    needs_update = false;
   }
 
   mxos_rtos_register_timed_event( &_timed_sys_power_state_change, MXOS_NETWORKING_WORKER_THREAD, _sys_power_state_change_handler, 500, 0 );
