@@ -257,16 +257,18 @@ merr_t system_network_daemen_start( system_context_t * const inContext )
 
 button_context_t easylink_btn;
 
-static void PlatformEasyLinkButtonClickedCallback(void)
+void PlatformEasyLinkButtonClickedCallback(void)
 {
   require_quiet( sys_context, exit );
 
 #ifdef EasyLink_Needs_Reboot
   /* Enter easylink mode temporary in configed mode */
+
+  mos_mutex_lock(sys_context->flashContentInRam_mutex);
   if(sys_context->flashContentInRam.mxos_config.configured == allConfigured){
       sys_context->flashContentInRam.mxos_config.configured = wLanUnConfigured;
-    needs_update = true;
   }
+  mos_mutex_unlock(sys_context->flashContentInRam_mutex);
 
   mxos_system_power_perform( &sys_context->flashContentInRam, eState_Software_Reset );
 #else
@@ -277,7 +279,7 @@ exit:
   return;
 }
 
-static void PlatformEasyLinkButtonLongPressedCallback(void)
+void PlatformEasyLinkButtonLongPressedCallback(void)
 {
   mxos_Context_t* context = NULL;
   mxos_logic_partition_t *partition = NULL;
