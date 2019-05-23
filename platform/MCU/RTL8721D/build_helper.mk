@@ -32,14 +32,12 @@ endif
 	$(PYTHON) $(ADD_MD5_SCRIPT) $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.ota.bin)
 	$(QUIET)$(call MKDIR, $(BUILD_DIR)/eclipse_debug/)
 	$(QUIET)$(CP) $(LINK_OUTPUT_FILE) $(BUILD_DIR)/eclipse_debug/last_built.elf
-	
-ifeq ($(HOST_OS),Win32)
 
 download: postbuild
+ifeq ($(HOST_OS),Win32)
 	@echo windows don't support jlink download ...
 # echo yes|./mxos/platform/MCU/RTL8721D/flashloader/flashloader.sh $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all.bin) $(OPENOCD_FULL_NAME) >$(OUTPUT_DIR)/flashloader.log 2>&1
 else	
-
 	@echo Downloading
 	echo yes|./mxos/platform/MCU/RTL8721D/flashloader/flashloader.sh $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all.bin) $(OPENOCD_FULL_NAME) >$(OUTPUT_DIR)/flashloader.log 2>&1
 endif
