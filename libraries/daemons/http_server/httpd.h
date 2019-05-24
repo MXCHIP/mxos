@@ -322,8 +322,12 @@
 #ifndef _HTTPD_H_
 #define _HTTPD_H_
 
-#include "common.h"
-//#include <json.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 
 /** Port on which the httpd listens for non secure connections. */
 #define HTTP_PORT 80
@@ -898,6 +902,8 @@ typedef enum {
 	HTTPD_HDR_ADD_CACHE_CTRL_NO_CHK         = 0x0020,
 	/** "Pragma: no-cache\r\n" */
 	HTTPD_HDR_ADD_PRAGMA_NO_CACHE           = 0x0040,
+	/* "Vary: Accept-Encoding\r\nContent-Encoding: gzip\r\n" */
+	HTTPD_HDR_ADD_GZIP                      = 0x0080,
 } httpd_hdr_field_sel_t;
 
 /** Default HTTP headers from \ref httpd_hdr_field_sel_t */

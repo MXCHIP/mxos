@@ -59,7 +59,7 @@ static mos_thread_id_t httpd_main_thread;
  */
 static bool httpd_stop_req;
 
-#define HTTPD_CLIENT_SOCK_TIMEOUT 10
+#define HTTPD_CLIENT_SOCK_TIMEOUT 1
 #define HTTPD_TIMEOUT_EVENT 0
 
 /** Maximum number of backlogged http connections
