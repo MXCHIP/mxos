@@ -41,7 +41,7 @@ postbuild: build_done
 	$(CAT) $(OUTPUT_DIR)/binary/xip_image2_prepend.bin $(OUTPUT_DIR)/binary/ram_2_prepend.bin > $(BIN_OUTPUT_FILE)
 	$(PYTHON) mxos/platform/MCU/RTL8721D/scripts/pad.py $(BIN_OUTPUT_FILE)
 	$(CAT) $(SOURCE_ROOT)/mxos/platform/MCU/RTL8721D/image/km0_image2_all.bin $(BIN_OUTPUT_FILE) > $(OTA_BIN_OUTPUT_FILE)
-endif
+
 	$(PYTHON) $(ADD_MD5_SCRIPT) $(OTA_BIN_OUTPUT_FILE)
 	$(QUIET)$(RM) $(ALL_BIN_OUTPUT_FILE)
 	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(ALL_BIN_OUTPUT_FILE) -f $(KM0_BOOT_OFFSET)   $(KM0_BOOT_FILE)              
@@ -51,7 +51,7 @@ endif
 
 	$(QUIET)$(call MKDIR, $(BUILD_DIR)/eclipse_debug/)
 	$(QUIET)$(CP) $(LINK_OUTPUT_FILE) $(BUILD_DIR)/eclipse_debug/last_built.elf
-
+endif
 download: postbuild
 ifeq ($(HOST_OS),Win32)
 	@echo windows don't support jlink download ...
