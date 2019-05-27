@@ -60,3 +60,5 @@ libraries/rhino.a \
 libraries/vfs.a
 
 DEFAULT_LINK_SCRIPT := gcc_a0v2.ld
+
+EXTRA_TARGET_MAKEFILES +=  mxos/platform/MCU/mx1270/flash_alg.mk
