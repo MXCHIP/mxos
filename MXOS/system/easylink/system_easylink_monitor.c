@@ -38,6 +38,7 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
 static void easylink_monitor_thread( void *inContext ); /* Perform easylink and connect to wlan */
 
 extern void mxos_wlan_monitor_no_easylink(void);
+extern int SetTimer(unsigned long ms, void (*psysTimerHandler)(void));
 
 /******************************************************
  *               Variables Definitions

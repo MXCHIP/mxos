@@ -103,6 +103,8 @@ void tftp_ota(void)
     uint16_t crc = 0;
     CRC16_Context contex;
     
+    UNUSED_VARIABLE(flashaddr);
+
 #define TMP_BUF_LEN 1024
 
     fota_log("Start OTA");
@@ -209,7 +211,9 @@ void tftp_ota(void)
     mxos_ota_switch_to_new_fw( filelen, crc );
     mxos_ota_finished(OTA_SUCCESS, NULL);
     while(1)
-        mxos_rtos_thread_sleep(100);
+	{
+        mos_sleep(100);
+	}
 }
 
 /******************************************************
@@ -218,11 +222,11 @@ void tftp_ota(void)
 mos_semphr_id_t force_ota_sem;
 
 static void force_thread(void * arg){
-    extern void tftp_ota();
+    extern void tftp_ota(void);
     tftp_ota();
 }
 
-merr_t start_force_ota()
+merr_t start_force_ota(void)
 {
    merr_t err;
 
@@ -251,7 +255,7 @@ static void mxosNotify_ApListCallback(int num, mwifi_ap_info_t *ap_list, mxos_Co
     }
 }
 
-merr_t start_forceota_check()
+merr_t start_forceota_check( void )
 {
 	merr_t err = kNoErr;
 	if((mxos_system_context_get( )->mxos_config.reserved & FORCE_OTA_SUEECSS)==0)

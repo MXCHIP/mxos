@@ -39,7 +39,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-//#include <ctype.h>
+#include <ctype.h>
 
 #if defined __GNUC__
 #include "GCC/platform_toolchain.h"

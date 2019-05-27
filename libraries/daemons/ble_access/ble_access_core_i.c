@@ -150,8 +150,7 @@ merr_t ble_access_start_timer(ble_access_device_t *dev, event_handler_t timer_ev
 
     dev->timer = mos_timer_new(10000, ble_access_timer_callback, TRUE, arg);
 
-    err = mos_timer_start(dev->timer);
-    require_noerr_action_string(err, exit, mos_timer_delete(dev->timer), "Start a timer failed");
+    mos_timer_start(dev->timer);
 
     ble_access_timer_evt = timer_event_handle;
 

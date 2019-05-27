@@ -57,7 +57,7 @@
  *               Variables Definitions
  ******************************************************/
 
-netif_t netif_prioritys[INTERFACE_MAX] = { INTERFACE_ETH, INTERFACE_STA, INTERFACE_UAP };
+netif_t netif_prioritys[INTERFACE_MAX] = { INTERFACE_STA, INTERFACE_UAP };
 
 /******************************************************
  *               Function Definitions

@@ -180,7 +180,7 @@ merr_t mxos_rtos_register_timed_event( mxos_timed_event_t* event_object, mos_wor
     if( worker_thread->thread == NULL )
         return kNotInitializedErr;
 
-    if ( mos_timer_new( &event_object->timer, time_ms, timed_event_handler, (void*) event_object ) != kNoErr )
+    if ( NULL == (event_object->timer = mos_timer_new( time_ms, timed_event_handler, true, event_object )) )
     {
         return kGeneralErr;
     }
@@ -189,18 +189,14 @@ merr_t mxos_rtos_register_timed_event( mxos_timed_event_t* event_object, mos_wor
     event_object->thread = worker_thread;
     event_object->arg = arg;
 
-    if ( mos_timer_start( &event_object->timer ) != kNoErr )
-    {
-        mos_timer_delete( &event_object->timer );
-        return kGeneralErr;
-    }
+    mos_timer_start( event_object->timer );
 
     return kNoErr;
 }
 
 merr_t mxos_rtos_deregister_timed_event( mxos_timed_event_t* event_object )
 {
-    mos_timer_delete( &event_object->timer );
+    mos_timer_delete( event_object->timer );
 
     return kNoErr;
 }
@@ -376,10 +372,14 @@ static void mxchip_timer_tick(void)
 	}
 
     cur_time = mos_time();
-    if (next_time <= cur_time)
+    if ( next_time <= cur_time )
+    {
         timer_thread_wait = 1;
-    else
+    } else
+    {
         timer_thread_wait = next_time - cur_time;
+    }
+
 	return;
 
 }

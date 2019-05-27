@@ -2031,7 +2031,7 @@ void mdns_query_unmonitor(char *fqst)
 
 #else
 
-int query_launch()
+int query_launch( void )
 {
 	/* not implmented, but we transparently drop through here so the
 	 * querier can be "started" by mdns_start

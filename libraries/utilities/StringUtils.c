@@ -34,6 +34,7 @@
 #include "mxos_debug.h"
 #include <stddef.h>
 #include <stdarg.h>
+#include <ctype.h>
 
 #ifndef MIN
 extern int MIN (/*@sef@*/ int x, /*@sef@*/ int y); /* LINT : This tells lint that  the parameter must be side-effect free. i.e. evaluation does not change any values (since it is being evaulated more than once */

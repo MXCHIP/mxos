@@ -329,8 +329,8 @@ int responder_launch(const char *domain, char *hostname);
 int responder_halt(void);
 
 /* internal API functions for querier */
-int query_launch();
-int query_halt(void);
+int query_launch( void );
+int query_halt( void );
 
 /* internal common functions used by responder and querier */
 /* return the amount of tail room in the message m */

@@ -69,6 +69,7 @@ uint32_t mos_queue_get_free(mos_queue_id_t id);
 // timer
 mos_timer_id_t mos_timer_new(uint32_t timeout, mos_timer_handler_t function, bool repeat, void *arg);
 void mos_timer_delete(mos_timer_id_t id);
+void mos_timer_start(mos_timer_id_t id);
 void mos_timer_stop(mos_timer_id_t id);
 void mos_timer_change(mos_timer_id_t id, uint32_t timeout);
 void mxos_timer_reset(mos_timer_id_t id);
@@ -77,6 +78,7 @@ bool mos_timer_is_runing(mos_timer_id_t id);
 // others
 uint32_t mos_time(void);
 void mos_sleep(float seconds);
+void mos_msleep(int ms);
 mos_mallinfo_t *mos_mallinfo(void);
 void mos_mallrecord_show(void);
 

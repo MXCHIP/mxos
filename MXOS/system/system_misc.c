@@ -95,8 +95,8 @@ static void mxosNotify_WiFIParaChangedHandler(mwifi_link_info_t *ap_info, char *
   bool _needsUpdate = false;
   require(inContext, exit);
   mos_mutex_lock(inContext->flashContentInRam_mutex);
-  if(strncmp(inContext->flashContentInRam.mxos_config.ssid, ap_info->ssid, maxSsidLen)!=0){
-    strncpy(inContext->flashContentInRam.mxos_config.ssid, ap_info->ssid, maxSsidLen);
+  if(strncmp(inContext->flashContentInRam.mxos_config.ssid, (char *)ap_info->ssid, maxSsidLen)!=0){
+    strncpy(inContext->flashContentInRam.mxos_config.ssid, (char *)ap_info->ssid, maxSsidLen);
     _needsUpdate = true;
   }
 

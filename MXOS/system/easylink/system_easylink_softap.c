@@ -37,6 +37,8 @@ static bool easylink_thread_force_exit = false;
 /* Perform easylink and connect to wlan */
 static void easylink_softap_thread( void *inContext );
 
+extern int SetTimer(unsigned long ms, void (*psysTimerHandler)(void));
+
 /* MXOS callback when WiFi status is changed */
 static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const inContext )
 {
@@ -126,7 +128,7 @@ restart:
         mxos_system_delegate_config_recv_ssid( context->flashContentInRam.mxos_config.ssid,
                                                context->flashContentInRam.mxos_config.user_key );
 
-        mxos_thread_sleep(1);
+        mos_sleep(1);
         system_connect_wifi_normal( context );
 
         /* Wait for station connection */
