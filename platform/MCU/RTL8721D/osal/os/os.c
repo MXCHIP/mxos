@@ -155,8 +155,14 @@ void mos_queue_delete(mos_queue_id_t id)
 
 uint32_t mos_queue_get_total(mos_queue_id_t id)
 {
-    // TODO:
-    return 0;
+    if (_mos_in_isr() == true)
+    {
+        return uxQueueMessagesWaitingFromISR(id);
+    }
+    else
+    {
+        return uxQueueMessagesWaiting(id);
+    }
 }
 
 uint32_t mos_queue_get_free(mos_queue_id_t id)

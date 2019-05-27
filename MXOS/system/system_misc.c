@@ -261,6 +261,7 @@ static void PlatformEasyLinkButtonLongPressedCallback(void)
   mxos_Context_t* context = NULL;
   mxos_logic_partition_t *partition = NULL;
 
+    return;
   context = mxos_system_context_get( );
   require( context, exit );
 
