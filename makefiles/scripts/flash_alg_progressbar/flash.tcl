@@ -32,7 +32,6 @@ proc flash_alg_init { alg_elf } {
     set FLASH_ALG_ENTRY [memread32 $::FLASH_ALG_ENTRY_LOC]
     set FLASH_ALG_BUF_SIZE [memread32 $::FLASH_ALG_BUF_SIZE_LOC]
 
-    reg xPSR 0x01000000
     reg pc $FLASH_ALG_ENTRY
 
     resume
