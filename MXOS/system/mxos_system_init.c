@@ -72,9 +72,6 @@ merr_t mxos_system_wlan_start_autoconf( void )
 #endif
 }
 
-void handle_kv_cmd(char *pwbuf, int blen, int argc, char **argv);
-static const struct cli_command kv_cmd = {"kv", "kv [set key value | get key | del key | seti key int_val | geti key | list]", handle_kv_cmd};
-
 merr_t mxos_system_init( void )
 {
   merr_t err = kNoErr;
@@ -100,8 +97,7 @@ merr_t mxos_system_init( void )
 
 #if MXOS_CLI_ENABLE
   /* MXOS command line interface */
-  cli_init();
-  cli_register_command(&kv_cmd);
+  // cli_init();
 #endif
 
   /* Network PHY driver and tcp/ip stack init */
