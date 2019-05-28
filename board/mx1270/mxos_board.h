@@ -314,9 +314,9 @@ enum
 #define MXOS_STDIO_UART_BAUDRATE    (115200)
 #endif
 
-#define MXOS_UART_FOR_APP     (MXOS_UART_2)
-#define MXOS_MFG_TEST         (MXOS_UART_2)
-#define MXOS_CLI_UART         (MXOS_UART_1)
+#define MXOS_UART_FOR_APP     (MXOS_UART_1)
+#define MXOS_MFG_TEST         (MXOS_UART_1)
+#define MXOS_CLI_UART         (MXOS_UART_2)
 
 /* Components connected to external I/Os*/
 #define USE_SPI_FLASH

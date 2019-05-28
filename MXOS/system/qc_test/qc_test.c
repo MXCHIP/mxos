@@ -30,7 +30,7 @@
 ******************************************************/
 
 #define QC_UART_BUFFER_SIZR     (50)
-#define QC_UART_BAUDRATE        (921600)
+#define QC_UART_BAUDRATE        (115200)
 
 /******************************************************
 *                    Constants
