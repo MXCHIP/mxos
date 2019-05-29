@@ -211,7 +211,7 @@ static merr_t mxos_filesystem_del_mounted_device ( mxos_filesystem_t* fs_handle 
     return kNoErr;
 }
 
-merr_t mxos_filesystem_mount ( mxos_block_device_t* device, mxos_filesystem_handle_type_t fs_type, mxos_filesystem_t* fs_handle_out, const char* mounted_name )
+merr_t mxos_filesystem_mount ( mxos_block_device_t* device, mxos_filesystem_handle_type_t fs_type, mxos_filesystem_t* fs_handle_out, const char* mounted_name,mxos_partition_t partition )
 {
     merr_t result;
 
@@ -221,11 +221,13 @@ merr_t mxos_filesystem_mount ( mxos_block_device_t* device, mxos_filesystem_hand
 #ifdef USING_FTFS
         case MXOS_FILESYSTEM_HANDLE_FTFS:
             fs_handle_out->driver = &mxos_filesystem_driver_ftfs;
+            fs_handle_out->partition = partition;
             break;
 #endif /* ifdef USING_mxosFS */
 #ifdef USING_FATFS
         case MXOS_FILESYSTEM_HANDLE_FATFS:
             fs_handle_out->driver = &mxos_filesystem_driver_fatfs;
+            fs_handle_out->partition = partition;
             break;
 #endif /* ifdef USING_FATFS */
 
@@ -410,5 +412,5 @@ merr_t mxos_filesystem_get_info( mxos_filesystem_t* fs_handle,mxos_filesystem_in
 
 merr_t mxos_filesystem_scan_files( mxos_filesystem_t* fs_handle, char* mounted_name, mxos_scan_file_handle arg )
 {
-    return fs_handle->driver->scan_files( mounted_name, arg );
+    return fs_handle->driver->scan_files(fs_handle, mounted_name, arg );
 }

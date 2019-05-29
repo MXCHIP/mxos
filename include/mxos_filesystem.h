@@ -381,7 +381,7 @@ merr_t mxos_filesystem_init ( void );
  *
  * @return kNoErr on success
  */
-merr_t mxos_filesystem_mount ( mxos_block_device_t* device, mxos_filesystem_handle_type_t fs_type, mxos_filesystem_t* fs_handle_out, const char* mounted_name);
+merr_t mxos_filesystem_mount ( mxos_block_device_t* device, mxos_filesystem_handle_type_t fs_type, mxos_filesystem_t* fs_handle_out, const char* mounted_name,mxos_partition_t partition);
 
 
 /**
@@ -703,6 +703,7 @@ struct mxos_filesystem_struct
         } fatfs;
 #endif /* USING_FATFS */
     } data;
+    mxos_partition_t partition;
 };
 
 

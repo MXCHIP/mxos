@@ -354,6 +354,26 @@ void mxos_board_init(void)
 
 bool mxos_should_enter_mfg_mode(void)
 {
-    return false;
+    GPIO_InitTypeDef  boot, status;
+	bool force_qc = false;
+
+	{
+		boot.GPIO_Pin = PB_1;/* pin is 6bits */
+		boot.GPIO_Mode = GPIO_Mode_IN;
+		boot.GPIO_PuPd = GPIO_PuPd_UP;
+        GPIO_Init(&boot);
+        status.GPIO_Pin = PB_23;/* pin is 6bits */
+		status.GPIO_Mode = GPIO_Mode_IN;
+		status.GPIO_PuPd = GPIO_PuPd_UP;
+		GPIO_Init(&status);
+		if ((GPIO_ReadDataBit(PB_1) == 0) && (GPIO_ReadDataBit(PB_23) == 0)){
+			force_qc = 1;
+		} else {
+			force_qc = 0;
+		}
+		GPIO_DeInit(PB_1);
+        GPIO_DeInit(PB_23);
+	}
+    return force_qc;
 }
 

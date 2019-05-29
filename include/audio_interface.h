@@ -24,6 +24,9 @@ int audio_dac_volume_set(int vol);
 /* write PCM data to ring buffer */
 int audio_dac_write(uint8_t *buf, int len);
 
+void audio_dac_mute(void);
+void audio_dac_unmute(void);
+
 /* start recording */
 int audio_adc_start(void);
 
@@ -46,3 +49,4 @@ int audio_adc_gain_set(int gain);
 
 /* read recording PCM data to buf. */
 int audio_adc_read(uint8_t *buf, int maxlen);
+

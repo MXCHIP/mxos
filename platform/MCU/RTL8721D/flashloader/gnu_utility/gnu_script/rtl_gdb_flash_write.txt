@@ -156,6 +156,11 @@ set $KM0_KM4_IMAGE2_SIZE =0
 set FlashAddrForWrite =0x188000
 flash_write ./image/image.bin $KM0_KM4_IMAGE2_SIZE
 
+#audio image
+#set $AUDIO_IMAGE_SIZE =0
+#set FlashAddrForWrite =0x300000
+#flash_write ../image/audio.bin $AUDIO_IMAGE_SIZE
+
 #Tell flashloader complete flag
 set FlashWriteComplete = 0x1
 #=============================================================================== 
