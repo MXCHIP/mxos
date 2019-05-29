@@ -69,7 +69,7 @@ void usr_main(void)
     aos_loop_init();
     cli_register_command(&kv_cmd);
 
-    mos_thread_new(32, "user app thread", usrapp_thread, 2048, NULL);
+    mos_thread_new(32, "user app thread", usrapp_thread, 4096, NULL);
 
     aos_loop_run();
 }

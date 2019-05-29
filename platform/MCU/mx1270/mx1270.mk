@@ -55,7 +55,9 @@ libraries/lwip.a \
 libraries/mxos.a \
 libraries/newlib_stub.a \
 libraries/rhino.a \
-libraries/vfs.a
+libraries/vfs.a \
+libraries/alicrypto.a \
+libraries/ls_osa.a
 
 DEFAULT_LINK_SCRIPT := gcc_a0v2.ld
 
