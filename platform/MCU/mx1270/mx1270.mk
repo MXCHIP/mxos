@@ -61,4 +61,6 @@ libraries/ls_osa.a
 
 DEFAULT_LINK_SCRIPT := gcc_a0v2.ld
 
-EXTRA_TARGET_MAKEFILES +=  mxos/platform/MCU/mx1270/flash_alg.mk
+EXTRA_TARGET_MAKEFILES +=  \
+mxos/platform/MCU/mx1270/flash_alg.mk \
+mxos/platform/MCU/mx1270/image.mk
