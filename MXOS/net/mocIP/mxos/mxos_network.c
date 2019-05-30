@@ -21,7 +21,7 @@
 #include <stdlib.h>
 
 #include "mxos_common.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 #include "mxos_network.h"
 
 #include "mos.h"

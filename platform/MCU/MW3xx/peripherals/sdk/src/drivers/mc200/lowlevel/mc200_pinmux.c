@@ -47,7 +47,7 @@
  *  @{
  */
 
-#ifdef  DEBUG
+#ifdef  _MXOS_DEBUG_
 
 #ifdef PACKAGE_88_PIN
 /**  

@@ -7,7 +7,7 @@
 /* Mail:         <Xsoda@Live.com> */
 
 #include "mxos_common.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 
 #include "url.h"
 

@@ -146,7 +146,7 @@ void* __wrap__realloc_r (void *p, void* x, size_t sz)
 
 
 #else
-struct mxchip_mallinfo* mxos_memory_info(void)
+struct mxchip_mallinfo* mos_mallinfo_legacy(void)
 {
     struct mallinfo mi = mallinfo();
     static struct mxchip_mallinfo mxos_memory;
@@ -164,7 +164,7 @@ struct mxchip_mallinfo* mxos_memory_info(void)
 
 struct mxchip_mallinfo *mxchip_memory_info(void);
 
-struct mxchip_mallinfo* mxos_memory_info(void)
+struct mxchip_mallinfo* mos_mallinfo_legacy(void)
 {
   struct mallinfo mi = mallinfo();
   static struct mxchip_mallinfo mxos_memory;

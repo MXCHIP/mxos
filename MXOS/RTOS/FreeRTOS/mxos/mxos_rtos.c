@@ -25,7 +25,7 @@
 #include "mxos_rtos_common.h"
 #include "FreeRTOS.h"
 #include "projdefs.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 #include "platform_core.h"
 #include "queue.h"
 #include "semphr.h"

@@ -238,7 +238,7 @@ typedef struct mxos_api_struct
     int (*UnSetTimer)( void (*psysTimerHandler)( void ) );
 
     /* memory management*/
-    mxosMemInfo_t* (*mxos_memory_info)( void );
+    mos_mallinfo_legacy_t* (*mos_mallinfo_legacy)( void );
     void* (*malloc)( size_t size ); // malloc
     void* (*realloc)( void* pv, size_t size ); // realloc
     void (*free)( void* pv );     //free

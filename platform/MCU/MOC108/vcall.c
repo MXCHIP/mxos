@@ -88,7 +88,7 @@ int mos_event_fd_new(mos_event_id_t event_handle)
     return mico_create_event_fd(event_handle);
 }
 
-mxosMemInfo_t *mxos_memory_info(void)
+mos_mallinfo_legacy_t *mos_mallinfo_legacy(void)
 {
     return mico_memory_info();
 }

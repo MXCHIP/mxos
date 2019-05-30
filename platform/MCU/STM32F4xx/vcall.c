@@ -95,9 +95,9 @@ merr_t mico_rtos_unlock_mutex(mos_mutex_id_t *id)
 	return kNoErr;
 }
 
-mxosMemInfo_t *mico_memory_info(void)
+mos_mallinfo_legacy_t *mico_memory_info(void)
 {
-	return mxos_memory_info();
+	return mos_mallinfo_legacy();
 }
 
 const uint32_t mico_nmode_enable = true;

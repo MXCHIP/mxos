@@ -85,7 +85,7 @@ extern volatile uint32_t *pxCurrentTCB;
 /*
  * This file contains base definitions for all of the possible traps in the system.
  * It is suggested to provide implementations for all of the traps but for
- * the time being they simply trigger a DEBUG instruction so that it is easy
+ * the time being they simply trigger a _MXOS_DEBUG_ instruction so that it is easy
  * to see what caused a particular trap.
  *
  * Trap Class 6, the SYSCALL, is used exclusively by the operating system.

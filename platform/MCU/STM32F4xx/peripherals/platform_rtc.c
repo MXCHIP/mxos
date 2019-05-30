@@ -18,7 +18,7 @@
 #include <time.h>
 #include "mxos_board.h"
 #include "platform_peripheral.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 
 /******************************************************
 *                      Macros

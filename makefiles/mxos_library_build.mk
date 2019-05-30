@@ -15,7 +15,7 @@ export MAKEFILES_PATH := $(MXOS_OS_PATH)/makefiles
 #HOST_ARCH   : ARM_CM3, ARM_CM4
 #NAME        : BESL, Gedday, uSSL, ThreadX, NetX_Duo
 #SOURCE_ROOT : ../../../    (needs trailing slash)
-#DEBUG       : 1
+#_MXOS_DEBUG_       : 1
 
 all: stripped_lib
 
@@ -89,7 +89,7 @@ $(SOURCE_ROOT)build/$(NAME)/%.o: %.S $(MAKEFILES_PATH)/mxos_library_makefile.mk
 # MXOS pre-built library defines
 CFLAGS += -DMXOS_PREBUILT_LIBS
 
-ifdef DEBUG
+ifdef _MXOS_DEBUG_
 CFLAGS += -DDEBUG
 ifndef ALWAYS_OPTIMISE
 CFLAGS += -O0

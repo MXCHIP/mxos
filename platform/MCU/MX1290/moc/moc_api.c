@@ -383,9 +383,9 @@ merr_t mxos_network_init(void)
 	return kNoErr;
 }
 
-mxosMemInfo_t* mxos_memory_info(void)
+mos_mallinfo_legacy_t* mos_mallinfo_legacy(void)
 {
-	return lib_api_p->mxos_memory_info();
+	return lib_api_p->mos_mallinfo_legacy();
 }
 char* mxos_system_lib_version(void)
 {

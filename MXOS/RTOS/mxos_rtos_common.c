@@ -23,7 +23,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include "mxos_debug.h"
+#include "mdebug.h"
 #include "mxos_rtos_internal.h"
 #include "platform_core.h"
 #include "mos.h"

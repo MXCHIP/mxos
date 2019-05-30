@@ -343,7 +343,10 @@ static merr_t onReceivedData(struct _HTTPHeader_t * inHeader, uint32_t inPos, ui
     return kUnsupportedErr;
   }
 
-  if(err!=kNoErr)  system_log("onReceivedData");
+  if(err!=kNoErr)
+  {
+    system_log("onReceivedData");
+  }
   return err;
 
 flashErrExit:

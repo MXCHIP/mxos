@@ -49,7 +49,7 @@
 
 /* MXOS SDK APIs */
 #include "mxos_opt.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 #include "mxos_common.h"
 #include "mos.h"
 #include "mos_worker.h"
@@ -58,6 +58,7 @@
 #include "mxos_socket.h"
 #include "mxos_security.h"
 #include "mxos_platform.h"
+#include "mxos_board.h"
 #include "mxos_system.h"
 #include "mxos_gprs.h"
 

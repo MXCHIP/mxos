@@ -612,7 +612,7 @@ static void help_command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char
   int i, n;
   uint32_t build_in_count = sizeof(built_ins)/sizeof(struct cli_command);
   
-#if (DEBUG)
+#if (_MXOS_DEBUG_)
   build_in_count++; //For command: mxosdebug
 #endif
 
@@ -695,7 +695,7 @@ int cli_unregister_commands(const struct cli_command *commands,
   
   return 0;
 }
-#if (DEBUG)
+#if (_MXOS_DEBUG_)
 extern int mxos_debug_enabled;
 static void mxosdebug_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv)
 {
@@ -764,7 +764,7 @@ int cli_init(void)
                                 return kGeneralErr;
                               }
   
-#if (DEBUG)
+#if (_MXOS_DEBUG_)
   cli_register_commands(user_clis, sizeof(user_clis)/sizeof(struct cli_command));
 #endif
 
@@ -814,7 +814,7 @@ int cli_init(void)
                                 return kGeneralErr;
                               }
   
-#if (DEBUG)
+#if (_MXOS_DEBUG_)
   cli_register_commands(user_clis, 1);
 #endif
   

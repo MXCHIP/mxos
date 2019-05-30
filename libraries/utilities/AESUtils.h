@@ -34,7 +34,7 @@
 #define __AESUtils_h__
 
 #include "mxos_common.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 
 #include "SecurityUtils.h"
 #define AES_UTILS_USE_MXOS_AES 1

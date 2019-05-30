@@ -215,7 +215,7 @@ void install_int_callback(INT_Peripher_Type intPeriph, uint32_t intType, intCall
   intCbfArra[intPeriph][intType] = cbFun;
 }
 
-#ifdef  DEBUG
+#ifdef  _MXOS_DEBUG_
 /*******************************************************************************
 * @brief		Reports the name of the source file and the source line number
 * 				where the CHECK_PARAM error has occurred.
@@ -233,7 +233,7 @@ void check_failed(uint8_t *file, uint32_t line)
 	/* Infinite loop */
 	while(1);
 }
-#endif /* DEBUG */
+#endif /* _MXOS_DEBUG_ */
 
 /*@} end of group DRIVER_Public_Functions */
 

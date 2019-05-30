@@ -32,11 +32,11 @@ extern void * link_bss_location;
 extern void * link_bss_end;
 #define link_bss_size   ((unsigned long)&link_bss_end  -  (unsigned long)&link_bss_location )
 
-#ifdef DEBUG
+#ifdef _MXOS_DEBUG_
 extern void * link_stack_location;
 extern void * link_stack_end;
 #define link_stack_size   ((unsigned long)&link_stack_end  -  (unsigned long)&link_stack_location )
-#endif /* ifdef DEBUG */
+#endif /* ifdef _MXOS_DEBUG_ */
 
 typedef void  (*constructor_ptr_t)( void );
 extern constructor_ptr_t link_constructors_location[];
@@ -101,7 +101,7 @@ void _start_init( void )
     /* BSS segment is for zero initialised elements, so memset it to zero */
     memset( &link_bss_location, 0, (size_t) link_bss_size );
 
-#if 0 /* was ifdef DEBUG */
+#if 0 /* was ifdef _MXOS_DEBUG_ */
     /* This is not a valid way to fill the stack, since it is currently in use - causes a problem in release with debug on - optimisation of active stack overwriting causes hardfault */
     memset( &link_stack_location, 0xA5, link_stack_size ); /* Fill stack with pattern to allow checking of stack usage */
 #endif /* if 0 */

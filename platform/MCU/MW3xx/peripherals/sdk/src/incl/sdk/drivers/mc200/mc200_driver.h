@@ -177,10 +177,10 @@ typedef enum
  *  @{
  */
 
-#ifdef  DEBUG
+#ifdef  _MXOS_DEBUG_
 /*************************************************************************************//**
 * @brief		The CHECK_PARAM macro is used for function's parameters check.
-* 				It is used only if the library is compiled in DEBUG mode.
+* 				It is used only if the library is compiled in _MXOS_DEBUG_ mode.
 * @param[in]	expr: - If expr is false, it calls check_failed() function
 *               which reports the name of the source file and the source
 *               line number of the call that failed.
@@ -191,7 +191,7 @@ void check_failed(uint8_t *file, uint32_t line);
 #define CHECK_PARAM(expr) ((expr) ? (void)0 : check_failed((uint8_t *)__FILE__, __LINE__))
 #else
 #define CHECK_PARAM(expr) ((void)0)
-#endif /* DEBUG */
+#endif /* _MXOS_DEBUG_ */
 
 /*@} end of group DRIVER_Public_Macro */
 

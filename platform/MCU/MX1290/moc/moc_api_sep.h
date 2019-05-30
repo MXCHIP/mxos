@@ -80,7 +80,7 @@ typedef struct {
 	int (*mos_event_fd_delete)(int fd);
 
 	/* memory management*/
-	struct mxchip_mallinfo* (*mxos_memory_info)(void);
+	struct mxchip_mallinfo* (*mos_mallinfo_legacy)(void);
 	void* (*malloc)(size_t size); // malloc
 	void* (*realloc)(void* pv, size_t size); // realloc
 	void (*free)(void* pv);     //free

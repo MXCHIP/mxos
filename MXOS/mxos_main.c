@@ -92,7 +92,7 @@ void mxos_main( void )
 {
 #if MXOS_APPLICATION
 
-#ifdef DEBUG
+#ifdef _MXOS_DEBUG_
     mxos_debug_enabled = 1;
 #else
     mxos_debug_enabled = 0;

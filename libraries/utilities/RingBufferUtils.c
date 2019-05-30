@@ -30,7 +30,7 @@
  */
 
 #include "RingBufferUtils.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 
 
 #define ring_buffer_utils_log(M, ...) custom_log("RingBufferUtils", M, ##__VA_ARGS__)

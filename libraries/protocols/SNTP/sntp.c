@@ -37,7 +37,7 @@
 #include "TimeUtils.h"
 #include "SocketUtils.h"
 
-#ifdef DEBUG
+#ifdef _MXOS_DEBUG_
 #define ntp_log(M, ...) custom_log("SNTP", M, ##__VA_ARGS__)
 #define ntp_log_trace() custom_log_trace("SNTP")
 #else
@@ -310,7 +310,7 @@ static merr_t sync_ntp_time( void* arg )
     }
 
     if ( time_synced_call_back ) time_synced_call_back( );
-#ifdef DEBUG
+#ifdef _MXOS_DEBUG_
     iso8601_time_t iso8601_time;
     mxos_time_get_iso8601_time( &iso8601_time );
     ntp_log("Current time is: %.26s\n", (char*)&iso8601_time);

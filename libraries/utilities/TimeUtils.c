@@ -31,7 +31,7 @@
 
 
 #include "TimeUtils.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 #include "mxos.h"
 #include <errno.h>
 

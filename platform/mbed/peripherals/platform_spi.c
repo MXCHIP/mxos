@@ -15,7 +15,7 @@
  ******************************************************************************
  */
 
-#include "mxos_debug.h"
+#include "mdebug.h"
 #include "platform_peripheral.h"
 
 #include "spi_api.h"
