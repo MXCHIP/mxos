@@ -738,7 +738,7 @@ static void smartbridge_scan_result_callback( mxos_bt_ble_scan_results_t *p_scan
             if( app_scan_report_callback != NULL )
             {
                 bt_smartbridge_log( "advertising callback reported" );
-                mxos_rtos_send_asynchronous_event( MXOS_BT_EVT_WORKER_THREAD, 
+                mos_worker_send_async_event( MXOS_BT_EVT_WORKER_THREAD, 
                                                    (event_handler_t)app_scan_report_callback, 
                                                    &current_scan_result->last_scan_response_received );
             }
@@ -750,7 +750,7 @@ static void smartbridge_scan_result_callback( mxos_bt_ble_scan_results_t *p_scan
             if( app_scan_report_callback != NULL )
             {
                 bt_smartbridge_log( "advertising callback reported" );
-                mxos_rtos_send_asynchronous_event( MXOS_BT_EVT_WORKER_THREAD, 
+                mos_worker_send_async_event( MXOS_BT_EVT_WORKER_THREAD, 
                                                    (event_handler_t)app_scan_report_callback, 
                                                    &current_scan_result->last_advertising_event_received );
             }
@@ -762,7 +762,7 @@ static void smartbridge_scan_result_callback( mxos_bt_ble_scan_results_t *p_scan
         bt_smartbridge_log( "LE scan completed." );
         if( app_scan_complete_callback != NULL )
         {
-            mxos_rtos_send_asynchronous_event( MXOS_BT_EVT_WORKER_THREAD, app_scan_complete_callback, NULL );
+            mos_worker_send_async_event( MXOS_BT_EVT_WORKER_THREAD, app_scan_complete_callback, NULL );
         }
     }
 }

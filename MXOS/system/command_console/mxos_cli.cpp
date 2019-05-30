@@ -475,7 +475,7 @@ void tftp_ota_thread( mxos_thread_arg_t arg )
 
 static void ota_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv )
 {
-    mxos_rtos_create_thread( NULL, MXOS_APPLICATION_PRIORITY, "LOCAL OTA", tftp_ota_thread, 0x4096, 0 );
+    mxos_rtos_create_thread( NULL, MOS_APPLICATION_PRIORITY, "LOCAL OTA", tftp_ota_thread, 0x4096, 0 );
 }
 
 static void help_command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv);
@@ -735,7 +735,7 @@ int cli_init(void)
 
   cli_register_commands(rtl8195_clis, sizeof(rtl8195_clis)/sizeof(struct cli_command));
 
-  ret = mxos_rtos_create_thread(NULL, MXOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 4096, 0);
+  ret = mxos_rtos_create_thread(NULL, MOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 4096, 0);
   if (ret != kNoErr) {
     printf("Error: Failed to create cli thread: %d\r\n",
                ret);
@@ -783,7 +783,7 @@ int cli_init(void)
   cli_register_commands(user_clis, 1);
 #endif
   
-  ret = mxos_rtos_create_thread(NULL, MXOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 1500, 0);
+  ret = mxos_rtos_create_thread(NULL, MOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 1500, 0);
   if (ret != kNoErr) {
     cli_printf("Error: Failed to create cli thread: %d\r\n",
                ret);

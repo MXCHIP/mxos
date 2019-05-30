@@ -52,7 +52,7 @@ void init_debug_uart(void)
 
 static void _mos_thread_yield(void)
 {
-   mos_thread_delay( 0 );
+   mos_sleep_ms( 0 );
 }
 
 
@@ -76,10 +76,10 @@ mxos_api_t *moc_adapter(new_mxos_api_t *new_mxos_api)
   mxos_api.mxos_rtos_suspend_all_thread = _kernel_api.os_apis->mxos_rtos_suspend_all_thread;
   mxos_api.mxos_rtos_resume_all_thread = (long(*)(void))_kernel_api.os_apis->mxos_rtos_resume_all_thread;
   mxos_api.mos_thread_join = _kernel_api.os_apis->mos_thread_join;
-  mxos_api.mxos_rtos_thread_force_awake = _kernel_api.os_apis->mxos_rtos_thread_force_awake;
+  mxos_api.mos_thread_awake = _kernel_api.os_apis->mos_thread_awake;
   mxos_api.mxos_rtos_is_current_thread = _kernel_api.os_apis->mxos_rtos_is_current_thread;
-  mxos_api.mxos_thread_sleep = _kernel_api.os_apis->mxos_thread_sleep;
-  mxos_api.mxos_thread_msleep = _kernel_api.os_apis->mxos_thread_msleep;
+  mxos_api.mos_sleep_ms = _kernel_api.os_apis->mos_sleep_ms;
+  mxos_api.mos_sleep_ms = _kernel_api.os_apis->mos_sleep_ms;
   mxos_api.mos_semphr_new = _kernel_api.os_apis->mos_semphr_new;
   mxos_api.mos_semphr_release = _kernel_api.os_apis->mos_semphr_release;
   mxos_api.mos_semphr_acquire = _kernel_api.os_apis->mos_semphr_acquire;
@@ -99,10 +99,10 @@ mxos_api_t *moc_adapter(new_mxos_api_t *new_mxos_api)
   mxos_api.mxos_start_timer = _kernel_api.os_apis->mxos_start_timer;
   mxos_api.mxos_stop_timer = _kernel_api.os_apis->mxos_stop_timer;
   mxos_api.mxos_reload_timer = _kernel_api.os_apis->mxos_reload_timer;
-  mxos_api.mxos_deinit_timer = _kernel_api.os_apis->mxos_deinit_timer;
+  mxos_api.mos_timer_delete = _kernel_api.os_apis->mos_timer_delete;
   mxos_api.mxos_is_timer_running = _kernel_api.os_apis->mxos_is_timer_running;
-  mxos_api.mxos_create_event_fd = _kernel_api.os_apis->mxos_create_event_fd;
-  mxos_api.mxos_delete_event_fd = _kernel_api.os_apis->mxos_delete_event_fd;
+  mxos_api.mos_event_fd_new = _kernel_api.os_apis->mos_event_fd_new;
+  mxos_api.mos_event_fd_delete = _kernel_api.os_apis->mos_event_fd_delete;
   mxos_api.SetTimer = NULL;
   mxos_api.SetTimer_uniq = NULL;
   mxos_api.UnSetTimer = NULL;
@@ -308,7 +308,7 @@ int mxos_wlan_register_recv_mgnt(monitor_cb_t fn)
     if (fn == NULL)
         return _kernel_api.wifi_apis->wlan_rx_mgnt_set(false, NULL);
     else
-        return _kernel_api.wifi_apis->wlan_rx_mgnt_set(true, fn);
+        return _kernel_api.wifi_apis->wlan_rx_mgnt_set(true, (mgnt_handler_t)fn);
 }
 
 void autoconfig_start(int seconds, int mode)
@@ -485,12 +485,12 @@ int hardfault_get(char *msg, int len)
     return _kernel_api.os_apis->hardfault_get(msg, len);
 }
 
-int mxos_change_timer_period( mxos_timer_t* timer, uint32_t new_period )
+int mxos_change_timer_period( mos_timer_id_t* timer, uint32_t new_period )
 {
     return _kernel_api.os_apis->mxos_change_timer_period(timer, new_period );
 }
 
-int mxos_init_once_timer( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
+int mxos_init_once_timer( mos_timer_id_t* timer, uint32_t time_ms, mos_timer_handler_t function, void* arg )
 {
     return _kernel_api.os_apis->mxos_init_once_timer( timer, time_ms, function, arg );
 }

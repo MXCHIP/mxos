@@ -214,7 +214,7 @@ static int ota_server_connect_server( struct in_addr in_addr )
     err = ota_server_connect( &server_address, sizeof(server_address) );
     if ( err != 0 )
     {
-        mxos_thread_sleep( 1 );
+        mos_sleep_ms( 1 );
         return -1;
     }
 
@@ -268,7 +268,7 @@ static void ota_server_thread( void * arg )
     while ( 1 )
     {
         if ( ota_server_context->ota_control == OTA_CONTROL_PAUSE ){
-            mxos_thread_sleep( 1 );
+            mos_sleep_ms( 1 );
             continue;
         }else if( ota_server_context->ota_control == OTA_CONTROL_STOP ){
             goto DELETE;
@@ -336,7 +336,7 @@ static void ota_server_thread( void * arg )
 
     RECONNECTED:
         ota_server_socket_close( );
-        mxos_thread_sleep(2);
+        mos_sleep_ms(2);
         continue;
 
     }
@@ -380,7 +380,7 @@ static merr_t onReceivedData( struct _HTTPHeader_t * inHeader, uint32_t inPos, u
         while( 1 ){
             if( ota_server_context->ota_control != OTA_CONTROL_PAUSE )
                 break;
-            mxos_thread_msleep(100);
+            mos_sleep_ms(100);
         }
     }
 
@@ -460,7 +460,7 @@ merr_t ota_server_start( char *url, char *md5, ota_server_cb_fn call_back )
 
     ota_server_context->ota_server_cb = call_back;
 
-    require_action(mos_thread_new( MXOS_APPLICATION_PRIORITY, "OTA", ota_server_thread, 
+    require_action(mos_thread_new( MOS_APPLICATION_PRIORITY, "OTA", ota_server_thread, 
     OTA_SERVER_THREAD_STACK_SIZE, NULL ) != NULL, exit, err = kGeneralErr);
 exit:
     return err;

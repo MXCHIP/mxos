@@ -16,7 +16,8 @@
  ******************************************************************************
  */
 
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 
 #include "mxos_board.h"
 #include "mxos_board_conf.h"

@@ -193,7 +193,7 @@ void platform_mcu_enter_standby(uint32_t secondsToWakeup)
   PWR_WakeUpPinCmd(ENABLE);
 #endif
 
-  if(secondsToWakeup == MXOS_WAIT_FOREVER)
+  if(secondsToWakeup == MOS_WAIT_FOREVER)
     PWR_EnterSTANDBYMode();
 
   platform_log("Wake up in %ld seconds", secondsToWakeup);

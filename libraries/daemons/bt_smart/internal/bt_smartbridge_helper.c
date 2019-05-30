@@ -196,12 +196,14 @@ void peripheral_helper_socket_clear_actions( mxos_bt_peripheral_socket_t* socket
 
 merr_t subprocedure_lock( gatt_subprocedure_t* subprocedure )
 {
-    return mos_mutex_lock(subprocedure->mutex );
+    mos_mutex_lock(subprocedure->mutex );
+    return kNoErr;
 }
 
 merr_t subprocedure_unlock( gatt_subprocedure_t* subprocedure )
 {
-    return mos_mutex_unlock(subprocedure->mutex );
+    mos_mutex_unlock(subprocedure->mutex );
+    return kNoErr;
 }
 
 merr_t subprocedure_reset( gatt_subprocedure_t* subprocedure )
@@ -233,7 +235,7 @@ merr_t subprocedure_wait_for_completion( gatt_subprocedure_t* subprocedure )
 
 merr_t subprocedure_wait_clear_semaphore( gatt_subprocedure_t* subprocedure )
 {
-    while ( mos_semphr_acquire(subprocedure->done_semaphore, MXOS_NO_WAIT ) == kNoErr )
+    while ( mos_semphr_acquire(subprocedure->done_semaphore, MOS_NO_WAIT ) == kNoErr )
     {
     }
     return MXOS_BT_SUCCESS;
@@ -277,10 +279,10 @@ mxos_bool_t smartbridge_helper_timer_stop(smartbridge_helper_timer_t *timer)
     if (!timer->is_started) 
         return MXOS_FALSE;
 
-    if (mos_timer_is_runing(&timer->timer)) 
-        mos_timer_stop(&timer->timer);
+    if (mos_timer_is_runing(timer->timer)) 
+        mos_timer_stop(timer->timer);
     
-    mos_timer_delete(&timer->timer);
+    mos_timer_delete(timer->timer);
     
     timer->is_started = MXOS_FALSE;
     timer->one_shot = MXOS_FALSE;
@@ -291,7 +293,7 @@ mxos_bool_t smartbridge_helper_timer_stop(smartbridge_helper_timer_t *timer)
 /* This function is used to start or restart a timer.
  * The 'timer' will be restarted if it is active.
  */
-mxos_bool_t smartbridge_helper_timer_start(smartbridge_helper_timer_t *timer, mxos_bool_t one_shot, uint32_t ms, timer_handler_t handler, void *arg)
+mxos_bool_t smartbridge_helper_timer_start(smartbridge_helper_timer_t *timer, mxos_bool_t one_shot, uint32_t ms, mos_timer_handler_t handler, void *arg)
 {
     if (timer == (void *)0) 
         return MXOS_FALSE;
@@ -299,14 +301,10 @@ mxos_bool_t smartbridge_helper_timer_start(smartbridge_helper_timer_t *timer, mx
     if (timer->is_started) 
         smartbridge_helper_timer_stop(timer);
 
-    if (mos_timer_new(&timer->timer, ms, smartbridge_helper_timer_handler, (void *)timer) != kNoErr)
+    if ((timer->timer = mos_timer_new(ms, smartbridge_helper_timer_handler, true, (void *)timer)) == NULL)
         return MXOS_FALSE;
 
-    if (mos_timer_start(&timer->timer) != kNoErr)
-    {
-        mos_timer_delete(&timer->timer);
-        return MXOS_FALSE;
-    }
+    mos_timer_start(timer->timer);
 
     timer->is_started = MXOS_TRUE;
     timer->one_shot = one_shot;

@@ -183,7 +183,7 @@ void moc_app_main( const mxos_api_t *moc_kernel_apis )
     /* Init nano second clock counter */
     platform_init_nanosecond_clock();
 
-    mos_thread_new( MXOS_APPLICATION_PRIORITY, "app_thread", (mos_thread_func_t)pre_main, app_stack_size, NULL );
+    mos_thread_new( MOS_APPLICATION_PRIORITY, "app_thread", (mos_thread_func_t)pre_main, app_stack_size, NULL );
    
     return;
 

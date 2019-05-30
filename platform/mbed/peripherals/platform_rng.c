@@ -16,7 +16,8 @@
  */
 
 #include "platform_peripheral.h"
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 
 #if DEVICE_TRNG
 #include "trng_api.h"

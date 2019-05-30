@@ -1,7 +1,8 @@
 #include "mxos.h"
 
 merr_t mxos_platform_init(void);
-int mico_create_event_fd(mxos_event_t event_handle);
+int mico_create_event_fd(mos_event_id_t event_handle);
+int mico_delete_event_fd(int fd);
 merr_t mxchipInit(void);
 char *system_lib_version(void);
 int wlan_driver_version(char *outVersion, uint8_t inLength);
@@ -11,30 +12,32 @@ void mico_wlan_register_monitor_cb(monitor_cb_t fn);
 int mico_wlan_start_monitor(void);
 int mico_wlan_stop_monitor(void);
 
-merr_t mico_rtos_create_thread(mos_thread_id_t *thread, uint8_t priority, const char *name, mos_thread_func_t function, uint32_t stack_size, void * arg)
+merr_t mico_rtos_create_thread(mos_thread_id_t *thread, uint8_t priority, const char *name, mos_thread_func_t function, uint32_t stack_size, void *arg)
 {
-    *thread = mos_thread_new( priority, name, function, stack_size, arg);
-    return *thread == NULL ? kGeneralErr : kNoErr;
+	*thread = mos_thread_new(priority, name, function, stack_size, arg);
+	return *thread == NULL ? kGeneralErr : kNoErr;
 }
 
 merr_t mico_rtos_delay_milliseconds(uint32_t num_ms)
 {
-	return mos_thread_delay(num_ms);
+	return mos_sleep_ms(num_ms);
 }
 
 merr_t mico_rtos_delete_thread(mos_thread_id_t *thread)
 {
-	return mos_thread_delete(&thread);
+	mos_thread_delete(&thread);
+	return kNoErr;
 }
 
 merr_t mico_rtos_get_semaphore(mos_semphr_id_t *id, uint32_t timeout)
 {
-    return mos_semphr_acquire(*id, timeout);
+	return mos_semphr_acquire(*id, timeout);
 }
 
 merr_t mico_rtos_deinit_semaphore(mos_semphr_id_t *id)
 {
-	return mos_semphr_delete(*id);
+	mos_semphr_delete(*id);
+	return kNoErr;
 }
 
 uint32_t mico_rtos_get_time(void)
@@ -44,14 +47,14 @@ uint32_t mico_rtos_get_time(void)
 
 merr_t mico_rtos_init_mutex(mos_mutex_id_t *mutex)
 {
-    *mutex = mos_mutex_new();
-    return *mutex == NULL ? kGeneralErr : kNoErr;
+	*mutex = mos_mutex_new();
+	return *mutex == NULL ? kGeneralErr : kNoErr;
 }
 
 merr_t mico_rtos_init_semaphore(mos_semphr_id_t *semaphore, int count)
 {
-    *semaphore = mos_semphr_new(count);
-    return *semaphore == NULL ? kGeneralErr : kNoErr;
+	*semaphore = mos_semphr_new(count);
+	return *semaphore == NULL ? kGeneralErr : kNoErr;
 }
 
 bool mico_rtos_is_current_thread(mos_thread_id_t *thread)
@@ -61,32 +64,35 @@ bool mico_rtos_is_current_thread(mos_thread_id_t *thread)
 
 merr_t mico_rtos_lock_mutex(mos_mutex_id_t *mutex)
 {
-	return mos_mutex_lock(*mutex);
+	mos_mutex_lock(*mutex);
+	return kNoErr;
 }
 
 merr_t mico_rtos_push_to_queue(mos_queue_id_t *id, void *message, uint32_t timeout)
 {
-    return mos_queue_push(*id, message, timeout);
+	return mos_queue_push(*id, message, timeout);
 }
 
 merr_t mico_rtos_set_semaphore(mos_semphr_id_t *id)
 {
-    return mos_semphr_release(*id);
+	return mos_semphr_release(*id);
 }
 
 merr_t mico_rtos_thread_join(mos_thread_id_t *id)
 {
-	return mos_thread_join(*id);
+	mos_thread_join(*id);
+	return kNoErr;
 }
 
 void mico_rtos_thread_msleep(uint32_t milliseconds)
 {
-	mxos_rtos_thread_msleep(milliseconds);
+	mos_sleep_ms(milliseconds);
 }
 
 merr_t mico_rtos_unlock_mutex(mos_mutex_id_t *id)
 {
-    return mos_mutex_unlock(*id);
+	mos_mutex_unlock(*id);
+	return kNoErr;
 }
 
 mxosMemInfo_t *mico_memory_info(void)
@@ -103,7 +109,8 @@ merr_t mico_platform_init(void)
 
 merr_t mico_rtos_deinit_queue(mos_queue_id_t *id)
 {
-	return mos_queue_delete(*id);
+	mos_queue_delete(*id);
+	return kNoErr;
 }
 
 void mico_rtos_enter_critical(void)
@@ -134,12 +141,17 @@ merr_t mico_rtos_pop_from_queue(mos_queue_id_t *id, void *message, uint32_t time
 
 merr_t mico_rtos_thread_force_awake(mos_thread_id_t *thread)
 {
-	return mxos_rtos_thread_force_awake(thread);
+	return mos_thread_awake(thread);
 }
 
-int mxos_create_event_fd(mxos_event_t event_handle)
+int mos_event_fd_new(mos_event_id_t event_handle)
 {
 	return mico_create_event_fd(event_handle);
+}
+
+int mos_event_fd_delete(int fd)
+{
+	return mico_delete_event_fd(fd);
 }
 
 merr_t mxos_network_init(void)

@@ -42,7 +42,6 @@
  *                    Structures
  ******************************************************/
 
-
 /******************************************************
  *               Function Declarations
  ******************************************************/
@@ -60,18 +59,18 @@ static mxos_time_t mxos_time_offset = 0;
  ******************************************************/
 
 /* OS Layer*/
-mos_thread_id_t mos_thread_new( uint8_t priority, const char* name, mos_thread_func_t function, uint32_t stack_size, void *arg )
+mos_thread_id_t mos_thread_new(uint8_t priority, const char *name, mos_thread_func_t function, uint32_t stack_size, void *arg)
 {
     mos_thread_id_t id;
-    if (lib_api_p->mos_thread_new( &id, priority, name, function, stack_size, arg ) == kNoErr)
+    if (lib_api_p->mos_thread_new(&id, priority, name, function, stack_size, arg) == kNoErr)
         return id;
     else
         return NULL;
 }
 
-merr_t mos_thread_delete( mos_thread_id_t thread )
+void mos_thread_delete(mos_thread_id_t thread)
 {
-    return lib_api_p->mos_thread_delete( thread == NULL ? NULL : &thread );
+    lib_api_p->mos_thread_delete(thread == NULL ? NULL : &thread);
 }
 
 void mos_thread_suspend(mos_thread_id_t thread)
@@ -81,7 +80,7 @@ void mos_thread_suspend(mos_thread_id_t thread)
 
 void mos_thread_yield(void)
 {
-    mos_thread_delay(0);
+    mos_sleep(0);
 }
 
 void mxos_rtos_suspend_all_thread(void)
@@ -94,115 +93,138 @@ long mxos_rtos_resume_all_thread(void)
     return lib_api_p->mxos_rtos_resume_all_thread();
 }
 
-merr_t mos_thread_join( mos_thread_id_t id )
+void mos_thread_join(mos_thread_id_t id)
 {
-    return lib_api_p->mos_thread_join(&id);
+    lib_api_p->mos_thread_join(&id);
 }
 
-merr_t mxos_rtos_thread_force_awake( mos_thread_id_t* thread )
+void mos_thread_awake(mos_thread_id_t id)
 {
-    return lib_api_p->mxos_rtos_thread_force_awake(thread);
+    lib_api_p->mos_thread_awake(&id);
 }
 
-bool mxos_rtos_is_current_thread( mos_thread_id_t* thread )
+bool mxos_rtos_is_current_thread(mos_thread_id_t *thread)
 {
     return lib_api_p->mxos_rtos_is_current_thread(thread);
 }
 
-mos_semphr_id_t mos_semphr_new( uint32_t count )
+mos_semphr_id_t mos_semphr_new(uint32_t count)
 {
     mos_semphr_id_t id = NULL;
     lib_api_p->mos_semphr_new(&id, count);
     return id;
 }
-merr_t mos_semphr_release( mos_semphr_id_t id )
+
+merr_t mos_semphr_release(mos_semphr_id_t id)
 {
     return lib_api_p->mos_semphr_release(&id);
 }
-merr_t mos_semphr_acquire( mos_semphr_id_t id, uint32_t timeout )
+
+merr_t mos_semphr_acquire(mos_semphr_id_t id, uint32_t timeout)
 {
     return lib_api_p->mos_semphr_acquire(&id, timeout);
 }
-merr_t mos_semphr_delete( mos_semphr_id_t id )
+
+void mos_semphr_delete(mos_semphr_id_t id)
 {
-    return lib_api_p->mos_semphr_delete(&id);
-}
-mos_mutex_id_t mos_mutex_new( void )
-{
-    mos_mutex_id_t id = NULL;
-    lib_api_p->mos_mutex_new( &id );
-    return id;
-}
-merr_t mos_mutex_lock( mos_mutex_id_t id )
-{
-    return lib_api_p->mos_mutex_lock( &id );
-}
-merr_t mos_mutex_unlock( mos_mutex_id_t id )
-{
-    return lib_api_p->mos_mutex_unlock( &id );
-}
-merr_t mos_mutex_delete( mos_mutex_id_t id )
-{
-    return lib_api_p->mos_mutex_delete( &id );
-}
-mos_queue_id_t mos_queue_new( uint32_t message_size, uint32_t number_of_messages )
-{
-    mos_queue_id_t id = NULL;
-    lib_api_p->mos_queue_new( &id, NULL, message_size, number_of_messages );
-    return id;
-}
-merr_t mos_queue_push( mos_queue_id_t id, void* message, uint32_t timeout )
-{
-    return lib_api_p->mos_queue_push( &id, message, timeout );
-}
-merr_t mos_queue_pop( mos_queue_id_t id, void* message, uint32_t timeout )
-{
-    return lib_api_p->mos_queue_pop( &id, message, timeout );
-}
-merr_t mos_queue_delete( mos_queue_id_t id )
-{
-    return lib_api_p->mos_queue_delete( &id );
-}
-bool mxos_rtos_is_queue_empty( mos_queue_id_t* queue )
-{
-    return lib_api_p->mxos_rtos_is_queue_empty( queue );
-}
-bool mxos_rtos_is_queue_full( mos_queue_id_t* queue )
-{
-    return lib_api_p->mxos_rtos_is_queue_full( queue );
+    lib_api_p->mos_semphr_delete(&id);
 }
 
-merr_t mos_timer_new( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
+mos_mutex_id_t mos_mutex_new(void)
 {
-    return lib_api_p->mxos_init_timer( timer, time_ms, function, arg );
+    mos_mutex_id_t id = NULL;
+    lib_api_p->mos_mutex_new(&id);
+    return id;
 }
-merr_t mos_timer_start( mxos_timer_t* timer )
+
+void mos_mutex_lock(mos_mutex_id_t id)
 {
-    return lib_api_p->mxos_start_timer( timer );
+    lib_api_p->mos_mutex_lock(&id);
 }
-merr_t mos_timer_stop( mxos_timer_t* timer )
+
+void mos_mutex_unlock(mos_mutex_id_t id)
 {
-    return lib_api_p->mxos_stop_timer( timer );
+    lib_api_p->mos_mutex_unlock(&id);
 }
-merr_t mxos_rtos_reload_timer( mxos_timer_t* timer )
+
+void mos_mutex_delete(mos_mutex_id_t id)
 {
-    return lib_api_p->mxos_reload_timer( timer );
+    lib_api_p->mos_mutex_delete(&id);
 }
-merr_t mos_timer_delete( mxos_timer_t* timer )
+
+mos_queue_id_t mos_queue_new(uint32_t message_size, uint32_t number_of_messages)
 {
-    return lib_api_p->mxos_deinit_timer( timer );
+    mos_queue_id_t id = NULL;
+    lib_api_p->mos_queue_new(&id, NULL, message_size, number_of_messages);
+    return id;
 }
-bool mxos_is_timer_running( mxos_timer_t* timer )
+
+merr_t mos_queue_push(mos_queue_id_t id, void *message, uint32_t timeout)
 {
-    return lib_api_p->mxos_is_timer_running( timer );
+    return lib_api_p->mos_queue_push(&id, message, timeout);
 }
-int mxos_create_event_fd(mxos_event_t handle)
+
+merr_t mos_queue_pop(mos_queue_id_t id, void *message, uint32_t timeout)
 {
-    return lib_api_p->mxos_create_event_fd(handle);
+    return lib_api_p->mos_queue_pop(&id, message, timeout);
 }
-int mxos_delete_event_fd(int fd)
+
+void mos_queue_delete(mos_queue_id_t id)
 {
-    return lib_api_p->mxos_delete_event_fd(fd);
+    lib_api_p->mos_queue_delete(&id);
+}
+
+typedef struct
+{
+    void *handle;
+    mos_timer_handler_t function;
+    void *arg;
+} mico_timer_t;
+
+mos_timer_id_t mos_timer_new(uint32_t timeout, mos_timer_handler_t function, bool repeat, void *arg)
+{
+    mos_timer_id_t timer;
+    if ((timer = malloc(sizeof(mico_timer_t))) == NULL)
+    {
+        return NULL;
+    }
+    if (lib_api_p->mxos_init_timer(timer, timeout, function, arg) != kNoErr)
+    {
+        free(timer);
+        return NULL;
+    }
+    return timer;
+}
+
+void mos_timer_start(mos_timer_id_t id)
+{
+    lib_api_p->mxos_start_timer(id);
+}
+
+void mos_timer_stop(mos_timer_id_t id)
+{
+    lib_api_p->mxos_stop_timer(id);
+}
+
+void mos_timer_delete(mos_timer_id_t id)
+{
+    lib_api_p->mos_timer_delete(id);
+    free(id);
+}
+
+bool mos_timer_is_runing(mos_timer_id_t id)
+{
+    return lib_api_p->mxos_is_timer_running(id);
+}
+
+int mos_event_fd_new(mos_event_id_t handle)
+{
+    return lib_api_p->mos_event_fd_new(handle);
+}
+
+int mos_event_fd_delete(int fd)
+{
+    return lib_api_p->mos_event_fd_delete(fd);
 }
 
 /**
@@ -212,23 +234,22 @@ int mxos_delete_event_fd(int fd)
  *
  * @returns Time in milliseconds since RTOS started.
  */
-mxos_time_t mos_time( void )
+mxos_time_t mos_time(void)
 {
     return lib_api_p->mxos_get_time();
 }
 
-merr_t mxos_time_get_time( mxos_time_t* time_ptr )
+merr_t mxos_time_get_time(mxos_time_t *time_ptr)
 {
-    *time_ptr = lib_api_p->mxos_get_time( ) + mxos_time_offset;
+    *time_ptr = lib_api_p->mxos_get_time() + mxos_time_offset;
     return kNoErr;
 }
 
-merr_t mxos_time_set_time( const mxos_time_t* time_ptr )
+merr_t mxos_time_set_time(const mxos_time_t *time_ptr)
 {
-    mxos_time_offset = *time_ptr - lib_api_p->mxos_get_time( );
+    mxos_time_offset = *time_ptr - lib_api_p->mxos_get_time();
     return kNoErr;
 }
-
 
 /**
  * Delay for a number of milliseconds
@@ -242,29 +263,27 @@ merr_t mxos_time_set_time( const mxos_time_t* time_ptr )
  * @return merr_t : kNoErr if delay was successful
  *
  */
-merr_t mos_thread_delay( uint32_t num_ms )
+void mos_sleep_ms(uint32_t num_ms)
 {
-    lib_api_p->mxos_thread_msleep(num_ms);
-    return kNoErr;
+    lib_api_p->mos_sleep_ms(num_ms);
 }
 
-void mos_sleep( float seconds )
+void mos_sleep(float seconds)
 {
-    mos_thread_delay(seconds * 1000);
+    mos_sleep_ms(seconds * 1000);
 }
 
-void *mxos_malloc( size_t xWantedSize )
+void *mxos_malloc(size_t xWantedSize)
 {
-	return lib_api_p->malloc(xWantedSize);
+    return lib_api_p->malloc(xWantedSize);
 }
 
-void mxos_free( void *pv )
+void mxos_free(void *pv)
 {
-	lib_api_p->free(pv);
+    lib_api_p->free(pv);
 }
 
-void *mxos_realloc( void *pv, size_t xWantedSize )
+void *mxos_realloc(void *pv, size_t xWantedSize)
 {
-	return lib_api_p->realloc(pv, xWantedSize);
+    return lib_api_p->realloc(pv, xWantedSize);
 }
-

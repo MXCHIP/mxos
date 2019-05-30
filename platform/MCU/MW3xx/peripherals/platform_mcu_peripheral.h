@@ -17,7 +17,8 @@
 
 #pragma once
 
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 #include "RingBufferUtils.h"
 
 #include "lowlevel_drivers.h"

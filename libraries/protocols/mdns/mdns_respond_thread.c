@@ -2047,13 +2047,13 @@ int probe_state_machine(int idx, int *state, int *event,
 			state[idx] = READY_TO_RESPOND;
 
 			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
-			mos_thread_delay(100);
+			mos_sleep_ms(100);
 			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
-			mos_thread_delay(200);
+			mos_sleep_ms(200);
 			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
-			mos_thread_delay(500);
+			mos_sleep_ms(500);
 			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
-			mos_thread_delay(1000);
+			mos_sleep_ms(1000);
 			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
 
 		} else if (event[idx] == EVENT_RX && from_v4->sin_addr.s_addr != get_interface_ip(idx)) {
@@ -2364,7 +2364,7 @@ static inline void mdns_ctrl_reannounce(netif_t iface, int *state)
 		mr_stats.tx_reannounce++;
 		mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[config_idx].iface_idx, 0);
 		if (i < 1)
-			mos_thread_delay(1000);
+			mos_sleep_ms(1000);
 	}
 	state[config_idx] = READY_TO_RESPOND;
 }
@@ -2715,7 +2715,7 @@ static int signal_and_wait_for_responder_halt()
 	}
 
 	while (responder_enabled && num_iterations--)
-	    mos_thread_delay(check_interval);
+	    mos_sleep_ms(check_interval);
 
 	if (!num_iterations)
 		MDNS_LOG("Error: timed out waiting for mdns responder to stop");
@@ -2744,9 +2744,7 @@ int responder_halt(void)
 		responder_enabled = false;
 	}
 
-	ret = mos_thread_delete(responder_thread);
-	if (ret != kNoErr)
-		MDNS_LOG("Warning: failed to delete thread.");
+	mos_thread_delete(responder_thread);
 
 	for (i = 0; i < MDNS_MAX_SERVICE_CONFIG; i++) {
 		mdns_remove_all_services(config_g[i].iface_idx);

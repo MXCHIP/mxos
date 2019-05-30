@@ -46,13 +46,13 @@ static merr_t _gpio_test_one( const qc_test_gpio_pair_t* gpio_test_pair )
 
     mhal_gpio_open(in, INPUT_PULL_DOWN);
     mhal_gpio_high(out);
-    mxos_rtos_thread_msleep(1);
+    mos_sleep_ms(1);
     if (mhal_gpio_value(in) != true)
         goto EXIT;
 
     mhal_gpio_open(in, INPUT_PULL_UP);
     mhal_gpio_low(out);
-    mxos_rtos_thread_msleep(1);
+    mos_sleep_ms(1);
     if (mhal_gpio_value(in) != false)
         goto EXIT;
 

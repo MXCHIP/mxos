@@ -109,7 +109,7 @@ merr_t mxos_bt_init( mxos_bt_mode_t mode, const char* device_name, uint8_t clien
 
     /* Create the BT Woker thread */
     result = mos_worker_thread_new(MXOS_BT_WORKER_THREAD, 
-                                            MXOS_APPLICATION_PRIORITY, 
+                                            MOS_APPLICATION_PRIORITY, 
                                             MXOS_BT_WORKER_THREAD_STACK_SIZE, 
                                             MXOS_BT_WORKER_THREAD_QUEUE_SIZE);
     if (result != kNoErr) 
@@ -120,7 +120,7 @@ merr_t mxos_bt_init( mxos_bt_mode_t mode, const char* device_name, uint8_t clien
 
     /* Create the BT Event Woker thread */
     result = mos_worker_thread_new(MXOS_BT_EVT_WORKER_THREAD,
-                                            MXOS_APPLICATION_PRIORITY,
+                                            MOS_APPLICATION_PRIORITY,
                                             MXOS_BT_EVT_WORKER_THREAD_STACK_SIZE,
                                             MXOS_BT_EVT_WORKER_THREAD_QUEUE_SIZE);
     if (result != kNoErr) 
@@ -150,7 +150,7 @@ merr_t mxos_bt_init( mxos_bt_mode_t mode, const char* device_name, uint8_t clien
     mxos_bt_dev_read_local_addr( bt_address );
     memset( bt_device_name, 0, sizeof( bt_device_name ) );
     memcpy( bt_device_name, device_name, strnlen( device_name, BT_DEVICE_NAME_MAX_LENGTH ) );
-    mos_thread_delay(10);
+    mos_sleep_ms(10);
 
     result = MXOS_BT_SUCCESS;
     goto exit;
@@ -480,7 +480,7 @@ static mxos_bt_dev_status_t smartbridge_bt_stack_management_callback( mxos_bt_ma
                     connecting_socket->bond_req.u.notify.passkey = p_event_data->user_passkey_notification.passkey;
                     memcpy(connecting_socket->bond_req.u.notify.addr, p_event_data->user_passkey_notification.bd_addr, 6);
                     
-                    mxos_rtos_send_asynchronous_event(MXOS_BT_EVT_WORKER_THREAD, 
+                    mos_worker_send_async_event(MXOS_BT_EVT_WORKER_THREAD, 
                                                       (event_handler_t)connecting_socket->bonding_callback,
                                                       (void *)&connecting_socket->bond_req);
                 } 
@@ -499,7 +499,7 @@ static mxos_bt_dev_status_t smartbridge_bt_stack_management_callback( mxos_bt_ma
                     connecting_peripheral_socket->bond_req.u.notify.passkey = p_event_data->user_passkey_notification.passkey;
                     memcpy(connecting_peripheral_socket->bond_req.u.notify.addr, p_event_data->user_passkey_notification.bd_addr, 6);
 
-                    mxos_rtos_send_asynchronous_event(MXOS_BT_EVT_WORKER_THREAD, 
+                    mos_worker_send_async_event(MXOS_BT_EVT_WORKER_THREAD, 
                                                       (event_handler_t)connecting_peripheral_socket->bonding_callback,
                                                       (void *)&connecting_peripheral_socket->bond_req);
                 }                                                 
@@ -527,7 +527,7 @@ static mxos_bt_dev_status_t smartbridge_bt_stack_management_callback( mxos_bt_ma
                 {
                     connecting_socket->bond_req.type = MXOS_BT_SMART_BOND_PASS_KEY_REQ;
                     memcpy(connecting_socket->bond_req.u.passkey.addr, p_event_data->user_passkey_request.bd_addr, 6);
-                    mxos_rtos_send_asynchronous_event(MXOS_BT_EVT_WORKER_THREAD, 
+                    mos_worker_send_async_event(MXOS_BT_EVT_WORKER_THREAD, 
                                                       (event_handler_t)connecting_socket->bonding_callback,
                                                       (void *)&connecting_socket->bond_req);
                 }
@@ -547,7 +547,7 @@ static mxos_bt_dev_status_t smartbridge_bt_stack_management_callback( mxos_bt_ma
                 {
                     connecting_peripheral_socket->bond_req.type = MXOS_BT_SMART_BOND_PASS_KEY_REQ;
                     memcpy(connecting_peripheral_socket->bond_req.u.passkey.addr, p_event_data->user_passkey_request.bd_addr, 6);
-                    mxos_rtos_send_asynchronous_event(MXOS_BT_EVT_WORKER_THREAD, 
+                    mos_worker_send_async_event(MXOS_BT_EVT_WORKER_THREAD, 
                                                       (event_handler_t)connecting_peripheral_socket->bonding_callback,
                                                       (void *)&connecting_peripheral_socket->bond_req);
                 }   
@@ -582,7 +582,7 @@ static mxos_bt_dev_status_t smartbridge_bt_stack_management_callback( mxos_bt_ma
                     connecting_socket->bond_req.type = MXOS_BT_SMART_BOND_USR_CONFIRM_REQ;
                     connecting_socket->bond_req.u.confirm.passkey = p_event_data->user_confirmation_request.numeric_value;
                     memcpy(connecting_socket->bond_req.u.confirm.addr, p_event_data->user_confirmation_request.bd_addr, 6);
-                    mxos_rtos_send_asynchronous_event(MXOS_BT_EVT_WORKER_THREAD,
+                    mos_worker_send_async_event(MXOS_BT_EVT_WORKER_THREAD,
                                                       (event_handler_t)connecting_socket->bonding_callback,
                                                       (void *)&connecting_socket->bond_req);
                 }
@@ -603,7 +603,7 @@ static mxos_bt_dev_status_t smartbridge_bt_stack_management_callback( mxos_bt_ma
                     connecting_peripheral_socket->bond_req.type = MXOS_BT_SMART_BOND_USR_CONFIRM_REQ;
                     connecting_peripheral_socket->bond_req.u.confirm.passkey = p_event_data->user_confirmation_request.numeric_value;
                     memcpy(connecting_peripheral_socket->bond_req.u.confirm.addr, p_event_data->user_confirmation_request.bd_addr, 6);
-                    mxos_rtos_send_asynchronous_event(MXOS_BT_EVT_WORKER_THREAD, 
+                    mos_worker_send_async_event(MXOS_BT_EVT_WORKER_THREAD, 
                                                       (event_handler_t)connecting_peripheral_socket->bonding_callback,
                                                       (void *)&connecting_peripheral_socket->bond_req);
                 }   
@@ -636,7 +636,7 @@ static mxos_bt_dev_status_t smartbridge_bt_stack_management_callback( mxos_bt_ma
                 {
                     connecting_socket->bond_req.type = MXOS_BT_SMART_BOND_OOB_DATA_REQ;
                     memcpy(connecting_socket->bond_req.u.oob_data.addr, p_event_data->smp_remote_oob_data_request.bd_addr, 6);
-                    mxos_rtos_send_asynchronous_event(MXOS_BT_EVT_WORKER_THREAD, 
+                    mos_worker_send_async_event(MXOS_BT_EVT_WORKER_THREAD, 
                                                       (event_handler_t)connecting_socket->bonding_callback,
                                                       (void *)&connecting_socket->bond_req);
                 }
@@ -656,7 +656,7 @@ static mxos_bt_dev_status_t smartbridge_bt_stack_management_callback( mxos_bt_ma
                 {
                     connecting_peripheral_socket->bond_req.type = MXOS_BT_SMART_BOND_OOB_DATA_REQ;
                     memcpy(connecting_peripheral_socket->bond_req.u.oob_data.addr, p_event_data->smp_remote_oob_data_request.bd_addr, 6);
-                    mxos_rtos_send_asynchronous_event(MXOS_BT_EVT_WORKER_THREAD, 
+                    mos_worker_send_async_event(MXOS_BT_EVT_WORKER_THREAD, 
                                                       (event_handler_t)connecting_peripheral_socket->bonding_callback,
                                                       (void *)&connecting_peripheral_socket->bond_req);
                 }   

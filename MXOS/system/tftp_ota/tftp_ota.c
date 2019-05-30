@@ -116,7 +116,7 @@ void tftp_ota(void)
 	  mxosWlanStopEasyLinkPlus();
     mwifi_airkiss_stop();
     mwifi_disconnect();
-	mxos_rtos_thread_msleep(10);
+	mos_sleep_ms(10);
 		
     tmpbuf = (uint8_t*)malloc(TMP_BUF_LEN);
     if (tmpbuf == NULL) {
@@ -144,7 +144,7 @@ void tftp_ota(void)
     mwifi_softap_start(&conf);
 
     while(wifi_up == 0) {
-        mxos_rtos_thread_msleep(100);
+        mos_sleep_ms(100);
         i++;
         if (i > 100) {
             fota_log("ERROR!! Can't find the OTA AP");
@@ -212,7 +212,7 @@ void tftp_ota(void)
     mxos_ota_switch_to_new_fw( filelen, crc );
     mxos_ota_finished(OTA_SUCCESS, NULL);
     while(1)
-        mxos_rtos_thread_sleep(100);
+        mos_sleep_ms(100);
 }
 
 /******************************************************
@@ -229,7 +229,7 @@ merr_t start_force_ota()
 {
    merr_t err;
 
-   require_action_string( mos_thread_new( MXOS_APPLICATION_PRIORITY, "Force OTA", force_thread, 0x1000, NULL ) != NULL, 
+   require_action_string( mos_thread_new( MOS_APPLICATION_PRIORITY, "Force OTA", force_thread, 0x1000, NULL ) != NULL, 
    exit, err = kGeneralErr, "ERROR: Unable to start the  force ota thread." );
 
    exit:
@@ -267,7 +267,7 @@ merr_t start_forceota_check()
 		fota_log("Start scan");
 		force_ota_sem = mos_semphr_new(1);
 		mxchip_active_scan(FORCE_OTA_AP,0);
-		err = mos_semphr_acquire(force_ota_sem,MXOS_WAIT_FOREVER);
+		err = mos_semphr_acquire(force_ota_sem,MOS_WAIT_FOREVER);
 		if(NULL != force_ota_sem)
 		mos_semphr_delete(force_ota_sem);
 		err = mxos_system_notify_remove( mxos_notify_WIFI_SCAN_COMPLETED, (void *)mxosNotify_ApListCallback);

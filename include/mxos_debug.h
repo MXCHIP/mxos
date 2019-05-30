@@ -38,7 +38,8 @@
 #include "mxos_board_conf.h"
 #endif
 
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 #include "platform_assert.h"
 
 #ifdef __cplusplus

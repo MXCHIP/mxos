@@ -96,7 +96,7 @@ void SocketCloseForOSEvent(int* fd)
     if ( tempFd < 0 )
       return;
     *fd = -1;
-    mxos_delete_event_fd(tempFd);
+    mos_event_fd_delete(tempFd);
 }
 
 void SocketAccept(int *plocalTcpClientsPool, int maxClientsNum, int newFd)

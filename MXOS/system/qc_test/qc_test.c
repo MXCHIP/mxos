@@ -118,7 +118,7 @@ static void _qc_test_calculate_app_crc( char *str, int len )
 
 void mxos_system_qc_test( void )
 {
-    mos_thread_new( MXOS_APPLICATION_PRIORITY, "QC Test", _qc_test_thread, (2048 * 4), NULL );
+    mos_thread_new( MOS_APPLICATION_PRIORITY, "QC Test", _qc_test_thread, (2048 * 4), NULL );
 }
 
 
@@ -167,7 +167,7 @@ static void _qc_test_thread( void * arg )
 
 exit:
     free( rx_data );
-    mxos_thread_sleep( MXOS_NEVER_TIMEOUT );
+    mos_sleep_ms( MOS_NEVER_TIMEOUT );
     mos_thread_delete( NULL );
 }
 
@@ -220,7 +220,7 @@ void mxos_mfg_test(mxos_Context_t *inContext)
   
   ring_buffer_init  ( (ring_buffer_t *)&rx_buffer, (uint8_t *)rx_data, 2048 );
   mhal_uart_open( UART_FOR_APP, &uart_config, (ring_buffer_t *)&rx_buffer );
-  mos_thread_new( MXOS_APPLICATION_PRIORITY, "MFG UART Recv", uartRecvMfg_thread, 0x300, NULL );
+  mos_thread_new( MOS_APPLICATION_PRIORITY, "MFG UART Recv", uartRecvMfg_thread, 0x300, NULL );
   
   /* Initialize UDP interface */
   t.tv_sec = 5;

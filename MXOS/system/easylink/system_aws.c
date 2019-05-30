@@ -141,7 +141,7 @@ static int aws_broadcast_notification(char *msg, int msg_num)
         if (ret > 0) {
             i++; // sendto fail don't i++, max sending times is 10, min sending times is 5.
         }
-        mxos_rtos_thread_msleep(20);
+        mos_sleep_ms(20);
     }
     
     //send notification
@@ -209,7 +209,7 @@ restart:
 
     mwifi_softap_startAws( EasyLink_TimeOut / 1000 );
     while( mos_semphr_acquire(aws_sem, 0 ) == kNoErr );
-    err = mos_semphr_acquire(aws_sem, MXOS_WAIT_FOREVER );
+    err = mos_semphr_acquire(aws_sem, MOS_WAIT_FOREVER );
 
     /* Easylink force exit by user, clean and exit */
     if( err != kNoErr && aws_thread_force_exit )
@@ -281,19 +281,19 @@ merr_t mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enable 
     if ( aws_thread_handler ) {
         system_log("EasyLink processing, force stop..");
         aws_thread_force_exit = true;
-        mxos_rtos_thread_force_awake( &aws_thread_handler );
+        mos_thread_awake(aws_thread_handler );
         mos_thread_join( aws_thread_handler );
     }
 
     if ( enable == MXOS_TRUE ) {
-        aws_thread_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "aws", aws_thread,
+        aws_thread_handler = mos_thread_new( MOS_APPLICATION_PRIORITY, "aws", aws_thread,
                                        0x1000, (void *) in_context );
         require_action_string( aws_thread_handler != NULL, exit, err = kGeneralErr, "ERROR: Unable to start the EasyLink thread." );
 
         err = kNoErr;
 
         /* Make sure easylink is already running, and waiting for sem trigger */
-        mos_thread_delay( 1000 );
+        mos_sleep_ms( 1000 );
     }
 
     exit:

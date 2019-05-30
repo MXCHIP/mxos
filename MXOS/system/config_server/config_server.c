@@ -94,10 +94,10 @@ merr_t config_server_start ( void )
   close_listener_sem = NULL;
   for (; i < MAX_TCP_CLIENT_PER_SERVER; i++)
     close_client_sem[ i ] = NULL;
-  require_action(mos_thread_new( MXOS_APPLICATION_PRIORITY, "Config Server", localConfiglistener_thread, 
+  require_action(mos_thread_new( MOS_APPLICATION_PRIORITY, "Config Server", localConfiglistener_thread, 
   STACK_SIZE_LOCAL_CONFIG_SERVER_THREAD, NULL ) != NULL, exit, err = kGeneralErr);
   
-  mxos_thread_msleep(200);
+  mos_sleep_ms(200);
 
 exit:
   return err;
@@ -115,12 +115,12 @@ merr_t config_server_stop( void )
     if( close_client_sem[ i ] != NULL )
       mos_semphr_release(close_client_sem[ i ] );
   }
-  mxos_thread_msleep(50);
+  mos_sleep_ms(50);
 
   if( close_listener_sem != NULL )
     mos_semphr_release(close_listener_sem );
 
-  mxos_thread_msleep(500);
+  mos_sleep_ms(500);
   is_config_server_established = false;
   
   return err;
@@ -139,7 +139,7 @@ void localConfiglistener_thread(void * arg)
   int close_listener_fd = -1;
 
   close_listener_sem = mos_semphr_new(1);
-  close_listener_fd = mxos_create_event_fd( close_listener_sem );
+  close_listener_fd = mos_event_fd_new( close_listener_sem );
 
   /*Establish a TCP server fd that accept the tcp clients connections*/ 
   localConfiglistener_fd = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
@@ -174,7 +174,7 @@ void localConfiglistener_thread(void * arg)
       if ( IsValidSocket( j ) ) {
         strcpy(ip_address,inet_ntoa( addr.sin_addr ));
         system_log("Config Client %s:%d connected, fd: %d", ip_address, addr.sin_port, j);
-        if(NULL ==  mos_thread_new( MXOS_APPLICATION_PRIORITY, "Config Clients", localConfig_thread, STACK_SIZE_LOCAL_CONFIG_CLIENT_THREAD, (void *)j) )
+        if(NULL ==  mos_thread_new( MOS_APPLICATION_PRIORITY, "Config Clients", localConfig_thread, STACK_SIZE_LOCAL_CONFIG_CLIENT_THREAD, (void *)j) )
           SocketClose(&j);
       }
     }
@@ -182,7 +182,7 @@ void localConfiglistener_thread(void * arg)
 
 exit:
     if( close_listener_sem != NULL ){
-      mxos_delete_event_fd( close_listener_fd );
+      mos_event_fd_delete( close_listener_fd );
       mos_semphr_delete(close_listener_sem );
       close_listener_sem = NULL;
     };
@@ -216,7 +216,7 @@ void localConfig_thread(void* arg)
   }
 
   close_client_sem[close_sem_index] = mos_semphr_new(1);
-  close_client_fd = mxos_create_event_fd( close_client_sem[close_sem_index] );
+  close_client_fd = mos_event_fd_new( close_client_sem[close_sem_index] );
 
   httpHeader = HTTPHeaderCreateWithCallback( 512, onReceivedData, onClearHTTPHeader, &httpContext );
   require_action( httpHeader, exit, err = kNoMemoryErr );
@@ -294,7 +294,7 @@ exit:
 
   if( close_client_sem[close_sem_index] != NULL )
   {
-    mxos_delete_event_fd( close_client_fd );
+    mos_event_fd_delete( close_client_fd );
     mos_semphr_delete(close_client_sem[close_sem_index] );
     close_client_sem[close_sem_index] = NULL;
   };
@@ -599,7 +599,7 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
       require_noerr( err, exit );
 
       if ( _uap_configured_cb ) {
-          mos_thread_delay( 1000 );
+          mos_sleep_ms( 1000 );
           _uap_configured_cb( easylinkIndentifier );
       }
   }
@@ -623,7 +623,7 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
       mxos_system_context_update( &inContext->flashContentInRam );
       SocketClose( &fd );
       mxos_system_power_perform( &inContext->flashContentInRam, eState_Software_Reset );
-      mxos_thread_sleep( MXOS_WAIT_FOREVER );
+      mos_sleep_ms( MOS_WAIT_FOREVER );
     }
     goto exit;
   }

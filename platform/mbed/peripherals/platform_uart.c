@@ -205,7 +205,7 @@ merr_t platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8
 		goto exit;
 	}
 	/* Wait for transmission complete */
-	//mxos_rtos_get_semaphore( &driver->tx_complete, MXOS_NEVER_TIMEOUT );
+	//mxos_rtos_get_semaphore( &driver->tx_complete, MOS_NEVER_TIMEOUT );
 
   	driver->tx_size = 0;
   	err = driver->last_transmit_result;

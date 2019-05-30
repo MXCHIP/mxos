@@ -124,7 +124,7 @@ USBH_StatusTypeDef  USBH_Init(USBH_HandleTypeDef *phost, void (*pUsrFunc)(USBH_H
   phost->os_event = mos_queue_new( sizeof(uint16_t), 10 );
   
   /*Create USB Host Task */
-  mos_thread_new(MXOS_APPLICATION_PRIORITY, "USBH", USBH_Process_OS, 0x4C0, phost );
+  mos_thread_new(MOS_APPLICATION_PRIORITY, "USBH", USBH_Process_OS, 0x4C0, phost );
   phost->thread = osThreadId1;
 #endif  
   

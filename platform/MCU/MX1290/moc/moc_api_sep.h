@@ -51,10 +51,10 @@ typedef struct {
 	void (*mxos_rtos_suspend_all_thread)(void);
 	long (*mxos_rtos_resume_all_thread)(void);
 	merr_t (*mos_thread_join)( mos_thread_id_t* thread );
-	merr_t (*mxos_rtos_thread_force_awake)( mos_thread_id_t* thread );
+	merr_t (*mos_thread_awake)( mos_thread_id_t* thread );
 	bool (*mxos_rtos_is_current_thread)( mos_thread_id_t* thread );
-	void (*mxos_thread_sleep)(uint32_t seconds);
-	void (*mxos_thread_msleep)(uint32_t milliseconds);
+	void (*mos_sleep)(uint32_t seconds);
+	void (*mos_sleep_ms)(uint32_t milliseconds);
 	merr_t (*mos_semphr_new)( mos_semphr_id_t* semaphore, int count );
 	merr_t (*mos_semphr_release)( mos_semphr_id_t* semaphore );
 	merr_t (*mos_semphr_acquire)( mos_semphr_id_t* semaphore, uint32_t timeout_ms );
@@ -70,14 +70,14 @@ typedef struct {
 	bool (*mxos_rtos_is_queue_empty)( mos_queue_id_t* queue );
 	bool (*mxos_rtos_is_queue_full)( mos_queue_id_t* queue );
 	uint32_t (*mxos_get_time)(void);
-	merr_t (*mxos_init_timer)( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg );
-	merr_t (*mxos_start_timer)( mxos_timer_t* timer );
-	merr_t (*mxos_stop_timer)( mxos_timer_t* timer );
-	merr_t (*mxos_reload_timer)( mxos_timer_t* timer );
-	merr_t (*mxos_deinit_timer)( mxos_timer_t* timer );
-	bool (*mxos_is_timer_running)( mxos_timer_t* timer );
-	int (*mxos_create_event_fd)(mxos_event handle);
-	int (*mxos_delete_event_fd)(int fd);
+	merr_t (*mxos_init_timer)( mos_timer_id_t* timer, uint32_t time_ms, mos_timer_handler_t function, void* arg );
+	merr_t (*mxos_start_timer)( mos_timer_id_t* timer );
+	merr_t (*mxos_stop_timer)( mos_timer_id_t* timer );
+	merr_t (*mxos_reload_timer)( mos_timer_id_t* timer );
+	merr_t (*mos_timer_delete)( mos_timer_id_t* timer );
+	bool (*mxos_is_timer_running)( mos_timer_id_t* timer );
+	int (*mos_event_fd_new)(mxos_event handle);
+	int (*mos_event_fd_delete)(int fd);
 
 	/* memory management*/
 	struct mxchip_mallinfo* (*mxos_memory_info)(void);
@@ -102,8 +102,8 @@ typedef struct {
 
     void (*mos_thread_resume)(mos_thread_id_t* thread);
     int (*hardfault_get)(char *msg, int len);
-    int (*mxos_init_once_timer)( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg );
-    int (*mxos_change_timer_period)( mxos_timer_t* timer, uint32_t new_period );
+    int (*mxos_init_once_timer)( mos_timer_id_t* timer, uint32_t time_ms, mos_timer_handler_t function, void* arg );
+    int (*mxos_change_timer_period)( mos_timer_id_t* timer, uint32_t new_period );
 } os_api_v1_t;
 
 typedef struct {

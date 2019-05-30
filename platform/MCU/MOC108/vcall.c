@@ -8,12 +8,13 @@ merr_t mico_rtos_create_thread(mos_thread_id_t *thread, uint8_t priority, const 
 
 merr_t mico_rtos_delay_milliseconds(uint32_t num_ms)
 {
-    return mos_thread_delay(num_ms);
+    return mos_sleep_ms(num_ms);
 }
 
 merr_t mico_rtos_delete_thread(mos_thread_id_t *thread)
 {
-    return mos_thread_delete(*thread);
+    mos_thread_delete(*thread);
+    return kNoErr;
 }
 
 merr_t mico_rtos_get_semaphore(mos_semphr_id_t *id, uint32_t timeout)
@@ -23,7 +24,8 @@ merr_t mico_rtos_get_semaphore(mos_semphr_id_t *id, uint32_t timeout)
 
 merr_t mico_rtos_deinit_semaphore(mos_semphr_id_t *id)
 {
-    return mos_semphr_delete(*id);
+    mos_semphr_delete(*id);
+    return kNoErr;
 }
 
 uint32_t mico_rtos_get_time(void)
@@ -50,7 +52,8 @@ bool mico_rtos_is_current_thread(mos_thread_id_t *thread)
 
 merr_t mico_rtos_lock_mutex(mos_mutex_id_t *mutex)
 {
-    return mos_mutex_lock(*mutex);
+    mos_mutex_lock(*mutex);
+    return kNoErr;
 }
 
 merr_t mico_rtos_push_to_queue(mos_queue_id_t *id, void *message, uint32_t timeout)
@@ -65,20 +68,22 @@ merr_t mico_rtos_set_semaphore(mos_semphr_id_t *id)
 
 merr_t mico_rtos_thread_join(mos_thread_id_t *id)
 {
-    return mos_thread_join(*id);
+    mos_thread_join(*id);
+    return kNoErr;
 }
 
 void mico_rtos_thread_msleep(uint32_t milliseconds)
 {
-    mxos_rtos_thread_msleep(milliseconds);
+    mos_sleep_ms(milliseconds);
 }
 
 merr_t mico_rtos_unlock_mutex(mos_mutex_id_t *id)
 {
-    return mos_mutex_unlock(*id);
+    mos_mutex_unlock(*id);
+    return kNoErr;
 }
 
-int mxos_create_event_fd(mxos_event_t event_handle)
+int mos_event_fd_new(mos_event_id_t event_handle)
 {
     return mico_create_event_fd(event_handle);
 }

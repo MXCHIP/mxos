@@ -26,6 +26,10 @@
 #include "system.h"
 #include "easylink_internal.h"
 
+int SetTimer(unsigned long ms, void (*psysTimerHandler)(void));
+int SetTimer_uniq(unsigned long ms, void (*psysTimerHandler)(void));
+int UnSetTimer(void (*psysTimerHandler)(void));
+
 /* Internal vars and functions */
 static mos_semphr_id_t easylink_sem;         /**< Used to suspend thread while easylink. */
 static mos_semphr_id_t easylink_connect_sem; /**< Used to suspend thread while connection. */
@@ -90,7 +94,7 @@ void easylink_softap_thread( void *inContext )
 
 restart:
     mxosWlanSuspend( );
-    mxos_thread_msleep( 20 );
+    mos_sleep_ms( 20 );
 
     mxos_system_delegate_config_will_start( );
 
@@ -110,7 +114,7 @@ restart:
     require_noerr( err, exit );
 
     while( mos_semphr_acquire(easylink_sem, 0 ) == kNoErr );
-    err = mos_semphr_acquire(easylink_sem, MXOS_WAIT_FOREVER );
+    err = mos_semphr_acquire(easylink_sem, MOS_WAIT_FOREVER );
 
     mwifi_softap_stop();
 
@@ -126,7 +130,7 @@ restart:
         mxos_system_delegate_config_recv_ssid( context->flashContentInRam.mxos_config.ssid,
                                                context->flashContentInRam.mxos_config.user_key );
 
-        mxos_thread_sleep(1);
+        mos_sleep_ms(1);
         system_connect_wifi_normal( context );
 
         /* Wait for station connection */
@@ -201,7 +205,7 @@ merr_t mxos_easylink_softap( mxos_Context_t * const in_context, mxos_bool_t enab
     if ( easylink_softap_thread_handler ) {
         system_log("EasyLink SoftAP processing, force stop..");
         easylink_thread_force_exit = true;
-        mxos_rtos_thread_force_awake( &easylink_softap_thread_handler );
+        mos_thread_awake(easylink_softap_thread_handler );
         mos_thread_join( easylink_softap_thread_handler );
     }
 
@@ -212,12 +216,12 @@ merr_t mxos_easylink_softap( mxos_Context_t * const in_context, mxos_bool_t enab
 
         config_server_set_uap_cb( easylink_uap_configured_cd );
 
-        easylink_softap_thread_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "EASYLINK AP",
+        easylink_softap_thread_handler = mos_thread_new( MOS_APPLICATION_PRIORITY, "EASYLINK AP",
                                        easylink_softap_thread, 0x1000, (void *) in_context );
         require_action_string( easylink_softap_thread_handler != NULL, exit, err = kGeneralErr, "ERROR: Unable to start the EasyLink thread." );
 
         /* Make sure easylink softap is already running, and waiting for sem trigger */
-        mos_thread_delay( 1000 );
+        mos_sleep_ms( 1000 );
     }
 
     exit:

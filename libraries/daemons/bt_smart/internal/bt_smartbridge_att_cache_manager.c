@@ -307,7 +307,8 @@ merr_t bt_smartbridge_att_cache_lock( bt_smartbridge_att_cache_t* cache )
         return MXOS_BT_ATT_CACHE_UNINITIALISED;
     }
 
-    return mos_mutex_lock(cache->mutex );
+    mos_mutex_lock(cache->mutex );
+    return kNoErr;
 }
 
 merr_t bt_smartbridge_att_cache_unlock( bt_smartbridge_att_cache_t* cache )
@@ -322,7 +323,8 @@ merr_t bt_smartbridge_att_cache_unlock( bt_smartbridge_att_cache_t* cache )
         return MXOS_BT_ATT_CACHE_UNINITIALISED;
     }
 
-    return mos_mutex_unlock(cache->mutex );
+    mos_mutex_unlock(cache->mutex );
+    return kNoErr;
 }
 
 merr_t bt_smartbridge_att_cache_find( const mxos_bt_smart_device_t* remote_device, bt_smartbridge_att_cache_t** cache )
@@ -341,11 +343,7 @@ merr_t bt_smartbridge_att_cache_find( const mxos_bt_smart_device_t* remote_devic
     }
 
     /* Lock protection */
-    result = mos_mutex_lock(att_cache_manager->mutex );
-    if ( result != MXOS_BT_SUCCESS )
-    {
-        return result;
-    }
+    mos_mutex_lock(att_cache_manager->mutex );
 
     result = linked_list_find_node( &att_cache_manager->used_list, smartbridge_att_cache_find_by_device_callback, (void*)remote_device, &node_found );
     if ( result == MXOS_BT_SUCCESS )
@@ -421,11 +419,7 @@ merr_t bt_smartbridge_att_cache_release( bt_smartbridge_att_cache_t* cache )
     }
 
     /* Lock protection */
-    result = mos_mutex_lock(att_cache_manager->mutex );
-    if ( result != MXOS_BT_SUCCESS )
-    {
-        return result;
-    }
+    mos_mutex_lock(att_cache_manager->mutex );
 
     result = linked_list_remove_node( &att_cache_manager->used_list, &cache->node );
     if ( result == MXOS_BT_SUCCESS )
@@ -454,11 +448,7 @@ static merr_t smartbridge_att_cache_get_free_cache( bt_smartbridge_att_cache_t**
     }
 
     /* Lock protection */
-    result = mos_mutex_lock(att_cache_manager->mutex );
-    if ( result != kNoErr )
-    {
-        return result;
-    }
+    mos_mutex_lock(att_cache_manager->mutex );
 
     /* Remove from front of free list */
     result = linked_list_remove_node_from_front( &att_cache_manager->free_list, &node );
@@ -501,11 +491,7 @@ static merr_t smartbridge_att_cache_insert_to_used_list( bt_smartbridge_att_cach
     }
 
     /* Lock protection */
-    result = mos_mutex_lock(att_cache_manager->mutex );
-    if ( result != MXOS_BT_SUCCESS )
-    {
-        return result;
-    }
+    mos_mutex_lock(att_cache_manager->mutex );
 
     result = linked_list_insert_node_at_rear( &att_cache_manager->used_list, &cache->node );
 
@@ -525,11 +511,7 @@ static merr_t smartbridge_att_cache_return_to_free_list( bt_smartbridge_att_cach
     }
 
     /* Lock protection */
-    result = mos_mutex_lock(att_cache_manager->mutex );
-    if ( result != MXOS_BT_SUCCESS )
-    {
-        return result;
-    }
+    mos_mutex_lock(att_cache_manager->mutex );
 
     result = linked_list_insert_node_at_rear( &att_cache_manager->free_list, &cache->node );
 

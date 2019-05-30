@@ -24,7 +24,8 @@
 #include "mxos_debug.h"
 #include "mxos_network.h"
 
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 #include "mxos_eth.h"
 #include "mxos_wlan.h"
 

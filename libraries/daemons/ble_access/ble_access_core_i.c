@@ -121,14 +121,14 @@ static uint8_t prefix_addr[][BLE_ACCESS_PREFIX_LEN] = {
 merr_t ble_access_create_worker_thread(void)
 {
     return mos_worker_thread_new(&ble_access_worker_thread, 
-                                          MXOS_DEFAULT_WORKER_PRIORITY,
+                                          MOS_DEFAULT_WORKER_PRIORITY,
                                           2048,
                                           20);
 }
 
 merr_t ble_access_send_aync_event(event_handler_t event_handle, void *arg)
 {
-    return mxos_rtos_send_asynchronous_event(&ble_access_worker_thread, event_handle, arg);
+    return mos_worker_send_async_event(&ble_access_worker_thread, event_handle, arg);
 }
 
 /*
@@ -148,11 +148,10 @@ merr_t ble_access_start_timer(ble_access_device_t *dev, event_handler_t timer_ev
 
     require_action(dev != NULL && timer_event_handle != NULL, exit, err = kParamErr);
 
-    err = mos_timer_new(&dev->timer, 10000, ble_access_timer_callback, arg);
-    require_noerr_string(err, exit, "Initialize a timer failed");
+    dev->timer = mos_timer_new(10000, ble_access_timer_callback, true, arg);
+    require_string(dev->timer != NULL, exit, "Initialize a timer failed");
 
-    err = mos_timer_start(&dev->timer);
-    require_noerr_action_string(err, exit, mos_timer_delete(&dev->timer), "Start a timer failed");
+    mos_timer_start(dev->timer);
 
     ble_access_timer_evt = timer_event_handle;
 
@@ -166,10 +165,10 @@ merr_t ble_access_stop_timer(ble_access_device_t *dev)
 
     require_action(dev != NULL, exit, err = kParamErr);
 
-    if (mos_timer_is_runing(&dev->timer)) {
-        mos_timer_stop(&dev->timer);
+    if (mos_timer_is_runing(dev->timer)) {
+        mos_timer_stop(dev->timer);
     }
-    err = mos_timer_delete(&dev->timer);
+    mos_timer_delete(dev->timer);
 
 exit:
     return err;
@@ -477,7 +476,8 @@ merr_t ble_access_connect_list_deinit(void)
         }
     }
     
-    return mos_mutex_delete(ble_access_conn_dev_list_mutex);
+    mos_mutex_delete(ble_access_conn_dev_list_mutex);
+    return kNoErr;
 }
 
 mxos_bool_t compare_device_by_address(linked_list_node_t* node_to_compare, void* user_data)

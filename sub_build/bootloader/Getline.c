@@ -50,7 +50,7 @@ void getline (char *line, int n)  {
   char c;
 
   do  {
-    uart_getchar(&c, MXOS_NEVER_TIMEOUT );
+    uart_getchar(&c, MOS_NEVER_TIMEOUT );
     if (c == CR)  c = LF;     /* read character                 */
     if (c == BACKSPACE  ||  c == DEL)  {    /* process backspace              */
       if (cnt != 0)  {

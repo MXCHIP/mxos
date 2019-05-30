@@ -27,7 +27,8 @@
 #include "stm32f4xx_pwr.h"
 #include "stm32f4xx_rng.h"
 
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 #include "RingBufferUtils.h"
 
 #ifdef __cplusplus

@@ -47,7 +47,7 @@ void qc_scan( void )
 
     mwifi_softap_startScan();
 
-    mos_thread_delay(2000);
+    mos_sleep_ms(2000);
 }
 
 

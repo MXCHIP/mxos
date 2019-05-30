@@ -481,7 +481,7 @@ static void _eth_arch_phy_task(void * arg)
             }
             phy_status = status;
         }
-        mos_thread_delay(PHY_TASK_WAIT);
+        mos_sleep_ms(PHY_TASK_WAIT);
     }
 }
 
@@ -587,12 +587,12 @@ err_t eth_arch_enetif_init(struct netif *netif)
     _eth_arch_low_level_init(netif);
 
     /* Check link status */
-    mos_thread_new( MXOS_APPLICATION_PRIORITY, "_eth_arch_phy_task", _eth_arch_phy_task, 0x500, netif);
+    mos_thread_new( MOS_APPLICATION_PRIORITY, "_eth_arch_phy_task", _eth_arch_phy_task, 0x500, netif);
 
     eth_log( "eth_arch_enetif_init done");
     
     /* Ethernet rx task */
-    mos_thread_new( MXOS_RTOS_HIGEST_PRIORITY, "_eth_arch_rx_task", _eth_arch_rx_task, 0x1000, netif);
+    mos_thread_new( MOS_RTOS_HIGEST_PRIORITY, "_eth_arch_rx_task", _eth_arch_rx_task, 0x1000, netif);
     return ERR_OK;
 }
 

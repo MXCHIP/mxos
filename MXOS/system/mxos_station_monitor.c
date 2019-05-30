@@ -51,7 +51,7 @@ static void mxosNotify_WifiStatusHandler(WiFiEvent event,  void* inContext)
 static void station_monitro_func( void * arg )
 {
     while(1) {
-        mos_semphr_acquire(sem, MXOS_WAIT_FOREVER);
+        mos_semphr_acquire(sem, MOS_WAIT_FOREVER);
         if (station_up == 1) {
             if (softap_up) {
                 station_m_log("Stop softap");
@@ -101,7 +101,7 @@ int mxos_station_status_monitor(char *ssid, char*key, int trigger_seconds)
     strncpy(softap_key, key, 64);
     softap_wait_seconds = trigger_seconds;
     
-    mos_thread_new( MXOS_APPLICATION_PRIORITY, "station monitor",
+    mos_thread_new( MOS_APPLICATION_PRIORITY, "station monitor",
         station_monitro_func, 1024, NULL);
 exit:
     return err;

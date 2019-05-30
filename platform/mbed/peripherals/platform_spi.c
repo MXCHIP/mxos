@@ -130,7 +130,7 @@ merr_t platform_spi_deinit( platform_spi_driver_t* driver )
 #if DEVICE_SPI_ASYNCH
     platform_irq_deinit( &driver->irq );
     if( driver->transfer_complete ) {
-        err = mos_semphr_delete( driver->transfer_complete );
+        mos_semphr_delete( driver->transfer_complete );
         driver->transfer_complete = NULL;
     }
 #endif
@@ -172,7 +172,7 @@ merr_t platform_spi_transfer( platform_spi_driver_t* driver, const platform_spi_
                                      platform_irq_entry( &driver->irq ),
                                      SPI_EVENT_ALL,
                                      DMA_USAGE_ALWAYS);
-                mos_semphr_acquire( driver->transfer_complete, MXOS_WAIT_FOREVER );
+                mos_semphr_acquire( driver->transfer_complete, MOS_WAIT_FOREVER );
                 require_action( driver->event & (SPI_EVENT_ALL | SPI_EVENT_COMPLETE), cleanup_transfer, err = kInternalErr);
             }
         } 

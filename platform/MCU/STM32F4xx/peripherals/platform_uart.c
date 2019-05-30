@@ -402,7 +402,7 @@ merr_t platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8
   driver->peripheral->tx_dma_config.stream->CR   |= DMA_SxCR_EN;
   
 /* Wait for transmission complete */
-  mos_semphr_acquire(driver->tx_complete, MXOS_NEVER_TIMEOUT );
+  mos_semphr_acquire(driver->tx_complete, MOS_NEVER_TIMEOUT );
 
   while ( ( driver->peripheral->port->SR & USART_SR_TC ) == 0 )
   {

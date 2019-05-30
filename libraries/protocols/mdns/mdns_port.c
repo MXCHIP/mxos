@@ -130,7 +130,7 @@ void *mdns_thread_create(mdns_thread_entry entry, int id)
     void *ret = NULL;
     if (id == MDNS_THREAD_RESPONDER)
     {
-        if ((mdns_responder_thread = mos_thread_new(MXOS_APPLICATION_PRIORITY,
+        if ((mdns_responder_thread = mos_thread_new(MOS_APPLICATION_PRIORITY,
                                     "mdns_resp_thread", (mos_thread_func_t)entry,
                                     MDNS_RESPONDER_THREAD_STACK, 0)) != NULL)
         {
@@ -139,7 +139,7 @@ void *mdns_thread_create(mdns_thread_entry entry, int id)
     }
     else if (id == MDNS_THREAD_QUERIER)
     {
-        if ((mdns_querier_thread = mos_thread_new(MXOS_APPLICATION_PRIORITY,
+        if ((mdns_querier_thread = mos_thread_new(MOS_APPLICATION_PRIORITY,
                                     "mdns_querier_thread", (mos_thread_func_t)entry,
                                     MDNS_QUERIER_THREAD_STACK, 0)) != NULL)
         {
