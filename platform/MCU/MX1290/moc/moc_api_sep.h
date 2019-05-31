@@ -155,12 +155,12 @@ typedef struct {
 typedef struct {
 	/* WIFI MGR */
 	int (*wlan_get_mac_address)(unsigned char *dest);
-	int (*wlan_get_mac_address_by_interface)(wlan_if_t wlan_if, unsigned char *dest);
+	int (*wlan_get_mac_address_by_interface)(uint8_t wlan_if, unsigned char *dest);
 	int (*mxos_wlan_driver_version)( char* version, int length );
-	merr_t (*mwifi_softap_start)(mwifi_softap_attr_t* attr);
-	merr_t (*mwifi_connect)(wifi_connect_attr_t* attr);
-	merr_t (*mwifi_get_ip)(IPStatusTypedef *outNetpara, WiFi_Interface inInterface);
-	merr_t (*mwifi_get_link_info)(LinkStatusTypeDef *outStatus);
+	merr_t (*mwifi_softap_start)(void* attr);
+	merr_t (*mwifi_connect)(void* attr);
+	merr_t (*mwifi_get_ip)(void *outNetpara, uint8_t inInterface);
+	merr_t (*mwifi_get_link_info)(void *outStatus);
 	void (*mwifi_softap_startScan)(void);
 	void (*mwifi_softap_startScanAdv)(void);
 	merr_t (*mwifi_off)(void);
@@ -177,17 +177,17 @@ typedef struct {
 	int (*mwifi_monitor_start)(void);
 	int (*mwifi_monitor_stop)(void);
 	int (*mwifi_monitor_set_channel)(int channel);
-	void (*mwifi_monitor_reg_cb)(monitor_cb_t fn);
+	void (*mwifi_monitor_reg_cb)(void *fn);
 	void (*wlan_set_channel)(int channel);
 	int (*mxchip_active_scan)(char*ssid, int is_adv);
 	int (*send_easylink_minus)(uint32_t ip, char *ssid, char *key)	;
 	int (*mxos_wlan_get_channel)(void);
-    merr_t (*wifi_manage_custom_ie_add)(wlan_if_t wlan_if, uint8_t *custom_ie, uint32_t len);
-    merr_t (*wifi_manage_custom_ie_delete)(wlan_if_t wlan_if);
+    merr_t (*wifi_manage_custom_ie_add)(uint8_t wlan_if, uint8_t *custom_ie, uint32_t len);
+    merr_t (*wifi_manage_custom_ie_delete)(uint8_t wlan_if);
     int (*wlan_inject_frame)(const uint8_t *buff, size_t len);
 	int (*mxos_wlan_monitor_no_easylink)(void);
 	int (*wifi_set_country)(int country_code);
-	int (*wlan_rx_mgnt_set)(int enable, mgnt_handler_t cb);
+	int (*wlan_rx_mgnt_set)(int enable, void *cb);
 	void (*autoconfig_start)(int seconds, int mode);
     void (*wlan_set_softap_tdma)(int value);
     int (*wifi_off_fastly)(void);

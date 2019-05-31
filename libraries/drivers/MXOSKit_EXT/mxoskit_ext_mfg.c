@@ -246,7 +246,7 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
                 //mos_sleep_ms(500);
 
                 scanap_done = false;
-                mwifi_softap_startScan( );
+                mwifi_scan( NULL );
                 while ( (!scanap_done) || (kNoErr != mos_semphr_acquire(mfg_test_state_change_sem, MOS_WAIT_FOREVER )) )
                     ;
                 break;

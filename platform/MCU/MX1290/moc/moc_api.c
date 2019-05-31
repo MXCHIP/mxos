@@ -3,41 +3,20 @@
 
 extern const mxos_api_t *lib_api_p;
 
-typedef struct _network_InitTypeDef_st 
-{ 
-  char wifi_mode;               /**< DHCP mode: @ref wlanInterfaceTypedef.*/
-  char wifi_ssid[32];           /**< SSID of the wlan needs to be connected.*/
-  char wifi_key[64];            /**< Security key of the wlan needs to be connected, ignored in an open system.*/
-  char local_ip_addr[16];       /**< Static IP configuration, Local IP address. */
-  char net_mask[16];            /**< Static IP configuration, Netmask. */
-  char gateway_ip_addr[16];     /**< Static IP configuration, Router IP address. */
-  char dnsServer_ip_addr[16];   /**< Static IP configuration, DNS server IP address. */
-  char dhcpMode;                /**< DHCP mode, @ref DHCP_Disable, @ref DHCP_Client and @ref DHCP_Server. */
-  char reserved[32];            
-  int  wifi_retry_interval;     /**< Retry interval if an error is occured when connecting an access point, 
-                                     time unit is millisecond. */
-} network_InitTypeDef_st; 
-
 /* WIFI MGR */
-merr_t StartNetwork(mwifi_softap_attr_t* attr)
+merr_t StartNetwork(void* attr)
 {
-	network_InitTypeDef_st wNetConfig;
-	memset(&wNetConfig, 0x00, sizeof(wNetConfig));
-	memcpy(wNetConfig.wifi_ssid, attr, sizeof(mwifi_softap_attr_t));
-    wNetConfig.wifi_mode = Soft_AP;
-    wNetConfig.dhcpMode = DHCP_Server;
-
 	return lib_api_p->mwifi_softap_start(attr);
 }
-merr_t StartAdvNetwork(wifi_connect_attr_t* attr)
+merr_t StartAdvNetwork(void* attr)
 {
 	return lib_api_p->mwifi_connect(attr);
 }
-merr_t getNetPara(IPStatusTypedef *outNetpara, WiFi_Interface inInterface)
+merr_t getNetPara(void *outNetpara, uint8_t inInterface)
 {
 	return lib_api_p->mwifi_get_ip(outNetpara, inInterface);
 }
-merr_t CheckNetLink(LinkStatusTypeDef *outStatus)
+merr_t CheckNetLink(void *outStatus)
 {
 	return lib_api_p->mwifi_get_link_info(outStatus);
 }
@@ -117,22 +96,6 @@ int mxos_wlan_monitor_rx_type(int type)
 {
 	return lib_api_p->mxos_wlan_monitor_rx_type(type);
 }
-int mwifi_monitor_start(void)
-{
-	return lib_api_p->mwifi_monitor_start();
-}
-int mwifi_monitor_stop(void)
-{
-	return lib_api_p->mwifi_monitor_stop();
-}
-int mwifi_monitor_set_channel(uint8_t channel)
-{
-	return lib_api_p->mwifi_monitor_set_channel((int)channel);
-}
-void mwifi_monitor_reg_cb(monitor_cb_t fn)
-{
-	lib_api_p->mwifi_monitor_reg_cb(fn);
-}
 
 int mxchip_active_scan(char*ssid, int is_adv)
 {
@@ -144,12 +107,7 @@ void wlan_set_channel(int channel)
     lib_api_p->wlan_set_channel(channel);
 }
 
-merr_t mwifi_custom_ie_add(wlan_if_t wlan_if, uint8_t *custom_ie, uint32_t len)
-{
-	return lib_api_p->wifi_manage_custom_ie_add(wlan_if, custom_ie, len);
-}
-
-merr_t mxos_wlan_custom_ie_delete(wlan_if_t wlan_if, custom_ie_delete_op_t op, uint8_t *option_data, uint32_t len)
+merr_t mxos_wlan_custom_ie_delete(uint8_t wlan_if, uint8_t op, uint8_t *option_data, uint32_t len)
 {
 	return lib_api_p->wifi_manage_custom_ie_delete(wlan_if);
 }
@@ -309,11 +267,6 @@ WEAK void iperf_Command(char *pcWriteBuffer, int xWriteBufferLen, int argc, char
 int mxos_wlan_driver_version( char* outVersion, uint8_t inLength )
 {
 	return lib_api_p->mxos_wlan_driver_version(outVersion, inLength);
-}
-
-void mwifi_get_mac( uint8_t *mac )
-{
-	lib_api_p->wlan_get_mac_address(mac);
 }
 
 void mwifi_get_mac_by_interface( wlan_if_t wlan_if, uint8_t *mac )
@@ -719,13 +672,6 @@ uint32_t RNG_GetRandomNumber(void)
 int wlan_inject_frame(const uint8_t *buff, size_t len)
 {
 	return lib_api_p->wlan_inject_frame(buff, len);
-}
-
-merr_t mwifi_monitor_send_frame(uint8_t *buffer, uint32_t length)
-{
-	// I don't know the return value;
-	lib_api_p->wlan_inject_frame(buffer, length);
-	return kNoErr;
 }
 
 void mxos_mcu_powersave_config(int enable)

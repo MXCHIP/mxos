@@ -80,7 +80,8 @@ void easylink_softap_thread( void *inContext )
 {
     merr_t err = kNoErr;
     system_context_t *context = (system_context_t *) inContext;
-    mwifi_softap_attr_t wNetConfig;
+    char wifi_ssid[32]; 
+    mwifi_ip_attr_t ip_attr;
 
     easylinkIndentifier = 0x0;
     easylink_success = false;
@@ -93,21 +94,20 @@ void easylink_softap_thread( void *inContext )
     easylink_connect_sem = mos_semphr_new( 1 );
 
 restart:
-    mxosWlanSuspend( );
+    mwifi_softap_stop( );
     mos_sleep_ms( 20 );
 
     mxos_system_delegate_config_will_start( );
 
-    memset( &wNetConfig, 0, sizeof(mwifi_softap_attr_t) );
-    snprintf( wNetConfig.wifi_ssid, 32, "EasyLink_%c%c%c%c%c%c",
+    snprintf( wifi_ssid, 32, "EasyLink_%c%c%c%c%c%c",
               context->mxosStatus.mac[9], context->mxosStatus.mac[10], context->mxosStatus.mac[12],
               context->mxosStatus.mac[13], context->mxosStatus.mac[15], context->mxosStatus.mac[16] );
-    strcpy( (char*) wNetConfig.wifi_key, "" );
-    strcpy( (char*) wNetConfig.local_ip_addr, "10.10.10.1" );
-    strcpy( (char*) wNetConfig.net_mask, "255.255.255.0" );
-    strcpy( (char*) wNetConfig.gateway_ip_addr, "10.10.10.1" );
-    mwifi_softap_start( &wNetConfig );
-    system_log("Establish soft ap: %s.....", wNetConfig.wifi_ssid);
+    strcpy( ip_attr.localip, "10.10.10.1" );
+    strcpy( ip_attr.netmask, "255.255.255.0" );
+    strcpy( ip_attr.gateway, "10.10.10.1" );
+    strcpy( ip_attr.dnserver, "10.10.10.1" );
+    mwifi_softap_start( wifi_ssid, "", 6, &ip_attr);
+    system_log("Establish soft ap: %s.....", wifi_ssid);
 
     /* Start bonjour service for device discovery under soft ap mode */
     err = easylink_bonjour_start( Soft_AP, 0, context );
@@ -139,13 +139,13 @@ restart:
         /* Easylink force exit by user, clean and exit */
         if ( err != kNoErr && easylink_thread_force_exit )
         {
-            mxosWlanSuspend( );
+            mwifi_softap_stop( );
             system_log("EasyLink connection canceled by user");
             goto exit;
         }
 
         /*SSID or Password is not correct, module cannot connect to wlan, so restart EasyLink again*/
-        require_noerr_action_string( err, restart, mxosWlanSuspend(), "Re-start easylink softap mode" );
+        require_noerr_action_string( err, restart, mwifi_softap_stop(), "Re-start easylink softap mode" );
         mxos_system_delegate_config_success( CONFIG_BY_SOFT_AP );
 
         /* Start bonjour service for new device discovery */

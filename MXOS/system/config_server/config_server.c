@@ -377,7 +377,7 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
   configContext_t *http_context = (configContext_t *)inHeader->userContext;
   mxos_logic_partition_t* ota_partition = mhal_flash_get_info( MXOS_PARTITION_OTA_TEMP );
   char name[50];
-  IPStatusTypedef ip;
+  mwifi_ip_attr_t ip;
   mwifi_get_ip(&ip, INTERFACE_STA);
 
   json_object *sectors, *sector = NULL;
@@ -434,16 +434,16 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
       err = config_server_create_bool_cell(sector, "DHCP",            inContext->flashContentInRam.mxos_config.dhcpEnable,   "RW");
       require_noerr(err, exit);
       /*Local cell*/
-      err = config_server_create_string_cell(sector, "IP address",  ip.ip,   "RW", NULL);
+      err = config_server_create_string_cell(sector, "IP address",  ip.localip,   "RW", NULL);
       require_noerr(err, exit);
       /*Netmask cell*/
-      err = config_server_create_string_cell(sector, "Net Mask",    ip.mask,   "RW", NULL);
+      err = config_server_create_string_cell(sector, "Net Mask",    ip.netmask,   "RW", NULL);
       require_noerr(err, exit);
       /*Gateway cell*/
-      err = config_server_create_string_cell(sector, "Gateway",     ip.gate,   "RW", NULL);
+      err = config_server_create_string_cell(sector, "Gateway",     ip.gateway,   "RW", NULL);
       require_noerr(err, exit);
       /*DNS server cell*/
-      err = config_server_create_string_cell(sector, "DNS Server",  ip.dns, "RW", NULL);
+      err = config_server_create_string_cell(sector, "DNS Server",  ip.dnserver, "RW", NULL);
       require_noerr(err, exit);
 #endif
       

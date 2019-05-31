@@ -511,11 +511,11 @@ static int get_config_idx_from_ip(uint32_t incoming_ip)
 {
 	int i, ret = -1;
 	uint32_t interface_ip, interface_mask;
-	IPStatusTypedef interface_ip_info;
+	mwifi_ip_attr_t interface_ip_info;
 	for (i = 0; i < MDNS_MAX_SERVICE_CONFIG; i++) {
 	    mwifi_get_ip(&interface_ip_info, config_g[i].iface_idx);
-	    interface_ip = inet_addr(interface_ip_info.ip);
-	    interface_mask = inet_addr(interface_ip_info.mask);
+	    interface_ip = inet_addr(interface_ip_info.localip);
+	    interface_mask = inet_addr(interface_ip_info.netmask);
 
         if (interface_ip == incoming_ip) // from myself.
             return -1;
@@ -559,10 +559,10 @@ static int get_config_idx_from_iface(netif_t iface_idx)
 static uint32_t get_interface_ip(int config_idx)
 {
 	uint32_t ip;
-	IPStatusTypedef interface_ip_info;
+	mwifi_ip_attr_t interface_ip_info;
 
 	mwifi_get_ip(&interface_ip_info, config_g[config_idx].iface_idx);
-	ip = inet_addr(interface_ip_info.ip);
+	ip = inet_addr(interface_ip_info.localip);
 	return ip;
 }
 

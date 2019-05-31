@@ -53,7 +53,7 @@
 #include "mxos_common.h"
 #include "mos.h"
 #include "mos_worker.h"
-#include "mxos_wlan.h"
+#include "mwifi.h"
 #include "mxos_eth.h"
 #include "mxos_socket.h"
 #include "mxos_security.h"

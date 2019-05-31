@@ -26,9 +26,9 @@
 extern "C" {
 #endif
 
-merr_t easylink_bonjour_start( WiFi_Interface interface, uint32_t easyLink_id, system_context_t * const inContext );
-merr_t easylink_bonjour_update( WiFi_Interface interface, uint32_t easyLink_id, system_context_t * const inContext );
-void easylink_remove_bonjour( WiFi_Interface interface );
+merr_t easylink_bonjour_start( mwifi_if_t interface, uint32_t easyLink_id, system_context_t * const inContext );
+merr_t easylink_bonjour_update( mwifi_if_t interface, uint32_t easyLink_id, system_context_t * const inContext );
+void easylink_remove_bonjour( mwifi_if_t interface );
 
 
 merr_t easylink_softap_start( system_context_t * const inContext );

@@ -55,12 +55,7 @@
 extern void init_platform( void );
 extern int application_start( void );
 extern void mxos_rtos_init( void );
-extern void ApListCallback( ScanResult *pApList );
-extern void ApListAdvCallback( ScanResult_adv *pApAdvList );
-extern void WifiStatusHandler( WiFiEvent status );
-extern void connected_ap_info( apinfo_adv_t *ap_info, char *key, int key_len );
-extern void NetCallback( IPStatusTypedef *pnet );
-extern void RptConfigmodeRslt( mwifi_softap_attr_t *nwkpara );
+extern void RptConfigmodeRslt( void *nwkpara );
 extern void easylink_user_data_result( int datalen, char*data );
 extern void socket_connected( int fd );
 extern void dns_ip_set( uint8_t *hostname, uint32_t ip );
@@ -70,6 +65,12 @@ extern void mxos_rtos_stack_overflow( char *taskname );
 
 /* MOC main function, called by MOC kernel */
 void moc_app_main( const mxos_api_t *lib_api_t );
+
+static void ApListCallback( void *pApList );
+static void ApListAdvCallback( void *pApAdvList );
+static void WifiStatusHandler( uint8_t status );
+static void connected_ap_info( void *ap_info, char *key, int key_len );
+static void NetCallback( void *pnet );
 
 /******************************************************
 *               Variables Definitions
@@ -189,5 +190,84 @@ void moc_app_main( const mxos_api_t *moc_kernel_apis )
 
 }
 
+// wrap functions
+typedef struct _ScanResult_adv
+{
+    char ApNum;
+    struct
+    {
+        char ssid[32];
+        char bssid[6];
+        char channel;
+        uint8_t security;
+        int16_t rssi;
+    } * ApList;
+} ScanResult_adv;
 
+typedef struct
+{
+    char ssid[32];
+    char bssid[6];
+    uint8_t channel;
+    uint8_t security;
+} apinfo_adv_t;
 
+void mwifi_scan_results_cb(int num, mwifi_ap_info_t *ap_list);
+void mwifi_status_cb(uint8_t status);
+void mwifi_connected_ap_info_cb(mwifi_link_info_t *info, char *key, int key_len);
+
+static void ApListCallback( void *pApList )
+{
+    
+}
+
+static void ApListAdvCallback( void *p )
+{
+    int num;
+    mwifi_ap_info_t *ap_list;
+
+    ScanResult_adv *pApAdvList = (ScanResult_adv *)p;
+
+    num = pApAdvList->ApNum;
+    if ((ap_list = malloc(num * sizeof(mwifi_ap_info_t))) == NULL)
+        return;
+
+    for (int i = 0; i < num; i++)
+    {
+        ap_list[i].rssi = pApAdvList->ApList[i].rssi;
+        memcpy(ap_list[i].ssid, pApAdvList->ApList[i].ssid, 32);
+        memcpy(ap_list[i].bssid, pApAdvList->ApList[i].bssid, 6);
+        ap_list[i].channel = pApAdvList->ApList[i].channel;
+        ap_list[i].security = pApAdvList->ApList[i].security;
+    }
+
+    mwifi_scan_results_cb(num, ap_list);
+
+    free(ap_list);
+
+}
+static void WifiStatusHandler( uint8_t status )
+{
+    mwifi_status_cb(status);
+}
+static void connected_ap_info( void *p, char *key, int key_len )
+{
+    mwifi_link_info_t link_info;
+    apinfo_adv_t *ap_info = (apinfo_adv_t *)p;
+
+    memset(&link_info, 0, sizeof(mwifi_link_info_t));
+
+    link_info.is_connected = 1;
+    memcpy(link_info.ssid, ap_info->ssid, 32);
+    memcpy(link_info.bssid, ap_info->bssid, 6);
+    memcpy(link_info.key, key, key_len);
+    link_info.channel = ap_info->channel;
+    link_info.security = ap_info->security;
+
+    mwifi_connected_ap_info_cb(&link_info, key, key_len);
+
+}
+static void NetCallback( void *pnet )
+{
+    
+}

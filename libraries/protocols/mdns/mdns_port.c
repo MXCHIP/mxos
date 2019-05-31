@@ -367,7 +367,7 @@ int mdns_send_msg(struct mdns_message *m, int sock, unsigned short port, netif_t
 
     int size, len;
     uint32_t ip;
-    IPStatusTypedef interface_ip_status;
+    mwifi_ip_attr_t interface_ip_status;
 
     if (sock == -1)
         return 0;
@@ -376,7 +376,7 @@ int mdns_send_msg(struct mdns_message *m, int sock, unsigned short port, netif_t
     size = (unsigned int)m->cur - (unsigned int)m->header;
 
     mwifi_get_ip(&interface_ip_status, out_interface);
-    ip = inet_addr(interface_ip_status.ip);
+    ip = inet_addr(interface_ip_status.localip);
 
 #ifdef CONFIG_IPV6
     int i, ipv6_valid;

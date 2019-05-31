@@ -207,7 +207,7 @@ restart:
     mxos_system_delegate_config_will_start( );
     system_log("Start AWS mode");
 
-    mwifi_softap_startAws( EasyLink_TimeOut / 1000 );
+    mwifi_start_aws( EasyLink_TimeOut / 1000 );
     while( mos_semphr_acquire(aws_sem, 0 ) == kNoErr );
     err = mos_semphr_acquire(aws_sem, MOS_WAIT_FOREVER );
 
@@ -234,13 +234,13 @@ restart:
         /* AWS force exit by user, clean and exit */
         if( err != kNoErr && aws_thread_force_exit )
         {
-            mxosWlanSuspend();
+            mwifi_disconnect();
             system_log("AWS connection canceled by user");
             goto exit;
         }
 
         /*SSID or Password is not correct, module cannot connect to wlan, so restart AWS again*/
-        require_noerr_action_string( err, restart, mxosWlanSuspend(), "Re-start AWS mode" );
+        require_noerr_action_string( err, restart, mwifi_disconnect(), "Re-start AWS mode" );
         mxos_system_delegate_config_success( CONFIG_BY_AWS );
 
 /* mxos_config.h can define MXOS_AWS_NOTIFY_DISABLE to disable send aws notification */

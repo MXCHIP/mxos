@@ -26,7 +26,7 @@
 #include "mos.h"
 #include "mos_worker.h"
 #include "mxos_eth.h"
-#include "mxos_wlan.h"
+#include "mwifi.h"
 
 /******************************************************
  *                      Macros

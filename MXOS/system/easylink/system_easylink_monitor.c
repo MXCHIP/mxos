@@ -249,7 +249,7 @@ restart:
     mxos_system_delegate_config_will_start( );
     system_log("Start easylink monitor mode");
     mxos_easylink_monitor_delegate_will_start( );
-    mxosWlanSuspend();
+    mwifi_disconnect();
     mwifi_monitor_start( );
 
     wlan_channel_walker = MXOS_TRUE;
@@ -285,7 +285,7 @@ restart:
         /* Easylink force exit by user, clean and exit */
         if( err != kNoErr && easylink_thread_force_exit )
         {
-            mxosWlanSuspend();
+            mwifi_disconnect();
             system_log("EasyLink connection canceled by user");
             goto exit;
         }
@@ -298,7 +298,7 @@ restart:
             connect_fail_config = mxos_system_delegate_config_result( source, MXOS_FALSE );
             if ( RESTART_EASYLINK == connect_fail_config ) {
                 system_log("Re-start easylink combo mode");
-                mxosWlanSuspend( );
+                mwifi_disconnect( );
                 goto restart;
             } else {
                 system_log("exit easylink combo mode");
@@ -346,16 +346,16 @@ merr_t mxos_easylink_monitor_channel_walker( mxos_bool_t enable, uint32_t interv
     return kNoErr;
 }
 
-merr_t mxos_easylink_monitor_save_result( mwifi_softap_attr_t *nwkpara )
+merr_t mxos_easylink_monitor_save_result( mwifi_link_info_t *nwkpara )
 {
     system_context_t * context = system_context( );
 
     if( context == NULL ) return kNotPreparedErr;
 
-    memcpy( context->flashContentInRam.mxos_config.ssid, nwkpara->wifi_ssid, maxSsidLen );
+    memcpy( context->flashContentInRam.mxos_config.ssid, nwkpara->ssid, maxSsidLen );
     memset( context->flashContentInRam.mxos_config.bssid, 0x0, 6 );
-    memcpy( context->flashContentInRam.mxos_config.user_key, nwkpara->wifi_key, maxKeyLen );
-    context->flashContentInRam.mxos_config.user_keyLength = strlen( nwkpara->wifi_key );
+    memcpy( context->flashContentInRam.mxos_config.user_key, nwkpara->key, maxKeyLen );
+    context->flashContentInRam.mxos_config.user_keyLength = strlen( nwkpara->key );
     context->flashContentInRam.mxos_config.dhcpEnable = true;
 
     system_log("Get SSID: %s, Key: %s", context->flashContentInRam.mxos_config.ssid, context->flashContentInRam.mxos_config.user_key);

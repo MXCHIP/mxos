@@ -6,11 +6,6 @@
 
 #include "merr.h"
 
-enum
-{
-  STATION_INTERFACE,
-  SOFTAP_INTERFACE,
-};
 typedef uint8_t mwifi_if_t;
 
 enum
@@ -51,9 +46,9 @@ typedef struct
 {
   int is_connected; /**< The link to wlan is established or not, 0: disconnected, 1: connected. */
   int rssi;         /**< Signal strength of the current connected AP */
-  uint8_t ssid[33]; /**< SSID of the current connected wlan */
+  char ssid[33]; /**< SSID of the current connected wlan */
   uint8_t bssid[6]; /**< BSSID of the current connected wlan */
-  uint8_t key[65];  /**< The passphrase/PSK of the connected AP */
+  char key[65];  /**< The passphrase/PSK of the connected AP */
   int channel;      /**< Channel of the current connected wlan */
   mwifi_security_t security;
 } mwifi_link_info_t;
@@ -61,7 +56,7 @@ typedef struct
 typedef struct
 {
   int rssi;                  /**< Signal strength of the AP */
-  uint8_t ssid[33];          /**< SSID of the AP */
+  char ssid[33];          /**< SSID of the AP */
   uint8_t bssid[6];          /**< BSSID of the AP */
   int channel;               /**< Channel of the AP */
   mwifi_security_t security; /**< security of the AP */
@@ -76,17 +71,6 @@ enum custom_ie_delete_op_e
 };
 typedef uint8_t mwifi_custom_ie_remove_type_t;
 
-enum
-{
-  NOTIFY_STATION_UP = 1,
-  NOTIFY_STATION_DOWN,
-
-  NOTIFY_AP_UP,
-  NOTIFY_AP_DOWN,
-
-  NOTIFY_ETH_UP,
-  NOTIFY_ETH_DOWN,
-};
 typedef uint8_t mwifi_notify_t;
 
 typedef void (*asso_event_handler_t)(char *buf, int buf_len, int flags, void *handler_user_data);
@@ -124,5 +108,9 @@ merr_t mwifi_reg_mgnt_cb(mwifi_monitor_cb_t func);
 merr_t mwifi_custom_ie_add(mwifi_if_t iface, uint8_t *data, uint32_t size);
 merr_t mwifi_custom_ie_remove(mwifi_if_t iface);
 merr_t mwifi_monitor_start_with_softap(char *ssid, char *key, int channel, mwifi_ip_attr_t *attr, asso_event_handler_t fn);
+
+// 
+merr_t mwifi_start_aws(int timeout);
+merr_t mwifi_aws_stop(void);
 
 #endif

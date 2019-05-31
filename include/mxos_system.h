@@ -375,7 +375,7 @@ merr_t mxos_easylink_monitor_with_easylink( mxos_Context_t * const in_context, m
   * @param  nwkpara: Wlan configurations
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-merr_t mxos_easylink_monitor_save_result( mwifi_softap_attr_t *nwkpara );
+merr_t mxos_easylink_monitor_save_result( mwifi_link_info_t *nwkpara );
 
 /**
   * @brief  Tell EasyLink monitor routine that change wlan channel periodically
@@ -514,7 +514,7 @@ merr_t mxos_system_power_perform( mxos_Context_t* const in_context, mxos_system_
   */
 /*****************************************************************************/
 
-typedef notify_wlan_t WiFiEvent;
+typedef uint8_t WiFiEvent;
 
 /** @brief MXOS system defined notifications */ 
 typedef enum{
@@ -522,7 +522,6 @@ typedef enum{
   mxos_notify_WIFI_SCAN_COMPLETED,        /**< A wlan scan is completed, type: void (*function)(ScanResult *pApList, void* arg)*/  
   mxos_notify_WIFI_STATUS_CHANGED,        /**< Wlan connection status is changed, type: void (*function)(WiFiEvent status, void* arg)*/
   mxos_notify_WiFI_PARA_CHANGED,          /**< Wlan parameters has received (channel, BSSID, key...), called when connect to a wlan, type: void (*function)(apinfo_adv_t *ap_info, char *key, int key_len, void* arg)*/
-  mxos_notify_DHCP_COMPLETED,             /**< MXOS has get the IP address from DHCP server, type: void (*function)(IPStatusTypedef *pnet, void* arg)*/
   mxos_notify_EASYLINK_WPS_COMPLETED,     /**< EasyLink receive SSID, Key, type: void (*function)(mwifi_softap_attr_t *nwkpara, void* arg)*/
   mxos_notify_EASYLINK_GET_EXTRA_DATA,    /**< EasyLink receive extra data, type: void (*function)(int datalen, char*data, void* arg)*/
   mxos_notify_TCP_CLIENT_CONNECTED,       /**< A tcp client has connected to TCP server, type: void (*function)(int fd, void* arg)*/

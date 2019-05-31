@@ -90,7 +90,7 @@ static void FOTA_WifiStatusHandler(WiFiEvent event, void * arg)
   */
 void tftp_ota(void)
 {
-    mwifi_softap_attr_t conf;
+    mwifi_ip_attr_t ip_attr;
     tftp_file_info_t fileinfo;
     uint32_t ipaddr = inet_addr(DEFAULT_OTA_SERVER), flashaddr;
     int filelen, maxretry = 5, len, left, i = 0;
@@ -98,7 +98,8 @@ void tftp_ota(void)
     uint8_t md5_calc[16];
     uint8_t *tmpbuf;
     md5_context ctx;
-    uint8_t mac[6], sta_ip_addr[16];
+    uint8_t mac[6];
+    char sta_ip_addr[16];
     mxos_logic_partition_t* ota_partition = mhal_flash_get_info( MXOS_PARTITION_OTA_TEMP );
     uint16_t crc = 0;
     CRC16_Context contex;
@@ -108,13 +109,10 @@ void tftp_ota(void)
     fota_log("Start OTA");
     mxos_system_notify_remove_all(mxos_notify_WIFI_STATUS_CHANGED);
     mxos_system_notify_remove_all(mxos_notify_WiFI_PARA_CHANGED);
-    mxos_system_notify_remove_all(mxos_notify_DHCP_COMPLETED);
     mxos_system_notify_remove_all(mxos_notify_WIFI_CONNECT_FAILED);
 	  mxos_system_notify_remove_all(mxos_notify_EASYLINK_WPS_COMPLETED);
     mxos_system_notify_register( mxos_notify_WIFI_STATUS_CHANGED, (void *)FOTA_WifiStatusHandler, NULL );
-    mxosWlanStopEasyLink();
-	  mxosWlanStopEasyLinkPlus();
-    mwifi_airkiss_stop();
+    mwifi_monitor_stop();
     mwifi_disconnect();
 	mos_sleep_ms(10);
 		
@@ -125,23 +123,20 @@ void tftp_ota(void)
         return;
     }
     
-    wlan_get_mac_address(mac);
+    mwifi_get_mac(mac);
     
     sprintf((char *)sta_ip_addr, "10.%d.%d.%d", 
         mac[3], mac[4], mac[5]);
         
     fota_log("Staic IP = %s", sta_ip_addr);  
-    
-    memset(&conf, 0, sizeof(mwifi_softap_attr_t));
-    
-    strcpy(conf.wifi_ssid, DEFAULT_OTA_AP);
-    
-    strcpy(conf.net_mask, DEFAULT_OTA_NETMASK);
-    strcpy(conf.local_ip_addr, (char *)sta_ip_addr);
-    
+                
     wifi_up = 0;
     fota_log("Connect to AP %s...", DEFAULT_OTA_AP);
-    mwifi_softap_start(&conf);
+    strcpy( ip_attr.localip, sta_ip_addr );
+    strcpy( ip_attr.netmask, DEFAULT_OTA_NETMASK );
+    strcpy( ip_attr.gateway, "10.10.10.1" );
+    strcpy( ip_attr.dnserver, "10.10.10.1" );
+    mwifi_softap_start( DEFAULT_OTA_AP, "", 6, &ip_attr);
 
     while(wifi_up == 0) {
         mos_sleep_ms(100);
@@ -236,22 +231,10 @@ merr_t start_force_ota()
            return err;
 
 }
-static void mxosNotify_ApListCallback(ScanResult *pApList, mxos_Context_t * const inContext)
+static void mxosNotify_ApListCallback(void *pApList, mxos_Context_t * const inContext)
 {
 	fota_log("ota notify");
     (void)inContext;
-
-    if(pApList->ApNum == 0){
-        if(NULL != force_ota_sem)
-        {
-        	fota_log("set force_ota_sem");
-            mos_semphr_release(force_ota_sem);
-        }
-    }else{
-    	fota_log("num = %d,ssid = %s",pApList->ApNum,pApList->ApList->ssid);
-    	fota_log("start_force_ota");
-        start_force_ota();
-    }
 }
 
 merr_t start_forceota_check()
@@ -266,7 +249,7 @@ merr_t start_forceota_check()
 		require_noerr( err, exit );
 		fota_log("Start scan");
 		force_ota_sem = mos_semphr_new(1);
-		mxchip_active_scan(FORCE_OTA_AP,0);
+		mwifi_scan(FORCE_OTA_AP);
 		err = mos_semphr_acquire(force_ota_sem,MOS_WAIT_FOREVER);
 		if(NULL != force_ota_sem)
 		mos_semphr_delete(force_ota_sem);

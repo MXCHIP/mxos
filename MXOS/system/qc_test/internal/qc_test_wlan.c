@@ -29,15 +29,11 @@
 ******************************************************/
 
 
-static void mxosNotify_ApListCallback( ScanResult *pApList )
+static void mxosNotify_ApListCallback( void *pApList )
 {
     int i = 0;
     char str[48];
     mf_printf( "Scan AP Success:\r\n" );
-    for ( i = 0; i < pApList->ApNum; i++ ) {
-        snprintf(str, 48, "  SSID: %s, RSSI: %d\r\n", pApList->ApList[i].ssid, pApList->ApList[i].rssi);
-        mf_printf( str );
-    }
 }
 
 void qc_scan( void )
@@ -45,7 +41,7 @@ void qc_scan( void )
     /* Register user function when wlan scan is completed */
     mxos_system_notify_register( mxos_notify_WIFI_SCAN_COMPLETED, (void *) mxosNotify_ApListCallback, NULL );
 
-    mwifi_softap_startScan();
+    mwifi_scan( NULL );
 
     mos_sleep_ms(2000);
 }

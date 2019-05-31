@@ -22,7 +22,7 @@
 #include "mxos_common.h"
 #include "mos.h"
 #include "mos_worker.h"
-#include "mxos_wlan.h"
+#include "mwifi.h"
 
 
 #ifndef MXOS_PREBUILT_LIBS
@@ -98,7 +98,7 @@ typedef struct _mxos_config_t
   int             keyLength;
   char            bssid[6];
   int             channel;
-  wlan_sec_type_t security;
+  mwifi_security_t security;
 
   /*Power save configuration*/
   bool            rfPowerSaveEnable;
