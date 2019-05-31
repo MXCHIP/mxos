@@ -69,7 +69,7 @@
 #define USBH_memset               memset
 #define USBH_memcpy               memcpy
     
- /* DEBUG macros */  
+ /* _MXOS_DEBUG_ macros */  
 
   
 #if (USBH_DEBUG_LEVEL > 0)
@@ -91,7 +91,7 @@
                             
                             
 #if (USBH_DEBUG_LEVEL > 2)                         
-#define  USBH_DbgLog(...)   printf("DEBUG : ") ;\
+#define  USBH_DbgLog(...)   printf("_MXOS_DEBUG_ : ") ;\
                             printf(__VA_ARGS__);\
                             printf("\n");
 #else

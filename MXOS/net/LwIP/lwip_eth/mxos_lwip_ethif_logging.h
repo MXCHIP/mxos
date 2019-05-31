@@ -20,7 +20,7 @@
 #define MXOS_LWIP_ETHIF_LOGGING_H_
 
 #include "mxos_opt.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 
 #ifdef __cplusplus
 extern "C" {

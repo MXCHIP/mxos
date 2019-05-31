@@ -37,7 +37,7 @@
 #include "TimeUtils.h"
 #include "SocketUtils.h"
 
-#ifdef DEBUG
+#ifdef _MXOS_DEBUG_
 #define ntp_log(M, ...) custom_log("SNTP", M, ##__VA_ARGS__)
 #define ntp_log_trace() custom_log_trace("SNTP")
 #else
@@ -114,7 +114,7 @@ static merr_t sync_ntp_time( void* arg );
  ******************************************************/
 
 static time_synced_fun time_synced_call_back = NULL;
-static mxos_timed_event_t sync_ntp_time_event;
+static mos_worker_timed_event_t sync_ntp_time_event;
 /* Only support primary and secondary servers */
 static struct in_addr ntp_server[2];
 
@@ -131,11 +131,11 @@ merr_t sntp_start_auto_time_sync( uint32_t interval_ms, time_synced_fun call_bac
     /* Synchronize time with NTP server and schedule for re-sync every one day */
     MxosRandomNumberRead( &random_initial, 1 );
     /* prevent thundering herd scenarios by randomizing per RFC4330 */
-    //mos_thread_delay(300 * (unsigned int)random_initial);
-    mxos_rtos_send_asynchronous_event( MXOS_NETWORKING_WORKER_THREAD, sync_ntp_time, 0 );
+    //mos_sleep_ms(300 * (unsigned int)random_initial);
+    mos_worker_send_async_event( MOS_NETWORKING_WORKER_THREAD, sync_ntp_time, 0 );
     if ( interval_ms < MIN_POLL_INTERVAL )
         interval_ms = MIN_POLL_INTERVAL;
-    mxos_rtos_register_timed_event( &sync_ntp_time_event, MXOS_NETWORKING_WORKER_THREAD, sync_ntp_time, interval_ms,
+    mos_worker_register_timed_event( &sync_ntp_time_event, MOS_NETWORKING_WORKER_THREAD, sync_ntp_time, interval_ms,
                                     0 );
     return err;
 }
@@ -160,7 +160,7 @@ merr_t sntp_clr_server_ip_address( uint32_t index )
 
 merr_t sntp_stop_auto_time_sync( void )
 {
-    return mxos_rtos_deregister_timed_event( &sync_ntp_time_event );
+    return mos_worker_deregister_timed_event( &sync_ntp_time_event );
 }
 
 merr_t sntp_get_time( const struct in_addr *ntp_server_ip, ntp_timestamp_t* timestamp)
@@ -289,7 +289,7 @@ static merr_t sync_ntp_time( void* arg )
         }
         else
         {
-            mos_thread_delay( TIME_BTW_ATTEMPTS );
+            mos_sleep_ms( TIME_BTW_ATTEMPTS );
             ntp_log( "failed, trying again..." );
         }
     }
@@ -310,7 +310,7 @@ static merr_t sync_ntp_time( void* arg )
     }
 
     if ( time_synced_call_back ) time_synced_call_back( );
-#ifdef DEBUG
+#ifdef _MXOS_DEBUG_
     iso8601_time_t iso8601_time;
     mxos_time_get_iso8601_time( &iso8601_time );
     ntp_log("Current time is: %.26s\n", (char*)&iso8601_time);

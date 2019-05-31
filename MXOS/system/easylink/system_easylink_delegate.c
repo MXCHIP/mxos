@@ -24,7 +24,7 @@
 #define SYS_LED_TRIGGER_INTERVAL 100 
 #define SYS_LED_TRIGGER_INTERVAL_AFTER_EASYLINK 500 
 
-static mxos_timer_t _Led_EL_timer;
+static mos_timer_id_t _Led_EL_timer;
 static bool _Led_EL_timer_initialized = false;
 
 static void _led_EL_Timeout_handler( void* arg )
@@ -38,13 +38,13 @@ WEAK void mxos_system_delegate_config_will_start( void )
   /*Led trigger*/
   if(_Led_EL_timer_initialized == true)
   {
-    mos_timer_stop(&_Led_EL_timer);
-    mos_timer_delete( &_Led_EL_timer );
+    mos_timer_stop(_Led_EL_timer);
+    mos_timer_delete(_Led_EL_timer );
     _Led_EL_timer_initialized = false;
   }
 
-  mos_timer_new(&_Led_EL_timer, SYS_LED_TRIGGER_INTERVAL, _led_EL_Timeout_handler, NULL);
-  mos_timer_start(&_Led_EL_timer);
+  _Led_EL_timer = mos_timer_new(SYS_LED_TRIGGER_INTERVAL, _led_EL_Timeout_handler, true, NULL);
+  mos_timer_start(_Led_EL_timer);
   _Led_EL_timer_initialized = true;
   return;
 }
@@ -58,8 +58,8 @@ WEAK void mxos_system_delegate_config_will_stop( void )
 {
   if(_Led_EL_timer_initialized == true)
   {
-    mos_timer_stop(&_Led_EL_timer);
-    mos_timer_delete( &_Led_EL_timer );
+    mos_timer_stop(_Led_EL_timer);
+    mos_timer_delete(_Led_EL_timer );
     _Led_EL_timer_initialized = false;
   }
   mxos_sys_led(true);
@@ -73,13 +73,13 @@ WEAK void mxos_system_delegate_config_recv_ssid ( char *ssid, char *key )
 
   if(_Led_EL_timer_initialized == true)
   {
-    mos_timer_stop(&_Led_EL_timer);
-    mos_timer_delete( &_Led_EL_timer );
+    mos_timer_stop(_Led_EL_timer);
+    mos_timer_delete(_Led_EL_timer );
     _Led_EL_timer_initialized = false;
   }
 
-  mos_timer_new(&_Led_EL_timer, SYS_LED_TRIGGER_INTERVAL_AFTER_EASYLINK, _led_EL_Timeout_handler, NULL);
-  mos_timer_start(&_Led_EL_timer);
+  _Led_EL_timer = mos_timer_new(SYS_LED_TRIGGER_INTERVAL_AFTER_EASYLINK, _led_EL_Timeout_handler, true, NULL);
+  mos_timer_start(_Led_EL_timer);
   _Led_EL_timer_initialized = true;
   return;
 }

@@ -31,7 +31,7 @@
 
 
 #include "StringUtils.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 #include <stddef.h>
 #include <stdarg.h>
 

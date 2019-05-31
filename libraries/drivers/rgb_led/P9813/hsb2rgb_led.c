@@ -16,7 +16,7 @@
  */
 
 #include "mxos_common.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 #include "hsb2rgb_led.h"
 #include "rgb_led.h"
 

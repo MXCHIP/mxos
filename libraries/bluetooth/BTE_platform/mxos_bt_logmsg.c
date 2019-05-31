@@ -23,7 +23,8 @@
 #include "bt_types.h"
 #include "buildcfg.h"
 #include "data_types.h"
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 
 extern int mxos_debug_enabled;
 extern mos_mutex_id_t stdio_tx_mutex;

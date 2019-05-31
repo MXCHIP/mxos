@@ -301,11 +301,11 @@ LWS_VISIBLE LWS_EXTERN void _lws_logv(int filter, const char *format, va_list vl
 LWS_VISIBLE LWS_EXTERN int
 lwsl_timestamp(int level, char *p, int len);
 
-#include "mxos_debug.h"
+#include "mdebug.h"
 
 #ifdef MXOS_PREBUILT_LIBS
 
-#ifdef DEBUG
+#ifdef _MXOS_DEBUG_
 #define CONFIG_LWS_DEBUG            MXOS_DEBUG_ON
 #define CONFIG_LWS_DEBUG_PARSER     MXOS_DEBUG_ON
 #define CONFIG_LWS_DEBUG_HEADER     MXOS_DEBUG_ON

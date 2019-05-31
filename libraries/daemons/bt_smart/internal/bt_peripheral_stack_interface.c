@@ -205,7 +205,7 @@ void peripheral_bt_interface_advertisements_state_change_callback( mxos_bt_ble_a
 {
     if( state == BTM_BLE_ADVERT_OFF && app_advertising_complete_callback != NULL )
     {
-        mxos_rtos_send_asynchronous_event( MXOS_BT_EVT_WORKER_THREAD, app_advertising_complete_callback, NULL );
+        mos_worker_send_async_event( MXOS_BT_EVT_WORKER_THREAD, app_advertising_complete_callback, NULL );
     }
 }
 

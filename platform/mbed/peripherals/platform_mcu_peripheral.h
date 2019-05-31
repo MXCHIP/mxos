@@ -18,7 +18,8 @@
 #define __PLATFORM_MCU_PERIPHERAL_H__
 
 
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 
 #ifdef __cplusplus
 extern "C"

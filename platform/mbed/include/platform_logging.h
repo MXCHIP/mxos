@@ -18,7 +18,7 @@
 #define __PlatformLogging_h__
 
 #include "mxos_common.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 
 #ifdef __cplusplus
 extern "C" {

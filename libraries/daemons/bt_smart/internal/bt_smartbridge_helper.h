@@ -112,10 +112,10 @@ typedef struct
 
 typedef struct 
 {
-    mxos_timer_t        timer;      // MXOS timer object
+    mos_timer_id_t        timer;      // MXOS timer object
     mxos_bool_t         is_started; // is it started?
     mxos_bool_t         one_shot;   // one-shot?
-    timer_handler_t     handler;    // timer expired handler
+    mos_timer_handler_t     handler;    // timer expired handler
     void               *context;    // user context
 } smartbridge_helper_timer_t;
 /******************************************************
@@ -158,7 +158,7 @@ mxos_bool_t smartbridge_helper_timer_stop(smartbridge_helper_timer_t *timer);
 /* This function is used to start or restart a timer.
  * The 'timer' will be restarted if it is active.
  */
-mxos_bool_t smartbridge_helper_timer_start(smartbridge_helper_timer_t *timer, mxos_bool_t one_shot, uint32_t ms, timer_handler_t handler, void *arg);
+mxos_bool_t smartbridge_helper_timer_start(smartbridge_helper_timer_t *timer, mxos_bool_t one_shot, uint32_t ms, mos_timer_handler_t handler, void *arg);
 
 #ifdef __cplusplus
 } /* extern "C" */

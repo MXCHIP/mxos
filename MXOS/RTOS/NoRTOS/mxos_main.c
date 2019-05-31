@@ -22,7 +22,8 @@
 #include <stdlib.h>
 
 #include "mxos_common.h"
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 #include "platform_peripheral.h"
 
 /******************************************************

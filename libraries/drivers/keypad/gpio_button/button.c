@@ -36,7 +36,7 @@ static void button_irq_handler( void* arg )
                            (_context->idle == IOBUTTON_IDLE_STATE_HIGH) ? IRQ_TRIGGER_RISING_EDGE : IRQ_TRIGGER_FALLING_EDGE,
                            button_irq_handler, _context );
         _context->start_time = mos_time() + 1;
-        mos_timer_start( &_context->_user_button_timer );
+        mos_timer_start(_context->_user_button_timer );
     }
     else {
         interval = (int) mos_time() + 1 - _context->start_time;
@@ -48,7 +48,7 @@ static void button_irq_handler( void* arg )
         mhal_gpio_int_on( _context->gpio,
                            (_context->idle == IOBUTTON_IDLE_STATE_HIGH) ? IRQ_TRIGGER_FALLING_EDGE : IRQ_TRIGGER_RISING_EDGE,
                            button_irq_handler, _context );
-        mos_timer_stop( &_context->_user_button_timer );
+        mos_timer_stop(_context->_user_button_timer );
         _context->start_time = 0;
     }
 }
@@ -74,8 +74,8 @@ void button_init( button_context_t *btn_context )
         mhal_gpio_int_on( btn_context->gpio, IRQ_TRIGGER_RISING_EDGE, button_irq_handler, btn_context );
     }
 
-    mos_timer_new( &btn_context->_user_button_timer, btn_context->long_pressed_timeout,
-                          button_timeout_handler, btn_context );
+    btn_context->_user_button_timer = mos_timer_new(btn_context->long_pressed_timeout,
+                          button_timeout_handler, true, btn_context );
 
 }
 

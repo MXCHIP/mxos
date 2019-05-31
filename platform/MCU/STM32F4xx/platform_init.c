@@ -23,7 +23,8 @@
 #include "platform_logging.h"
 #include <string.h> // For memcmp
 #include "crt0.h"
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 #include "platform_init.h"
 
 

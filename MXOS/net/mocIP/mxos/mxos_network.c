@@ -21,12 +21,13 @@
 #include <stdlib.h>
 
 #include "mxos_common.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 #include "mxos_network.h"
 
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 #include "mxos_eth.h"
-#include "mxos_wlan.h"
+#include "mwifi.h"
 
 /******************************************************
  *                      Macros

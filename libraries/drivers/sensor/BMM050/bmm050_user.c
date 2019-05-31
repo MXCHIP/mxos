@@ -406,7 +406,7 @@ s8 BMM050_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 void BMM050_delay_msek(u32 msek)
 {
 	/*Here you can write your own delay routine*/
-  mxos_thread_msleep(msek);
+  mos_sleep_ms(msek);
 }
 #endif
 

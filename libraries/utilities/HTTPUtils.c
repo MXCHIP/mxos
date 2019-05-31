@@ -29,7 +29,7 @@
  ******************************************************************************
  */
 
-#include "mxos_debug.h"
+#include "mdebug.h"
 #include "StringUtils.h"
 #include "HTTPUtils.h"
 #include "mxos_board.h"

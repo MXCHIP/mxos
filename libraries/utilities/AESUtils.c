@@ -33,7 +33,7 @@
 #include "AESUtils.h"
 
 #include "mxos_common.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 
 #if( AES_UTILS_HAS_COMMON_CRYPTO_GCM )
     #include <CommonCrypto/CommonCryptorSPI.h>
@@ -116,7 +116,7 @@ merr_t    AES_CTR_Update( AES_CTR_Context *inContext, const void *inSrc, size_t 
     
     // inSrc and inDst may be the same, but otherwise, the buffers must not overlap.
     
-#if( DEBUG )
+#if( _MXOS_DEBUG_ )
     if( inSrc != inDst ) check_ptr_overlap( inSrc, inLen, inDst, inLen );
 #endif
     
@@ -582,9 +582,12 @@ merr_t    AES_ECB_Update( AES_ECB_Context *inContext, const void *inSrc, size_t 
     
     // inSrc and inDst may be the same, but otherwise, the buffers must not overlap.
     
-#if( DEBUG )
+#if( _MXOS_DEBUG_ )
     if( inSrc != inDst ) check_ptr_overlap( inSrc, inLen, inDst, inLen );
-    if( ( inLen % kAES_ECB_Size ) != 0 ) aes_log( "ECB doesn't support non-block-sized operations (%d bytes)", (int)inLen );
+    if( ( inLen % kAES_ECB_Size ) != 0 )
+    {
+        aes_log( "ECB doesn't support non-block-sized operations (%d bytes)", (int)inLen );
+    }
 #endif
     
     src = (const uint8_t *) inSrc;

@@ -30,7 +30,7 @@ endif
 
 ifneq ($(filter $(subst ., ,$(COMPONENTS)),mocOS mocIP),)
 $(info MXOS core based on MOC ! )
-$(NAME)_SOURCES += ../../platform/MCU/$(HOST_MCU_FAMILY)/moc/moc_api.c 
+$(NAME)_SOURCES += ../../platform/MCU/$(HOST_MCU_FAMILY)/moc/moc_api.c ../../platform/MCU/$(HOST_MCU_FAMILY)/moc/moc_api_wifi.c 
                    
 GLOBAL_INCLUDES += . \
                    ../../platform/MCU/$(HOST_MCU_FAMILY)/moc

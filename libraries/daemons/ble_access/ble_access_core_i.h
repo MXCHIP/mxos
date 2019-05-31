@@ -157,7 +157,7 @@ typedef struct {
     // BT Socket for Every BLE Connection
     mxos_bt_smartbridge_socket_t    socket;
     // A timer for Authentication Process 
-    mxos_timer_t                    timer;
+    mos_timer_id_t                    timer;
     // Authentication State 
     uint8_t                         auth_state;
     // Is used ?

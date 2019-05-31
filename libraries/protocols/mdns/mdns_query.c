@@ -1826,7 +1826,7 @@ static int signal_and_wait_for_query_halt()
 	}
 
 	while (query_enabled && num_iterations--)
-	    mos_thread_delay(check_interval);
+	    mos_sleep_ms(check_interval);
 
 	if (!num_iterations)
 		MDNS_LOG("Error: timed out waiting for mdns querier to stop\r\n");
@@ -1856,9 +1856,7 @@ int query_halt(void)
 		query_enabled = 0;
 	}
 
-	ret = mos_thread_delete(query_thread);
-	if (ret != kNoErr)
-		MDNS_LOG("Warning: failed to delete thread.\r\n");
+	mos_thread_delete(query_thread);
 
 	ret = mdns_socket_close(&ctrl_sock);
 #if CONFIG_DNSSD_QUERY

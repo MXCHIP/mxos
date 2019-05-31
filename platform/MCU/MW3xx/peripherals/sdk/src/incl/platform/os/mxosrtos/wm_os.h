@@ -41,7 +41,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 
 #include <wmerrno.h>
 #include <wm_utils.h>
@@ -50,7 +51,7 @@
 //#include <semdbg.h>
 #include <board.h>
 
-#define OS_WAIT_FOREVER    MXOS_WAIT_FOREVER
+#define OS_WAIT_FOREVER    MOS_WAIT_FOREVER
 
 
 /*** Mutex ***/

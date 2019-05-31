@@ -18,7 +18,7 @@
 
 #include "platform_peripheral.h"
 #include "mxos_common.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 
 #include "rtc_api.h"
 

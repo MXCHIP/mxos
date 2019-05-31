@@ -130,7 +130,7 @@ void *mdns_thread_create(mdns_thread_entry entry, int id)
     void *ret = NULL;
     if (id == MDNS_THREAD_RESPONDER)
     {
-        if ((mdns_responder_thread = mos_thread_new(MXOS_APPLICATION_PRIORITY,
+        if ((mdns_responder_thread = mos_thread_new(MOS_APPLICATION_PRIORITY,
                                     "mdns_resp_thread", (mos_thread_func_t)entry,
                                     MDNS_RESPONDER_THREAD_STACK, 0)) != NULL)
         {
@@ -139,7 +139,7 @@ void *mdns_thread_create(mdns_thread_entry entry, int id)
     }
     else if (id == MDNS_THREAD_QUERIER)
     {
-        if ((mdns_querier_thread = mos_thread_new(MXOS_APPLICATION_PRIORITY,
+        if ((mdns_querier_thread = mos_thread_new(MOS_APPLICATION_PRIORITY,
                                     "mdns_querier_thread", (mos_thread_func_t)entry,
                                     MDNS_QUERIER_THREAD_STACK, 0)) != NULL)
         {
@@ -367,7 +367,7 @@ int mdns_send_msg(struct mdns_message *m, int sock, unsigned short port, netif_t
 
     int size, len;
     uint32_t ip;
-    IPStatusTypedef interface_ip_status;
+    mwifi_ip_attr_t interface_ip_status;
 
     if (sock == -1)
         return 0;
@@ -376,7 +376,7 @@ int mdns_send_msg(struct mdns_message *m, int sock, unsigned short port, netif_t
     size = (unsigned int)m->cur - (unsigned int)m->header;
 
     mwifi_get_ip(&interface_ip_status, out_interface);
-    ip = inet_addr(interface_ip_status.ip);
+    ip = inet_addr(interface_ip_status.localip);
 
 #ifdef CONFIG_IPV6
     int i, ipv6_valid;

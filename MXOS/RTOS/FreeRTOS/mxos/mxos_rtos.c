@@ -18,13 +18,14 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 //#include "qc_test.h"
 #include "mxos_rtos_internal.h"
 #include "mxos_rtos_common.h"
 #include "FreeRTOS.h"
 #include "projdefs.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 #include "platform_core.h"
 #include "queue.h"
 #include "semphr.h"
@@ -172,7 +173,7 @@ void software_init_hook_rtos (void)
 #endif
 
     /* Create an initial thread */
-    _xTaskCreate( (TaskFunction_t)pre_main, "app_thread", (unsigned short)(app_stack_size/sizeof( portSTACK_TYPE )), NULL, MXOS_PRIORITY_TO_NATIVE_PRIORITY(MXOS_APPLICATION_PRIORITY), &app_thread_handle);
+    _xTaskCreate( (TaskFunction_t)pre_main, "app_thread", (unsigned short)(app_stack_size/sizeof( portSTACK_TYPE )), NULL, MXOS_PRIORITY_TO_NATIVE_PRIORITY(MOS_APPLICATION_PRIORITY), &app_thread_handle);
 
     /* Start the FreeRTOS scheduler - this call should never return */
     vTaskStartScheduler( );
@@ -242,7 +243,7 @@ merr_t mos_thread_join( mos_thread_id_t id )
 
     while ( xTaskIsTaskFinished( tmp ) != pdTRUE )
     {
-        mos_thread_delay( 10 );
+        mos_sleep_ms( 10 );
     }
     return kNoErr;
 }
@@ -410,7 +411,7 @@ merr_t mxos_rtos_check_stack( void )
     return kNoErr;
 }
 
-merr_t mxos_rtos_thread_force_awake( mos_thread_id_t* thread )
+merr_t mos_thread_awake( mos_thread_id_t* thread )
 {
 #if FreeRTOS_VERSION_MAJOR < 9
     vTaskForceAwake(*thread);
@@ -506,7 +507,7 @@ merr_t mos_mutex_lock( mos_mutex_id_t id )
 {
     check_string(id != NULL, "Bad args");
 
-    if ( xSemaphoreTake( id, MXOS_WAIT_FOREVER ) != pdPASS )
+    if ( xSemaphoreTake( id, MOS_WAIT_FOREVER ) != pdPASS )
     {
         return kGeneralErr;
     }
@@ -631,7 +632,7 @@ bool mxos_rtos_is_queue_full( mos_queue_id_t* queue )
 
 static void timer_callback( xTimerHandle handle )
 {
-    mxos_timer_t* timer = (mxos_timer_t*) pvTimerGetTimerID( handle );
+    mos_timer_id_t* timer = (mos_timer_id_t*) pvTimerGetTimerID( handle );
 
     if ( timer->function )
     {
@@ -639,7 +640,7 @@ static void timer_callback( xTimerHandle handle )
     }
 }
 
-merr_t mos_timer_new( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
+merr_t mos_timer_new( mos_timer_id_t* timer, uint32_t time_ms, mos_timer_handler_t function, void* arg )
 {
     check_string(timer != NULL, "Bad args");
 
@@ -656,7 +657,7 @@ merr_t mos_timer_new( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t fun
 }
 
 
-merr_t mos_timer_start( mxos_timer_t* timer )
+merr_t mos_timer_start( mos_timer_id_t* timer )
 {
     signed portBASE_TYPE result;
 
@@ -665,7 +666,7 @@ merr_t mos_timer_start( mxos_timer_t* timer )
         result = xTimerStartFromISR(timer->handle, &xHigherPriorityTaskWoken );
         portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );
     } else
-        result = xTimerStart( timer->handle, MXOS_WAIT_FOREVER );
+        result = xTimerStart( timer->handle, MOS_WAIT_FOREVER );
 
     if ( result != pdPASS )
     {
@@ -675,7 +676,7 @@ merr_t mos_timer_start( mxos_timer_t* timer )
     return kNoErr;
 }
 
-merr_t mos_timer_stop( mxos_timer_t* timer )
+merr_t mos_timer_stop( mos_timer_id_t* timer )
 {
     signed portBASE_TYPE result;
 
@@ -684,7 +685,7 @@ merr_t mos_timer_stop( mxos_timer_t* timer )
         result = xTimerStopFromISR(timer->handle, &xHigherPriorityTaskWoken );
         portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );
     } else
-        result = xTimerStop( timer->handle, MXOS_WAIT_FOREVER );
+        result = xTimerStop( timer->handle, MOS_WAIT_FOREVER );
 
     if ( result != pdPASS )
     {
@@ -694,7 +695,7 @@ merr_t mos_timer_stop( mxos_timer_t* timer )
     return kNoErr;
 }
 
-merr_t mxos_rtos_reload_timer( mxos_timer_t* timer )
+merr_t mxos_rtos_reload_timer( mos_timer_id_t* timer )
 {
     signed portBASE_TYPE result;
 
@@ -703,7 +704,7 @@ merr_t mxos_rtos_reload_timer( mxos_timer_t* timer )
         result = xTimerResetFromISR(timer->handle, &xHigherPriorityTaskWoken );
         portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );
     } else
-        result = xTimerReset( timer->handle, MXOS_WAIT_FOREVER );
+        result = xTimerReset( timer->handle, MOS_WAIT_FOREVER );
 
     if ( result != pdPASS )
     {
@@ -713,9 +714,9 @@ merr_t mxos_rtos_reload_timer( mxos_timer_t* timer )
     return kNoErr;
 }
 
-merr_t mos_timer_delete( mxos_timer_t* timer )
+merr_t mos_timer_delete( mos_timer_id_t* timer )
 {
-    if ( xTimerDelete( timer->handle, MXOS_WAIT_FOREVER ) != pdPASS )
+    if ( xTimerDelete( timer->handle, MOS_WAIT_FOREVER ) != pdPASS )
     {
         return kGeneralErr;
     }
@@ -724,7 +725,7 @@ merr_t mos_timer_delete( mxos_timer_t* timer )
 }
 
 
-bool mos_timer_is_runing( mxos_timer_t* timer )
+bool mos_timer_is_runing( mos_timer_id_t* timer )
 {
     return ( xTimerIsTimerActive( timer->handle ) != 0 ) ? true : false;
 }
@@ -821,7 +822,7 @@ mxos_time_t mos_time( void )
  * @return merr_t : kNoErr if delay was successful
  *
  */
-merr_t mos_thread_delay( uint32_t num_ms )
+merr_t mos_sleep_ms( uint32_t num_ms )
 {
     uint32_t ticks;
 
@@ -836,7 +837,7 @@ merr_t mos_thread_delay( uint32_t num_ms )
 
 void mos_sleep( float seconds )
 {
-    mos_thread_delay(seconds * 1000);
+    mos_sleep_ms(seconds * 1000);
 }
 
 void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed portCHAR *pcTaskName )

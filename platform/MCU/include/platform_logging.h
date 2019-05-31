@@ -13,7 +13,7 @@
 #define __PlatformLogging_h__
 
 #include "mxos_common.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 
 #ifndef MXOS_PLATFORM_LOG_INFO_DISABLE
 	#define platform_log(M, ...) custom_log("Platform", M, ##__VA_ARGS__)

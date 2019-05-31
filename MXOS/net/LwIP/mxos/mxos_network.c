@@ -21,11 +21,12 @@
 #include <stdlib.h>
 
 #include "mxos_common.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 #include "mxos_eth.h"
-#include "mxos_wlan.h"
+#include "mwifi.h"
 
 /******************************************************
  *                      Macros
@@ -114,7 +115,7 @@ merr_t mxos_network_switch_interface_auto( void )
     }
 
 exit:
-    err = mxos_rtos_send_asynchronous_event( MXOS_NETWORKING_WORKER_THREAD, set_default_interface, NULL );
+    err = mos_worker_send_async_event( MOS_NETWORKING_WORKER_THREAD, set_default_interface, NULL );
     return err;
 }
 
@@ -126,7 +127,7 @@ merr_t mxos_network_switch_interface_manual( netif_t interface )
     auto_switch = MXOS_FALSE;
 
     default_if = interface;
-    err = mxos_rtos_send_asynchronous_event( MXOS_NETWORKING_WORKER_THREAD, set_default_interface, NULL );
+    err = mos_worker_send_async_event( MOS_NETWORKING_WORKER_THREAD, set_default_interface, NULL );
 
     return err;
 

@@ -412,7 +412,7 @@ static void mxos_lwip_netif_status_irq(struct netif *lwip_netif)
             eth_log("Ethernet interface has address: %s", ipaddr_ntoa(addr));
             any_addr = false;
             mxos_eth_add_dns_addr();
-            mxos_rtos_send_asynchronous_event( MXOS_NETWORKING_WORKER_THREAD, notify_app_ethif_status_changed, (void *)NOTIFY_ETH_UP );
+            mos_worker_send_async_event( MOS_NETWORKING_WORKER_THREAD, notify_app_ethif_status_changed, (void *)NOTIFY_ETH_UP );
 
             return;
         }
@@ -423,13 +423,13 @@ static void mxos_lwip_netif_status_irq(struct netif *lwip_netif)
             eth_log("Ethernet interface has preferred address: %s", ipaddr_ntoa(addr));
 
             mxos_eth_add_dns_addr();
-            mxos_rtos_send_asynchronous_event( MXOS_NETWORKING_WORKER_THREAD, notify_app_ethif_status_changed, (void *)NOTIFY_ETH_UP );
+            mos_worker_send_async_event( MOS_NETWORKING_WORKER_THREAD, notify_app_ethif_status_changed, (void *)NOTIFY_ETH_UP );
 
         }
 
     } else {
         any_addr = true;
-        mxos_rtos_send_asynchronous_event( MXOS_NETWORKING_WORKER_THREAD, notify_app_ethif_status_changed, (void *)NOTIFY_ETH_DOWN );
+        mos_worker_send_async_event( MOS_NETWORKING_WORKER_THREAD, notify_app_ethif_status_changed, (void *)NOTIFY_ETH_DOWN );
         eth_log("Ethernet interface down");
     }
 }

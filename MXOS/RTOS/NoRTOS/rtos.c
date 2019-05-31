@@ -19,7 +19,8 @@
  */
 
 #include "mxos_common.h"
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 #include "platform_peripheral.h"
 
 #include "portmacro.h"
@@ -110,7 +111,7 @@ bool mxos_rtos_is_current_thread( mos_thread_id_t* thread )
     return kUnsupportedErr;
 }
 
-merr_t mxos_rtos_thread_force_awake( mos_thread_id_t* thread )
+merr_t mos_thread_awake( mos_thread_id_t* thread )
 {
     return kUnsupportedErr;
 }
@@ -212,7 +213,7 @@ merr_t mos_semphr_acquire( mos_semphr_id_t id, uint32_t timeout )
 
     delay_start = mos_time();
     while( noos_semaphore->count == 0){
-      if(mos_time() >= delay_start + timeout && timeout != MXOS_NEVER_TIMEOUT){
+      if(mos_time() >= delay_start + timeout && timeout != MOS_NEVER_TIMEOUT){
         return kTimeoutErr;
       }
     }
@@ -291,7 +292,7 @@ merr_t mos_mutex_delete( mos_mutex_id_t id )
  * @return merr_t : kNoErr if delay was successful
  *
  */
-merr_t mos_thread_delay( uint32_t num_ms )
+merr_t mos_sleep_ms( uint32_t num_ms )
 {
     mxos_time_t start = mos_time( );
 
@@ -350,27 +351,27 @@ bool mxos_rtos_is_queue_full( mos_queue_id_t* queue )
 }
 
 
-merr_t mos_timer_new( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
+merr_t mos_timer_new( mos_timer_id_t* timer, uint32_t time_ms, mos_timer_handler_t function, void* arg )
 {
     return kUnsupportedErr;
 }
 
-merr_t mos_timer_start( mxos_timer_t* timer )
+merr_t mos_timer_start( mos_timer_id_t* timer )
 {
     return kUnsupportedErr;
 }
 
-merr_t mos_timer_stop( mxos_timer_t* timer )
+merr_t mos_timer_stop( mos_timer_id_t* timer )
 {
     return kUnsupportedErr;
 }
 
-merr_t mxos_rtos_reload_timer( mxos_timer_t* timer )
+merr_t mxos_rtos_reload_timer( mos_timer_id_t* timer )
 {
     return kUnsupportedErr;
 }
 
-merr_t mos_timer_delete( mxos_timer_t* timer )
+merr_t mos_timer_delete( mos_timer_id_t* timer )
 {
     return kUnsupportedErr;
 }

@@ -18,7 +18,7 @@
 #include "mxos_board.h"
 #include "mxos_board_conf.h"
 #include "platform_peripheral.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 
 /******************************************************
 *                    Constants

@@ -41,7 +41,8 @@
 #ifndef __SYS_RTXC_H__
 #define __SYS_RTXC_H__
 
-#include "mxos_rtos.h"
+#include "mos.h"
+#include "mos_worker.h"
 
 #define SYS_MBOX_NULL ((mos_queue_id_t)0)
 #define SYS_SEM_NULL  ((mos_semphr_id_t)0)

@@ -18,7 +18,7 @@
 #include <string.h>
 #include <malloc.h>
 
-#include "mxos_debug.h"
+#include "mdebug.h"
 #include "mxos_common.h"
 #include "mxos_platform.h"
 
@@ -830,12 +830,12 @@ void mxos_nanosecond_delay( uint64_t delayns )
 
 
 
-static mxosMemInfo_t mxos_memory;
+static mos_mallinfo_legacy_t mxos_memory;
 
 extern unsigned char __StackLimit[];
 extern unsigned char __end__[];
 
-mxosMemInfo_t* mxos_memory_info( void )
+mos_mallinfo_legacy_t* mos_mallinfo_legacy( void )
 {
     struct mallinfo mi = mallinfo();
 

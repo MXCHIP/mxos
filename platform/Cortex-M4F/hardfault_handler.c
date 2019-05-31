@@ -23,9 +23,9 @@
  *                    Constants
  ******************************************************/
 
-#ifdef DEBUG
+#ifdef _MXOS_DEBUG_
 #define DEBUG_HARDFAULT
-#endif /* ifdef DEBUG */
+#endif /* ifdef _MXOS_DEBUG_ */
 
 /* Bit Definitions for SCB_CFSR */
 #define  SCB_CFSR_IACCVIOL                   ((uint32_t)0x00000001)

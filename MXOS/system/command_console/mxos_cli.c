@@ -23,8 +23,8 @@
 //int cli_getchar(char *inbuf);
 
 /// CLI ///
-#define RX_WAIT   MXOS_WAIT_FOREVER
-#define SEND_WAIT MXOS_WAIT_FOREVER
+#define RX_WAIT   MOS_WAIT_FOREVER
+#define SEND_WAIT MOS_WAIT_FOREVER
 
 #define RET_CHAR    '\n'
 #define END_CHAR		'\r'
@@ -364,7 +364,7 @@ static void cli_main( void *data )
       continue;
     msg = pCli->inbuf;
 #else
-	while(mos_semphr_acquire(log_rx_interrupt_sema, MXOS_NEVER_TIMEOUT) != kNoErr);
+	while(mos_semphr_acquire(log_rx_interrupt_sema, MOS_NEVER_TIMEOUT) != kNoErr);
 	msg = log_buf;
 #endif
     
@@ -475,7 +475,7 @@ void tftp_ota_thread( void * arg )
     
 static void ota_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv )
 {
-    mos_thread_new( MXOS_APPLICATION_PRIORITY, "LOCAL OTA", tftp_ota_thread, 0x4096, NULL );
+    mos_thread_new( MOS_APPLICATION_PRIORITY, "LOCAL OTA", tftp_ota_thread, 0x4096, NULL );
 }
 
 static void help_command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv);
@@ -612,7 +612,7 @@ static void help_command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char
   int i, n;
   uint32_t build_in_count = sizeof(built_ins)/sizeof(struct cli_command);
   
-#if (DEBUG)
+#if (_MXOS_DEBUG_)
   build_in_count++; //For command: mxosdebug
 #endif
 
@@ -695,7 +695,7 @@ int cli_unregister_commands(const struct cli_command *commands,
   
   return 0;
 }
-#if (DEBUG)
+#if (_MXOS_DEBUG_)
 extern int mxos_debug_enabled;
 static void mxosdebug_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv)
 {
@@ -764,13 +764,13 @@ int cli_init(void)
                                 return kGeneralErr;
                               }
   
-#if (DEBUG)
+#if (_MXOS_DEBUG_)
   cli_register_commands(user_clis, sizeof(user_clis)/sizeof(struct cli_command));
 #endif
 
   cli_register_commands(rtl8195_clis, sizeof(rtl8195_clis)/sizeof(struct cli_command));
 
-  if (mos_thread_new( MXOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 4096, NULL) == NULL)
+  if (mos_thread_new( MOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 4096, NULL) == NULL)
   {
     printf("Error: Failed to create cli thread: %d\r\n",
                ret);
@@ -814,11 +814,11 @@ int cli_init(void)
                                 return kGeneralErr;
                               }
   
-#if (DEBUG)
+#if (_MXOS_DEBUG_)
   cli_register_commands(user_clis, 1);
 #endif
   
-  if (mos_thread_new( MXOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 4096, NULL) == NULL)
+  if (mos_thread_new( MOS_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 4096, NULL) == NULL)
   {
     cli_printf("Error: Failed to create cli thread\r\n");
     free(pCli);
@@ -865,7 +865,7 @@ int cli_putstr(const char *msg)
 
 int cli_getchar(char *inbuf)
 {
-  if (mhal_uart_read(MXOS_CLI_UART, inbuf, 1, MXOS_WAIT_FOREVER) == 0)
+  if (mhal_uart_read(MXOS_CLI_UART, inbuf, 1, MOS_WAIT_FOREVER) == 0)
     return 1;
   else
     return 0;

@@ -135,7 +135,7 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
             {
                 sprintf( str, "%s\r\nStart:\r\n%s\r\n%s", "TEST MODE", "  Next: KEY2", "  Prev: KEY1" );
                 mf_printf( str );
-                while ( kNoErr != mos_semphr_acquire(mfg_test_state_change_sem, MXOS_WAIT_FOREVER ) )
+                while ( kNoErr != mos_semphr_acquire(mfg_test_state_change_sem, MOS_WAIT_FOREVER ) )
                     ;
                 break;
             }
@@ -146,7 +146,7 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
                     // OLED display test info
                     sprintf( str, "%s OUTPUT\r\nOLED\r\nRGB_LED\r\nDC_MOTOR", OLED_MFG_TEST_PREFIX );
                     mf_printf( str );
-                    mxos_thread_msleep( 500 );
+                    mos_sleep_ms( 500 );
 
                     // RGB_LED
                     hsb2rgb_led_open( rgb_led_hue, 100, 50 );
@@ -162,7 +162,7 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
 
                     // OLED
                     mf_printf( mfg_test_oled_test_string );
-                    mxos_thread_msleep( 500 );
+                    mos_sleep_ms( 500 );
                 }
                 
                 // exit, close modules
@@ -220,7 +220,7 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
                                 sprintf( str, "%3.1f/%3.1f/%5.2f",
                                          (float) bme280_temp / 100,
                                          (float) bme280_hum / 1024, (float) bme280_press / 1000 );
-                                mxos_thread_sleep( 1 );
+                                mos_sleep_ms( 1 );
                                 mf_printf_pos( 0, 6, "                " ); // clean line4
                                 mf_printf_pos( 0, 6, str );
                             }
@@ -232,7 +232,7 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
                         dht11_test_cnt = 0;
                     }
 
-                    mxos_thread_msleep( 500 );
+                    mos_sleep_ms( 500 );
                 }
                 break;
             }
@@ -243,11 +243,11 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
                          mac[0],
                          mac[1], mac[2], mac[3], mac[4], mac[5] );
                 mf_printf( str );
-                //mxos_thread_msleep(500);
+                //mos_sleep_ms(500);
 
                 scanap_done = false;
-                mwifi_softap_startScan( );
-                while ( (!scanap_done) || (kNoErr != mos_semphr_acquire(mfg_test_state_change_sem, MXOS_WAIT_FOREVER )) )
+                mwifi_scan( NULL );
+                while ( (!scanap_done) || (kNoErr != mos_semphr_acquire(mfg_test_state_change_sem, MOS_WAIT_FOREVER )) )
                     ;
                 break;
             }
@@ -259,5 +259,5 @@ void mxoskit_ext_mfg_test( mxos_Context_t *inContext )
     }
 
     exit:
-    mxos_thread_sleep( MXOS_NEVER_TIMEOUT );
+    mos_sleep_ms( MOS_NEVER_TIMEOUT );
 }

@@ -170,7 +170,7 @@ uint32_t GetLSIFrequency(void)
   TIM_ITConfig(TIM5, TIM_IT_CC4, ENABLE);
 
   /* Wait until the TIM5 get 2 LSI edges (refer to TIM5_IRQHandler()) *********/
-  mos_semphr_acquire(_measureLSIComplete_SEM, MXOS_WAIT_FOREVER);
+  mos_semphr_acquire(_measureLSIComplete_SEM, MOS_WAIT_FOREVER);
   mos_semphr_delete(_measureLSIComplete_SEM );
   _measureLSIComplete_SEM = NULL;
 

@@ -64,11 +64,11 @@ exit:
 
 merr_t mxos_system_wlan_start_autoconf( void )
 {
-  /* Enter auto-conf mode only once in reboot mode, use MXOS_NETWORKING_WORKER_THREAD to save ram */
+  /* Enter auto-conf mode only once in reboot mode, use MOS_NETWORKING_WORKER_THREAD to save ram */
 #ifdef  EasyLink_Needs_Reboot
-    return mxos_rtos_send_asynchronous_event( MXOS_NETWORKING_WORKER_THREAD, system_config_mode_worker, NULL );
+    return mos_worker_send_async_event( MOS_NETWORKING_WORKER_THREAD, system_config_mode_worker, NULL );
 #else
-    return mxos_rtos_send_asynchronous_event( &wlan_autoconf_worker_thread, system_config_mode_worker, NULL );
+    return mos_worker_send_async_event( &wlan_autoconf_worker_thread, system_config_mode_worker, NULL );
 #endif
 }
 
@@ -114,7 +114,7 @@ merr_t mxos_system_init( void )
 #ifndef  EasyLink_Needs_Reboot
   /* Create a worker thread for user handling wlan auto-conf event, this worker thread only has
      one event on queue, avoid some unwanted operation */
-  err = mos_worker_thread_new( &wlan_autoconf_worker_thread, MXOS_APPLICATION_PRIORITY, 0x500, 1 );
+  err = mos_worker_thread_new( &wlan_autoconf_worker_thread, MOS_APPLICATION_PRIORITY, 0x500, 1 );
   require_noerr_string( err, exit, "ERROR: Unable to start the autoconf worker thread." );
 #endif
 
@@ -137,7 +137,7 @@ merr_t mxos_system_init( void )
   else if( sys_context->flashContentInRam.mxos_config.configured == mfgConfigured ){
     system_log( "Enter MFG mode automatically" );
     mxos_mfg_test( in_context );
-    mxos_thread_sleep( MXOS_NEVER_TIMEOUT );
+    mos_sleep_ms( MOS_NEVER_TIMEOUT );
   }
 #endif
   else{

@@ -127,7 +127,7 @@ extern "C" {
 #endif
 
 #if !defined MXOS_WLAN_FORCE_OTA_ENABLE
-#define MXOS_WLAN_FORCE_OTA_ENABLE               1
+#define MXOS_WLAN_FORCE_OTA_ENABLE               0
 #endif
 
 #if !defined MXOS_WLAN_AUTO_CONFIG
@@ -267,7 +267,7 @@ extern "C" {
 #endif
 
 #if !defined CONFIG_SYSTEM_DEBUG
-#define CONFIG_SYSTEM_DEBUG                    MXOS_DEBUG_OFF
+#define CONFIG_SYSTEM_DEBUG                    MXOS_DEBUG_ON
 #endif
 
 #if !defined CONFIG_NET_DEBUG

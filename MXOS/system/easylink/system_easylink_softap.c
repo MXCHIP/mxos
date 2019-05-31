@@ -26,6 +26,10 @@
 #include "system.h"
 #include "easylink_internal.h"
 
+int SetTimer(unsigned long ms, void (*psysTimerHandler)(void));
+int SetTimer_uniq(unsigned long ms, void (*psysTimerHandler)(void));
+int UnSetTimer(void (*psysTimerHandler)(void));
+
 /* Internal vars and functions */
 static mos_semphr_id_t easylink_sem;         /**< Used to suspend thread while easylink. */
 static mos_semphr_id_t easylink_connect_sem; /**< Used to suspend thread while connection. */
@@ -76,7 +80,8 @@ void easylink_softap_thread( void *inContext )
 {
     merr_t err = kNoErr;
     system_context_t *context = (system_context_t *) inContext;
-    mwifi_softap_attr_t wNetConfig;
+    char wifi_ssid[32]; 
+    mwifi_ip_attr_t ip_attr;
 
     easylinkIndentifier = 0x0;
     easylink_success = false;
@@ -89,28 +94,27 @@ void easylink_softap_thread( void *inContext )
     easylink_connect_sem = mos_semphr_new( 1 );
 
 restart:
-    mxosWlanSuspend( );
-    mxos_thread_msleep( 20 );
+    mwifi_softap_stop( );
+    mos_sleep_ms( 20 );
 
     mxos_system_delegate_config_will_start( );
 
-    memset( &wNetConfig, 0, sizeof(mwifi_softap_attr_t) );
-    snprintf( wNetConfig.wifi_ssid, 32, "EasyLink_%c%c%c%c%c%c",
+    snprintf( wifi_ssid, 32, "EasyLink_%c%c%c%c%c%c",
               context->mxosStatus.mac[9], context->mxosStatus.mac[10], context->mxosStatus.mac[12],
               context->mxosStatus.mac[13], context->mxosStatus.mac[15], context->mxosStatus.mac[16] );
-    strcpy( (char*) wNetConfig.wifi_key, "" );
-    strcpy( (char*) wNetConfig.local_ip_addr, "10.10.10.1" );
-    strcpy( (char*) wNetConfig.net_mask, "255.255.255.0" );
-    strcpy( (char*) wNetConfig.gateway_ip_addr, "10.10.10.1" );
-    mwifi_softap_start( &wNetConfig );
-    system_log("Establish soft ap: %s.....", wNetConfig.wifi_ssid);
+    strcpy( ip_attr.localip, "10.10.10.1" );
+    strcpy( ip_attr.netmask, "255.255.255.0" );
+    strcpy( ip_attr.gateway, "10.10.10.1" );
+    strcpy( ip_attr.dnserver, "10.10.10.1" );
+    mwifi_softap_start( wifi_ssid, "", 6, &ip_attr);
+    system_log("Establish soft ap: %s.....", wifi_ssid);
 
     /* Start bonjour service for device discovery under soft ap mode */
     err = easylink_bonjour_start( Soft_AP, 0, context );
     require_noerr( err, exit );
 
     while( mos_semphr_acquire(easylink_sem, 0 ) == kNoErr );
-    err = mos_semphr_acquire(easylink_sem, MXOS_WAIT_FOREVER );
+    err = mos_semphr_acquire(easylink_sem, MOS_WAIT_FOREVER );
 
     mwifi_softap_stop();
 
@@ -126,7 +130,7 @@ restart:
         mxos_system_delegate_config_recv_ssid( context->flashContentInRam.mxos_config.ssid,
                                                context->flashContentInRam.mxos_config.user_key );
 
-        mxos_thread_sleep(1);
+        mos_sleep_ms(1);
         system_connect_wifi_normal( context );
 
         /* Wait for station connection */
@@ -135,13 +139,13 @@ restart:
         /* Easylink force exit by user, clean and exit */
         if ( err != kNoErr && easylink_thread_force_exit )
         {
-            mxosWlanSuspend( );
+            mwifi_softap_stop( );
             system_log("EasyLink connection canceled by user");
             goto exit;
         }
 
         /*SSID or Password is not correct, module cannot connect to wlan, so restart EasyLink again*/
-        require_noerr_action_string( err, restart, mxosWlanSuspend(), "Re-start easylink softap mode" );
+        require_noerr_action_string( err, restart, mwifi_softap_stop(), "Re-start easylink softap mode" );
         mxos_system_delegate_config_success( CONFIG_BY_SOFT_AP );
 
         /* Start bonjour service for new device discovery */
@@ -201,7 +205,7 @@ merr_t mxos_easylink_softap( mxos_Context_t * const in_context, mxos_bool_t enab
     if ( easylink_softap_thread_handler ) {
         system_log("EasyLink SoftAP processing, force stop..");
         easylink_thread_force_exit = true;
-        mxos_rtos_thread_force_awake( &easylink_softap_thread_handler );
+        mos_thread_awake(easylink_softap_thread_handler );
         mos_thread_join( easylink_softap_thread_handler );
     }
 
@@ -212,12 +216,12 @@ merr_t mxos_easylink_softap( mxos_Context_t * const in_context, mxos_bool_t enab
 
         config_server_set_uap_cb( easylink_uap_configured_cd );
 
-        easylink_softap_thread_handler = mos_thread_new( MXOS_APPLICATION_PRIORITY, "EASYLINK AP",
+        easylink_softap_thread_handler = mos_thread_new( MOS_APPLICATION_PRIORITY, "EASYLINK AP",
                                        easylink_softap_thread, 0x1000, (void *) in_context );
         require_action_string( easylink_softap_thread_handler != NULL, exit, err = kGeneralErr, "ERROR: Unable to start the EasyLink thread." );
 
         /* Make sure easylink softap is already running, and waiting for sem trigger */
-        mos_thread_delay( 1000 );
+        mos_sleep_ms( 1000 );
     }
 
     exit:

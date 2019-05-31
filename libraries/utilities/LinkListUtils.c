@@ -20,7 +20,7 @@
 */ 
 
 #include "LinkListUtils.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 
 merr_t linked_list_init( linked_list_t* list )
 {

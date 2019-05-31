@@ -489,9 +489,9 @@ int main( void )
                     }
 #ifdef VERIFY_ERASE_SECTOR
                     {
-#ifdef DEBUG
+#ifdef _MXOS_DEBUG_
                         memset(Rx_Buffer,0xa5,SECTOR_SIZE);
-#endif /* DEBUG */
+#endif /* _MXOS_DEBUG_ */
                         if ( 0 != mhal_flash_read( partition_remapping[data_transfer.partition], &position, Rx_Buffer,
                                                  (unsigned int) SECTOR_SIZE ) )
                         {

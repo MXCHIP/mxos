@@ -377,7 +377,7 @@ merr_t host_platform_sdio_enumerate( void )
         {
             return kTimeoutErr;
         }
-    } while ( ( result != kNoErr ) && ( mxos_thread_msleep( (uint32_t) 1 ), ( 1 == 1 ) ) );
+    } while ( ( result != kNoErr ) && ( mos_sleep_ms( (uint32_t) 1 ), ( 1 == 1 ) ) );
     /* If you're stuck here, check the platform matches your hardware */
 
     /* Send CMD7 with the returned RCA to select the card */
@@ -388,10 +388,10 @@ merr_t host_platform_sdio_enumerate( void )
 
 merr_t host_platform_bus_deinit( void )
 {
-    merr_t result;
+    merr_t result = kNoErr;
     uint32_t     a;
 
-    result = mos_semphr_delete(sdio_transfer_finished_semaphore );
+    mos_semphr_delete(sdio_transfer_finished_semaphore );
 
     platform_mcu_powersave_disable();
 

@@ -31,7 +31,7 @@ const char *eaProtocols[1] = {EA_PROTOCOL};
 merr_t mxos_easylink_wac( mxos_Context_t * const inContext, mxos_bool_t enable )
 {
     merr_t err = kNoErr;
-    IPStatusTypedef para;
+    uint8_t mac[6];
     uint8_t major_ver, minor_ver, revision;
     
     if( enable == FALSE ) {
@@ -45,9 +45,9 @@ merr_t mxos_easylink_wac( mxos_Context_t * const inContext, mxos_bool_t enable )
     WAC_Params = calloc(1, sizeof(WACPlatformParameters_t));
     require(WAC_Params, exit);
 
-    mwifi_get_ip(&para, Station);
+    mwifi_get_mac(mac);
 
-    str2hex((unsigned char *)para.mac, WAC_Params->macAddress, 6);
+    str2hex((unsigned char *)mac, WAC_Params->macAddress, 6);
     WAC_Params->isUnconfigured          = 1;
     WAC_Params->supportsAirPlay         = 0;
     WAC_Params->supportsAirPrint        = 0;

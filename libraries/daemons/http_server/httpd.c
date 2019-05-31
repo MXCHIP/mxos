@@ -439,7 +439,7 @@ static inline int tcp_local_connect( int *sockfd )
         if ( *sockfd >= 0 )
             break;
         /* Wait some time to allow some sockets to get released */
-        mxos_thread_msleep( 1000 );
+        mos_sleep_ms( 1000 );
     }
 
     if ( *sockfd < 0 )
@@ -493,7 +493,7 @@ static int httpd_signal_and_wait_for_halt( )
 
     while ( httpd_state != HTTPD_THREAD_SUSPENDED && num_iterations-- )
     {
-        mxos_thread_msleep( check_interval_ms );
+        mos_sleep_ms( check_interval_ms );
     }
 
     close( sockfd );
@@ -523,9 +523,7 @@ static int httpd_thread_cleanup( void )
                 httpd_d("Unable to stop thread. Force killing it.");
             /* No break here on purpose */
         case HTTPD_THREAD_SUSPENDED:
-            status = mos_thread_delete( httpd_main_thread );
-            if ( status != kNoErr )
-                httpd_d("Failed to delete thread.");
+            mos_thread_delete( httpd_main_thread );
             status = httpd_close_sockets( );
             httpd_state = HTTPD_INIT_DONE;
             break;
@@ -552,7 +550,7 @@ int httpd_start( void )
         return kNoErr;
     }
 
-    httpd_main_thread = mos_thread_new( MXOS_APPLICATION_PRIORITY, "httpd",
+    httpd_main_thread = mos_thread_new( MOS_APPLICATION_PRIORITY, "httpd",
                                       httpd_main,
                                       http_server_thread_stack_size, NULL );
 

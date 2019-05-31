@@ -31,7 +31,7 @@
 
 
 #include "TimeUtils.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 #include "mxos.h"
 #include <errno.h>
 
@@ -74,7 +74,7 @@ void SleepForUpTicks( uint64_t inTicks )
     for( ; ticks < deadline; ticks = UpTicks() )
     {
         ticks = deadline - ticks;
-        mxos_thread_msleep(ticks);
+        mos_sleep_ms(ticks);
     }
 }
 

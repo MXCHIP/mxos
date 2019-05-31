@@ -15,7 +15,7 @@
  */
 
 #include "mxos_common.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 #include "platform_peripheral.h"
 
 

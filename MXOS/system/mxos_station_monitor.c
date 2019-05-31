@@ -50,8 +50,10 @@ static void mxosNotify_WifiStatusHandler(WiFiEvent event,  void* inContext)
 
 static void station_monitro_func( void * arg )
 {
+    mwifi_ip_attr_t ip_attr;
+  
     while(1) {
-        mos_semphr_acquire(sem, MXOS_WAIT_FOREVER);
+        mos_semphr_acquire(sem, MOS_WAIT_FOREVER);
         if (station_up == 1) {
             if (softap_up) {
                 station_m_log("Stop softap");
@@ -64,18 +66,14 @@ static void station_monitro_func( void * arg )
             mos_semphr_acquire(sem, softap_wait_seconds*1000);
             if (station_up == 1)
                 continue;
-            
-            /* Setup Soft AP*/
-            memset( &wNetConfig, 0x0, sizeof(mwifi_softap_attr_t) );
-            strcpy( (char*) wNetConfig.wifi_ssid, softap_ssid );
-            strcpy( (char*) wNetConfig.wifi_key, softap_key );
-            strcpy( (char*) wNetConfig.local_ip_addr, "10.10.0.1" );
-            strcpy( (char*) wNetConfig.net_mask, "255.255.255.0" );
-            strcpy( (char*) wNetConfig.dnsServer_ip_addr, "10.10.0.1" );
 
-            station_m_log("Establish SofAP, SSID:%s and KEY:%s", wNetConfig.wifi_ssid, wNetConfig.wifi_key);
+            station_m_log("Establish SofAP, SSID:%s and KEY:%s", softap_ssid, softap_key);
 
-            mwifi_softap_start( &wNetConfig );
+            strcpy( ip_attr.localip, "10.10.10.1" );
+            strcpy( ip_attr.netmask, "255.255.255.0" );
+            strcpy( ip_attr.gateway, "10.10.10.1" );
+            strcpy( ip_attr.dnserver, "10.10.10.1" );
+            mwifi_softap_start( softap_ssid, softap_key, 6, &ip_attr);
             softap_up = 1;
         }
     }
@@ -101,7 +99,7 @@ int mxos_station_status_monitor(char *ssid, char*key, int trigger_seconds)
     strncpy(softap_key, key, 64);
     softap_wait_seconds = trigger_seconds;
     
-    mos_thread_new( MXOS_APPLICATION_PRIORITY, "station monitor",
+    mos_thread_new( MOS_APPLICATION_PRIORITY, "station monitor",
         station_monitro_func, 1024, NULL);
 exit:
     return err;

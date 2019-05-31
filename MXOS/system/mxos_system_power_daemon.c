@@ -20,7 +20,7 @@
 #include "mxos.h"
 #include "system_internal.h"
 
-static mxos_timed_event_t _timed_sys_power_state_change;
+static mos_worker_timed_event_t _timed_sys_power_state_change;
 
 extern system_context_t* sys_context;
 
@@ -54,7 +54,7 @@ static merr_t _sys_power_state_change_handler(void *arg)
       break;
     case eState_Standby:
       mwifi_off( );
-      mxos_sys_standby( MXOS_WAIT_FOREVER );
+      mxos_sys_standby( MOS_WAIT_FOREVER );
       break;
     default:
       break;
@@ -73,7 +73,7 @@ static merr_t _sys_will_power_off_handler(void *arg)
     mxos_system_context_update( &sys_context->flashContentInRam );
   }
 
-  mxos_rtos_register_timed_event( &_timed_sys_power_state_change, MXOS_NETWORKING_WORKER_THREAD, _sys_power_state_change_handler, 500, 0 );
+  mos_worker_register_timed_event( &_timed_sys_power_state_change, MOS_NETWORKING_WORKER_THREAD, _sys_power_state_change_handler, 500, 0 );
   sendNotifySYSWillPowerOff();
 
 exit:
@@ -90,7 +90,7 @@ merr_t mxos_system_power_perform( mxos_Context_t* const in_context, mxos_system_
   sys_context->mxosStatus.current_sys_state = new_state;
 
   /* Send an envent to do some operation before power off, and wait some time to perform power change */
-  mxos_rtos_send_asynchronous_event( MXOS_NETWORKING_WORKER_THREAD, _sys_will_power_off_handler, NULL );
+  mos_worker_send_async_event( MOS_NETWORKING_WORKER_THREAD, _sys_will_power_off_handler, NULL );
 
 exit:
   return err; 

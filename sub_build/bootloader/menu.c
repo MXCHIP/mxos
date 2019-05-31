@@ -175,7 +175,7 @@ void SerialUpload(mxos_flash_t flash, uint32_t flashdestination, char * fileName
   uint8_t key;
 
   printf("Select Receive File\n\r");
-  mhal_uart_read( MXOS_STDIO_UART, &key, 1, MXOS_NEVER_TIMEOUT );
+  mhal_uart_read( MXOS_STDIO_UART, &key, 1, MOS_NEVER_TIMEOUT );
 
   if (key == CRC16)
   {

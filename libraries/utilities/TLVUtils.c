@@ -31,7 +31,7 @@
 
 #include "TLVUtils.h"
 
-#include "mxos_debug.h"
+#include "mdebug.h"
 
 
 merr_t TLVGetNext( const uint8_t *    inSrc, 

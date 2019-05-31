@@ -77,7 +77,7 @@ static void peripheral_gatt_connection_handler( uint16_t connection_handle )
 {
     bt_peripheral_log( "GATT connection was SUCCESS" );
 
-    mxos_rtos_send_asynchronous_event( MXOS_BT_WORKER_THREAD, peripheral_app_connection_handler, (void*)peripheral_socket );
+    mos_worker_send_async_event( MXOS_BT_WORKER_THREAD, peripheral_app_connection_handler, (void*)peripheral_socket );
 }
 
 static void peripheral_gatt_disconnection_handler( uint16_t connection_handle )
@@ -104,7 +104,7 @@ static void peripheral_gatt_disconnection_handler( uint16_t connection_handle )
             /* Notify app that connection is disconnected by the remote device */
             if ( peripheral_socket->disconnection_callback != NULL )
             {
-                mxos_rtos_send_asynchronous_event( MXOS_BT_EVT_WORKER_THREAD, peripheral_app_disconnection_handler, (void*)peripheral_socket );
+                mos_worker_send_async_event( MXOS_BT_EVT_WORKER_THREAD, peripheral_app_disconnection_handler, (void*)peripheral_socket );
             }
 
             /* If disconnection happens when connection is still being established. Notify app */
@@ -335,11 +335,7 @@ merr_t mxos_bt_peripheral_delete_socket( mxos_bt_peripheral_socket_t* socket )
         return MXOS_BT_SMART_APPL_UNINITIALISED;
     }
 
-    result = mos_semphr_delete(socket->semaphore );
-    if ( result != MXOS_BT_SUCCESS )
-    {
-        return result;
-    }
+    mos_semphr_delete(socket->semaphore );
 
     memset( socket, 0, sizeof( *socket ) );
     socket->connection_handle = SOCKET_INVALID_CONNECTION_HANDLE;
@@ -357,7 +353,7 @@ merr_t mxos_bt_peripheral_disconnect( void )
     peripheral_helper_socket_set_actions( peripheral_socket, SOCKET_ACTION_HOST_DISCONNECT );
 
     /* Clean-up accidentally set semaphores */
-    while( mos_semphr_acquire(peripheral_socket->semaphore, MXOS_NO_WAIT ) == MXOS_BT_SUCCESS )
+    while( mos_semphr_acquire(peripheral_socket->semaphore, MOS_NO_WAIT ) == MXOS_BT_SUCCESS )
     {
     }
 
@@ -693,11 +689,11 @@ static merr_t peripheral_app_connection_handler( void* arg )
         else 
         {
             mxos_bt_start_pairing(socket->remote_device.address, socket->remote_device.address_type, &socket->security_settings);
-            mos_semphr_acquire(socket->semaphore, MXOS_NEVER_TIMEOUT);
+            mos_semphr_acquire(socket->semaphore, MOS_NEVER_TIMEOUT);
             mxos_bt_start_encryption(&socket->remote_device.address);
         }
 
-        mos_semphr_acquire(socket->semaphore, MXOS_NEVER_TIMEOUT);
+        mos_semphr_acquire(socket->semaphore, MOS_NEVER_TIMEOUT);
     }
 
     /* Finished */
@@ -705,7 +701,7 @@ static merr_t peripheral_app_connection_handler( void* arg )
 
     if ( socket != NULL && socket->connection_callback != NULL )
     {
-        return mxos_rtos_send_asynchronous_event( MXOS_BT_EVT_WORKER_THREAD, 
+        return mos_worker_send_async_event( MXOS_BT_EVT_WORKER_THREAD, 
                                                   (event_handler_t)socket->connection_callback, 
                                                   (void*)socket );
     }

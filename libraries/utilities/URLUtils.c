@@ -30,7 +30,7 @@
  */
 
 #include "mxos_common.h"
-#include "mxos_debug.h"
+#include "mdebug.h"
 
 #include "StringUtils.h"
 
@@ -197,7 +197,7 @@ merr_t    URLParseComponents( const char *inSrc, const char *inEnd, URLComponent
 void PrintURL( URLComponents *inURL )
 {
     (void)inURL;
-#if DEBUG
+#if _MXOS_DEBUG_
     char *scheme   = DataToCString( (uint8_t*)inURL->schemePtr, inURL->schemeLen );
     char *user     = DataToCString( (uint8_t*)inURL->userPtr, inURL->userLen );
     char *password = DataToCString( (uint8_t*)inURL->passwordPtr, inURL->passwordLen );
@@ -224,7 +224,7 @@ void PrintURL( URLComponents *inURL )
     free( query );
     free( fragment );
     free( segment );
-#endif // DEBUG
+#endif // _MXOS_DEBUG_
 }
 
 

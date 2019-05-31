@@ -205,10 +205,10 @@ typedef struct mxos_api_struct
     void (*mxos_rtos_suspend_all_thread)( void );
     long (*mxos_rtos_resume_all_thread)( void );
     merr_t (*mos_thread_join)( mos_thread_id_t* thread );
-    merr_t (*mxos_rtos_thread_force_awake)( mos_thread_id_t* thread );
+    merr_t (*mos_thread_awake)( mos_thread_id_t* thread );
     bool (*mxos_rtos_is_current_thread)( mos_thread_id_t* thread );
-    void (*mxos_thread_sleep)( uint32_t seconds );
-    void (*mxos_thread_msleep)( uint32_t milliseconds );
+    void (*mos_sleep)( uint32_t seconds );
+    void (*mos_sleep_ms)( uint32_t milliseconds );
     merr_t (*mos_semphr_new)( mos_semphr_id_t* semaphore, int count );
     merr_t (*mos_semphr_release)( mos_semphr_id_t* semaphore );
     merr_t (*mos_semphr_acquire)( mos_semphr_id_t* semaphore, uint32_t timeout_ms );
@@ -225,20 +225,20 @@ typedef struct mxos_api_struct
     bool (*mxos_rtos_is_queue_empty)( mos_queue_id_t* queue );
     merr_t (*mxos_rtos_is_queue_full)( mos_queue_id_t* queue );
     uint32_t (*mxos_get_time)( void );
-    merr_t (*mxos_init_timer)( mxos_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg );
-    merr_t (*mxos_start_timer)( mxos_timer_t* timer );
-    merr_t (*mxos_stop_timer)( mxos_timer_t* timer );
-    merr_t (*mxos_reload_timer)( mxos_timer_t* timer );
-    merr_t (*mxos_deinit_timer)( mxos_timer_t* timer );
-    bool (*mxos_is_timer_running)( mxos_timer_t* timer );
-    int (*mxos_create_event_fd)( mxos_event_t handle );
-    int (*mxos_delete_event_fd)( int fd );
+    merr_t (*mxos_init_timer)( mos_timer_id_t* timer, uint32_t time_ms, mos_timer_handler_t function, void* arg );
+    merr_t (*mxos_start_timer)( mos_timer_id_t* timer );
+    merr_t (*mxos_stop_timer)( mos_timer_id_t* timer );
+    merr_t (*mxos_reload_timer)( mos_timer_id_t* timer );
+    merr_t (*mos_timer_delete)( mos_timer_id_t* timer );
+    bool (*mxos_is_timer_running)( mos_timer_id_t* timer );
+    int (*mos_event_fd_new)( mos_event_id_t handle );
+    int (*mos_event_fd_delete)( int fd );
     int (*SetTimer)( unsigned long ms, void (*psysTimerHandler)( void ) );
     int (*SetTimer_uniq)( unsigned long ms, void (*psysTimerHandler)( void ) );
     int (*UnSetTimer)( void (*psysTimerHandler)( void ) );
 
     /* memory management*/
-    mxosMemInfo_t* (*mxos_memory_info)( void );
+    mos_mallinfo_legacy_t* (*mos_mallinfo_legacy)( void );
     void* (*malloc)( size_t size ); // malloc
     void* (*realloc)( void* pv, size_t size ); // realloc
     void (*free)( void* pv );     //free
@@ -305,12 +305,12 @@ typedef struct mxos_api_struct
 
     /* WIFI MGR */
     int (*wlan_get_mac_address)( unsigned char *dest );
-    int (*wlan_get_mac_address_by_interface)(wlan_if_t wlan_if, unsigned char *dest);
+    int (*wlan_get_mac_address_by_interface)(uint8_t wlan_if, unsigned char *dest);
     int (*mxos_wlan_driver_version)( char* version, int length );
-    merr_t (*mwifi_softap_start)( mwifi_softap_attr_t* attr );
-    merr_t (*mwifi_connect)( wifi_connect_attr_t* attr );
-    merr_t (*mwifi_get_ip)( IPStatusTypedef *outNetpara, WiFi_Interface inInterface );
-    merr_t (*mwifi_get_link_info)( LinkStatusTypeDef *outStatus );
+    merr_t (*mwifi_softap_start)( void* attr );
+    merr_t (*mwifi_connect)( void* attr );
+    merr_t (*mwifi_get_ip)( void *outNetpara, uint8_t inInterface );
+    merr_t (*mwifi_get_link_info)( void *outStatus );
     merr_t (*mwifi_softap_startScan)( void );
     merr_t (*mwifi_softap_startScanAdv)( void );
     merr_t (*mwifi_off)( void );
@@ -333,11 +333,11 @@ typedef struct mxos_api_struct
     int (*mwifi_monitor_start)( void );
     int (*mwifi_monitor_stop)( void );
     int (*mwifi_monitor_set_channel)( int channel );
-    void (*mwifi_monitor_reg_cb)( monitor_cb_t fn );
+    void (*mwifi_monitor_reg_cb)( void *fn );
     void (*wlan_set_channel)( int channel );
     int (*mxchip_active_scan)( char*ssid, int is_adv );
-    merr_t (*wifi_manage_custom_ie_add)(wlan_if_t wlan_if, uint8_t *custom_ie, uint32_t len);
-    merr_t (*wifi_manage_custom_ie_delete)(wlan_if_t wlan_if);
+    merr_t (*wifi_manage_custom_ie_add)(uint8_t wlan_if, uint8_t *custom_ie, uint32_t len);
+    merr_t (*wifi_manage_custom_ie_delete)(uint8_t wlan_if);
 
     /* CLI APIs */
     int (*cli_init)(void);
@@ -479,12 +479,12 @@ typedef struct user_api_struct
     int (*application_start)( void );
 
     /* callback functions */
-    void (*ApListCallback)( ScanResult *pApList );
-    void (*ApListAdvCallback)( ScanResult_adv *pApAdvList );
-    void (*WifiStatusHandler)( WiFiEvent status );
-    void (*connected_ap_info)( apinfo_adv_t *ap_info, char *key, int key_len );
-    void (*NetCallback)( IPStatusTypedef *pnet );
-    void (*RptConfigmodeRslt)( mwifi_softap_attr_t *nwkpara );
+    void (*ApListCallback)( void *pApList );
+    void (*ApListAdvCallback)( void *pApAdvList );
+    void (*WifiStatusHandler)( uint8_t status );
+    void (*connected_ap_info)( void *ap_info, char *key, int key_len );
+    void (*NetCallback)( void *pnet );
+    void (*RptConfigmodeRslt)( void *nwkpara );
     void (*easylink_user_data_result)( int datalen, char*data );
     void (*socket_connected)( int fd );
     void (*dns_ip_set)( uint8_t *hostname, uint32_t ip );
