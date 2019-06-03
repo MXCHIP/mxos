@@ -35,8 +35,7 @@ def get_mem_info(map_file):
             ram_config += [{'start':int(ram[0], 16), 'end':int(ram[0], 16) + int(ram[1], 16)}]
 
         # find memory map (without discard and debug sections)
-        mem_map_list = re.findall('Linker script and memory map([\s\S]+?)OUTPUT\('+map_file.replace('.map','.elf'), s)
-        mem_map = '' if not mem_map_list else mem_map_list[0]
+        mem_map = re.findall('Linker script and memory map([\s\S]+?)START GROUP', s)[0]
         if not mem_map:
             print 'Can\'t parse memory info, memory info get fail!'
             return
