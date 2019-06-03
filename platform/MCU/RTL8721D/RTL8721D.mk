@@ -3,10 +3,9 @@ NAME := RTL8721D
 # Host architecture is Cortex-M4
 HOST_ARCH := Cortex-M33
 
-RTOS:=VENDER_OS
-NET:=VENDER_NET
-TLS:=TODO
 TOOLCHAIN_VERSION := 7-2017-q4-major
+
+$(NAME)_COMPONENTS += wolfSSL
 
 $(NAME)_SOURCES += mxos_platform_common.c 
 $(NAME)_PREBUILT_LIBRARY := \

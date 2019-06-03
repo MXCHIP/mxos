@@ -104,13 +104,15 @@ void tftp_ota(void)
     uint16_t crc = 0;
     CRC16_Context contex;
     
+    UNUSED_VARIABLE(flashaddr);
+
 #define TMP_BUF_LEN 1024
 
     fota_log("Start OTA");
     mxos_system_notify_remove_all(mxos_notify_WIFI_STATUS_CHANGED);
     mxos_system_notify_remove_all(mxos_notify_WiFI_PARA_CHANGED);
     mxos_system_notify_remove_all(mxos_notify_WIFI_CONNECT_FAILED);
-	  mxos_system_notify_remove_all(mxos_notify_EASYLINK_WPS_COMPLETED);
+	mxos_system_notify_remove_all(mxos_notify_EASYLINK_WPS_COMPLETED);
     mxos_system_notify_register( mxos_notify_WIFI_STATUS_CHANGED, (void *)FOTA_WifiStatusHandler, NULL );
     mwifi_monitor_stop();
     mwifi_disconnect();
@@ -216,11 +218,11 @@ void tftp_ota(void)
 mos_semphr_id_t force_ota_sem;
 
 static void force_thread(void * arg){
-    extern void tftp_ota();
+    extern void tftp_ota(void);
     tftp_ota();
 }
 
-merr_t start_force_ota()
+merr_t start_force_ota(void)
 {
    merr_t err;
 
@@ -231,13 +233,26 @@ merr_t start_force_ota()
            return err;
 
 }
-static void mxosNotify_ApListCallback(void *pApList, mxos_Context_t * const inContext)
+
+static void mxosNotify_ApListCallback(int num, mwifi_ap_info_t *ap_list, mxos_Context_t * const inContext)
 {
 	fota_log("ota notify");
     (void)inContext;
+
+    if(num == 0){
+        if(NULL != force_ota_sem)
+        {
+        	fota_log("set force_ota_sem");
+            mos_semphr_release(force_ota_sem);
+        }
+    }else{
+    	fota_log("num = %d,ssid = %s",num,ap_list->ssid);
+    	fota_log("start_force_ota");
+        start_force_ota();
+    }
 }
 
-merr_t start_forceota_check()
+merr_t start_forceota_check( void )
 {
 	merr_t err = kNoErr;
 	if((mxos_system_context_get( )->mxos_config.reserved & FORCE_OTA_SUEECSS)==0)

@@ -69,6 +69,10 @@ $(NAME)_COMPONENTS += $(TOOLCHAIN_NAME)
 $(NAME)_COMPONENTS += MCU/STM32F4xx/peripherals
 $(NAME)_COMPONENTS += utilities
 
+$(NAME)_COMPONENTS += FreeRTOS
+$(NAME)_COMPONENTS += LwIP
+$(NAME)_COMPONENTS += wolfSSL
+
 # Source files
 $(NAME)_SOURCES := ../../$(HOST_ARCH)/crt0_$(TOOLCHAIN_NAME).c \
                    ../../$(HOST_ARCH)/platform_core.c \

@@ -53,6 +53,9 @@ ifdef TEMP_COMMENT
 $(NAME)_COMPONENTS += $(TOOLCHAIN_NAME)
 endif
 
+$(NAME)_COMPONENTS += FreeRTOS
+$(NAME)_COMPONENTS += LwIP
+$(NAME)_COMPONENTS += wolfSSL
 
 ifdef TOOLCHAIN_NAME
 ifneq ($(wildcard $(CURDIR)peripherals.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a),)
