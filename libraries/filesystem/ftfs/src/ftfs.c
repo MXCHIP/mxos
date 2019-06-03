@@ -47,7 +47,7 @@ static FT_FILE *_ft_fopen( struct fs *fs, const char *path, const char *mode )
 
     do
     {
-        mhal_flash_read( MXOS_PARTITION_FILESYS, &addr, (uint8_t *) &entry, sizeof(entry) );
+        mhal_flash_read( fs->partition, &addr, (uint8_t *) &entry, sizeof(entry) );
 
         if ( entry.name[0] == '\0' ) /* reached end of table */
         return NULL; /* file not found */
@@ -98,7 +98,7 @@ size_t ft_fread( void *ptr, size_t size, size_t nmemb, file *f )
     {
         if ( stream->fp + size >= stream->length )
             size = stream->length - stream->fp;
-        mhal_flash_read( MXOS_PARTITION_FILESYS, &addr, (uint8_t *) (b + len), size );
+        mhal_flash_read( stream->sb->fs.partition, &addr, (uint8_t *) (b + len), size );
         len += size;
         stream->fp += size;
         if ( stream->fp >= stream->length )
@@ -215,14 +215,8 @@ struct fs *ftfs_init( struct ftfs_super *sb, mxos_partition_t partition )
 {
     FT_HEADER sec;
     uint32_t start_addr = 0;
-//    struct ftfs_super sb;
-    mxos_logic_partition_t *ftfs_partition;
 
-    ftfs_partition = mhal_flash_get_info( partition );
-
-    start_addr = ftfs_partition->partition_start_addr;
-
-    if ( ft_read_header( &sec, start_addr ) != kNoErr )
+    if ( ft_read_header( &sec, partition ) != kNoErr )
         return NULL;
 
     if ( !ft_is_valid_magic( sec.magic ) )
@@ -255,7 +249,7 @@ bool ft_is_content_valid( mxos_partition_t partition, int be_ver )
     FT_HEADER sec1;
     bool ret = false;
 
-    if ( ft_read_header( &sec1, mxos_partitions[partition].partition_start_addr ) != kNoErr )
+    if ( ft_read_header( &sec1, partition ) != kNoErr )
         goto ret;
 
     ftfs_log("part: be_ver: %ld", sec1.backend_version);

@@ -92,4 +92,8 @@ void mos_msleep(uint32_t ms);
 mos_mallinfo_t *mos_mallinfo(void);
 void mos_mallrecord_show(void);
 
+void mxos_timer_reset(mos_timer_id_t id);
+bool mos_timer_is_runing(mos_timer_id_t id);
+
+
 #endif

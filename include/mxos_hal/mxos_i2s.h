@@ -29,11 +29,11 @@
  ******************************************************************************
  */
 
-#ifndef __MXOSDRIVERI2S_H__
-#define __MXOSDRIVERI2S_H__
+#pragma once
 
-#include "mxos_common.h"
-#include "platform_peripheral.h"
+#include "stdint.h"
+#include "merr.h"
+
 
 /* Legacy definitions */
 #define MxosIISInitialize mxos_i2s_init
@@ -65,7 +65,16 @@
 
 typedef int8_t mxos_iis_t;   /**< MXOS IIS peripheral handle, MXOS_IIS_XX define by board/<board_name>/board.h. */
 
-typedef platform_iis_message_segment_t mxos_iis_message_segment_t;
+/**
+ * IIS message segment
+ */
+typedef struct
+{
+    const void* tx_buffer;
+    void*       rx_buffer;
+    uint32_t    length;
+} mxos_iis_message_segment_t;
+
 
 typedef struct
 {
@@ -149,4 +158,3 @@ merr_t mxos_i2s_read( const mxos_iis_device_t* iis, uint8_t *p_buf, uint32_t siz
 /** @} */
 /** @} */
 
-#endif

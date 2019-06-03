@@ -181,10 +181,10 @@ int ft_fseek(file *f, long offset, int whence);
  * \return FAIL if header read operation fails.
  * \return SUCCESS if header read operation is successful.
  */
-static inline int ft_read_header(FT_HEADER *fh, uint32_t address)
+static inline int ft_read_header(FT_HEADER *fh, mxos_partition_t p)
 {
   uint32_t offset = 0;
-  return mhal_flash_read( MXOS_PARTITION_FILESYS, &offset, (uint8_t *)fh, sizeof(FT_HEADER) );
+  return mhal_flash_read( p, &offset, (uint8_t *)fh, sizeof(FT_HEADER) );
 }
 
 int ft_is_valid_magic(uint8_t *magic);

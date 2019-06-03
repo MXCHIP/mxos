@@ -100,7 +100,7 @@ merr_t mxos_time_get_utc_time_ms( mxos_utc_time_ms_t* utc_time_ms )
     uint32_t     time_since_last_reference;
 
     /* Update the UTC time by the time difference between now and the last update */
-    mxos_time_get_time( &temp_mxos_time );
+    temp_mxos_time = mos_time();
     time_since_last_reference = ( temp_mxos_time - last_utc_time_mxos_reference );
 
     if ( time_since_last_reference != 0 )
@@ -115,7 +115,7 @@ merr_t mxos_time_get_utc_time_ms( mxos_utc_time_ms_t* utc_time_ms )
 
 merr_t mxos_time_set_utc_time_ms( const mxos_utc_time_ms_t* utc_time_ms )
 {
-    mxos_time_get_time( &last_utc_time_mxos_reference );
+    last_utc_time_mxos_reference = mos_time();
     current_utc_time = *utc_time_ms;
     return kNoErr;
 }

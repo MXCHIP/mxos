@@ -31,8 +31,6 @@
 #ifndef __MXOSSOCKET_H__
 #define __MXOSSOCKET_H__
 
-#include "mxos_opt.h"
-
 #if defined __GNUC__
 #include <sys/time.h>
 #include <sys/select.h>

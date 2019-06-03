@@ -161,9 +161,7 @@ void mdns_thread_yield(void *t)
 
 uint32_t mdns_time_ms(void)
 {
-    mxos_time_t current;
-    mxos_time_get_time(&current);
-    return current;
+    return mos_time();
 }
 
 int mdns_rand_range(int n)

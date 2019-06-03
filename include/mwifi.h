@@ -6,7 +6,26 @@
 
 #include "merr.h"
 
+enum
+{
+  STATION_INTERFACE,
+  SOFTAP_INTERFACE,
+};
 typedef uint8_t mwifi_if_t;
+
+/** @brief Wlan configuration source */ 
+typedef enum{
+  CONFIG_BY_NONE,             /**< Default value */
+  CONFIG_BY_EASYLINK_V2,      /**< Wlan configured by EasyLink revision 2.0 */
+  CONFIG_BY_EASYLINK_PLUS,    /**< Wlan configured by EasyLink Plus */    
+  CONFIG_BY_EASYLINK_MINUS,   /**< Wlan configured by EasyLink Minus */       
+  CONFIG_BY_MONITOR,          /**< Wlan configured by airkiss from wechat Tencent inc. */
+  CONFIG_BY_SOFT_AP,          /**< Wlan configured by EasyLink soft ap mode */
+  CONFIG_BY_WAC,              /**< Wlan configured by wireless accessory configuration from Apple inc. */
+  CONFIG_BY_WPS,              /**< Wlan configured by Wi-Fi protected setup(WPS). */
+  CONFIG_BY_AWS,              /**< Wlan configured by EasyLink AWS */
+  CONFIG_BY_USER,             /**< Wlan configured by user defined functions. */
+} mxos_config_source_t;
 
 enum
 {
@@ -71,6 +90,17 @@ enum custom_ie_delete_op_e
 };
 typedef uint8_t mwifi_custom_ie_remove_type_t;
 
+enum
+{
+  NOTIFY_STATION_UP = 1,
+  NOTIFY_STATION_DOWN,
+
+  NOTIFY_AP_UP,
+  NOTIFY_AP_DOWN,
+
+  NOTIFY_ETH_UP,
+  NOTIFY_ETH_DOWN,
+};
 typedef uint8_t mwifi_notify_t;
 
 typedef void (*asso_event_handler_t)(char *buf, int buf_len, int flags, void *handler_user_data);
@@ -110,7 +140,9 @@ merr_t mwifi_custom_ie_remove(mwifi_if_t iface);
 merr_t mwifi_monitor_start_with_softap(char *ssid, char *key, int channel, mwifi_ip_attr_t *attr, asso_event_handler_t fn);
 
 // 
-merr_t mwifi_start_aws(int timeout);
+typedef void (*notify_ap_up_callback)(void);
+merr_t mwifi_aws_start(int inTimeout);
+merr_t mwifi_aws_start_with_softap(int inTimeout,char *ssid,char *key,int channel,notify_ap_up_callback fn);
 merr_t mwifi_aws_stop(void);
 
 #endif

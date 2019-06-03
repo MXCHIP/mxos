@@ -179,20 +179,6 @@ merr_t mxos_ota_switch_to_new_fw(int ota_data_len, uint16_t ota_data_crc);
   * @{
   */
 
-/** @brief Wlan configuration source */ 
-typedef enum{
-  CONFIG_BY_NONE,             /**< Default value */
-  CONFIG_BY_EASYLINK_V2,      /**< Wlan configured by EasyLink revision 2.0 */
-  CONFIG_BY_EASYLINK_PLUS,    /**< Wlan configured by EasyLink Plus */    
-  CONFIG_BY_EASYLINK_MINUS,   /**< Wlan configured by EasyLink Minus */       
-  CONFIG_BY_MONITOR,          /**< Wlan configured by airkiss from wechat Tencent inc. */
-  CONFIG_BY_SOFT_AP,          /**< Wlan configured by EasyLink soft ap mode */
-  CONFIG_BY_WAC,              /**< Wlan configured by wireless accessory configuration from Apple inc. */
-  CONFIG_BY_WPS,              /**< Wlan configured by Wi-Fi protected setup(WPS). */
-  CONFIG_BY_AWS,              /**< Wlan configured by EasyLink AWS */
-  CONFIG_BY_USER,             /**< Wlan configured by user defined functions. */
-} mxos_config_source_t;
-
 /**  @brief Wlan connect err flag */
 typedef enum{
     EXIT_EASYLINK,          /** Default value,exit easylink*/
@@ -528,7 +514,6 @@ typedef enum{
   mxos_notify_DNS_RESOLVE_COMPLETED,      /**< A DNS host address has resolved, type: void (*function)(uint8_t *hostname, uint32_t ip,  void* arg)*/
   mxos_notify_SYS_WILL_POWER_OFF,         /**< System power will be turned off, type: void (*function)(void* arg)*/
   mxos_notify_WIFI_CONNECT_FAILED,        /**< A wlan connection attemption is failed, type: void join_fail(merr_t err, void* arg)*/
-  mxos_notify_WIFI_SCAN_ADV_COMPLETED,    /**< A anvanced wlan scan is completed, type: void (*function)(ScanResult_adv *pApList, void* arg)*/
   mxos_notify_WIFI_Fatal_ERROR,           /**< A fatal error occured when communicating with wlan sub-system, type: void (*function)(void* arg)*/
   mxos_notify_Stack_Overflow_ERROR,       /**< A MXOS RTOS thread's stack is over-flowed, type: void (*function)(char *taskname, void* arg)*/
   mxos_notify_GPRS_STATUS_CHANGED,

@@ -73,7 +73,7 @@ struct mxos_filesystem_driver_struct
     merr_t (*dir_create)       ( mxos_filesystem_t* fs_handle, const char* directory_name );
     merr_t (*format)           ( mxos_block_device_t* device );
     merr_t (*get_info)         ( mxos_filesystem_info* info,char* mounted_name );
-    merr_t (*scan_files)       ( char* mounted_name, mxos_scan_file_handle arg );
+    merr_t (*scan_files)       ( mxos_filesystem_t* fs_handle, char* mounted_name, mxos_scan_file_handle arg );
 };
 
 

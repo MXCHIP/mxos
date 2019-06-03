@@ -78,7 +78,7 @@ static merr_t ftfs_dir_rewind( mxos_dir_t* dir_handle );
 static merr_t ftfs_dir_close( mxos_dir_t* dir_handle );
 static merr_t ftfs_dir_create( mxos_filesystem_t* fs_handle, const char* directory_name );
 static merr_t ftfs_format( mxos_block_device_t* device );
-static merr_t ftfs_scan_files( char* mounted_name, mxos_scan_file_handle arg );
+static merr_t ftfs_scan_files(mxos_filesystem_t* fs_handle, char* mounted_name, mxos_scan_file_handle arg );
 static merr_t ftfs_get_info( mxos_filesystem_info* info,char* mounted_name );
 
 /******************************************************
@@ -126,13 +126,8 @@ static struct fs * ftfs_file_init( struct ftfs_super *sb, mxos_partition_t parti
 {
     FT_HEADER sec;
     uint32_t start_addr = 0;
-    mxos_logic_partition_t *ftfs_partition;
 
-    ftfs_partition = mhal_flash_get_info( partition );
-
-    start_addr = ftfs_partition->partition_start_addr;
-
-    if ( ft_read_header( &sec, start_addr ) != kNoErr )
+    if ( ft_read_header( &sec, partition ) != kNoErr )
         return NULL;
 
     if ( !ft_is_valid_magic( sec.magic ) )
@@ -148,6 +143,7 @@ static struct fs * ftfs_file_init( struct ftfs_super *sb, mxos_partition_t parti
     sb->fs.fwrite = ft_fwrite;
     sb->fs.ftell = ft_ftell;
     sb->fs.fseek = ft_fseek;
+    sb->fs.partition = partition;
 
     memset( sb->fds, 0, sizeof(sb->fds) );
     sb->fds_mask = 0;
@@ -166,8 +162,8 @@ static struct fs * ftfs_file_init( struct ftfs_super *sb, mxos_partition_t parti
 static merr_t ftfs_mount( mxos_block_device_t* device, mxos_filesystem_t* fs_handle_out )
 {
     UNUSED_PARAMETER( device );
-    UNUSED_PARAMETER( fs_handle_out );
-    return MXOS_FILESYSTEM_ERROR;
+    fs_handle_out->data.fs = ftfs_file_init( &(fs_handle_out->data.sb), fs_handle_out->partition );
+    return MXOS_FILESYSTEM_SUCCESS;
 }
 
 /* Unmounts a FTFS filesystem from a block device */
@@ -182,15 +178,14 @@ static merr_t ftfs_unmount( mxos_filesystem_t* fs_handle )
 static merr_t ftfs_file_open( mxos_filesystem_t* fs_handle, mxos_file_t* file_handle_out, const char* filename,
                                 mxos_filesystem_open_mode_t mode )
 {
-
+    file * f;
     if ( mode != MXOS_FILESYSTEM_OPEN_FOR_READ )
     {
         return MXOS_FILESYSTEM_WRITE_PROTECTED;
     }
-    fs_handle->data.fs = ftfs_file_init( &(fs_handle->data.sb), MXOS_PARTITION_FILESYS );
-    fs_handle->data.f = ft_fopen( fs_handle->data.fs, filename, NULL );
-    file_handle_out->data.f = fs_handle->data.f;
-    if ( fs_handle->data.f == NULL )
+    f = ft_fopen( fs_handle->data.fs, filename, NULL );
+    file_handle_out->data.f = f;
+    if ( f == NULL )
     {
         return MXOS_FILESYSTEM_ERROR;
     }
@@ -201,11 +196,15 @@ static merr_t ftfs_file_open( mxos_filesystem_t* fs_handle, mxos_file_t* file_ha
 static merr_t ftfs_file_get_details( mxos_filesystem_t* fs_handle, const char* filename,
                                        mxos_dir_entry_details_t* details_out )
 {
-    int file_size;
-    file_size = ((FT_FILE *) (fs_handle->data.f))->length;
-    if ( file_size < 0 )
-    {
-        return MXOS_FILESYSTEM_ERROR;
+    int file_size=0;
+    file * f;
+    
+    f = ft_fopen( fs_handle->data.fs, filename, NULL );
+    if (f == NULL) {
+        file_size = 0;
+    } else {
+        file_size = ft_ftell( f );
+        ft_fclose(f);
     }
     details_out->size = (uint64_t) file_size;
     details_out->attributes_available = MXOS_FALSE;
@@ -353,7 +352,7 @@ static merr_t ftfs_format( mxos_block_device_t* device )
     return MXOS_FILESYSTEM_WRITE_PROTECTED;
 }
 
-static merr_t ftfs_scan_files( char* mounted_name, mxos_scan_file_handle arg )
+static merr_t ftfs_scan_files( mxos_filesystem_t* fs_handle, char* mounted_name, mxos_scan_file_handle arg )
 {
     UNUSED_PARAMETER( mounted_name );
     char path[]="/";
@@ -362,7 +361,7 @@ static merr_t ftfs_scan_files( char* mounted_name, mxos_scan_file_handle arg )
     struct ft_entry entry;
     while ( entry.name[0] != '\0' )
     {
-        mhal_flash_read( MXOS_PARTITION_FILESYS, &addr, (uint8_t *) &entry, sizeof(entry) );
+        mhal_flash_read( fs_handle->partition, &addr, (uint8_t *) &entry, sizeof(entry) );
         if(entry.name[0] == '\0')
         break;
         arg( path,(char *)entry.name);

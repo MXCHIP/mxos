@@ -2230,7 +2230,7 @@ static int send_init_probes(int idx, int *state, int *event,
 	return event[idx];
 }
 
-static inline void mdns_ctrl_halt()
+static inline void mdns_ctrl_halt( void )
 {
 	int i, ret;
 	/* Send the goodbye packet.  This is same as announcement, but with a
@@ -2703,7 +2703,7 @@ int responder_launch(const char *domain, char *hostname)
 	return kNoErr;
 }
 
-static int signal_and_wait_for_responder_halt()
+static int signal_and_wait_for_responder_halt( void )
 {
 	int total_wait_time = 100 * 100;    /* 10 seconds */
 	int check_interval = 100;   /* 100 ms */
