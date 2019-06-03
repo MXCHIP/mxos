@@ -46,9 +46,9 @@ typedef struct
 {
   int is_connected; /**< The link to wlan is established or not, 0: disconnected, 1: connected. */
   int rssi;         /**< Signal strength of the current connected AP */
-  char ssid[33]; /**< SSID of the current connected wlan */
+  char ssid[33];    /**< SSID of the current connected wlan */
   uint8_t bssid[6]; /**< BSSID of the current connected wlan */
-  char key[65];  /**< The passphrase/PSK of the connected AP */
+  char key[65];     /**< The passphrase/PSK of the connected AP */
   int channel;      /**< Channel of the current connected wlan */
   mwifi_security_t security;
 } mwifi_link_info_t;
@@ -56,7 +56,7 @@ typedef struct
 typedef struct
 {
   int rssi;                  /**< Signal strength of the AP */
-  char ssid[33];          /**< SSID of the AP */
+  char ssid[33];             /**< SSID of the AP */
   uint8_t bssid[6];          /**< BSSID of the AP */
   int channel;               /**< Channel of the AP */
   mwifi_security_t security; /**< security of the AP */
@@ -109,7 +109,7 @@ merr_t mwifi_custom_ie_add(mwifi_if_t iface, uint8_t *data, uint32_t size);
 merr_t mwifi_custom_ie_remove(mwifi_if_t iface);
 merr_t mwifi_monitor_start_with_softap(char *ssid, char *key, int channel, mwifi_ip_attr_t *attr, asso_event_handler_t fn);
 
-// 
+//
 merr_t mwifi_start_aws(int timeout);
 merr_t mwifi_aws_stop(void);
 
