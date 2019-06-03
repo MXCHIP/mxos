@@ -24,7 +24,7 @@ GLOBAL_ASMFLAGS	+= $(CPU_CFLAGS)
 GLOBAL_LDFLAGS	+= -march=armv8-m.main+dsp -mthumb -mcmse -mfloat-abi=softfp -mfpu=fpv5-sp-d16 -nostartfiles -specs nosys.specs -Wl,--gc-sections -Wl,--warn-section-align -Wl,--build-id=none -Wl,--no-enum-size-warning -Wl,--warn-common -lm -lstdc++
 GLOBAL_LDFLAGS	+= -L mxos/platform/MCU/RTL8721D
 
-GLOBAL_INCLUDES := ../include ../../ ../../../MXOS/RTOS/
+GLOBAL_INCLUDES := . ../include ../../ ../../../MXOS/RTOS/
                    
 EXTRA_TARGET_MAKEFILES +=  mxos/platform/MCU/RTL8721D/build_helper.mk
 
