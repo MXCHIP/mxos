@@ -820,7 +820,7 @@ int ssl_socket( mxos_ssl_t ssl );
  *
  *  @retval     void
  */
-void ssl_set_cert(const char *_cert_pem, const char *private_key_pem);
+void ssl_set_cert(const char *_cert_pem, const char *private_key_pem, const char *_verify_ca);
 
 /** @brief      SSL client create a SSL connection.
  *
