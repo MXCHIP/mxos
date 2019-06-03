@@ -474,23 +474,4 @@ extern mos_mutex_id_t stdio_tx_mutex;
 
 #define IsValidFD(X) ((X) >= 0)
 
-typedef struct
-{
-    int num_of_chunks;   /**< number of free chunks*/
-    int total_memory;    /**< maximum total allocated space*/
-    int allocted_memory; /**< total allocated space*/
-    int free_memory;     /**< total free space*/
-} mos_mallinfo_legacy_t;
-
-#define mxos_get_mem_info mos_mallinfo_legacy
-
-/**
- * @brief  Get memory usage information
- *
- * @param  None
- *
- * @return Point to structure of memory usage information in heap
- */
-mos_mallinfo_legacy_t *mos_mallinfo_legacy(void);
-
 #endif

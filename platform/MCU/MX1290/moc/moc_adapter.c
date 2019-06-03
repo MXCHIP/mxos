@@ -108,7 +108,7 @@ mxos_api_t *moc_adapter(new_mxos_api_t *new_mxos_api)
   mxos_api.SetTimer = NULL;
   mxos_api.SetTimer_uniq = NULL;
   mxos_api.UnSetTimer = NULL;
-  mxos_api.mos_mallinfo_legacy = (mos_mallinfo_legacy_t* (*)( void ))_kernel_api.os_apis->mos_mallinfo_legacy;
+  mxos_api.mos_mallinfo_legacy = (void* (*)( void ))_kernel_api.os_apis->mos_mallinfo_legacy;
   mxos_api.malloc = _kernel_api.os_apis->malloc;
   mxos_api.realloc = _kernel_api.os_apis->realloc;
   mxos_api.free = _kernel_api.os_apis->free;

@@ -336,10 +336,29 @@ merr_t mxos_network_init(void)
 	return kNoErr;
 }
 
-mos_mallinfo_legacy_t* mos_mallinfo_legacy(void)
+
+typedef struct
 {
-	return lib_api_p->mos_mallinfo_legacy();
+    int num_of_chunks;   /**< number of free chunks*/
+    int total_memory;    /**< maximum total allocated space*/
+    int allocted_memory; /**< total allocated space*/
+    int free_memory;     /**< total free space*/
+} mos_mallinfo_legacy_t;
+
+mos_mallinfo_t *mos_mallinfo(void)
+{
+	static mos_mallinfo_t mallinfo;
+	mos_mallinfo_legacy_t *mallinfo_legacy;
+	
+	mallinfo_legacy = lib_api_p->mos_mallinfo_legacy();
+    mallinfo.total = mallinfo_legacy->total_memory;
+    mallinfo.free = mallinfo_legacy->free_memory;
+    mallinfo.chunks = mallinfo_legacy->num_of_chunks;
+    mallinfo.min_free = 0;
+
+	return &mallinfo;
 }
+
 char* mxos_system_lib_version(void)
 {
     return lib_api_p->library_version;
