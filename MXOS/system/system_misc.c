@@ -275,12 +275,6 @@ void PlatformEasyLinkButtonLongPressedCallback(void)
   context = mxos_system_context_get( );
   require( context, exit );
 
-  partition = mhal_flash_get_info( MXOS_PARTITION_PARAMETER_1 );
-  mhal_flash_erase( MXOS_PARTITION_PARAMETER_1 ,0x0, partition->partition_length );
-
-  partition = mhal_flash_get_info( MXOS_PARTITION_PARAMETER_2 );
-  mhal_flash_erase( MXOS_PARTITION_PARAMETER_2 ,0x0, partition->partition_length );
-
   partition = mhal_flash_get_info( MXOS_PARTITION_KV );
   mhal_flash_erase( MXOS_PARTITION_KV ,0x0, partition->partition_length );
 

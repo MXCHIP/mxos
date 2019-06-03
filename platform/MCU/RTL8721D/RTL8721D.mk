@@ -29,7 +29,7 @@ GLOBAL_INCLUDES := ../include ../../ ../../../MXOS/RTOS/
                    
 EXTRA_TARGET_MAKEFILES +=  mxos/platform/MCU/RTL8721D/build_helper.mk
 
-GLOBAL_DEFINES += FreeRTOS_VERSION="V8.1.2"
+GLOBAL_DEFINES += FreeRTOS_VERSION=\"V8.1.2\"
 
 GLOBAL_LDFLAGS  += \
 -Wl,-wrap,_malloc_r \

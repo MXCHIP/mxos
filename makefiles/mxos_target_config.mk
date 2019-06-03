@@ -261,7 +261,7 @@ $(eval $(call PROCESS_COMPATIBILITY_CHECK,))
 # Now we know the target architecture - include all toolchain makefiles and check one of them can handle the architecture
 CC :=
 
-ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-M4F Cortex-R4 Cortex-M0 Cortex-M0plus ARM968E-S),)
+ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-M4F Cortex-R4 Cortex-M0 Cortex-M0plus ARM968E-S Cortex-M33),)
 
 include $(MAKEFILES_PATH)/mxosder_toolchain_arm-none-eabi.mk
 

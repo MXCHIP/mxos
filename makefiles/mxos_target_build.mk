@@ -22,8 +22,12 @@ include $(MAKEFILES_PATH)/mxosder_toolchain_$(TOOLCHAIN_NAME).mk
 ##################################
 
 LINK_OUTPUT_FILE          :=$(OUTPUT_DIR)/binary/$(CLEANED_BUILD_STRING)$(LINK_OUTPUT_SUFFIX)        	# build/helloworld-MXOSKit_3165/binary/helloworld-MXOSKit_3165.elf
+LINK_OUTPUT_FILE_WIN      :=$(OUTPUT_DIR_WIN)\binary\$(CLEANED_BUILD_STRING)$(LINK_OUTPUT_SUFFIX)
+
 STRIPPED_LINK_OUTPUT_FILE :=$(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.stripped$(LINK_OUTPUT_SUFFIX)) 	# build/helloworld-MXOSKit_3165/binary/helloworld-MXOSKit_3165.stripped.elf
+
 BIN_OUTPUT_FILE        	  :=$(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=$(BIN_OUTPUT_SUFFIX))         		# build/helloworld-MXOSKit_3165/binary/helloworld-MXOSKit_3165.bin
+BIN_OUTPUT_FILE_WIN       :=$(LINK_OUTPUT_FILE_WIN:$(LINK_OUTPUT_SUFFIX)=$(BIN_OUTPUT_SUFFIX))         		# build/helloworld-MXOSKit_3165/binary/helloworld-MXOSKit_3165.bin
 HEX_OUTPUT_FILE           :=$(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=$(HEX_OUTPUT_SUFFIX))         		# build/helloworld-MXOSKit_3165/binary/helloworld-MXOSKit_3165.bin
 
 MAP_OUTPUT_FILE           :=$(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.map)     							# build/helloworld-MXOSKit_3165/binary/helloworld-MXOSKit_3165.map
@@ -233,7 +237,7 @@ $(LINK_OUTPUT_FILE): $(LINK_LIBS) $(MXOS_SDK_LINK_SCRIPT) $(LINK_OPTS_FILE) $(LI
 	$(QUIET)$(LINKER) -o  $@ $(OPTIONS_IN_FILE_OPTION)$(LINK_OPTS_FILE) $(COMPILER_SPECIFIC_STDOUT_REDIRECT)
 	$(QUIET)$(ECHO_BLANK_LINE)
 	$(QUIET)$(call COMPILER_SPECIFIC_MAPFILE_TO_CSV,$(MAP_OUTPUT_FILE),$(MAP_CSV_OUTPUT_FILE))
-	
+ 	
 # Stripped elf file target - Strips the full elf file and outputs to a new .stripped.elf file
 $(STRIPPED_LINK_OUTPUT_FILE): $(LINK_OUTPUT_FILE)
 	$(QUIET)$(STRIP) -o $@ $(STRIPFLAGS) $<
