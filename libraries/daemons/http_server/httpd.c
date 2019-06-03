@@ -439,7 +439,7 @@ static inline int tcp_local_connect( int *sockfd )
         if ( *sockfd >= 0 )
             break;
         /* Wait some time to allow some sockets to get released */
-        mos_sleep_ms( 1000 );
+        mos_msleep( 1000 );
     }
 
     if ( *sockfd < 0 )
@@ -493,7 +493,7 @@ static int httpd_signal_and_wait_for_halt( )
 
     while ( httpd_state != HTTPD_THREAD_SUSPENDED && num_iterations-- )
     {
-        mos_sleep_ms( check_interval_ms );
+        mos_msleep( check_interval_ms );
     }
 
     close( sockfd );

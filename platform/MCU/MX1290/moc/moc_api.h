@@ -208,7 +208,7 @@ typedef struct mxos_api_struct
     merr_t (*mos_thread_awake)( mos_thread_id_t* thread );
     bool (*mxos_rtos_is_current_thread)( mos_thread_id_t* thread );
     void (*mos_sleep)( uint32_t seconds );
-    void (*mos_sleep_ms)( uint32_t milliseconds );
+    void (*mos_msleep)( uint32_t milliseconds );
     merr_t (*mos_semphr_new)( mos_semphr_id_t* semaphore, int count );
     merr_t (*mos_semphr_release)( mos_semphr_id_t* semaphore );
     merr_t (*mos_semphr_acquire)( mos_semphr_id_t* semaphore, uint32_t timeout_ms );

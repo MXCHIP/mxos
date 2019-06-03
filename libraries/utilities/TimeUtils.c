@@ -74,7 +74,7 @@ void SleepForUpTicks( uint64_t inTicks )
     for( ; ticks < deadline; ticks = UpTicks() )
     {
         ticks = deadline - ticks;
-        mos_sleep_ms(ticks);
+        mos_msleep(ticks);
     }
 }
 

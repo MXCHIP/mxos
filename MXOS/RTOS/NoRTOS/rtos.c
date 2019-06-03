@@ -292,7 +292,7 @@ merr_t mos_mutex_delete( mos_mutex_id_t id )
  * @return merr_t : kNoErr if delay was successful
  *
  */
-merr_t mos_sleep_ms( uint32_t num_ms )
+merr_t mos_msleep( uint32_t num_ms )
 {
     mxos_time_t start = mos_time( );
 

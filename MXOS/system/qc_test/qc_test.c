@@ -167,7 +167,7 @@ static void _qc_test_thread( void * arg )
 
 exit:
     free( rx_data );
-    mos_sleep_ms( MOS_NEVER_TIMEOUT );
+    mos_msleep( MOS_NEVER_TIMEOUT );
     mos_thread_delete( NULL );
 }
 

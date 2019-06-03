@@ -114,7 +114,7 @@ void tftp_ota(void)
     mxos_system_notify_register( mxos_notify_WIFI_STATUS_CHANGED, (void *)FOTA_WifiStatusHandler, NULL );
     mwifi_monitor_stop();
     mwifi_disconnect();
-	mos_sleep_ms(10);
+	mos_msleep(10);
 		
     tmpbuf = (uint8_t*)malloc(TMP_BUF_LEN);
     if (tmpbuf == NULL) {
@@ -139,7 +139,7 @@ void tftp_ota(void)
     mwifi_softap_start( DEFAULT_OTA_AP, "", 6, &ip_attr);
 
     while(wifi_up == 0) {
-        mos_sleep_ms(100);
+        mos_msleep(100);
         i++;
         if (i > 100) {
             fota_log("ERROR!! Can't find the OTA AP");
@@ -207,7 +207,7 @@ void tftp_ota(void)
     mxos_ota_switch_to_new_fw( filelen, crc );
     mxos_ota_finished(OTA_SUCCESS, NULL);
     while(1)
-        mos_sleep_ms(100);
+        mos_msleep(100);
 }
 
 /******************************************************

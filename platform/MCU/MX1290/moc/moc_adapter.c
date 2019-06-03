@@ -53,7 +53,7 @@ void init_debug_uart(void)
 
 static void _mos_thread_yield(void)
 {
-   mos_sleep_ms( 0 );
+   mos_msleep( 0 );
 }
 
 
@@ -80,8 +80,8 @@ mxos_api_t *moc_adapter(new_mxos_api_t *new_mxos_api)
   mxos_api.mos_thread_join = _kernel_api.os_apis->mos_thread_join;
   mxos_api.mos_thread_awake = _kernel_api.os_apis->mos_thread_awake;
   mxos_api.mxos_rtos_is_current_thread = _kernel_api.os_apis->mxos_rtos_is_current_thread;
-  mxos_api.mos_sleep_ms = _kernel_api.os_apis->mos_sleep_ms;
-  mxos_api.mos_sleep_ms = _kernel_api.os_apis->mos_sleep_ms;
+  mxos_api.mos_msleep = _kernel_api.os_apis->mos_msleep;
+  mxos_api.mos_msleep = _kernel_api.os_apis->mos_msleep;
   mxos_api.mos_semphr_new = _kernel_api.os_apis->mos_semphr_new;
   mxos_api.mos_semphr_release = _kernel_api.os_apis->mos_semphr_release;
   mxos_api.mos_semphr_acquire = _kernel_api.os_apis->mos_semphr_acquire;

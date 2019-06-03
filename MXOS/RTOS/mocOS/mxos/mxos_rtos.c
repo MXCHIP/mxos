@@ -263,14 +263,14 @@ merr_t mxos_time_set_time(const mxos_time_t *time_ptr)
  * @return merr_t : kNoErr if delay was successful
  *
  */
-void mos_sleep_ms(uint32_t num_ms)
+void mos_msleep(uint32_t num_ms)
 {
-    lib_api_p->mos_sleep_ms(num_ms);
+    lib_api_p->mos_msleep(num_ms);
 }
 
 void mos_sleep(float seconds)
 {
-    mos_sleep_ms(seconds * 1000);
+    mos_msleep(seconds * 1000);
 }
 
 void *mxos_malloc(size_t xWantedSize)

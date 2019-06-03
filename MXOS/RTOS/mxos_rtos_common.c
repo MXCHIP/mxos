@@ -228,12 +228,12 @@ static void timed_event_handler( void* arg )
 
 void sleep(uint32_t seconds)
 {
-    mos_sleep_ms(seconds*1000);
+    mos_msleep(seconds*1000);
 }
 
 void msleep(uint32_t mseconds)
 {
-    mos_sleep_ms(mseconds);
+    mos_msleep(mseconds);
 }
 
 

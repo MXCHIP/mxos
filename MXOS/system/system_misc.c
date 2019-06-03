@@ -223,7 +223,7 @@ merr_t system_network_daemen_start( system_context_t * const inContext )
   system_log("Wi-Fi driver version %s", inContext->mxosStatus.rf_version);
   system_log("Wi-Fi mac address: %s", inContext->mxosStatus.mac);
 
-  system_log("Free memory %d bytes", mxos_get_mem_info()->free_memory); 
+  system_log("Free memory %d bytes", mos_mallinfo()->free); 
 
 #if PLATFORM_ETH_ENABLE
   mxos_eth_bringup(true, NULL, NULL, NULL);

@@ -88,7 +88,7 @@ int mos_event_fd_delete(int fd);
 // others
 uint32_t mos_time(void);
 void mos_sleep(float seconds);
-void mos_sleep_ms(uint32_t ms);
+void mos_msleep(uint32_t ms);
 mos_mallinfo_t *mos_mallinfo(void);
 void mos_mallrecord_show(void);
 

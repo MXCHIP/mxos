@@ -432,7 +432,7 @@ s8 BMG160_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 void BMG160_delay_msek(u32 msek)
 {
 	/*Here you can write your own delay routine*/
-  mos_sleep_ms(msek);
+  mos_msleep(msek);
 }
 #endif
 

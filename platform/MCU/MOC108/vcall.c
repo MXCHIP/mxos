@@ -8,7 +8,7 @@ merr_t mico_rtos_create_thread(mos_thread_id_t *thread, uint8_t priority, const 
 
 merr_t mico_rtos_delay_milliseconds(uint32_t num_ms)
 {
-    return mos_sleep_ms(num_ms);
+    return mos_msleep(num_ms);
 }
 
 merr_t mico_rtos_delete_thread(mos_thread_id_t *thread)
@@ -74,7 +74,7 @@ merr_t mico_rtos_thread_join(mos_thread_id_t *id)
 
 void mico_rtos_thread_msleep(uint32_t milliseconds)
 {
-    mos_sleep_ms(milliseconds);
+    mos_msleep(milliseconds);
 }
 
 merr_t mico_rtos_unlock_mutex(mos_mutex_id_t *id)

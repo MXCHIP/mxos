@@ -141,7 +141,7 @@ static int aws_broadcast_notification(char *msg, int msg_num)
         if (ret > 0) {
             i++; // sendto fail don't i++, max sending times is 10, min sending times is 5.
         }
-        mos_sleep_ms(20);
+        mos_msleep(20);
     }
     
     //send notification
@@ -293,7 +293,7 @@ merr_t mxos_easylink_aws( mxos_Context_t * const in_context, mxos_bool_t enable 
         err = kNoErr;
 
         /* Make sure easylink is already running, and waiting for sem trigger */
-        mos_sleep_ms( 1000 );
+        mos_msleep( 1000 );
     }
 
     exit:

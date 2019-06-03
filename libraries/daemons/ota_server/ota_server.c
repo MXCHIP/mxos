@@ -214,7 +214,7 @@ static int ota_server_connect_server( struct in_addr in_addr )
     err = ota_server_connect( &server_address, sizeof(server_address) );
     if ( err != 0 )
     {
-        mos_sleep_ms( 1 );
+        mos_msleep( 1 );
         return -1;
     }
 
@@ -268,7 +268,7 @@ static void ota_server_thread( void * arg )
     while ( 1 )
     {
         if ( ota_server_context->ota_control == OTA_CONTROL_PAUSE ){
-            mos_sleep_ms( 1 );
+            mos_msleep( 1 );
             continue;
         }else if( ota_server_context->ota_control == OTA_CONTROL_STOP ){
             goto DELETE;
@@ -336,7 +336,7 @@ static void ota_server_thread( void * arg )
 
     RECONNECTED:
         ota_server_socket_close( );
-        mos_sleep_ms(2);
+        mos_msleep(2);
         continue;
 
     }
@@ -380,7 +380,7 @@ static merr_t onReceivedData( struct _HTTPHeader_t * inHeader, uint32_t inPos, u
         while( 1 ){
             if( ota_server_context->ota_control != OTA_CONTROL_PAUSE )
                 break;
-            mos_sleep_ms(100);
+            mos_msleep(100);
         }
     }
 

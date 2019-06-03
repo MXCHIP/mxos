@@ -150,7 +150,7 @@ merr_t mxos_bt_init( mxos_bt_mode_t mode, const char* device_name, uint8_t clien
     mxos_bt_dev_read_local_addr( bt_address );
     memset( bt_device_name, 0, sizeof( bt_device_name ) );
     memcpy( bt_device_name, device_name, strnlen( device_name, BT_DEVICE_NAME_MAX_LENGTH ) );
-    mos_sleep_ms(10);
+    mos_msleep(10);
 
     result = MXOS_BT_SUCCESS;
     goto exit;

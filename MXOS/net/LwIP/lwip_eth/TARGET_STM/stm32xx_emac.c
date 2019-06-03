@@ -481,7 +481,7 @@ static void _eth_arch_phy_task(void * arg)
             }
             phy_status = status;
         }
-        mos_sleep_ms(PHY_TASK_WAIT);
+        mos_msleep(PHY_TASK_WAIT);
     }
 }
 

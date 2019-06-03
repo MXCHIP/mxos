@@ -97,7 +97,7 @@ merr_t config_server_start ( void )
   require_action(mos_thread_new( MOS_APPLICATION_PRIORITY, "Config Server", localConfiglistener_thread, 
   STACK_SIZE_LOCAL_CONFIG_SERVER_THREAD, NULL ) != NULL, exit, err = kGeneralErr);
   
-  mos_sleep_ms(200);
+  mos_msleep(200);
 
 exit:
   return err;
@@ -115,12 +115,12 @@ merr_t config_server_stop( void )
     if( close_client_sem[ i ] != NULL )
       mos_semphr_release(close_client_sem[ i ] );
   }
-  mos_sleep_ms(50);
+  mos_msleep(50);
 
   if( close_listener_sem != NULL )
     mos_semphr_release(close_listener_sem );
 
-  mos_sleep_ms(500);
+  mos_msleep(500);
   is_config_server_established = false;
   
   return err;
@@ -224,7 +224,7 @@ void localConfig_thread(void* arg)
 
   t.tv_sec = 60;
   t.tv_usec = 0;
-  system_log("Free memory %d bytes", mxos_get_mem_info()->free_memory) ; 
+  system_log("Free memory %d bytes", mos_mallinfo()->free) ; 
 
   while(1){
     FD_ZERO(&readfds);
@@ -602,7 +602,7 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
       require_noerr( err, exit );
 
       if ( _uap_configured_cb ) {
-          mos_sleep_ms( 1000 );
+          mos_msleep( 1000 );
           _uap_configured_cb( easylinkIndentifier );
       }
   }
@@ -626,7 +626,7 @@ merr_t _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system
       mxos_system_context_update( &inContext->flashContentInRam );
       SocketClose( &fd );
       mxos_system_power_perform( &inContext->flashContentInRam, eState_Software_Reset );
-      mos_sleep_ms( MOS_WAIT_FOREVER );
+      mos_msleep( MOS_WAIT_FOREVER );
     }
     goto exit;
   }

@@ -357,7 +357,7 @@ int SSL_ConnectNetwork(Network* n, char* addr, int port, int ca_str_len, char* c
     //CyaSSL_SetLoggingCb(print_ssl_msg);
   }
 
-  mqtt_mxos_log("Memory remains before ssl connect %d", mxos_get_mem_info()->free_memory);
+  mqtt_mxos_log("Memory remains before ssl connect %d", mos_mallinfo()->free);
   //ca_str_len = 0;
   if((ca_str_len > 0) && (NULL != ca_str)){
     mqtt_mxos_log("SSL connect with ca:[%d][%s]", ca_str_len, ca_str);
@@ -367,7 +367,7 @@ int SSL_ConnectNetwork(Network* n, char* addr, int port, int ca_str_len, char* c
     mqtt_mxos_log("SSL connect without ca.");
     n->ssl = (void*)ssl_connect(n->my_socket, 0, NULL, &ssl_errno);
   }
-  mqtt_mxos_log("Memory remains after  ssl connect %d", mxos_get_mem_info()->free_memory);
+  mqtt_mxos_log("Memory remains after  ssl connect %d", mos_mallinfo()->free);
 
   if (NULL == n->ssl){
     mqtt_mxos_log("ssl_connect failed, err=%d.\r\n", ssl_errno);

@@ -243,7 +243,7 @@ merr_t mos_thread_join( mos_thread_id_t id )
 
     while ( xTaskIsTaskFinished( tmp ) != pdTRUE )
     {
-        mos_sleep_ms( 10 );
+        mos_msleep( 10 );
     }
     return kNoErr;
 }
@@ -822,7 +822,7 @@ mxos_time_t mos_time( void )
  * @return merr_t : kNoErr if delay was successful
  *
  */
-merr_t mos_sleep_ms( uint32_t num_ms )
+merr_t mos_msleep( uint32_t num_ms )
 {
     uint32_t ticks;
 
@@ -837,7 +837,7 @@ merr_t mos_sleep_ms( uint32_t num_ms )
 
 void mos_sleep( float seconds )
 {
-    mos_sleep_ms(seconds * 1000);
+    mos_msleep(seconds * 1000);
 }
 
 void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed portCHAR *pcTaskName )

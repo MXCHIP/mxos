@@ -2,7 +2,7 @@
 
 #include "mxos_hal/mxos_gpio.h"
 #include "mxos_hal/mxos_uart.h"
-#include "mxos_rtos.h"
+#include "mos.h"
 #include "command_console/mxos_cli.h"
 #include "qc_test.h"
 

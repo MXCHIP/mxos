@@ -137,7 +137,7 @@ merr_t mxos_system_init( void )
   else if( sys_context->flashContentInRam.mxos_config.configured == mfgConfigured ){
     system_log( "Enter MFG mode automatically" );
     mxos_mfg_test( in_context );
-    mos_sleep_ms( MOS_NEVER_TIMEOUT );
+    mos_msleep( MOS_NEVER_TIMEOUT );
   }
 #endif
   else{

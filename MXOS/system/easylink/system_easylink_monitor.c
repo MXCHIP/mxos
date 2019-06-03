@@ -207,7 +207,7 @@ static void switch_channel_thread(void * arg)
             mxos_easylink_monitor_delegate_channel_changed( wlan_channel );
             wlan_channel++;
             if ( wlan_channel >= 14 ) wlan_channel = 1;
-            mos_sleep_ms(wlan_channel_walker_interval);
+            mos_msleep(wlan_channel_walker_interval);
         }
     }
 
@@ -387,7 +387,7 @@ merr_t mxos_easylink_monitor_with_easylink( mxos_Context_t * const in_context, m
         require_action_string( easylink_monitor_thread_handler != NULL, exit, err = kGeneralErr, "ERROR: Unable to start the EasyLink monitor thread." );
 
         /* Make sure easylink is already running, and waiting for sem trigger */
-        mos_sleep_ms( 1000 );
+        mos_msleep( 1000 );
     }
 
     exit:

@@ -43,7 +43,7 @@ void qc_scan( void )
 
     mwifi_scan( NULL );
 
-    mos_sleep_ms(2000);
+    mos_msleep(2000);
 }
 
 

@@ -95,7 +95,7 @@ void easylink_softap_thread( void *inContext )
 
 restart:
     mwifi_softap_stop( );
-    mos_sleep_ms( 20 );
+    mos_msleep( 20 );
 
     mxos_system_delegate_config_will_start( );
 
@@ -130,7 +130,7 @@ restart:
         mxos_system_delegate_config_recv_ssid( context->flashContentInRam.mxos_config.ssid,
                                                context->flashContentInRam.mxos_config.user_key );
 
-        mos_sleep_ms(1);
+        mos_msleep(1);
         system_connect_wifi_normal( context );
 
         /* Wait for station connection */
@@ -221,7 +221,7 @@ merr_t mxos_easylink_softap( mxos_Context_t * const in_context, mxos_bool_t enab
         require_action_string( easylink_softap_thread_handler != NULL, exit, err = kGeneralErr, "ERROR: Unable to start the EasyLink thread." );
 
         /* Make sure easylink softap is already running, and waiting for sem trigger */
-        mos_sleep_ms( 1000 );
+        mos_msleep( 1000 );
     }
 
     exit:

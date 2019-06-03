@@ -71,7 +71,7 @@ void mxos_system_monitor_thread_main( void *arg )
     }
     
     mxos_wdg_reload();
-    mos_sleep_ms(DEFAULT_SYSTEM_MONITOR_PERIOD);
+    mos_msleep(DEFAULT_SYSTEM_MONITOR_PERIOD);
   }
 }
 

@@ -16,7 +16,7 @@
  */
 
 #pragma once
-#include "mxos_rtos.h"
+#include "mos.h"
 #include "RingBufferUtils.h"
 
 #ifdef __cplusplus

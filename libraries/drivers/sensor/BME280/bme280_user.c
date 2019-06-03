@@ -460,7 +460,7 @@ s8 BME280_SPI_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 void BME280_delay_msek(u16 msek)
 {
 	/*Here you can write your own delay routine*/
-  mos_sleep_ms(msek);
+  mos_msleep(msek);
 }
 #endif
 

@@ -378,7 +378,7 @@ void OLED_Init(void)
 
 static void delay_ms(u16 nms)
 {
-  mos_sleep_ms(nms);
+  mos_msleep(nms);
 }
 
 
