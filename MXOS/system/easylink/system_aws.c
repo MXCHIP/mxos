@@ -207,7 +207,7 @@ restart:
     mxos_system_delegate_config_will_start( );
     system_log("Start AWS mode");
 
-    mwifi_start_aws( EasyLink_TimeOut / 1000 );
+    mwifi_aws_start( EasyLink_TimeOut / 1000 );
     while( mos_semphr_acquire(aws_sem, 0 ) == kNoErr );
     err = mos_semphr_acquire(aws_sem, MOS_WAIT_FOREVER );
 

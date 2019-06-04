@@ -28,18 +28,10 @@
  *  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************
  */
-
-#ifndef __MXOSDRIVERRTC_H__
-#define __MXOSDRIVERRTC_H__
-
 #pragma once
-#include "mxos_common.h"
-#include "platform_peripheral.h"
-
-/* Legacy definitions */
-#define MxosRtcInitialize mxos_rtc_init
-#define MxosRtcGetTime mxos_rtc_get_time
-#define MxosRtcSetTime mxos_rtc_set_time
+     
+#include "stdint.h"
+#include "merr.h"
 
 /** @addtogroup MXOS_PLATFORM
 * @{
@@ -93,7 +85,4 @@ merr_t mxos_rtc_set_time(time_t t);
 
 /** @} */
 /** @} */
-
-#endif
-
 

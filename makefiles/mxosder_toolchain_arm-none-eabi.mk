@@ -13,6 +13,7 @@ THUMB_GNU_ARCH_LIST := Cortex-M0 \
                        Cortex-M3 \
                        Cortex-M4 \
                        Cortex-M4F\
+                       Cortex-M33\
                        Cortex-R3 \
                        Cortex-M0plus
 
@@ -26,7 +27,9 @@ HOST_INSTRUCTION_SET := THUMB
 endif
 
 TOOLCHAIN_PREFIX  := arm-none-eabi-
+ifndef TOOLCHAIN_VERSION
 TOOLCHAIN_VERSION := 5_4-2016q2-20160622
+endif
 
 ifeq ($(HOST_OS),Win32)
 ################
@@ -184,6 +187,13 @@ CPU_CFLAGS   := -mthumb -mcpu=cortex-m0plus -D__CORTEX_M0PLUS
 CPU_CXXFLAGS := -mthumb -mcpu=cortex-m0plus -D__CORTEX_M0PLUS
 CPU_ASMFLAGS := -mcpu=cortex-m0plus -mthumb
 CPU_LDFLAGS  := -mthumb -mcpu=cortex-m0plus -Wl,-A,thumb
+endif
+
+ifeq ($(HOST_ARCH),Cortex-M33)
+CPU_CFLAGS   := -march=armv8-m.main+dsp -mthumb -mcmse -mfloat-abi=softfp -mfpu=fpv5-sp-d16
+CPU_CXXFLAGS := -march=armv8-m.main+dsp -mthumb -mcmse -mfloat-abi=softfp -mfpu=fpv5-sp-d16
+CPU_ASMFLAGS := -march=armv8-m.main+dsp -mthumb -mcmse -mfloat-abi=softfp -mfpu=fpv5-sp-d16
+CPU_LDFLAGS  := -march=armv8-m.main+dsp -mthumb -mcmse -mfloat-abi=softfp -mfpu=fpv5-sp-d16 
 endif
 
 ifeq ($(HOST_ARCH),Cortex-R4)

@@ -61,8 +61,6 @@ static void station_monitro_func( void * arg )
                 softap_up = 0;
             }
         } else if (softap_up == 0) {
-            mwifi_softap_attr_t wNetConfig;
-
             mos_semphr_acquire(sem, softap_wait_seconds*1000);
             if (station_up == 1)
                 continue;

@@ -29,6 +29,7 @@ struct fs {
 	size_t (* fwrite)(const void *ptr, size_t size, size_t nmemb, file *f);
 	long (* ftell)(file *f);
 	int (* fseek)(file *f, long offset, int whence);
+    int partition;
 };
 
 #endif /* __FS__H__ */

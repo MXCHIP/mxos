@@ -204,31 +204,9 @@ endif
 $(foreach comp, $(COMPONENTS), $(if $(wildcard $(foreach dir, $(COMPONENT_DIRECTORIES), $(dir)/$(subst .,/,$(comp)) ) ),,$(error Unknown component: $(comp))))
 
 # Find the matching network, platform, RTOS and application from the build string components
-NET_FULL	    ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MXOS_OS_PATH)/MXOS/net/$(comp)),$(comp),)))
-RTOS_FULL       ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MXOS_OS_PATH)/MXOS/RTOS/$(comp)),$(comp),)))
-TLS_FULL        ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MXOS_OS_PATH)/MXOS/security/TLS/$(comp)),$(comp),)))
 APP_FULL        :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(SOURCE_ROOT)$(comp)),$(SOURCE_ROOT)$(comp),$(if $(wildcard $(MXOS_OS_PATH)/$(comp)),$(MXOS_OS_PATH)/$(comp),))))
-
-NET			:=$(notdir $(NET_FULL))
-RTOS        :=$(notdir $(RTOS_FULL))
-TLS         :=$(notdir $(TLS_FULL))
 APP         :=$(notdir $(APP_FULL))
 
-# Define default RTOS and TCPIP stack
-ifndef RTOS
-RTOS := FreeRTOS
-COMPONENTS += $(RTOS)
-endif
-
-ifndef NET
-NET := LwIP
-COMPONENTS += $(NET)
-endif
-
-ifndef TLS
-TLS := wolfSSL
-COMPONENTS += $(TLS)
-endif
 
 EXTRA_CFLAGS :=    -DMXOS_SDK_VERSION_MAJOR=$(MXOS_SDK_VERSION_MAJOR) \
                    -DMXOS_SDK_VERSION_MINOR=$(MXOS_SDK_VERSION_MINOR) \
@@ -261,7 +239,7 @@ $(eval $(call PROCESS_COMPATIBILITY_CHECK,))
 # Now we know the target architecture - include all toolchain makefiles and check one of them can handle the architecture
 CC :=
 
-ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-M4F Cortex-R4 Cortex-M0 Cortex-M0plus ARM968E-S),)
+ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-M4F Cortex-R4 Cortex-M0 Cortex-M0plus ARM968E-S Cortex-M33),)
 
 include $(MAKEFILES_PATH)/mxosder_toolchain_arm-none-eabi.mk
 

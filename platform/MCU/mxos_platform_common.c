@@ -215,7 +215,7 @@ merr_t mhal_gpio_int_off( mxos_gpio_t gpio )
 
 merr_t mxos_i2c_init( mxos_i2c_device_t* device )
 {
-  platform_i2c_config_t config;
+  mxos_i2c_config_t config;
   merr_t result;
 
   if ( device->port >= MXOS_I2C_NONE )
@@ -238,7 +238,7 @@ merr_t mxos_i2c_init( mxos_i2c_device_t* device )
 
 merr_t mxos_i2c_deinit( mxos_i2c_device_t* device )
 {
-  platform_i2c_config_t config;
+  mxos_i2c_config_t config;
 
   if ( device->port >= MXOS_I2C_NONE )
     return kUnsupportedErr;
@@ -259,7 +259,7 @@ merr_t mxos_i2c_deinit( mxos_i2c_device_t* device )
 bool mxos_i2c_probe_dev( mxos_i2c_device_t* device, int retries )
 {
   bool ret;
-  platform_i2c_config_t config;
+  mxos_i2c_config_t config;
 
   if ( device->port >= MXOS_I2C_NONE )
     return kUnsupportedErr;
@@ -294,7 +294,7 @@ merr_t mxos_i2c_build_comb_msg( mxos_i2c_message_t* message, const void* tx_buff
 merr_t mxos_i2c_transfer( mxos_i2c_device_t* device, mxos_i2c_message_t* messages, uint16_t number_of_messages )
 {
   merr_t err = kNoErr;
-  platform_i2c_config_t config;
+  mxos_i2c_config_t config;
   
   if ( device->port >= MXOS_I2C_NONE )
     return kUnsupportedErr;
@@ -378,7 +378,7 @@ merr_t mxos_spi_init( const mxos_spi_device_t* spi )
 
   if( platform_spi_drivers[spi->port].spi_mutex == NULL)
     platform_spi_drivers[spi->port].spi_mutex = mos_mutex_new( );
-  
+
   config.chip_select = spi->chip_select == MXOS_GPIO_NONE ? NULL : &platform_gpio_pins[spi->chip_select];
   config.speed       = spi->speed;
   config.mode        = spi->mode;
@@ -505,7 +505,7 @@ merr_t mhal_uart_open( mxos_uart_t uart, const mxos_uart_config_t* config, ring_
   /* Interface is used by STDIO. Uncomment MXOS_DISABLE_STDIO to overcome this */
   if ( uart == MXOS_STDIO_UART )
   {
-    return kGeneralErr;
+    //return kGeneralErr;
   }
 #endif
   
@@ -578,7 +578,7 @@ mxos_logic_partition_t* mhal_flash_get_info( mxos_partition_t inPartition )
     require( inPartition >= 0 && inPartition < MXOS_PARTITION_MAX, exit );
 
 #ifdef MXOS_ENABLE_SECONDARY_APPLICATION
-extern platform_logic_partition_t* paltform_flash_get_info(int inPartition);
+extern mxos_logic_partition_t* paltform_flash_get_info(int inPartition);
     logic_partition = paltform_flash_get_info( inPartition );
 #else
     logic_partition = (mxos_logic_partition_t *)&mxos_partitions[ inPartition ];
@@ -608,7 +608,7 @@ static merr_t MxosFlashInitialize( mxos_partition_t partition )
   mos_mutex_lock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   
   err = platform_flash_init( &platform_flash_peripherals[ partition_info->partition_owner ] );
-  platform_flash_drivers[ partition_info->partition_owner ].peripheral = (platform_flash_t *)&platform_flash_peripherals[ partition_info->partition_owner ];
+  platform_flash_drivers[ partition_info->partition_owner ].peripheral = (mxos_flash_t *)&platform_flash_peripherals[ partition_info->partition_owner ];
   platform_flash_drivers[ partition_info->partition_owner ].initialized = true;
   mos_mutex_unlock(platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   

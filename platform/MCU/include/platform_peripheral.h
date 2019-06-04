@@ -71,108 +71,10 @@ Porting Notes
 
 #define USE_RTC_BKP 0x00BB32F2 // Use RTC BKP to initilize system time.
 
-
-#define UART_WAKEUP_MASK_POSN   0
-#define UART_WAKEUP_DISABLE    (0 << UART_WAKEUP_MASK_POSN) /**< UART can not wakeup MCU from stop mode */
-#define UART_WAKEUP_ENABLE     (1 << UART_WAKEUP_MASK_POSN) /**< UART can wake up MCU from stop mode */
  
 /******************************************************
  *                   Enumerations
  ******************************************************/
-
-/**
- * Pin configuration
- */
-typedef enum
-{
-    INPUT_PULL_UP,             /* Input with an internal pull-up resistor - use with devices that actively drive the signal low - e.g. button connected to ground */
-    INPUT_PULL_DOWN,           /* Input with an internal pull-down resistor - use with devices that actively drive the signal high - e.g. button connected to a power rail */
-    INPUT_HIGH_IMPEDANCE,      /* Input - must always be driven, either actively or by an external pullup resistor */
-    OUTPUT_PUSH_PULL,          /* Output actively driven high and actively driven low - must not be connected to other active outputs - e.g. LED output */
-    OUTPUT_OPEN_DRAIN_NO_PULL, /* Output actively driven low but is high-impedance when set high - can be connected to other open-drain/open-collector outputs. Needs an external pull-up resistor */
-    OUTPUT_OPEN_DRAIN_PULL_UP, /* Output actively driven low and is pulled high with an internal resistor when set high - can be connected to other open-drain/open-collector outputs. */
-} platform_pin_config_t;
-
-/**
- * GPIO interrupt trigger
- */
-typedef enum
-{
-    IRQ_TRIGGER_RISING_EDGE  = 0x1, /* Interrupt triggered at input signal's rising edge  */
-    IRQ_TRIGGER_FALLING_EDGE = 0x2, /* Interrupt triggered at input signal's falling edge */
-    IRQ_TRIGGER_BOTH_EDGES   = IRQ_TRIGGER_RISING_EDGE | IRQ_TRIGGER_FALLING_EDGE,
-} platform_gpio_irq_trigger_t;
-
-/**
- * UART data width
- */
-typedef enum
-{
-    DATA_WIDTH_5BIT,
-    DATA_WIDTH_6BIT,
-    DATA_WIDTH_7BIT,
-    DATA_WIDTH_8BIT,
-    DATA_WIDTH_9BIT
-} platform_uart_data_width_t;
-
-/**
- * UART stop bits
- */
-typedef enum
-{
-    STOP_BITS_1,
-    STOP_BITS_2,
-} platform_uart_stop_bits_t;
-
-/**
- * UART flow control
- */
-typedef enum
-{
-    FLOW_CONTROL_DISABLED,
-    FLOW_CONTROL_CTS,
-    FLOW_CONTROL_RTS,
-    FLOW_CONTROL_CTS_RTS
-} platform_uart_flow_control_t;
-
-/**
- * UART parity
- */
-typedef enum
-{
-    NO_PARITY,
-    ODD_PARITY,
-    EVEN_PARITY,
-} platform_uart_parity_t;
-
-/**
- * I2C address width
- */
-typedef enum
-{
-    I2C_ADDRESS_WIDTH_7BIT,
-    I2C_ADDRESS_WIDTH_10BIT,
-    I2C_ADDRESS_WIDTH_16BIT,
-} platform_i2c_bus_address_width_t;
-
-/**
- * I2C speed mode
- */
-typedef enum
-{
-    I2C_LOW_SPEED_MODE,         /* 10Khz devices */
-    I2C_STANDARD_SPEED_MODE,    /* 100Khz devices */
-    I2C_HIGH_SPEED_MODE         /* 400Khz devices */
-} platform_i2c_speed_mode_t;
-
-/**
- * GTimer mode
- */
-typedef enum
-{
-    ONE_SHOT,
-    PERIOIC,
-} platform_gtimer_mode_t;
 
 /**
  * SPI slave transfer direction
@@ -207,32 +109,10 @@ typedef enum
  *                 Type Definitions
  ******************************************************/
 
-/**
- * GPIO interrupt callback handler
- */
-typedef void (*platform_gpio_irq_callback_t)( void* arg );
-
-/**
- * Gtimer interrupt callback handler
- */
-typedef void (*platform_gtimer_irq_callback_t)( void* arg );
 
 /******************************************************
  *                    Structures
  ******************************************************/
-
-/**
- * UART configuration
- */
-typedef struct
-{
-    uint32_t                     baud_rate;
-    platform_uart_data_width_t   data_width;
-    platform_uart_parity_t       parity;
-    platform_uart_stop_bits_t    stop_bits;
-    platform_uart_flow_control_t flow_control;
-    uint8_t                      flags;          /**< if set, UART can wake up MCU from stop mode, reference: @ref UART_WAKEUP_DISABLE and @ref UART_WAKEUP_ENABLE*/
-} platform_uart_config_t;
 
 /**
  * SPI configuration
@@ -275,51 +155,6 @@ typedef struct platform_spi_slave_config
 
 
 /**
- * SPI message segment
- */
-typedef struct
-{
-    const void* tx_buffer;
-    void*       rx_buffer;
-    uint32_t    length;
-} platform_spi_message_segment_t;
-
-/**
- * IIS message segment
- */
-typedef struct
-{
-    const void* tx_buffer;
-    void*       rx_buffer;
-    uint32_t    length;
-} platform_iis_message_segment_t;
-
-/**
- * I2C configuration
- */
-typedef struct
-{
-    uint16_t                         address;       /* the address of the device on the i2c bus */
-    platform_i2c_bus_address_width_t address_width;
-    uint8_t                          flags;
-    platform_i2c_speed_mode_t        speed_mode;    /* speed mode the device operates in */
-} platform_i2c_config_t;
-
-/**
- * I2C message
- */
-typedef struct
-{
-    const void*  tx_buffer;
-    void*        rx_buffer;
-    uint16_t     tx_length;
-    uint16_t     rx_length;
-    uint16_t     retries;    /* Number of times to retry the message */
-    bool combined;           /**< If set, this message is used for both tx and rx. */
-    //uint8_t      flags;      /* MESSAGE_DISABLE_DMA : if set, this flag disables use of DMA for the message */
-} platform_i2c_message_t;
-
-/**
  * RTC time
  */
 typedef struct
@@ -333,14 +168,6 @@ typedef struct
     uint8_t year;
 } platform_rtc_time_t;
 
-typedef struct
-{
-    int32_t                    partition_owner;
-    const char*                partition_description;
-    uint32_t                   partition_start_addr;
-    uint32_t                   partition_length;
-    uint32_t                   partition_options;
-} platform_logic_partition_t;
 
 /******************************************************
  *                 Global Variables

@@ -1329,6 +1329,7 @@ uint8_t match_string_with_wildcard_pattern( const char* string, uint32_t length,
     return ( *current_pattern == '\0' );
 }
 
+#if 0
 /*
  ******************************************************************************
  * Length limited version of strstr. Ported from bcmutils.c
@@ -1353,4 +1354,5 @@ char* strnstr(const char *s, uint16_t s_len, const char *substr, uint16_t substr
     return NULL;
 }
 
+#endif
 

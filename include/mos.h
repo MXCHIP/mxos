@@ -80,6 +80,7 @@ void mos_timer_start(mos_timer_id_t id);
 void mos_timer_stop(mos_timer_id_t id);
 void mos_timer_change(mos_timer_id_t id, uint32_t timeout);
 bool mos_timer_is_runing(mos_timer_id_t id);
+void mos_timer_reset(mos_timer_id_t id);
 
 //
 int mos_event_fd_new(mos_event_id_t handle);

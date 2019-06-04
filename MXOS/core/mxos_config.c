@@ -21,9 +21,9 @@
 #include "mxos_board_conf.h"
 
 #ifdef MXOS_DEFAULT_APPLICATION_STACK_SIZE
-uint32_t MXOS_WEAK app_stack_size = MXOS_DEFAULT_APPLICATION_STACK_SIZE;
+uint32_t app_stack_size = MXOS_DEFAULT_APPLICATION_STACK_SIZE;
 #else
-uint32_t MXOS_WEAK app_stack_size = 1500;
+uint32_t app_stack_size = 1500;
 #endif
 
 

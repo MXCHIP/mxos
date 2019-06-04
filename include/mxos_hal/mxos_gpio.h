@@ -29,22 +29,14 @@
  ******************************************************************************
  */
 
-#ifndef __MXOSDRIVERGPIO_H__
-#define __MXOSDRIVERGPIO_H__
-
 #pragma once
-#include "mxos_common.h"
-#include "platform_peripheral.h"
 
-/* Legacy definitions */
-#define MxosGpioInitialize      mhal_gpio_open
-#define MxosGpioFinalize        mhal_gpio_close
-#define MxosGpioOutputHigh      mhal_gpio_high
-#define MxosGpioOutputLow       mhal_gpio_low
-#define MxosGpioOutputTrigger   mhal_gpio_toggle
-#define MxosGpioInputGet        mhal_gpio_value
-#define MxosGpioEnableIRQ       mhal_gpio_int_on
-#define MxosGpioDisableIRQ      mhal_gpio_int_off
+#include "stdint.h"
+#include "merr.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** @addtogroup MXOS_PLATFORM
 * @{
@@ -70,10 +62,33 @@
 
 typedef int8_t mxos_gpio_t;  /**< MXOS GPIO peripheral handle, MXOS_GPIO_XX define by board/<board_name>/mxos_board.h. */
 
-typedef platform_pin_config_t                   mxos_gpio_config_t;
-typedef platform_gpio_irq_trigger_t             mxos_gpio_irq_trigger_t;
-typedef platform_gpio_irq_callback_t            mxos_gpio_irq_handler_t;
+/**
+ * Pin configuration
+ */
+typedef enum
+{
+    INPUT_PULL_UP,             /* Input with an internal pull-up resistor - use with devices that actively drive the signal low - e.g. button connected to ground */
+    INPUT_PULL_DOWN,           /* Input with an internal pull-down resistor - use with devices that actively drive the signal high - e.g. button connected to a power rail */
+    INPUT_HIGH_IMPEDANCE,      /* Input - must always be driven, either actively or by an external pullup resistor */
+    OUTPUT_PUSH_PULL,          /* Output actively driven high and actively driven low - must not be connected to other active outputs - e.g. LED output */
+    OUTPUT_OPEN_DRAIN_NO_PULL, /* Output actively driven low but is high-impedance when set high - can be connected to other open-drain/open-collector outputs. Needs an external pull-up resistor */
+    OUTPUT_OPEN_DRAIN_PULL_UP, /* Output actively driven low and is pulled high with an internal resistor when set high - can be connected to other open-drain/open-collector outputs. */
+} mxos_gpio_config_t;
 
+/**
+ * GPIO interrupt trigger
+ */
+typedef enum
+{
+    IRQ_TRIGGER_RISING_EDGE  = 0x1, /* Interrupt triggered at input signal's rising edge  */
+    IRQ_TRIGGER_FALLING_EDGE = 0x2, /* Interrupt triggered at input signal's falling edge */
+    IRQ_TRIGGER_BOTH_EDGES   = IRQ_TRIGGER_RISING_EDGE | IRQ_TRIGGER_FALLING_EDGE,
+} mxos_gpio_irq_trigger_t;
+
+/**
+ * GPIO interrupt callback handler
+ */
+typedef void (*mxos_gpio_irq_handler_t)( void* arg );
 
  /******************************************************
  *                 Function Declarations
@@ -190,6 +205,9 @@ merr_t mhal_gpio_int_off( mxos_gpio_t gpio );
 /** @} */
 /** @} */
 
+#ifdef __cplusplus
+} /*extern "C" */
 #endif
+
 
 

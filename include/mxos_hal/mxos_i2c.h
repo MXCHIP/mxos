@@ -28,22 +28,11 @@
  *  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************
  */
-
-#ifndef __MXOSDRIVERI2C_H__
-#define __MXOSDRIVERI2C_H__
-
 #pragma once
-#include "mxos_common.h"
-#include "platform_peripheral.h"
+     
+#include "stdint.h"
+#include "merr.h"
 
-/* Legacy definitions */
-#define MxosI2cInitialize mxos_i2c_init
-#define MxosI2cProbeDevice mxos_i2c_probe_dev 
-#define MxosI2cBuildTxMessage mxos_i2c_build_tx_msg
-#define MxosI2cBuildRxMessage mxos_i2c_build_rx_msg
-#define MxosI2cBuildCombinedMessage mxos_i2c_build_comb_msg
-#define MxosI2cTransfer mxos_i2c_transfer
-#define MxosI2cFinalize mxos_i2c_deinit
 
 /** @addtogroup MXOS_PLATFORM
 * @{
@@ -61,6 +50,10 @@
 /******************************************************
  *                   Enumerations
  ******************************************************/
+/* I2C flags constants */
+#define I2C_DEVICE_DMA_MASK_POSN ( 0 )
+#define I2C_DEVICE_NO_DMA        ( 0 << I2C_DEVICE_DMA_MASK_POSN )
+#define I2C_DEVICE_USE_DMA       ( 1 << I2C_DEVICE_DMA_MASK_POSN )
 
 
 
@@ -74,9 +67,40 @@
 
 typedef int8_t mxos_i2c_t;   /**< MXOS I2C peripheral handle, MXOS_I2C_XX define by board/<board_name>/mxos_board.h. */
 
-typedef platform_i2c_bus_address_width_t        mxos_i2c_bus_address_width_t;
-typedef platform_i2c_speed_mode_t               mxos_i2c_speed_mode_t;
-typedef platform_i2c_message_t                  mxos_i2c_message_t;
+/**
+ * I2C address width
+ */
+typedef enum
+{
+    I2C_ADDRESS_WIDTH_7BIT,
+    I2C_ADDRESS_WIDTH_10BIT,
+    I2C_ADDRESS_WIDTH_16BIT,
+} mxos_i2c_bus_address_width_t;
+
+/**
+ * I2C speed mode
+ */
+typedef enum
+{
+    I2C_LOW_SPEED_MODE,         /* 10Khz devices */
+    I2C_STANDARD_SPEED_MODE,    /* 100Khz devices */
+    I2C_HIGH_SPEED_MODE         /* 400Khz devices */
+} mxos_i2c_speed_mode_t;
+
+
+/**
+ * I2C message
+ */
+typedef struct
+{
+    const void*  tx_buffer;
+    void*        rx_buffer;
+    uint16_t     tx_length;
+    uint16_t     rx_length;
+    uint16_t     retries;    /* Number of times to retry the message */
+    bool combined;           /**< If set, this message is used for both tx and rx. */
+    //uint8_t      flags;      /* MESSAGE_DISABLE_DMA : if set, this flag disables use of DMA for the message */
+} mxos_i2c_message_t;
 
 typedef struct
 {
@@ -85,6 +109,17 @@ typedef struct
    mxos_i2c_bus_address_width_t  address_width;  /**< I2C device's address length */
    mxos_i2c_speed_mode_t         speed_mode;     /**< Speed mode the device operates in */
 } mxos_i2c_device_t;
+
+/**
+ * I2C configuration
+ */
+typedef struct
+{
+    uint16_t                         address;       /* the address of the device on the i2c bus */
+    mxos_i2c_bus_address_width_t address_width;
+    uint8_t                          flags;
+    mxos_i2c_speed_mode_t        speed_mode;    /* speed mode the device operates in */
+} mxos_i2c_config_t;
 
 /******************************************************
  *                 Function Declarations
@@ -180,6 +215,5 @@ merr_t mxos_i2c_deinit( mxos_i2c_device_t* device );
 /** @} */
 /** @} */
 
-#endif
 
 

@@ -29,21 +29,16 @@
  ******************************************************************************
  */
 
-#ifndef __MXOS_ADC_H__
-#define __MXOS_ADC_H__
+#pragma once
 
-#include "mxos_common.h"
-#include "platform_peripheral.h"
+#include "stdint.h"
+#include "merr.h"
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* Legacy definitions */
-#define MxosAdcInitialize           mxos_adc_init
-#define MxosAdcFinalize             mxos_adc_deinit
-#define MxosAdcTakeSample           mxos_adc_take_sample
-#define MxosAdcTakeSampleStreram    mxos_adc_take_sample_streram
 
 /** @addtogroup MXOS_PLATFORM
 * @{
@@ -151,4 +146,3 @@ merr_t  mxos_adc_deinit( mxos_adc_t adc );
 } /*extern "C" */
 #endif
 
-#endif

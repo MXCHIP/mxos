@@ -33,8 +33,6 @@
 #ifndef __Common_h__
 #define __Common_h__
 
-
-
 // ==== STD LIB ====
 #include <stdint.h>
 #include <stdbool.h>
