@@ -86,6 +86,7 @@ extern int mxos_debug_enabled;
 /******************************************************
  *               Function Definitions
  ******************************************************/
+extern merr_t mxos_rtos_init( void );
 
 /* mxos_main is executed after rtos is start up and before real main*/
 void mxos_main( void )

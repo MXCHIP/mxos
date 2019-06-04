@@ -387,6 +387,8 @@ static void cli_main( void *data )
 }
 
 #ifndef MOC
+extern merr_t mxos_rtos_print_thread_status( char* pcWriteBuffer, int xWriteBufferLen );
+
 static void task_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv )
 {
     mxos_rtos_print_thread_status( pcWriteBuffer, xWriteBufferLen );
