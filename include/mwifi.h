@@ -8,8 +8,8 @@
 
 enum
 {
-  STATION_INTERFACE,
   SOFTAP_INTERFACE,
+  STATION_INTERFACE,
 };
 typedef uint8_t mwifi_if_t;
 
