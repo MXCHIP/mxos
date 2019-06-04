@@ -1,7 +1,9 @@
 #include <stdint.h>
 
+#include "mxos_board.h"
 #include "mxos_hal/mxos_gpio.h"
 #include "mxos_hal/mxos_uart.h"
+#include "mxos_hal/mxos_flash.h"
 #include "mos.h"
 #include "command_console/mxos_cli.h"
 #include "qc_test.h"
@@ -73,4 +75,28 @@ void usr_main(void)
 char *mxos_get_bootloader_ver(void)
 {
     return "bootloader";
+}
+
+typedef struct
+{
+    uint32_t dst_adr;
+    uint32_t src_adr;
+    uint32_t siz;
+    uint16_t crc;
+} ota_hdr_t;
+
+merr_t mxos_ota_switch(uint32_t ota_len, uint16_t ota_crc)
+{
+    uint32_t addr = 0;
+    ota_hdr_t ota_hdr =
+    {
+        .dst_adr = 0xA000,
+        .src_adr = 0x100000,
+        .siz = ota_len,
+        .crc = ota_crc,
+    };
+
+    mhal_flash_write(MXOS_PARTITION_PARAMETER_1, &addr, (uint8_t *)&ota_hdr, sizeof(ota_hdr));
+
+    return kNoErr;
 }

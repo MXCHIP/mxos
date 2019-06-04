@@ -247,32 +247,9 @@ exit:
 /******************************************************
  *               Function Definitions
  ******************************************************/
+merr_t mxos_ota_switch(uint32_t ota_len, uint16_t ota_crc);
 
 merr_t mxos_ota_switch_to_new_fw( int ota_data_len, uint16_t ota_data_crc )
 {
-    mxos_Context_t *mxos_context = mxos_system_context_get();
-#ifdef MXOS_ENABLE_SECONDARY_APPLICATION
-    UNUSED_PARAMETER( ota_data_len );
-    UNUSED_PARAMETER( ota_data_crc );
-    extern int switch_active_firmware(void);
-    switch_active_firmware();
-#else
-    mxos_logic_partition_t* ota_partition = mhal_flash_get_info( MXOS_PARTITION_OTA_TEMP );
-
-    memset( &sys_context->flashContentInRam.bootTable, 0, sizeof(boot_table_t) );
-#ifdef CONFIG_MX108
-    sys_context->flashContentInRam.bootTable.dst_adr = 0x13200;
-    sys_context->flashContentInRam.bootTable.src_adr = ota_partition->partition_start_addr;
-    sys_context->flashContentInRam.bootTable.siz = ota_data_len;
-    sys_context->flashContentInRam.bootTable.crc = ota_data_crc;
-#else
-    sys_context->flashContentInRam.bootTable.length = ota_data_len;
-    sys_context->flashContentInRam.bootTable.start_address = ota_partition->partition_start_addr;
-    sys_context->flashContentInRam.bootTable.type = 'A';
-    sys_context->flashContentInRam.bootTable.upgrade_type = 'U';
-    sys_context->flashContentInRam.bootTable.crc = ota_data_crc;
-#endif
-    mxos_system_context_update( mxos_context );
-#endif
-    return kNoErr;
+  return mxos_ota_switch(ota_data_len, ota_data_crc);
 }

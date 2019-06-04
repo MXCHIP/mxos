@@ -64,3 +64,5 @@ DEFAULT_LINK_SCRIPT := gcc_a0v2.ld
 EXTRA_TARGET_MAKEFILES +=  \
 mxos/platform/MCU/mx1270/flash_alg.mk \
 mxos/platform/MCU/mx1270/image.mk
+
+GLOBAL_DEFINES += CONFIG_MX1270
