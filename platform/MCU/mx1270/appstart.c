@@ -36,26 +36,22 @@ int main(int argc, const char *argv[]);
 void handle_kv_cmd(char *pwbuf, int blen, int argc, char **argv);
 static const struct cli_command kv_cmd = {"kv", "kv [set key value | get key | del key | seti key int_val | geti key | list]", handle_kv_cmd};
 
-static void qc_check(void)
+static void usrapp_thread(void *arg)
 {
+    mxos_debug_enabled = 1;
+    stdio_tx_mutex = mos_mutex_new();
+
     mhal_gpio_open(STAT_PIN, INPUT_PULL_UP);
     mhal_gpio_open(BOOT_PIN, INPUT_PULL_UP);
 
     if (mhal_gpio_value(STAT_PIN) == false && mhal_gpio_value(BOOT_PIN) == false)
     {
         mxos_system_qc_test();
-        mos_thread_delete(NULL);
     }
-}
-
-static void usrapp_thread(void *arg)
-{
-    mxos_debug_enabled = 1;
-    stdio_tx_mutex = mos_mutex_new();
-
-    qc_check();
-
-    main(0, NULL);
+    else
+    {
+        main(0, NULL);
+    }
 
     mos_thread_delete(NULL);
 }
@@ -76,5 +72,5 @@ void usr_main(void)
 
 char *mxos_get_bootloader_ver(void)
 {
-	return "bootloader";
+    return "bootloader";
 }

@@ -29,11 +29,16 @@
 ******************************************************/
 
 
-static void mxosNotify_ApListCallback( void *pApList )
+static void mxosNotify_ApListCallback( int num, mwifi_ap_info_t *ap_list )
 {
     int i = 0;
     char str[48];
     mf_printf( "Scan AP Success:\r\n" );
+    for ( i = 0; i < num; i++ ) 
+    {
+        snprintf(str, 48, "  SSID: %s, RSSI: %d\r\n", ap_list[i].ssid, ap_list[i].rssi);
+        mf_printf( str );
+    }
 }
 
 void qc_scan( void )
