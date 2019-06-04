@@ -43,7 +43,7 @@
 #define MxosUartFinalize            mhal_uart_close
 #define MxosUartSend                mhal_uart_write
 #define MxosUartRecv                mhal_uart_read
-#define MxosUartGetLengthInBuffer   mhal_uart_readd_data_len
+#define MxosUartGetLengthInBuffer   mhal_uart_recved_len
 #define MxosStdioUartInitialize     mxos_stdio_uart_init
 
 /** @addtogroup MXOS_PLATFORM
@@ -158,7 +158,7 @@ merr_t mhal_uart_read( mxos_uart_t uart, void* data, uint32_t size, uint32_t tim
  *
  * @return    Data length
  */
-uint32_t mhal_uart_readd_data_len( mxos_uart_t uart );
+uint32_t mhal_uart_recved_len( mxos_uart_t uart );
 
 /** @} */
 /** @} */

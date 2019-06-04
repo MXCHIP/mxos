@@ -544,7 +544,7 @@ merr_t mhal_uart_read( mxos_uart_t uart, void* data, uint32_t size, uint32_t tim
   return (merr_t) platform_uart_receive_bytes( &platform_uart_drivers[uart], (uint8_t*)data, size, timeout );
 }
 
-uint32_t mhal_uart_readd_data_len( mxos_uart_t uart )
+uint32_t mhal_uart_recved_len( mxos_uart_t uart )
 {
   if ( uart >= MXOS_UART_NONE )
     return 0;

@@ -196,9 +196,9 @@ merr_t mhal_uart_read( mxos_uart_t uart, void* data, uint32_t size, uint32_t tim
 {
 	return lib_api_p->mhal_uart_read(uart, data, size, timeout );
 }
-uint32_t mhal_uart_readd_data_len( mxos_uart_t uart )
+uint32_t mhal_uart_recved_len( mxos_uart_t uart )
 {
-	return lib_api_p->mhal_uart_readd_data_len(uart);
+	return lib_api_p->mhal_uart_recved_len(uart);
 }
 
 void wifistate_Command(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv)

@@ -238,7 +238,7 @@ mxos_api_t *moc_adapter(new_mxos_api_t *new_mxos_api)
   mxos_api.mhal_uart_close = _kernel_api.uart_apis->mhal_uart_close;
   mxos_api.mhal_uart_write = _kernel_api.uart_apis->mhal_uart_write;
   mxos_api.mhal_uart_read = _kernel_api.uart_apis->mhal_uart_read;
-  mxos_api.mhal_uart_readd_data_len = _kernel_api.uart_apis->mhal_uart_readd_data_len;
+  mxos_api.mhal_uart_recved_len = _kernel_api.uart_apis->mhal_uart_recved_len;
   mxos_api.MxosUartPinRedirect = _kernel_api.uart_apis->MxosUartPinRedirect;
   
   mxos_api.pm_mcu_state = _kernel_api.ps_apis->pm_mcu_state;

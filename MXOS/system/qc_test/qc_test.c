@@ -301,7 +301,7 @@ static size_t _uart_get_one_packet(uint8_t* inBuf, int inBufLen)
       return inBufLen;
     }
     else{
-      datalen = mhal_uart_readd_data_len( UART_FOR_APP );
+      datalen = mhal_uart_recved_len( UART_FOR_APP );
       if(datalen){
         mhal_uart_read(UART_FOR_APP, inBuf, datalen, 500);
         return datalen;

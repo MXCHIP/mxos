@@ -383,7 +383,7 @@ typedef struct mxos_api_struct
     merr_t (*mhal_uart_close)( mxos_uart_t uart );
     merr_t (*mhal_uart_write)( mxos_uart_t uart, const void* data, uint32_t size );
     merr_t (*mhal_uart_read)( mxos_uart_t uart, void* data, uint32_t size, uint32_t timeout );
-    uint32_t (*mhal_uart_readd_data_len)( mxos_uart_t uart );
+    uint32_t (*mhal_uart_recved_len)( mxos_uart_t uart );
     void (*MxosUartPinRedirect)( mxos_uart_t uart );
 
     /* Power management*/

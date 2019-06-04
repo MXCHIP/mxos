@@ -306,13 +306,8 @@ enum
     MXOS_PARTITION_NONE,
 };
 
-#ifdef BOOTLOADER
-#define MXOS_STDIO_UART             (MXOS_UART_1)
+#define MXOS_STDIO_UART             (MXOS_UART_2)
 #define MXOS_STDIO_UART_BAUDRATE    (115200)
-#else
-#define MXOS_STDIO_UART             (MXOS_UART_1)
-#define MXOS_STDIO_UART_BAUDRATE    (115200)
-#endif
 
 #define MXOS_UART_FOR_APP     (MXOS_UART_1)
 #define MXOS_MFG_TEST         (MXOS_UART_1)

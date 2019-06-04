@@ -274,7 +274,7 @@ extern "C" {
 #define CONFIG_NET_DEBUG                       MXOS_DEBUG_OFF
 #endif
 
-#if !defined CONFIG_MDNS_DEBUGs
+#if !defined CONFIG_MDNS_DEBUG
 #define CONFIG_MDNS_DEBUG                      MXOS_DEBUG_OFF
 #endif
 
