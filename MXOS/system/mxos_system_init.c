@@ -96,8 +96,10 @@ merr_t mxos_system_init( void )
 #endif
 
 #if MXOS_CLI_ENABLE
+#ifndef CONFIG_MX1270
   /* MXOS command line interface */
   cli_init();
+#endif
 #endif
 
   /* Network PHY driver and tcp/ip stack init */

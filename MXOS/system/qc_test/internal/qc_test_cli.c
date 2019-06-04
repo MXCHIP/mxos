@@ -35,13 +35,11 @@ void mf_printf(char *str)
     if ((str == NULL) || (strlen(str)==0))
         return;
   mhal_uart_write( MXOS_MFG_TEST, str, strlen(str));
-  mhal_uart_write( MXOS_STDIO_UART, str, strlen(str));
 }
 
 void mf_putc(char ch)
 {
   mhal_uart_write( MXOS_MFG_TEST, &ch, 1);
-  mhal_uart_write( MXOS_STDIO_UART, &ch, 1);
 }
 
 int mf_get_line( char** p_cmd_str )

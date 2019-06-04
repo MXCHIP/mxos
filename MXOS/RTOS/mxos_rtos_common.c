@@ -29,7 +29,7 @@
 #include "mos.h"
 #include "mos_worker.h"
 #include "mxos_common.h"
-#include "mxos_rtos_common.h"
+#include "mos_worker.h"
 #include "mxos_board_conf.h"
 
 /******************************************************

@@ -209,7 +209,6 @@ enum
     MXOS_RF_LED,
     BOOT_SEL,
     MFG_SEL,
-    EasyLink_BUTTON,
     STDIO_UART_RX,
     STDIO_UART_TX,
     FLASH_PIN_SPI_CS,
@@ -318,6 +317,8 @@ enum
 #define SFLASH_SUPPORT_MACRONIX_PARTS 
 //#define SFLASH_SUPPORT_SST_PARTS
 //#define SFLASH_SUPPORT_WINBOND_PARTS
+
+#define EasyLink_BUTTON 13
 
 /* Arduino extention connector */
 #define Arduino_RXD         (MXOS_GPIO_29)

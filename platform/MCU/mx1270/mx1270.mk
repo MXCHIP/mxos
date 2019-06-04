@@ -36,7 +36,12 @@ GLOBAL_LDFLAGS  += -L ./platform/MCU/mx1270
 
 # Source files
 $(NAME)_SOURCES := \
-appstart.c
+appstart.c \
+../../../MXOS/RTOS/mxos_rtos_common.c \
+../../../MXOS/net/LwIP/mxos/mxos_network.c
+
+$(NAME)_INCLUDES := \
+../../../MXOS/RTOS/FreeRTOS/mxos
 
 # Libraries
 $(NAME)_PREBUILT_LIBRARY := \
@@ -65,4 +70,4 @@ EXTRA_TARGET_MAKEFILES +=  \
 mxos/platform/MCU/mx1270/flash_alg.mk \
 mxos/platform/MCU/mx1270/image.mk
 
-GLOBAL_DEFINES += CONFIG_MX1270
+GLOBAL_DEFINES += CONFIG_MX1270 FreeRTOS_VERSION=\"V9.0.0\"

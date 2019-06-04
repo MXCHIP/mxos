@@ -22,7 +22,7 @@
 #include "mos_worker.h"
 //#include "qc_test.h"
 #include "mxos_rtos_internal.h"
-#include "mxos_rtos_common.h"
+#include "mos_worker.h"
 #include "FreeRTOS.h"
 #include "projdefs.h"
 #include "mdebug.h"
