@@ -331,11 +331,11 @@ mxos_logic_partition_t* paltform_flash_get_info(int inPartition)
     }
 }
 
-int switch_active_firmware(void)
+merr_t mxos_ota_switch(uint32_t ota_len, uint16_t ota_crc)
 {
     sys_clear_ota_signature();
 
-    return 0;
+    return kNoErr;
 }
 
 void mxos_sys_led(bool onoff)
